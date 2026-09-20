@@ -54,7 +54,7 @@ Tất cả nằm trong **Cài đặt** (biểu tượng bánh răng ở góc tr�
 ## Khi muốn sửa app
 
 1. Thay file `index.html` mới trên GitHub (**Add file**, rồi **Upload files**).
-2. Mở `sw.js`, tăng số phiên bản ở dòng `const VERSION = "ngay50k-v6";` lên số tiếp theo (`v7`, `v8`…)
+2. Mở `sw.js`, tăng số phiên bản ở dòng `const VERSION = "ngay50k-v8";` lên số tiếp theo (`v9`, `v10`…)
 3. Lần sau mở app có mạng, app hiện thông báo **Đã có bản mới**, bấm **Tải lại** là xong. Dữ liệu vẫn giữ nguyên.
 
 ## Làm thêm mini app khác
