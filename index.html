@@ -13,6 +13,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="format-detection" content="telephone=no">
 <link rel="manifest" href="manifest.webmanifest">
+<script>try{var t=localStorage.getItem("ngay50k-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <style>
@@ -912,6 +913,16 @@ header .date{font-size:1.65rem; font-weight:800; letter-spacing:-.02em; color:va
       <h2 id="settingsTitle" tabindex="-1">Cài đặt</h2>
       <button class="done" id="closeSettings">Xong</button>
     </div>
+
+    <section class="set-group" aria-labelledby="gTheme">
+      <h3 id="gTheme">Giao diện</h3>
+      <p class="set-now">Tự động sẽ sáng hay tối theo cài đặt của iPhone.</p>
+      <div class="seg seg3" id="themeSeg" role="group" aria-label="Chọn giao diện" style="margin-top:12px">
+        <button data-theme-opt="auto" aria-pressed="true">Tự động</button>
+        <button data-theme-opt="light" aria-pressed="false">Sáng</button>
+        <button data-theme-opt="dark" aria-pressed="false">Tối</button>
+      </div>
+    </section>
 
     <section class="set-group" aria-labelledby="gBudget">
       <h3 id="gBudget">Hạn mức chi một ngày</h3>
@@ -2483,6 +2494,27 @@ header .date{font-size:1.65rem; font-weight:800; letter-spacing:-.02em; color:va
   showTab = function(n){ _showTabC(n); if(n === "money") requestAnimationFrame(() => { const sc = $("chartScroll"); sc.scrollLeft = sc.scrollWidth; }); };
   const _renderMoney = renderMoney;
   renderMoney = function(){ _renderMoney(); chartSel = -1; renderChart(); };
+
+  /* ---------- theme choice (per device) ---------- */
+  const THEME_KEY = "ngay50k-theme";
+  function applyTheme(t){
+    const root = document.documentElement;
+    if(t === "light" || t === "dark") root.setAttribute("data-theme", t); else root.removeAttribute("data-theme");
+    document.querySelectorAll('meta[name="theme-color"]').forEach(m => {
+      if(!m.dataset.media) m.dataset.media = m.getAttribute("media") || "";
+      if(t === "light" || t === "dark"){ m.removeAttribute("media"); m.setAttribute("content", t === "dark" ? "#0B1026" : "#EEF3FF"); }
+      else { m.setAttribute("media", m.dataset.media); m.setAttribute("content", /dark/.test(m.dataset.media) ? "#0B1026" : "#EEF3FF"); }
+    });
+    document.querySelectorAll("#themeSeg button").forEach(b => b.setAttribute("aria-pressed", b.dataset.themeOpt === (t || "auto") ? "true" : "false"));
+  }
+  let curTheme = "auto";
+  try{ curTheme = localStorage.getItem(THEME_KEY) || "auto"; }catch(e){}
+  applyTheme(curTheme);
+  document.querySelectorAll("#themeSeg button").forEach(b => b.onclick = () => {
+    curTheme = b.dataset.themeOpt;
+    try{ if(curTheme === "auto") localStorage.removeItem(THEME_KEY); else localStorage.setItem(THEME_KEY, curTheme); }catch(e){}
+    applyTheme(curTheme);
+  });
 
   /* ---------- swipe right to go back ---------- */
   function backTarget(){
