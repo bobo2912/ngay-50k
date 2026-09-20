@@ -159,6 +159,16 @@ input[type="date"].inp{
 input[type="date"].inp::-webkit-date-and-time-value{text-align:left; margin:0}
 .field{min-width:0}
 .amount-inp{font-size:1.25rem; font-weight:700; padding:8px 11px}
+.amt-row{display:flex; gap:8px; align-items:stretch}
+.amt-row .inp{flex:1; min-width:0}
+.k000{flex:none; min-width:64px; border:1.5px solid var(--line); border-radius:10px; background:var(--surface); color:var(--ink); font-size:1.05rem; font-weight:700; padding:0 12px; touch-action:manipulation}
+.k000:active{background:var(--note-soft)}
+.k000:disabled{opacity:.4}
+.opt{font-weight:400; color:var(--muted)}
+.chips.sugg{margin-top:6px; gap:6px}
+.chips.sugg:empty{display:none}
+.chips.sugg .chip{max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:.82rem; padding:4px 10px}
+.chips.sugg .chip.same{border-color:var(--note); color:var(--note); font-weight:600}
 .chips{display:flex; flex-wrap:wrap; gap:8px; margin-top:8px}
 .chip{border:1.5px solid var(--line); background:var(--surface); border-radius:999px; padding:5px 11px; font-size:.85rem; font-weight:500}
 .chip[aria-pressed="true"]{background:var(--ink); color:var(--bg); border-color:var(--ink)}
@@ -447,7 +457,10 @@ header .date{color:var(--ink); font-size:1rem; font-weight:700}
 
         <div class="field">
           <label for="amt"><span>Số tiền</span><span id="amtSrc"></span></label>
-          <input id="amt" class="inp amount-inp num" inputmode="numeric" autocomplete="off" placeholder="0đ">
+          <div class="amt-row">
+            <input id="amt" class="inp amount-inp num" inputmode="numeric" autocomplete="off" placeholder="0đ">
+            <button type="button" class="k000 num" id="amt000" aria-label="Thêm 000 vào số tiền">000</button>
+          </div>
           <div class="chips" id="amtChips"></div>
         </div>
 
@@ -457,12 +470,17 @@ header .date{color:var(--ink); font-size:1rem; font-weight:700}
             <input id="acct" class="inp num" inputmode="numeric" autocomplete="off">
           </div>
           <div class="field">
+            <label for="holder"><span>Tên tài khoản <span class="opt">(không bắt buộc)</span></span><span id="holderSrc"></span></label>
+            <input id="holder" class="inp" autocomplete="off" maxlength="50" placeholder="vd: NGUYEN VAN A">
+          </div>
+          <div class="field">
             <label for="bank"><span>Ngân hàng nhận</span><span id="bankSrc"></span></label>
             <input id="bank" class="inp" list="bankList" autocomplete="off" placeholder="vd: Vietcombank">
           </div>
           <div class="field">
             <label for="memo"><span>Nội dung chuyển khoản</span><span id="memoSrc"></span></label>
             <input id="memo" class="inp" autocomplete="off" maxlength="80">
+            <div class="chips sugg" id="memoChips" aria-label="Nội dung gần đây"></div>
           </div>
         </div>
 
@@ -478,6 +496,7 @@ header .date{color:var(--ink); font-size:1rem; font-weight:700}
         <div class="field">
           <label for="desc"><span>Ghi chú của bạn</span></label>
           <input id="desc" class="inp" maxlength="60" autocomplete="off" placeholder="vd: cơm trưa">
+          <div class="chips sugg" id="descChips" aria-label="Ghi chú gần đây"></div>
         </div>
 
         <div class="save-contact" id="saveContactBox" hidden>
@@ -633,6 +652,7 @@ header .date{color:var(--ink); font-size:1rem; font-weight:700}
         <div class="field"><label for="cName"><span>Tên gợi nhớ</span></label><input id="cName" class="inp" maxlength="40" placeholder="vd: Cô Lan bán cơm"></div>
         <div class="field"><label for="cAcct"><span>Số tài khoản</span></label><input id="cAcct" class="inp num" inputmode="numeric"></div>
         <div class="field"><label for="cBank"><span>Ngân hàng</span></label><input id="cBank" class="inp" list="bankList" placeholder="vd: Vietcombank"></div>
+        <div class="field"><label for="cHolder"><span>Tên tài khoản <span class="opt">(không bắt buộc)</span></span></label><input id="cHolder" class="inp" maxlength="50" placeholder="vd: NGUYEN VAN A"></div>
         <div class="field"><label for="cMemo"><span>Nội dung mặc định (không bắt buộc)</span></label><input id="cMemo" class="inp" maxlength="80"></div>
         <div class="field"><label><span>Loại chi thường dùng</span></label><div class="chips" id="cCatChips" style="margin-top:0"></div></div>
         <button class="primary" id="saveContactBtn" disabled>Lưu người nhận</button>
@@ -919,7 +939,9 @@ header .date{color:var(--ink); font-size:1rem; font-weight:700}
     if(!acct) return null;
     const add = top["62"] ? tlv(top["62"]) : {};
     const amount = top["54"] ? Math.round(parseFloat(top["54"])) : 0;
-    return { bin, acct, bank: BANKS[bin] || "", amount: amount>0 ? amount : 0, memo: (add["08"]||"").trim() };
+    let name = (top["59"] || "").trim();
+    if(/^(na|n\/a|none|null|-+|\.+)$/i.test(name)) name = "";
+    return { bin, acct, bank: BANKS[bin] || "", amount: amount>0 ? amount : 0, memo: (add["08"]||"").trim(), name };
   }
 
   /* ---------- expense form ---------- */
@@ -937,8 +959,8 @@ header .date{color:var(--ink); font-size:1rem; font-weight:700}
     lockForm(false);
     $("bankFields").hidden = (m === "cash");
     $("formTitle").textContent = m === "cash" ? "Trả tiền mặt" : "Thông tin chuyển khoản";
-    ["amt","acct","bank","memo","desc","contactName"].forEach(id => { $(id).value = ""; $(id).classList.remove("missing"); });
-    ["amtSrc","acctSrc","bankSrc","memoSrc"].forEach(id => setSrc(id,""));
+    ["amt","acct","holder","bank","memo","desc","contactName"].forEach(id => { $(id).value = ""; $(id).classList.remove("missing"); });
+    ["amtSrc","acctSrc","holderSrc","bankSrc","memoSrc"].forEach(id => setSrc(id,""));
     [...$("amtChips").children].forEach(c=>c.setAttribute("aria-pressed","false"));
     $("saveContact").checked = false; $("contactNameField").hidden = true;
     $("txDate").max = todayKey(); $("txDate").value = curDay(); updateTxHint();
@@ -947,6 +969,7 @@ header .date{color:var(--ink); font-size:1rem; font-weight:700}
     if(data){
       if(data.amount){ setAmt(data.amount); setSrc("amtSrc","qr"); } else setSrc("amtSrc","need");
       $("acct").value = data.acct; setSrc("acctSrc","qr");
+      if(data.name){ $("holder").value = data.name; setSrc("holderSrc","qr"); }
       if(data.bank){ $("bank").value = data.bank; setSrc("bankSrc","qr"); }
       if(data.memo){ $("memo").value = data.memo; setSrc("memoSrc","qr"); }
       contact = contact || findContact(data.acct, data.bank);
@@ -956,18 +979,21 @@ header .date{color:var(--ink); font-size:1rem; font-weight:700}
         if(old.cat) selectCat(old.cat);
         if(old.desc) $("desc").value = old.desc;
       }
+      if(!$("holder").value && old && old.name){ $("holder").value = old.name; setSrc("holderSrc","saved"); }
       if(!$("bank").value) setSrc("bankSrc","need");
     }
     if(contact){
       if(!data){ $("acct").value = contact.acct; $("bank").value = contact.bank; setSrc("acctSrc","saved"); setSrc("bankSrc","saved"); setSrc("amtSrc","need"); }
       if(!$("bank").value && contact.bank){ $("bank").value = contact.bank; setSrc("bankSrc","saved"); }
       if(!$("memo").value && contact.memo){ $("memo").value = contact.memo; setSrc("memoSrc","saved"); }
+      if(!$("holder").value && contact.holder){ $("holder").value = contact.holder; setSrc("holderSrc","saved"); }
       if(contact.cat) selectCat(contact.cat);
       $("desc").value = contact.name;
     }
     activeContact = contact || null;
     updateWho();
-    refreshForm();
+    delete $("memo").dataset.typed; delete $("desc").dataset.typed;
+    refreshForm(); renderSugg();
     $("formBox").scrollIntoView({block:"start"});
   }
   function updateTxHint(){
@@ -993,7 +1019,7 @@ header .date{color:var(--ink); font-size:1rem; font-weight:700}
     [...$("catChips").children].forEach((x,i)=>x.setAttribute("aria-pressed", CATS[i].id===id?"true":"false"));
   }
   function lockForm(on){
-    $("formBox").querySelectorAll(".inp,.chip,#saveContact").forEach(el => el.disabled = on);
+    $("formBox").querySelectorAll(".inp,.chip,.k000,#saveContact").forEach(el => el.disabled = on);
     $("saveBtn").hidden = on; $("saveErr").hidden = true; $("preview").hidden = on; locked = on;
   }
   function missingFields(){
@@ -1029,6 +1055,7 @@ header .date{color:var(--ink); font-size:1rem; font-weight:700}
   }
   function buildText(it){
     let t = "Chuyển khoản " + it.amt.toLocaleString("vi-VN") + " VND đến số tài khoản " + it.acct + ", ngân hàng " + it.bank;
+    if(it.holder) t += ", tên người nhận " + it.holder;
     if(it.memo) t += ", nội dung: " + it.memo;
     return t;
   }
@@ -1043,13 +1070,14 @@ header .date{color:var(--ink); font-size:1rem; font-weight:700}
     const it = { id:uid(), amt:amtValue(), cat:selectedCat, note:$("desc").value.trim(), t:when };
     if(mode !== "cash"){
       it.acct = digits($("acct").value); it.bank = $("bank").value.trim(); it.memo = $("memo").value.trim();
+      const holder = $("holder").value.trim(); if(holder) it.holder = holder;
       let c = activeContact ? state.contacts.find(x=>x.id===activeContact.id) : null;
       if(!c && $("saveContact").checked){
         c = findContact(it.acct, it.bank);
         if(!c){ c = { id:uid(), name:$("contactName").value.trim(), acct:it.acct, bank:it.bank, memo:"", cat:it.cat, uses:0 }; state.contacts.push(c); }
       }
-      if(c){ c.uses = (c.uses||0) + 1; c.last = Date.now(); c.cat = it.cat; if(!c.bank) c.bank = it.bank; it.contactId = c.id; it.who = c.name; }
-      if(scanned) state.payees[scanned.bin + ":" + it.acct] = {bank:it.bank, cat:it.cat, desc:it.note};
+      if(c){ c.uses = (c.uses||0) + 1; c.last = Date.now(); c.cat = it.cat; if(!c.bank) c.bank = it.bank; if(it.holder) c.holder = it.holder; it.contactId = c.id; it.who = c.name; }
+      if(scanned) state.payees[scanned.bin + ":" + it.acct] = Object.assign({bank:it.bank, cat:it.cat, desc:it.note}, it.holder ? {name:it.holder} : {});
     }
     (state.days[k] = state.days[k] || []).push(it);
     viewDay = k === todayKey() ? null : k;
@@ -1105,7 +1133,7 @@ header .date{color:var(--ink); font-size:1rem; font-weight:700}
     const li = document.createElement("li"); li.className = "item";
     li.innerHTML = '<span class="cat" aria-hidden="true"></span><div class="desc"><div></div><div></div></div><span class="amt num"></span><button class="del" aria-label="Xoá khoản này">✕</button>';
     li.querySelector(".cat").textContent = c.icon;
-    li.querySelector(".desc div:first-child").textContent = it.note || it.who || (it.bank ? "Chuyển khoản " + it.bank : c.label);
+    li.querySelector(".desc div:first-child").textContent = it.note || it.who || it.holder || (it.bank ? "Chuyển khoản " + it.bank : c.label);
     li.querySelector(".desc div:last-child").textContent = pad(t.getHours())+":"+pad(t.getMinutes()) + " · " + (it.bank ? (it.who && it.note && it.note !== it.who ? it.who + " · " : "") + it.bank : c.label);
     li.querySelector(".amt").textContent = (opts && opts.sign ? "−" : "") + fmt(it.amt);
     li.querySelector(".del").onclick = (e) => {
@@ -1286,7 +1314,7 @@ header .date{color:var(--ink); font-size:1rem; font-weight:700}
     $("contactForm").hidden = false; $("addContactBtn").hidden = true;
     $("contactFormTitle").textContent = c ? "Sửa người nhận" : "Thêm người nhận";
     $("cName").value = c ? c.name : ""; $("cAcct").value = c ? c.acct : "";
-    $("cBank").value = c ? c.bank : ""; $("cMemo").value = c ? (c.memo||"") : "";
+    $("cBank").value = c ? c.bank : ""; $("cMemo").value = c ? (c.memo||"") : ""; $("cHolder").value = c ? (c.holder||"") : "";
     selectCCat(c && c.cat ? c.cat : "an"); refreshContactForm();
     $("contactForm").scrollIntoView({block:"start"});
   }
@@ -1296,7 +1324,7 @@ header .date{color:var(--ink); font-size:1rem; font-weight:700}
     $("saveContactBtn").disabled = !($("cName").value.trim() && digits($("cAcct").value) && $("cBank").value.trim());
   }
   function saveContactForm(){
-    const data = { name:$("cName").value.trim(), acct:digits($("cAcct").value), bank:$("cBank").value.trim(), memo:$("cMemo").value.trim(), cat:cCat };
+    const data = { name:$("cName").value.trim(), acct:digits($("cAcct").value), bank:$("cBank").value.trim(), holder:$("cHolder").value.trim(), memo:$("cMemo").value.trim(), cat:cCat };
     if(!data.name || !data.acct || !data.bank) return;
     if(editingContactId){
       const c = state.contacts.find(x=>x.id===editingContactId); if(c) Object.assign(c, data);
@@ -1707,7 +1735,50 @@ header .date{color:var(--ink); font-size:1rem; font-weight:700}
   $("amt").addEventListener("input", () => { setAmt(amtValue()); setSrc("amtSrc",""); [...$("amtChips").children].forEach(c=>c.setAttribute("aria-pressed","false")); refreshForm(); });
   $("acct").addEventListener("input", e => { e.target.value = digits(e.target.value); setSrc("acctSrc",""); refreshForm(); });
   $("bank").addEventListener("input", () => { setSrc("bankSrc",""); refreshForm(); });
-  $("memo").addEventListener("input", () => setSrc("memoSrc",""));
+  $("memo").addEventListener("input", () => { $("memo").dataset.typed = "1"; setSrc("memoSrc",""); renderSugg(); });
+  $("desc").addEventListener("input", () => { $("desc").dataset.typed = "1"; renderSugg(); });
+  $("holder").addEventListener("input", () => setSrc("holderSrc",""));
+  $("amt000").addEventListener("pointerdown", e => e.preventDefault());
+  $("amt000").onclick = () => {
+    const v = amtValue();
+    if(!v){ $("amt").focus(); return; }
+    if(v * 1000 > 999999999999) return;
+    setAmt(v * 1000); setSrc("amtSrc",""); [...$("amtChips").children].forEach(c=>c.setAttribute("aria-pressed","false")); refreshForm();
+  };
+
+  /* ---------- quick suggestions: recent notes & transfer contents ---------- */
+  const SUGG_MAX = 6;
+  const fold = t => String(t||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/đ/g,"d").replace(/Đ/g,"D").toLowerCase().trim();
+  function recentValues(field){
+    const all = [];
+    for(const k in state.days) (state.days[k]||[]).forEach(it => { if(it[field]) all.push(it); });
+    all.sort((a,b) => (b.t||0) - (a.t||0));
+    const seen = new Set(), out = [];
+    for(const it of all){ const v = String(it[field]).trim(), f = fold(v); if(!v || seen.has(f)) continue; seen.add(f); out.push(v); if(out.length >= 30) break; }
+    return out;
+  }
+  function suggChip(label, value, input, extraClass){
+    const b = document.createElement("button"); b.type = "button";
+    b.className = "chip" + (extraClass ? " " + extraClass : ""); b.textContent = label; b.title = value;
+    b.addEventListener("pointerdown", e => e.preventDefault());
+    b.onclick = () => { $(input).value = value; delete $(input).dataset.typed; $(input).classList.remove("missing"); if(input === "memo") setSrc("memoSrc",""); refreshForm(); renderSugg(); };
+    return b;
+  }
+  function fillSugg(boxId, inputId, list){
+    const box = $(boxId), cur = fold($(inputId).value), typed = $(inputId).dataset.typed === "1";
+    const picks = list.filter(v => fold(v) !== cur && (!typed || !cur || fold(v).includes(cur))).slice(0, SUGG_MAX);
+    picks.forEach(v => box.appendChild(suggChip(v, v, inputId)));
+  }
+  function renderSugg(){
+    if(locked) return;
+    const mb = $("memoChips"), db = $("descChips"); mb.innerHTML = ""; db.innerHTML = "";
+    const memo = $("memo").value.trim();
+    if(mode !== "cash") fillSugg("memoChips", "memo", recentValues("memo"));
+    if(mode !== "cash" && memo && fold(memo) !== fold($("desc").value)){
+      db.appendChild(suggChip("Giống nội dung chuyển khoản", memo, "desc", "same"));
+    }
+    fillSugg("descChips", "desc", recentValues("note"));
+  }
   $("saveContact").addEventListener("change", e => {
     $("contactNameField").hidden = !e.target.checked;
     if(e.target.checked && !$("contactName").value) $("contactName").value = $("desc").value;
