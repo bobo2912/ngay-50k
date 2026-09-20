@@ -59,7 +59,7 @@ button{cursor:pointer}
 .num{font-variant-numeric:tabular-nums}
 [hidden]{display:none!important}
 
-header{display:flex; justify-content:space-between; align-items:baseline; margin:4px 2px 12px}
+header{display:flex; justify-content:space-between; align-items:center; margin:4px 2px 12px}
 header h1{font-size:1rem; font-weight:700; margin:0}
 header .date{color:var(--muted); font-size:.9rem}
 
@@ -301,6 +301,36 @@ summary{cursor:pointer; color:var(--muted); font-size:.92rem}
 .ghost{border:1.5px solid var(--line); background:var(--surface); border-radius:10px; padding:10px 14px; font-weight:600}
 .danger{color:var(--over)}
 .sync{font-size:.8rem; color:var(--muted); margin-top:14px}
+.head-right{display:flex; align-items:center; gap:4px}
+.gear{display:grid; place-items:center; width:40px; height:40px; margin-right:-8px; border:0; border-radius:12px; background:transparent; color:var(--ink)}
+.gear:active{background:var(--line)}
+.settings{position:fixed; inset:0; z-index:70; background:var(--bg); overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior:contain;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px); transform:translateX(100%); transition:transform .25s ease}
+.settings.show{transform:none}
+.settings-in{max-width:460px; margin:0 auto; padding:12px 16px 40px}
+.settings-head{position:sticky; top:0; z-index:2; display:flex; justify-content:space-between; align-items:center; margin:0 -16px; padding:8px 16px 10px; background:var(--bg)}
+.settings-head h2{margin:0; font-size:1.25rem; font-weight:800; outline:none}
+.settings .done{border:0; background:none; font:inherit; font-weight:700; color:var(--note); padding:8px 4px}
+.set-group{margin-top:14px; padding:16px; border-radius:16px; background:var(--surface); border:1px solid var(--line)}
+.set-group > h3{margin:0 0 4px; font-size:1rem; font-weight:700}
+.set-group .set-row:first-of-type{margin-top:10px}
+.set-now{margin:0; font-size:.9rem; color:var(--muted)}
+.set-now strong{color:var(--ink)}
+.set-group .backup-state{margin-top:0}
+.how h4, .set-group .sub{font-size:.9rem; color:var(--ink); margin:0 0 4px; font-weight:600}
+.set-group .sub{margin-top:22px}
+.how p{margin:8px 0 0}
+.ghost:disabled{opacity:.4}
+.set-group{scroll-margin-top:64px}
+.meter{height:10px; margin-top:12px; border-radius:6px; background:var(--line); overflow:hidden}
+.meter span{display:block; height:100%; width:0; min-width:4px; border-radius:6px; background:var(--ok); transition:width .3s}
+.meter.warn span{background:var(--over)}
+.meter-cap{margin:6px 0 0; font-size:.85rem; color:var(--muted)}
+.stor{margin:12px 0 0}
+.stor div{display:flex; justify-content:space-between; gap:12px; padding:9px 0; border-top:1px solid var(--line); font-size:.92rem}
+.stor dt{color:var(--muted)}
+.stor dd{margin:0; font-weight:600}
+@media (prefers-reduced-motion: reduce){ .settings,.meter span{transition:none} }
 .backup-nudge{display:flex; align-items:center; gap:10px; margin-top:12px; padding:10px 12px; border:1.5px solid var(--line); border-radius:12px; background:var(--surface); font-size:.88rem}
 .backup-nudge p{margin:0; flex:1; line-height:1.4}
 .backup-nudge button{border:0; background:none; font:inherit; font-weight:700; color:var(--note); padding:6px 4px; white-space:nowrap}
@@ -334,7 +364,12 @@ summary{cursor:pointer; color:var(--muted); font-size:.92rem}
 <main>
   <header>
     <h1>Ngày 50k</h1>
-    <span class="date" id="dateLabel"></span>
+    <div class="head-right">
+      <span class="date" id="dateLabel"></span>
+      <button class="gear" id="openSettings" aria-label="Cài đặt" aria-haspopup="dialog">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+    </div>
   </header>
 
   <nav class="tabs" role="tablist" aria-label="Menu">
@@ -463,57 +498,6 @@ summary{cursor:pointer; color:var(--muted); font-size:.92rem}
       <p class="week-sum" id="weekSum"></p>
     </section>
 
-    <details>
-      <summary>Cài đặt</summary>
-      <div class="set-row">
-        <input id="budgetInput" class="inp num" inputmode="numeric" aria-label="Hạn mức mỗi ngày (đồng)" style="flex:1">
-        <button class="ghost" id="saveBudget">Lưu hạn mức</button>
-      </div>
-      <p class="inline-ok" id="budgetMsg" hidden></p>
-      <div class="set-row"><button class="ghost danger" id="clearToday">Xoá hết khoản chi hôm nay</button></div>
-      <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào.</p>
-    </details>
-
-    <details id="syncBox">
-      <summary>Sao lưu và đồng bộ</summary>
-      <p class="backup-state" id="backupState"></p>
-      <div class="set-row">
-        <button class="ghost grow" id="exportBtn">Xuất file sao lưu</button>
-        <label class="ghost grow file-btn">Nhập từ file<input type="file" id="importFile"></label>
-      </div>
-      <div class="import-card" id="importCard" hidden>
-        <h3>Nhập dữ liệu từ file</h3>
-        <p id="importInfo"></p>
-        <p class="preview" id="importPreview"></p>
-        <button class="primary" id="mergeBtn">Gộp vào dữ liệu trên máy này</button>
-        <div class="row2">
-          <button class="ghost danger" id="replaceBtn">Thay toàn bộ</button>
-          <button class="ghost" id="cancelImport">Huỷ</button>
-        </div>
-      </div>
-      <p class="inline-ok" id="syncMsg" hidden></p>
-      <p class="sync-err" id="syncErr" hidden></p>
-      <div class="how">
-        <h3>Đồng bộ sang máy khác</h3>
-        <ol>
-          <li>Trên máy đang có dữ liệu, bấm Xuất file sao lưu, rồi gửi file qua AirDrop, Zalo hoặc lưu vào iCloud Drive.</li>
-          <li>Trên máy kia, bấm Nhập từ file, chọn file đó, rồi chọn Gộp.</li>
-          <li>Muốn hai máy giống hệt nhau, làm thêm một lượt theo chiều ngược lại.</li>
-        </ol>
-        <p style="margin:8px 0 0">Gộp giữ lại khoản mới của cả hai máy, khoản nào đã xoá ở một máy cũng được xoá ở máy kia.</p>
-      </div>
-      <div class="set-row" style="margin-top:20px"><button class="ghost danger grow" id="wipeBtn">Xoá toàn bộ dữ liệu trên máy này</button></div>
-      <div class="import-card wipe-card" id="wipeCard" hidden>
-        <h3>Xoá toàn bộ dữ liệu?</h3>
-        <p class="preview" id="wipeInfo"></p>
-        <p>Không hoàn tác được. Dữ liệu trên máy khác và trong các file sao lưu vẫn còn.</p>
-        <button class="primary" id="wipeExport">Xuất file sao lưu trước</button>
-        <div class="row2">
-          <button class="ghost danger" id="wipeConfirm">Xoá vĩnh viễn</button>
-          <button class="ghost" id="wipeCancel">Huỷ</button>
-        </div>
-      </div>
-    </details>
   </div>
 
   <!-- ================= TAB: THU CHI ================= -->
@@ -637,6 +621,81 @@ summary{cursor:pointer; color:var(--muted); font-size:.92rem}
     </section>
   </div>
 </main>
+
+<div class="settings" id="settings" role="dialog" aria-modal="true" aria-labelledby="settingsTitle" hidden>
+  <div class="settings-in">
+    <div class="settings-head">
+      <h2 id="settingsTitle" tabindex="-1">Cài đặt</h2>
+      <button class="done" id="closeSettings">Xong</button>
+    </div>
+
+    <section class="set-group" aria-labelledby="gBudget">
+      <h3 id="gBudget">Hạn mức chi một ngày</h3>
+      <p class="set-now">Đang đặt <strong class="num" id="budgetNow"></strong> mỗi ngày.</p>
+      <div class="set-row">
+        <input id="budgetInput" class="inp num" inputmode="numeric" placeholder="Nhập hạn mức mới, vd: 60000" aria-label="Hạn mức mới mỗi ngày (đồng)" style="flex:1">
+        <button class="ghost" id="saveBudget">Lưu</button>
+      </div>
+      <p class="inline-ok" id="budgetMsg" hidden></p>
+    </section>
+
+    <section class="set-group" id="syncBox" aria-labelledby="gSync">
+      <h3 id="gSync">Sao lưu và đồng bộ</h3>
+      <p class="backup-state" id="backupState"></p>
+      <div class="set-row">
+        <button class="ghost grow" id="exportBtn">Xuất file sao lưu</button>
+        <label class="ghost grow file-btn">Nhập từ file<input type="file" id="importFile"></label>
+      </div>
+      <div class="import-card" id="importCard" hidden>
+        <h3>Nhập dữ liệu từ file</h3>
+        <p id="importInfo"></p>
+        <p class="preview" id="importPreview"></p>
+        <button class="primary" id="mergeBtn">Gộp vào dữ liệu trên máy này</button>
+        <div class="row2">
+          <button class="ghost danger" id="replaceBtn">Thay toàn bộ</button>
+          <button class="ghost" id="cancelImport">Huỷ</button>
+        </div>
+      </div>
+      <p class="inline-ok" id="syncMsg" hidden></p>
+      <p class="sync-err" id="syncErr" hidden></p>
+      <div class="how">
+        <h4>Đồng bộ sang máy khác</h4>
+        <ol>
+          <li>Trên máy đang có dữ liệu, bấm Xuất file sao lưu, rồi gửi file qua AirDrop, Zalo hoặc lưu vào iCloud Drive.</li>
+          <li>Trên máy kia, bấm Nhập từ file, chọn file đó, rồi chọn Gộp.</li>
+          <li>Muốn hai máy giống hệt nhau, làm thêm một lượt theo chiều ngược lại.</li>
+        </ol>
+        <p>Gộp giữ lại khoản mới của cả hai máy, khoản nào đã xoá ở một máy cũng được xoá ở máy kia.</p>
+      </div>
+    </section>
+
+    <section class="set-group" aria-labelledby="gStore">
+      <h3 id="gStore">Dung lượng</h3>
+      <div class="meter" aria-hidden="true"><span id="storBar"></span></div>
+      <p class="meter-cap" id="storPct"></p>
+      <dl class="stor">
+        <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
+        <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
+      </dl>
+      <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. Giới hạn khoảng 5 MB được tính chung cho các mini app cùng tài khoản GitHub.</p>
+
+      <h4 class="sub">Xoá dữ liệu</h4>
+      <div class="set-row"><button class="ghost danger grow" id="clearToday">Xoá hết khoản chi hôm nay</button></div>
+      <div class="set-row"><button class="ghost danger grow" id="wipeBtn">Xoá toàn bộ dữ liệu trên máy này</button></div>
+      <p class="inline-ok" id="wipeMsg" hidden></p>
+      <div class="import-card wipe-card" id="wipeCard" hidden>
+        <h3>Xoá toàn bộ dữ liệu?</h3>
+        <p class="preview" id="wipeInfo"></p>
+        <p>Không hoàn tác được. Dữ liệu trên máy khác và trong các file sao lưu vẫn còn.</p>
+        <button class="primary" id="wipeExport">Xuất file sao lưu trước</button>
+        <div class="row2">
+          <button class="ghost danger" id="wipeConfirm">Xoá vĩnh viễn</button>
+          <button class="ghost" id="wipeCancel">Huỷ</button>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
 <div class="sheet-back" id="sheetBack" hidden></div>
 <div class="sheet" id="filterSheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" hidden>
   <div class="grab" aria-hidden="true"></div>
@@ -1087,7 +1146,7 @@ summary{cursor:pointer; color:var(--muted); font-size:.92rem}
     $("weekSum").innerHTML = tracked
       ? "Giữ đúng hạn mức <strong>" + kept + "/" + tracked + "</strong> ngày trước đó. Tổng 7 ngày: <strong>" + fmt(total) + "</strong>."
       : "Ghi vài ngày để thấy mình giữ hạn mức thế nào.";
-    $("budgetInput").placeholder = b.toLocaleString("vi-VN") + "đ / ngày";
+    $("budgetInput").placeholder = "Hạn mức mới, vd: " + (b === 50000 ? "60.000" : "50.000");
     if(!$("formBox").hidden) refreshForm();
   }
 
@@ -1710,8 +1769,73 @@ summary{cursor:pointer; color:var(--muted); font-size:.92rem}
     $("backupNudge").hidden = !due;
     if(due) $("nudgeText").textContent = last ? "Đã " + daysAgo(last) + " ngày chưa sao lưu dữ liệu." : "Bạn chưa sao lưu dữ liệu lần nào.";
   }
+  /* ---------- storage usage ---------- */
+  const LS_LIMIT = 5 * 1024 * 1024;
+  function kb(n){ return n < 1024 ? n + " byte" : n < 1024*1024 ? (n/1024).toFixed(n < 10240 ? 1 : 0).replace(".", ",") + " KB" : (n/1048576).toFixed(1).replace(".", ",") + " MB"; }
+  let cacheBytes = null;
+  async function measureCache(){
+    try{
+      if(!("caches" in window)) return;
+      let total = 0;
+      for(const name of await caches.keys()){
+        if(name.indexOf("ngay50k-") !== 0) continue;
+        const c = await caches.open(name);
+        for(const req of await c.keys()){ const r = await c.match(req); if(r) total += (await r.clone().blob()).size; }
+      }
+      cacheBytes = total; renderStorage();
+    }catch(e){}
+  }
+  function renderStorage(){
+    let data = 0, all = 0;
+    try{
+      for(let i = 0; i < localStorage.length; i++){
+        const k = localStorage.key(i), v = localStorage.getItem(k) || "";
+        const n = (k.length + v.length) * 2;
+        all += n; if(k.indexOf("ngay50k:") === 0) data += n;
+      }
+    }catch(e){}
+    const pct = all / LS_LIMIT * 100;
+    $("storBar").style.width = Math.min(pct, 100) + "%";
+    $("storBar").parentNode.classList.toggle("warn", pct >= 80);
+    $("storPct").textContent = "Đã dùng " + (pct < 1 ? "dưới 1" : Math.round(pct)) + "% chỗ lưu dữ liệu (khoảng 5 MB)." + (pct >= 80 ? " Sắp đầy, hãy xuất file sao lưu." : "");
+    $("storData").textContent = kb(data);
+    $("storCache").textContent = cacheBytes == null ? "–" : kb(cacheBytes);
+  }
   const _renderAll = renderAll;
-  renderAll = function(){ _renderAll(); renderBackup(); };
+  renderAll = function(){
+    _renderAll(); renderBackup(); renderStorage();
+    $("budgetNow").textContent = fmt(state.budget);
+    $("clearToday").disabled = !(state.days[todayKey()] || []).length;
+  };
+
+  /* ---------- settings panel ---------- */
+  let settingsOpen = false;
+  function openSettings(){
+    if(settingsOpen) return; settingsOpen = true;
+    renderAll(); measureCache();
+    const el = $("settings"); el.hidden = false; el.scrollTop = 0;
+    document.querySelector("main").setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "hidden";
+    requestAnimationFrame(() => { el.classList.add("show"); $("settingsTitle").focus({ preventScroll:true }); });
+  }
+  function closeSettings(){
+    if(!settingsOpen) return; settingsOpen = false;
+    const el = $("settings"); el.classList.remove("show");
+    document.querySelector("main").removeAttribute("aria-hidden");
+    document.body.style.overflow = "";
+    $("budgetMsg").hidden = true; $("wipeCard").hidden = true;
+    setTimeout(() => { if(!settingsOpen) el.hidden = true; }, 260);
+    $("openSettings").focus({ preventScroll:true });
+  }
+  $("openSettings").onclick = openSettings;
+  $("closeSettings").onclick = closeSettings;
+  document.addEventListener("keydown", e => { if(e.key === "Escape" && settingsOpen) closeSettings(); });
+  const _clearToday = $("clearToday").onclick;
+  $("clearToday").onclick = () => {
+    const n = (state.days[todayKey()] || []).length;
+    _clearToday();
+    if((state.days[todayKey()] || []).length < n) flash("wipeMsg", "✓ Đã xoá " + n + " khoản chi hôm nay.");
+  };
 
   function fileStamp(){ const d = new Date(); return keyOf(d) + "-" + pad(d.getHours()) + pad(d.getMinutes()); }
   async function exportData(){
@@ -1860,11 +1984,12 @@ summary{cursor:pointer; color:var(--muted); font-size:.92rem}
   };
   $("cancelImport").onclick = () => { pending = null; $("importCard").hidden = true; };
   $("exportBtn").onclick = exportData;
-  $("nudgeGo").onclick = () => { $("syncBox").open = true; $("syncBox").scrollIntoView({ behavior:"smooth", block:"start" }); exportData(); };
+  $("nudgeGo").onclick = () => { openSettings(); setTimeout(() => $("syncBox").scrollIntoView({ behavior:"smooth", block:"start" }), 280); exportData(); };
   $("nudgeLater").onclick = () => { lsSet(SNOOZE_KEY, String(Date.now() + 86400000)); renderBackup(); };
   $("wipeBtn").onclick = () => {
     $("syncMsg").hidden = true; $("syncErr").hidden = true;
-    if(!hasData() && !lsGet(BK_KEY)){ showSyncOk("Máy này chưa có dữ liệu nào."); return; }
+    $("wipeMsg").hidden = true;
+    if(!hasData() && !lsGet(BK_KEY)){ flash("wipeMsg", "Máy này chưa có dữ liệu nào."); return; }
     const last = Number(lsGet(BK_KEY)) || 0;
     $("wipeInfo").textContent = "Sẽ xoá " + summarize(state) + ". " + (last ? "Sao lưu gần nhất: " + agoText(last) + "." : "Bạn chưa sao lưu lần nào.");
     $("wipeCard").hidden = false;
@@ -1878,10 +2003,11 @@ summary{cursor:pointer; color:var(--muted); font-size:.92rem}
     }catch(e){}
     state = normalize({}); sigs = collectSigs(state); pending = null;
     viewDay = null; $("importCard").hidden = true; $("wipeCard").hidden = true;
-    renderAll(); showSyncOk("✓ Đã xoá toàn bộ dữ liệu trên máy này.");
+    $("syncMsg").hidden = true; $("syncErr").hidden = true;
+    renderAll(); flash("wipeMsg", "✓ Đã xoá toàn bộ dữ liệu trên máy này.");
   };
   window.addEventListener("storage", e => { if(e.key === LS_KEY){ loadLocal(); renderAll(); } });
-  renderBackup();
+  renderAll();
 
   /* ---------- offline app shell & updates ---------- */
   if("serviceWorker" in navigator && /^https?:$/.test(location.protocol)){
