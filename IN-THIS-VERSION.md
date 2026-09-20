@@ -1,6 +1,13 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v9, ngày 20/09/2026
+**Phiên bản hiện tại:** v10, ngày 20/09/2026
+
+---
+
+## Có gì mới trong v10 (so với v9)
+
+- **Camera chỉ bật khi đang quét QR.** Sửa lỗi bấm nút quét nhiều lần liên tiếp có thể mở thừa camera, khiến chấm xanh báo camera của iPhone vẫn sáng sau khi đã đóng. Camera cũng tự tắt khi bạn chuyển sang app khác hoặc thoát app.
+- **Vuốt để quay lại không còn hiện mũi tên** ở mép trái. Cử chỉ vẫn hoạt động như cũ.
 
 ---
 
@@ -25,7 +32,7 @@
 
 ## Có gì mới trong v7 (so với v6)
 
-- **Vuốt ngang để quay lại.** Vuốt từ trái sang phải ở bất kỳ đâu để đóng form, bảng chọn, màn hình Cài đặt, camera, hoặc trở về tab Giao dịch. Một mũi tên nhỏ hiện ở mép trái khi vuốt, vuốt chưa đủ xa thì huỷ.
+- **Vuốt ngang để quay lại.** Vuốt từ trái sang phải ở bất kỳ đâu để đóng form, bảng chọn, màn hình Cài đặt, camera, hoặc trở về tab Giao dịch. Vuốt chưa đủ xa thì huỷ.
 - **Sửa khoản chi đã lưu.** Chạm vào một khoản chi (ở tab Giao dịch hoặc Thu chi) để sửa số tiền, tag và ghi chú.
 - **Thư viện tag.** 20 tag có sẵn: Ăn, Uống, Đi lại, Xăng xe, Đi chợ, Mua sắm, Nhà cửa, Điện nước, Điện thoại và mạng, Sức khoẻ, Làm đẹp, Học tập, Giải trí, Du lịch, Con cái, Thú cưng, Hiếu hỷ và quà, Từ thiện, Sửa chữa, Khác.
   - Form chỉ hiện 5 tag bạn dùng nhiều nhất, còn lại nằm trong nút **＋ Tag khác**.
@@ -99,6 +106,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v10** | Camera chỉ bật khi quét QR, bỏ mũi tên khi vuốt quay lại |
 | **v9** | Chọn giao diện Sáng, Tối hoặc Tự động |
 | **v8** | Giao diện Liquid Glass, màu xanh dương, thanh tab ở đáy, thẻ số tiền còn lại mới |
 | **v7** | Vuốt để quay lại, sửa khoản chi, thư viện tag và tag tự tạo, biểu đồ thu chi theo ngày, tuần, tháng |

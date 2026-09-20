@@ -1053,7 +1053,6 @@ header .date{font-size:1.65rem; font-weight:800; letter-spacing:-.02em; color:va
     <button class="primary" id="saveTag" disabled>Lưu tag</button>
   </div>
 </div>
-<div class="swipe-ind" id="swipeInd" aria-hidden="true">‹</div>
 <div class="sheet-back" id="sheetBack" hidden></div>
 <div class="sheet" id="filterSheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" hidden>
   <div class="grab" aria-hidden="true"></div>
@@ -2170,7 +2169,14 @@ header .date{font-size:1.65rem; font-weight:800; letter-spacing:-.02em; color:va
   const camCanvas = document.createElement("canvas");
   const camCtx = camCanvas.getContext("2d", { willReadFrequently:true });
   function camHint(t, err){ const h = $("camHint"); h.textContent = t; h.className = "cam-hint" + (err ? " err" : ""); }
+  let camOpening = false;
+  const liveStreams = new Set();
+  function stopAllStreams(){
+    liveStreams.forEach(st => { try{ st.getTracks().forEach(t => t.stop()); }catch(e){} });
+    liveStreams.clear();
+  }
   async function openCamera(){
+    if(camOpening || camStream) return;
     if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.isSecureContext){
       msg("Máy này chưa mở được camera trong app. Dùng nút Chọn ảnh mã QR để chụp.", true);
       $("photoAny").click(); return;
@@ -2178,9 +2184,13 @@ header .date{font-size:1.65rem; font-weight:800; letter-spacing:-.02em; color:va
     if(!window.jsQR){ msg("Không tải được bộ đọc QR. Mở lại app rồi thử lại.", true); return; }
     $("cam").hidden = false; document.body.style.overflow = "hidden";
     $("camFrame").classList.remove("hit"); camHint("Đang mở camera…");
+    camOpening = true;
     try{
-      camStream = await navigator.mediaDevices.getUserMedia({ audio:false, video:{ facingMode:{ ideal:"environment" }, width:{ ideal:1280 }, height:{ ideal:720 } } });
-      if($("cam").hidden){ stopCamera(); return; }
+      const st = await navigator.mediaDevices.getUserMedia({ audio:false, video:{ facingMode:{ ideal:"environment" }, width:{ ideal:1280 }, height:{ ideal:720 } } });
+      liveStreams.add(st);
+      camOpening = false;
+      if($("cam").hidden){ stopAllStreams(); return; }
+      camStream = st;
       const v = $("camVideo"); v.srcObject = camStream;
       await v.play().catch(()=>{});
       camHint("Đưa mã QR vào trong khung");
@@ -2189,6 +2199,7 @@ header .date{font-size:1.65rem; font-weight:800; letter-spacing:-.02em; color:va
       $("camTorch").hidden = !caps.torch; torchOn = false; $("camTorch").setAttribute("aria-pressed", "false");
       camBusy = false; scanLoop();
     }catch(e){
+      camOpening = false;
       const n = e && e.name;
       if(n === "NotAllowedError" || n === "SecurityError") camHint("App chưa được phép dùng camera. Đóng lại rồi bấm Quét và chọn Cho phép. Nếu đã lỡ chặn, vào Cài đặt iPhone, chọn Safari, mục Camera, đổi thành Hỏi.", true);
       else if(n === "NotFoundError" || n === "OverconstrainedError") camHint("Không tìm thấy camera trên máy này. Dùng Chọn ảnh thay thế.", true);
@@ -2226,7 +2237,8 @@ header .date{font-size:1.65rem; font-weight:800; letter-spacing:-.02em; color:va
   function stopCamera(keepOpen){
     clearTimeout(camTimer); camTimer = null;
     if(camStream){ camStream.getTracks().forEach(t => t.stop()); camStream = null; }
-    const v = $("camVideo"); v.srcObject = null;
+    stopAllStreams();
+    const v = $("camVideo"); try{ v.pause(); }catch(e){} v.srcObject = null; v.removeAttribute("src");
     if(!keepOpen){ $("cam").hidden = true; document.body.style.overflow = ""; }
   }
   function closeCamera(){ stopCamera(false); $("camBtn").focus({ preventScroll:true }); }
@@ -2237,7 +2249,11 @@ header .date{font-size:1.65rem; font-weight:800; letter-spacing:-.02em; color:va
     try{ torchOn = !torchOn; await track.applyConstraints({ advanced:[{ torch:torchOn }] }); $("camTorch").setAttribute("aria-pressed", String(torchOn)); }catch(e){ torchOn = false; $("camTorch").hidden = true; }
   };
   $("camPhoto").onchange = e => { const f = e.target.files[0]; e.target.value = ""; closeCamera(); decodeFile(f); };
-  document.addEventListener("visibilitychange", () => { if(document.hidden && !$("cam").hidden) closeCamera(); });
+  document.addEventListener("visibilitychange", () => {
+    if(document.hidden){ if(!$("cam").hidden) closeCamera(); else stopCamera(); }
+    else if($("cam").hidden && (camStream || liveStreams.size)) stopCamera();
+  });
+  window.addEventListener("pagehide", () => stopCamera());
   document.addEventListener("keydown", e => { if(e.key === "Escape" && !$("cam").hidden) closeCamera(); });
 
   /* ---------- tag library ---------- */
@@ -2532,7 +2548,6 @@ header .date{font-size:1.65rem; font-weight:800; letter-spacing:-.02em; color:va
     return null;
   }
   let sw = null;
-  const ind = $("swipeInd");
   const SW_GO = 80;
   document.addEventListener("touchstart", e => {
     sw = null;
@@ -2557,23 +2572,18 @@ header .date{font-size:1.65rem; font-weight:800; letter-spacing:-.02em; color:va
     sw.dx = Math.max(0, dx);
     const p = Math.min(sw.dx / SW_GO, 1);
     if(sw.panel) sw.panel.style.transform = "translateX(" + sw.dx + "px)";
-    ind.style.opacity = String(Math.min(1, p * 1.2));
-    ind.style.transform = "translateX(" + (-56 + p*68) + "px) scale(" + (0.7 + p*0.3) + ")";
-    ind.classList.toggle("go", p >= 1);
   }, { passive:true });
   function endSwipe(){
     if(!sw || !sw.active){ sw = null; return; }
     const v = sw.dx / Math.max(1, Date.now() - sw.t);
     const go = sw.dx >= SW_GO || (sw.dx > 40 && v > 0.6);
     const panel = sw.panel, fn = sw.fn;
-    ind.style.transition = "transform .2s, opacity .2s"; ind.style.opacity = "0"; ind.style.transform = "translateX(-56px)"; ind.classList.remove("go");
-    setTimeout(() => { ind.style.transition = ""; }, 220);
     if(panel){ panel.style.transition = ""; panel.style.transform = ""; }
     sw = null;
     if(go) fn();
   }
   document.addEventListener("touchend", endSwipe, { passive:true });
-  document.addEventListener("touchcancel", () => { if(sw && sw.panel){ sw.panel.style.transition = ""; sw.panel.style.transform = ""; } ind.style.opacity = "0"; sw = null; }, { passive:true });
+  document.addEventListener("touchcancel", () => { if(sw && sw.panel){ sw.panel.style.transition = ""; sw.panel.style.transform = ""; } sw = null; }, { passive:true });
   document.addEventListener("keydown", e => {
     if(e.key !== "Escape") return;
     if(!$("tagSheet").hidden){ closeTagSheet(); e.stopImmediatePropagation(); }
