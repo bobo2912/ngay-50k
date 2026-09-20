@@ -105,6 +105,24 @@ h2{font-size:.95rem; font-weight:600; margin:0 0 8px}
 }
 .scan-btn svg{width:20px; height:20px}
 .scan-btn input{position:absolute; width:1px; height:1px; opacity:0; pointer-events:none}
+.photo-btn{position:relative; display:flex; align-items:center; justify-content:center; gap:8px; width:100%; margin-top:8px; padding:11px; border:1.5px solid var(--line); border-radius:12px; background:var(--surface); color:var(--ink); font-weight:600; font-size:.95rem; cursor:pointer}
+.photo-btn svg{width:18px; height:18px}
+.photo-btn input{position:absolute; width:1px; height:1px; opacity:0; pointer-events:none}
+.cam{position:fixed; inset:0; z-index:90; background:#000; color:#fff; display:flex; flex-direction:column}
+.cam video{position:absolute; inset:0; width:100%; height:100%; object-fit:cover}
+.cam-top, .cam-bottom{position:relative; z-index:2; display:flex; align-items:center; justify-content:space-between; padding:12px 16px}
+.cam-top{padding-top:calc(12px + env(safe-area-inset-top,0px)); background:linear-gradient(rgba(0,0,0,.55), transparent)}
+.cam-bottom{margin-top:auto; flex-direction:column; gap:12px; padding-bottom:calc(20px + env(safe-area-inset-bottom,0px)); background:linear-gradient(transparent, rgba(0,0,0,.6))}
+.cam-top h2{margin:0; font-size:1rem; font-weight:700; color:#fff}
+.cam-x{width:40px; height:40px; border:0; border-radius:20px; background:rgba(255,255,255,.18); color:#fff; font-size:1.2rem}
+.cam-frame{position:absolute; z-index:1; left:50%; top:46%; width:min(68vw, 300px); aspect-ratio:1; transform:translate(-50%,-50%); border-radius:22px; box-shadow:0 0 0 100vmax rgba(0,0,0,.45); outline:3px solid rgba(255,255,255,.9); outline-offset:-3px}
+.cam-frame.hit{outline-color:#5CC49A}
+.cam-hint{margin:0; text-align:center; font-size:.95rem; line-height:1.45; max-width:320px}
+.cam-hint.err{color:#FFB4AE}
+.cam-actions{display:flex; gap:10px}
+.cam-actions button, .cam-actions label{position:relative; border:0; border-radius:22px; padding:10px 16px; background:rgba(255,255,255,.18); color:#fff; font:inherit; font-weight:600; font-size:.9rem; cursor:pointer}
+.cam-actions button[aria-pressed="true"]{background:#fff; color:#000}
+.cam-actions input{position:absolute; width:1px; height:1px; opacity:0; pointer-events:none}
 .scan-msg{margin:8px 2px 0; font-size:.85rem; color:var(--muted); min-height:1.4em}
 .scan-msg.err{color:var(--over)}
 .link-btn{display:block; margin:10px auto 0; border:0; background:transparent; color:var(--muted); text-decoration:underline; text-underline-offset:3px; padding:6px}
@@ -399,12 +417,16 @@ header .date{color:var(--ink); font-size:1rem; font-weight:700}
     </div>
 
     <section id="startBox">
-      <label class="scan-btn">
+      <button class="scan-btn" id="camBtn">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><path d="M8 12h8"/></svg>
-        Quét QR thanh toán
+        Quét QR bằng camera
+      </button>
+      <label class="photo-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/></svg>
+        Chọn ảnh mã QR
         <input type="file" accept="image/*" id="photoAny">
       </label>
-      <p class="scan-msg" id="scanMsg">Chụp mã QR ở quầy, hoặc chọn ảnh mã QR có sẵn trong máy.</p>
+      <p class="scan-msg" id="scanMsg">Quét trực tiếp ở quầy, hoặc chọn ảnh mã QR có sẵn trong máy.</p>
       <div id="quickPeopleBox" hidden>
         <p class="quick-label">Chuyển nhanh cho người hay chuyển</p>
         <div class="people" id="quickPeople"></div>
@@ -696,6 +718,18 @@ header .date{color:var(--ink); font-size:1rem; font-weight:700}
         </div>
       </div>
     </section>
+  </div>
+</div>
+<div class="cam" id="cam" role="dialog" aria-modal="true" aria-labelledby="camTitle" hidden>
+  <video id="camVideo" playsinline muted autoplay></video>
+  <div class="cam-frame" id="camFrame" aria-hidden="true"></div>
+  <div class="cam-top"><h2 id="camTitle">Quét mã QR</h2><button class="cam-x" id="camClose" aria-label="Đóng camera">✕</button></div>
+  <div class="cam-bottom">
+    <p class="cam-hint" id="camHint">Đưa mã QR vào trong khung</p>
+    <div class="cam-actions">
+      <button id="camTorch" aria-pressed="false" hidden>Đèn flash</button>
+      <label>Chọn ảnh thay thế<input type="file" accept="image/*" id="camPhoto"></label>
+    </div>
   </div>
 </div>
 <div class="sheet-back" id="sheetBack" hidden></div>
@@ -1034,6 +1068,12 @@ header .date{color:var(--ink); font-size:1rem; font-weight:700}
   }
 
   /* ---------- QR from photo ---------- */
+  function handleRaw(raw){
+    msg("Quét trực tiếp ở quầy, hoặc chọn ảnh mã QR có sẵn trong máy.");
+    const data = parseVietQR(raw);
+    if(data) openForm("qr", data);
+    else { openForm("transfer"); msg("Mã QR này không có số tài khoản. Hãy điền tay.", true); }
+  }
   function msg(t, err){ const m = $("scanMsg"); m.textContent = t; m.className = "scan-msg" + (err ? " err" : ""); }
   function decodeFile(file){
     if(!file) return;
@@ -1052,10 +1092,8 @@ header .date{color:var(--ink); font-size:1rem; font-weight:700}
       }
       URL.revokeObjectURL(url);
       if(!raw){ msg("Không tìm thấy mã QR trong ảnh. Thử chụp gần hơn, đủ sáng, mã nằm gọn trong ảnh.", true); return; }
-      msg("Chụp mã QR ở quầy, hoặc chọn ảnh mã QR có sẵn trong máy.");
-      const data = parseVietQR(raw);
-      if(data) openForm("qr", data);
-      else { openForm("transfer"); msg("Mã QR này không có số tài khoản. Hãy điền tay.", true); }
+      msg("Quét trực tiếp ở quầy, hoặc chọn ảnh mã QR có sẵn trong máy.");
+      handleRaw(raw);
     };
     img.onerror = () => { URL.revokeObjectURL(url); msg("Không mở được ảnh này. Thử ảnh khác.", true); };
     img.src = url;
@@ -1622,7 +1660,7 @@ header .date{color:var(--ink); font-size:1rem; font-weight:700}
     if(name === "today"){
       viewDay = null;
       if(!$("formBox").hidden) closeForm();
-      msg("Chụp mã QR ở quầy, hoặc chọn ảnh mã QR có sẵn trong máy.");
+      msg("Quét trực tiếp ở quầy, hoặc chọn ảnh mã QR có sẵn trong máy.");
       renderToday();
     } else if(name === "money"){
       viewMonth = new Date(); viewMonth.setDate(1);
@@ -1738,6 +1776,81 @@ header .date{color:var(--ink); font-size:1rem; font-weight:700}
 
   loadLocal(); renderAll();
 
+
+  /* ---------- live camera QR scan ---------- */
+  let camStream = null, camTimer = null, camBusy = false, torchOn = false;
+  const camCanvas = document.createElement("canvas");
+  const camCtx = camCanvas.getContext("2d", { willReadFrequently:true });
+  function camHint(t, err){ const h = $("camHint"); h.textContent = t; h.className = "cam-hint" + (err ? " err" : ""); }
+  async function openCamera(){
+    if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.isSecureContext){
+      msg("Máy này chưa mở được camera trong app. Dùng nút Chọn ảnh mã QR để chụp.", true);
+      $("photoAny").click(); return;
+    }
+    if(!window.jsQR){ msg("Không tải được bộ đọc QR. Mở lại app rồi thử lại.", true); return; }
+    $("cam").hidden = false; document.body.style.overflow = "hidden";
+    $("camFrame").classList.remove("hit"); camHint("Đang mở camera…");
+    try{
+      camStream = await navigator.mediaDevices.getUserMedia({ audio:false, video:{ facingMode:{ ideal:"environment" }, width:{ ideal:1280 }, height:{ ideal:720 } } });
+      if($("cam").hidden){ stopCamera(); return; }
+      const v = $("camVideo"); v.srcObject = camStream;
+      await v.play().catch(()=>{});
+      camHint("Đưa mã QR vào trong khung");
+      const track = camStream.getVideoTracks()[0];
+      const caps = track && track.getCapabilities ? track.getCapabilities() : {};
+      $("camTorch").hidden = !caps.torch; torchOn = false; $("camTorch").setAttribute("aria-pressed", "false");
+      camBusy = false; scanLoop();
+    }catch(e){
+      const n = e && e.name;
+      if(n === "NotAllowedError" || n === "SecurityError") camHint("App chưa được phép dùng camera. Đóng lại rồi bấm Quét và chọn Cho phép. Nếu đã lỡ chặn, vào Cài đặt iPhone, chọn Safari, mục Camera, đổi thành Hỏi.", true);
+      else if(n === "NotFoundError" || n === "OverconstrainedError") camHint("Không tìm thấy camera trên máy này. Dùng Chọn ảnh thay thế.", true);
+      else if(n === "NotReadableError") camHint("Camera đang bị app khác dùng. Tắt app đó rồi thử lại.", true);
+      else camHint("Không mở được camera. Dùng Chọn ảnh thay thế.", true);
+      stopCamera(true);
+    }
+  }
+  function scanLoop(){
+    clearTimeout(camTimer);
+    camTimer = setTimeout(() => {
+      if(!camStream) return;
+      const v = $("camVideo");
+      if(v.readyState >= 2 && v.videoWidth && !camBusy){
+        camBusy = true;
+        try{
+          const vw = v.videoWidth, vh = v.videoHeight, side = Math.min(vw, vh) * 0.8;
+          const sx = (vw - side) / 2, sy = (vh - side) / 2, out = Math.min(560, Math.round(side));
+          camCanvas.width = out; camCanvas.height = out;
+          camCtx.drawImage(v, sx, sy, side, side, 0, 0, out, out);
+          const r = window.jsQR(camCtx.getImageData(0, 0, out, out).data, out, out, { inversionAttempts:"dontInvert" });
+          if(r && r.data){
+            $("camFrame").classList.add("hit");
+            if(navigator.vibrate) try{ navigator.vibrate(60); }catch(e){}
+            const raw = r.data;
+            setTimeout(() => { closeCamera(); handleRaw(raw); }, 180);
+            return;
+          }
+        }catch(e){}
+        camBusy = false;
+      }
+      scanLoop();
+    }, 120);
+  }
+  function stopCamera(keepOpen){
+    clearTimeout(camTimer); camTimer = null;
+    if(camStream){ camStream.getTracks().forEach(t => t.stop()); camStream = null; }
+    const v = $("camVideo"); v.srcObject = null;
+    if(!keepOpen){ $("cam").hidden = true; document.body.style.overflow = ""; }
+  }
+  function closeCamera(){ stopCamera(false); $("camBtn").focus({ preventScroll:true }); }
+  $("camBtn").onclick = openCamera;
+  $("camClose").onclick = closeCamera;
+  $("camTorch").onclick = async () => {
+    const track = camStream && camStream.getVideoTracks()[0]; if(!track) return;
+    try{ torchOn = !torchOn; await track.applyConstraints({ advanced:[{ torch:torchOn }] }); $("camTorch").setAttribute("aria-pressed", String(torchOn)); }catch(e){ torchOn = false; $("camTorch").hidden = true; }
+  };
+  $("camPhoto").onchange = e => { const f = e.target.files[0]; e.target.value = ""; closeCamera(); decodeFile(f); };
+  document.addEventListener("visibilitychange", () => { if(document.hidden && !$("cam").hidden) closeCamera(); });
+  document.addEventListener("keydown", e => { if(e.key === "Escape" && !$("cam").hidden) closeCamera(); });
   /* ---------- backup, restore & merge ---------- */
   const BK_KEY = "ngay50k:lastBackup", SNOOZE_KEY = "ngay50k:nudgeSnooze", UNDO_KEY = "ngay50k:beforeImport";
   const NUDGE_DAYS = 7;
