@@ -6,6 +6,7 @@ Thư mục này là toàn bộ app. Bạn đưa nó lên một trang web miễn 
 
 - `index.html`: app
 - `manifest.webmanifest`: tên và icon khi cài lên màn hình chính
+- `scan.html`: khung camera dùng khi quét QR, tự huỷ sau mỗi lần quét để iPhone tắt hẳn camera
 - `sw.js`: giúp app mở được khi không có mạng
 - `IN-THIS-VERSION.md`: danh sách tính năng, điểm mới của bản hiện tại và lịch sử các phiên bản
 - `fonts/`, `vendor/`, `icons/`: phông chữ, thư viện quét QR, icon. Tất cả nằm sẵn trong thư mục, app không tải gì từ trang web khác.
@@ -53,9 +54,10 @@ Tất cả nằm trong **Cài đặt** (biểu tượng bánh răng ở góc tr�
 
 ## Khi muốn sửa app
 
-1. Thay file `index.html` mới trên GitHub (**Add file**, rồi **Upload files**).
-2. Mở `sw.js`, tăng số phiên bản ở dòng `const VERSION = "ngay50k-v10";` lên số tiếp theo (`v11`, `v12`…)
-3. Lần sau mở app có mạng, app hiện thông báo **Đã có bản mới**, bấm **Tải lại** là xong. Dữ liệu vẫn giữ nguyên.
+1. Tải các file mới lên GitHub (**Add file**, rồi **Upload files**).
+2. Mở `sw.js`, tăng số phiên bản ở dòng `const VERSION = "ngay50k-v11";` lên số tiếp theo (`v12`, `v13`…)
+3. Kiểm tra số phiên bản ở cuối màn hình **Cài đặt**, mục **Dung lượng**, để chắc máy đã nhận bản mới.
+4. Lần sau mở app có mạng, app hiện thông báo **Đã có bản mới**, bấm **Tải lại** là xong. Dữ liệu vẫn giữ nguyên.
 
 ## Làm thêm mini app khác
 

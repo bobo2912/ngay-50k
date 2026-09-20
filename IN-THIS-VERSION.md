@@ -1,6 +1,13 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v10, ngày 20/09/2026
+**Phiên bản hiện tại:** v11, ngày 20/09/2026
+
+---
+
+## Có gì mới trong v11 (so với v10)
+
+- **Sửa triệt để lỗi chấm xanh camera.** Camera giờ chạy trong một khung riêng (file `scan.html`). Khi quét xong, đóng camera hoặc rời app, khung này bị xoá hẳn, nên iPhone buộc phải tắt camera.
+- **Hiện số phiên bản** ở cuối mục Dung lượng trong Cài đặt, để kiểm tra máy đã nhận bản mới chưa.
 
 ---
 
@@ -87,7 +94,7 @@
   - Xuất file sao lưu.
   - Nhập từ file, chọn **Gộp** hoặc **Thay toàn bộ**, có xem trước thay đổi và **Hoàn tác**.
   - Đồng bộ giữa các máy qua file.
-- **Dung lượng:**
+- **Dung lượng:** kèm số phiên bản app.
   - Thanh đo chỗ lưu đã dùng, dung lượng dữ liệu và bản lưu offline.
   - Xoá khoản chi hôm nay.
   - Xoá toàn bộ dữ liệu trên máy.
@@ -106,6 +113,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v11** | Camera chạy trong khung riêng, tắt hẳn khi đóng; hiện số phiên bản trong Cài đặt |
 | **v10** | Camera chỉ bật khi quét QR, bỏ mũi tên khi vuốt quay lại |
 | **v9** | Chọn giao diện Sáng, Tối hoặc Tự động |
 | **v8** | Giao diện Liquid Glass, màu xanh dương, thanh tab ở đáy, thẻ số tiền còn lại mới |

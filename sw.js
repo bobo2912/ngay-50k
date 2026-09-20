@@ -1,10 +1,11 @@
 /* Ngày 50k – bộ nhớ đệm để app mở được khi không có mạng.
    Mỗi lần sửa app, hãy tăng số phiên bản dưới đây (v1 -> v2 ...) để máy nhận bản mới. */
-const VERSION = "ngay50k-v10";
+const VERSION = "ngay50k-v11";
 
 const ASSETS = [
   "./",
   "./index.html",
+  "./scan.html",
   "./manifest.webmanifest",
   "./vendor/jsQR.js",
   "./icons/icon-192.png",
@@ -46,7 +47,8 @@ self.addEventListener("fetch", event => {
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return;
 
-  if (req.mode === "navigate") {
+  const isAppPage = url.pathname.endsWith("/") || url.pathname.endsWith("/index.html");
+  if (req.mode === "navigate" && isAppPage) {
     event.respondWith(
       caches.match("./index.html").then(hit => {
         const net = fetch(req).then(res => {
