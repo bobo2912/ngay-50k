@@ -302,6 +302,8 @@ summary{cursor:pointer; color:var(--muted); font-size:.92rem}
 .danger{color:var(--over)}
 .sync{font-size:.8rem; color:var(--muted); margin-top:14px}
 .head-right{display:flex; align-items:center; gap:4px}
+header .date{color:var(--ink); font-size:1rem; font-weight:700}
+.vh{position:absolute; width:1px; height:1px; margin:-1px; padding:0; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0}
 .gear{display:grid; place-items:center; width:40px; height:40px; margin-right:-8px; border:0; border-radius:12px; background:transparent; color:var(--ink)}
 .gear:active{background:var(--line)}
 .settings{position:fixed; inset:0; z-index:70; background:var(--bg); overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior:contain;
@@ -363,9 +365,9 @@ summary{cursor:pointer; color:var(--muted); font-size:.92rem}
 <body>
 <main>
   <header>
-    <h1>Ngày 50k</h1>
+    <h1 class="vh">Ngày 50k</h1>
+    <span class="date" id="dateLabel"></span>
     <div class="head-right">
-      <span class="date" id="dateLabel"></span>
       <button class="gear" id="openSettings" aria-label="Cài đặt" aria-haspopup="dialog">
         <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
       </button>
