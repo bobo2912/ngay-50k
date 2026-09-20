@@ -1,0 +1,1904 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ngày 50k</title>
+<meta name="description" content="Giữ mỗi ngày chi tiêu trong 50.000đ. Dữ liệu chỉ lưu trên máy của bạn.">
+<meta name="theme-color" content="#F5F1F6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#17111B" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Ngày 50k">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="format-detection" content="telephone=no">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<style>
+@font-face{font-family:'Be Vietnam Pro';font-style:normal;font-display:swap;font-weight:400;src:url(fonts/be-vietnam-pro-vietnamese-400-normal.woff2) format('woff2');unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}
+@font-face{font-family:'Be Vietnam Pro';font-style:normal;font-display:swap;font-weight:400;src:url(fonts/be-vietnam-pro-latin-ext-400-normal.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Be Vietnam Pro';font-style:normal;font-display:swap;font-weight:400;src:url(fonts/be-vietnam-pro-latin-400-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Be Vietnam Pro';font-style:normal;font-display:swap;font-weight:500;src:url(fonts/be-vietnam-pro-vietnamese-500-normal.woff2) format('woff2');unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}
+@font-face{font-family:'Be Vietnam Pro';font-style:normal;font-display:swap;font-weight:500;src:url(fonts/be-vietnam-pro-latin-ext-500-normal.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Be Vietnam Pro';font-style:normal;font-display:swap;font-weight:500;src:url(fonts/be-vietnam-pro-latin-500-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Be Vietnam Pro';font-style:normal;font-display:swap;font-weight:600;src:url(fonts/be-vietnam-pro-vietnamese-600-normal.woff2) format('woff2');unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}
+@font-face{font-family:'Be Vietnam Pro';font-style:normal;font-display:swap;font-weight:600;src:url(fonts/be-vietnam-pro-latin-ext-600-normal.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Be Vietnam Pro';font-style:normal;font-display:swap;font-weight:600;src:url(fonts/be-vietnam-pro-latin-600-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Be Vietnam Pro';font-style:normal;font-display:swap;font-weight:800;src:url(fonts/be-vietnam-pro-vietnamese-800-normal.woff2) format('woff2');unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}
+@font-face{font-family:'Be Vietnam Pro';font-style:normal;font-display:swap;font-weight:800;src:url(fonts/be-vietnam-pro-latin-ext-800-normal.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Be Vietnam Pro';font-style:normal;font-display:swap;font-weight:800;src:url(fonts/be-vietnam-pro-latin-800-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+:root{
+  --bg:#F5F1F6; --surface:#FFFFFF; --ink:#241A2C; --muted:#75697D; --line:#E4DBE8;
+  --note:#C2447F; --note-soft:#F6D9E7; --over:#C3342C; --ok:#2F8F6B; --ok-soft:#DDF1E8; --mb:#1E3A8A;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#17111B; --surface:#221A28; --ink:#F3ECF5; --muted:#A99BB0; --line:#3A2E41;
+    --note:#E0629C; --note-soft:#3F2233; --over:#F0645B; --ok:#5CC49A; --ok-soft:#1E3A30; --mb:#3B5BD9;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#17111B; --surface:#221A28; --ink:#F3ECF5; --muted:#A99BB0; --line:#3A2E41;
+  --note:#E0629C; --note-soft:#3F2233; --over:#F0645B; --ok:#5CC49A; --ok-soft:#1E3A30; --mb:#3B5BD9;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  font-size:15px; line-height:1.45; -webkit-font-smoothing:antialiased;
+}
+main{max-width:460px; margin:0 auto; padding:12px 16px 36px}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--note); outline-offset:2px}
+.num{font-variant-numeric:tabular-nums}
+[hidden]{display:none!important}
+
+header{display:flex; justify-content:space-between; align-items:baseline; margin:4px 2px 12px}
+header h1{font-size:1rem; font-weight:700; margin:0}
+header .date{color:var(--muted); font-size:.9rem}
+
+/* menu */
+.tabs{display:grid; grid-template-columns:repeat(4,auto); gap:2px; background:var(--surface); border:1.5px solid var(--line); border-radius:14px; padding:4px; margin-bottom:18px}
+.tabs button{border:0; background:transparent; border-radius:10px; padding:8px 7px; font-weight:600; font-size:.8rem; color:var(--muted); white-space:nowrap}
+.tabs button[aria-selected="true"]{background:var(--ink); color:var(--bg)}
+
+/* banknote */
+.note{
+  position:relative; border-radius:14px; overflow:hidden; background:var(--note); color:#fff;
+  padding:16px 18px 14px; aspect-ratio:2.4/1; min-height:140px;
+  display:flex; flex-direction:column; justify-content:space-between;
+}
+.note::before{
+  content:""; position:absolute; inset:0; opacity:.18; pointer-events:none;
+  background:
+    repeating-radial-gradient(circle at 85% 50%, transparent 0 7px, #fff 7px 8px),
+    repeating-linear-gradient(115deg, transparent 0 11px, rgba(255,255,255,.5) 11px 12px);
+  -webkit-mask:linear-gradient(90deg,transparent 30%,#000 75%); mask:linear-gradient(90deg,transparent 30%,#000 75%);
+}
+.note .spent-mask{
+  position:absolute; top:0; bottom:0; right:0; width:0%;
+  background:repeating-linear-gradient(135deg, rgba(20,8,20,.42) 0 6px, rgba(20,8,20,.30) 6px 12px);
+  transition:width .45s cubic-bezier(.2,.8,.2,1); border-left:2px dashed rgba(255,255,255,.85);
+}
+.note.over{background:var(--over)}
+.note.over .spent-mask{width:0!important}
+.note-top,.note-bottom{position:relative; display:flex; justify-content:space-between; align-items:flex-start; z-index:1}
+.note .face{font-weight:600; font-size:.85rem; opacity:.9}
+.note .corner{font-weight:800; font-size:1.15rem; line-height:1}
+.note .remain{font-weight:800; font-size:clamp(1.7rem,8vw,2.1rem); line-height:1; letter-spacing:-.02em}
+.note .remain-label{font-size:.8rem; opacity:.92; margin-top:4px}
+.status{margin:10px 2px 0; font-size:.88rem; color:var(--muted); min-height:1.5em}
+.status strong{color:var(--ink)}
+
+section{margin-top:22px}
+h2{font-size:.95rem; font-weight:600; margin:0 0 8px}
+
+.scan-btn{
+  position:relative; width:100%; border:0; border-radius:12px; padding:13px; background:var(--ink); color:var(--bg);
+  display:flex; align-items:center; justify-content:center; gap:10px; font-weight:700; font-size:1rem; cursor:pointer;
+}
+.scan-btn svg{width:20px; height:20px}
+.scan-btn input{position:absolute; width:1px; height:1px; opacity:0; pointer-events:none}
+.scan-msg{margin:8px 2px 0; font-size:.85rem; color:var(--muted); min-height:1.4em}
+.scan-msg.err{color:var(--over)}
+.link-btn{display:block; margin:10px auto 0; border:0; background:transparent; color:var(--muted); text-decoration:underline; text-underline-offset:3px; padding:6px}
+.links{display:flex; justify-content:center; gap:18px; flex-wrap:wrap}
+.links .link-btn{margin:4px 0 0}
+
+.quick-label{font-size:.85rem; color:var(--muted); margin:14px 2px 6px}
+.people{display:flex; gap:8px; overflow-x:auto; padding-bottom:4px; scrollbar-width:none}
+.people::-webkit-scrollbar{display:none}
+.person{
+  flex:0 0 auto; border:1.5px solid var(--line); background:var(--surface); border-radius:12px;
+  padding:8px 12px; text-align:left; max-width:170px;
+}
+.person b{display:block; font-weight:600; font-size:.9rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.person span{display:block; font-size:.78rem; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+
+/* forms */
+.form{background:var(--surface); border:1.5px solid var(--line); border-radius:14px; padding:14px}
+.form-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:6px}
+.form-head h2{margin:0}
+.x{border:0; background:transparent; color:var(--muted); font-size:1.3rem; padding:2px 8px; border-radius:8px}
+.field{margin-top:10px}
+.field > label{display:flex; justify-content:space-between; font-size:.8rem; color:var(--muted); margin-bottom:4px}
+.src{color:var(--ok); font-weight:600}
+.need{color:var(--over); font-weight:600}
+.inp{width:100%; border:1.5px solid var(--line); background:var(--bg); border-radius:10px; padding:9px 11px; outline:none; font-size:16px}
+.inp:focus{border-color:var(--note)}
+.inp.missing{border-color:var(--over)}
+.inp:disabled{opacity:.75}
+input[type="date"].inp{
+  -webkit-appearance:none; appearance:none; display:block;
+  width:100%; min-width:0; max-width:100%; min-height:48px; text-align:left; line-height:1.5;
+}
+input[type="date"].inp::-webkit-date-and-time-value{text-align:left; margin:0}
+.field{min-width:0}
+.amount-inp{font-size:1.25rem; font-weight:700; padding:8px 11px}
+.chips{display:flex; flex-wrap:wrap; gap:8px; margin-top:8px}
+.chip{border:1.5px solid var(--line); background:var(--surface); border-radius:999px; padding:5px 11px; font-size:.85rem; font-weight:500}
+.chip[aria-pressed="true"]{background:var(--ink); color:var(--bg); border-color:var(--ink)}
+.chip.amt{font-weight:600}
+.who{margin-top:4px; padding:10px 12px; border-radius:10px; background:var(--ok-soft); font-size:.92rem}
+.save-contact{margin-top:14px; padding:12px; border:1.5px dashed var(--line); border-radius:12px}
+.check{display:flex; gap:10px; align-items:center; font-weight:600; font-size:.95rem}
+.check input{width:20px; height:20px; accent-color:var(--note)}
+.preview{margin:14px 2px 0; font-size:.92rem; color:var(--muted); min-height:1.4em}
+.preview strong{color:var(--ink)}
+.preview.bad strong{color:var(--over)}
+.primary{width:100%; margin-top:12px; border:0; border-radius:12px; padding:12px; background:var(--ink); color:var(--bg); font-weight:700; font-size:.95rem}
+.primary:disabled{opacity:.4; cursor:default}
+.primary.green{background:var(--ok); color:#fff}
+.subtle{font-size:.82rem; color:var(--muted); margin:10px 2px 0}
+.inline-ok{margin:10px 2px 0; color:var(--ok); font-weight:600; font-size:.92rem}
+
+.result{margin-top:16px; border-radius:16px; padding:16px; background:var(--surface); border:2px solid var(--mb)}
+.result h2{color:var(--mb); font-size:.9rem}
+.result textarea{width:100%; min-height:100px; resize:vertical; border:2px solid var(--line); background:var(--bg); border-radius:10px; padding:10px 12px; line-height:1.5; outline:none}
+.btn-row{display:grid; gap:8px; margin-top:10px}
+.copy-btn{border:1.5px solid var(--mb); background:transparent; color:var(--mb); border-radius:12px; padding:11px; font-weight:700; font-size:.95rem}
+.mb-btn{display:flex; align-items:center; justify-content:center; gap:10px; text-decoration:none; background:var(--mb); color:#fff; border-radius:12px; padding:12px; font-weight:700; font-size:.95rem}
+.mb-btn .tag{background:#fff; color:#1E3A8A; border-radius:6px; padding:1px 7px; font-size:.85rem}
+
+/* lists */
+ul{list-style:none; margin:0; padding:0}
+.item{display:flex; align-items:center; gap:10px; padding:10px 2px; border-bottom:1px solid var(--line)}
+.item .cat{font-size:1.1rem; width:1.6em; text-align:center}
+.item .desc{flex:1; min-width:0}
+.item .desc div:first-child{font-weight:500; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.item .desc div:last-child{font-size:.78rem; color:var(--muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.item .amt{font-weight:600; white-space:nowrap}
+.item .amt.plus{color:var(--ok)}
+.item .del,.item .act{border:0; background:transparent; color:var(--muted); font-size:1.1rem; padding:4px 8px; border-radius:8px}
+.item .act.go{color:var(--mb); font-weight:700; font-size:.9rem; border:1.5px solid var(--mb); padding:5px 10px}
+.empty{color:var(--muted); padding:8px 2px}
+#peopleList .desc div:last-child{white-space:normal}
+.day-head{display:flex; justify-content:space-between; font-size:.85rem; color:var(--muted); margin:18px 2px 0; padding-bottom:4px; border-bottom:1.5px solid var(--line)}
+
+/* week */
+.week{display:grid; grid-template-columns:repeat(7,1fr); gap:6px; align-items:end; height:120px; margin-top:6px; position:relative}
+.week .limit-line{position:absolute; left:0; right:0; border-top:1.5px dashed var(--muted); opacity:.5}
+.bar-wrap{display:flex; flex-direction:column; align-items:center; height:100%; justify-content:flex-end}
+.bar{width:100%; max-width:34px; border-radius:6px 6px 2px 2px; background:var(--note-soft); min-height:3px}
+.bar.under{background:var(--ok)} .bar.overb{background:var(--over)}
+.bar.today{outline:2px solid var(--ink); outline-offset:1px}
+.week-labels{display:grid; grid-template-columns:repeat(7,1fr); gap:6px; margin-top:6px; text-align:center; font-size:.78rem; color:var(--muted)}
+.week-sum{margin-top:10px; color:var(--muted); font-size:.92rem}
+.week-sum strong{color:var(--ink)}
+
+/* money tab */
+.month{display:flex; justify-content:space-between; align-items:center; margin-bottom:12px}
+.month button{border:1.5px solid var(--line); background:var(--surface); border-radius:10px; width:36px; height:36px; font-size:1.1rem}
+.month strong{font-size:1rem}
+.ledger{background:var(--surface); border:1.5px solid var(--line); border-radius:14px; padding:12px 14px}
+.ledger-row{display:flex; justify-content:space-between; align-items:baseline; padding:4px 0}
+.ledger-row span{color:var(--muted)}
+.ledger-row b{font-size:1rem}
+.ledger-row b.in{color:var(--ok)} .ledger-row b.out{color:var(--over)}
+.ledger-total{border-top:1.5px solid var(--line); margin-top:8px; padding-top:10px}
+.ledger-total b{font-size:1.3rem; letter-spacing:-.01em}
+.cats{margin-top:6px}
+.cat-row{display:grid; grid-template-columns:5.5em 1fr auto; gap:10px; align-items:center; padding:5px 0; font-size:.92rem}
+.cat-bar{height:8px; border-radius:4px; background:var(--line); overflow:hidden}
+.cat-bar i{display:block; height:100%; background:var(--note)}
+
+.seg{display:grid; grid-template-columns:1fr 1fr; gap:4px; background:var(--bg); border:1.5px solid var(--line); border-radius:10px; padding:3px}
+.seg button{border:0; background:transparent; border-radius:8px; padding:7px; font-weight:600; font-size:.85rem; color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--ink); color:var(--bg)}
+.loan{background:var(--surface); border:1.5px solid var(--line); border-radius:14px; padding:12px 14px; margin-top:10px}
+.loan-top{display:flex; justify-content:space-between; align-items:flex-start; gap:10px}
+.loan-top b{display:block; font-size:.95rem}
+.loan-top small{display:block; color:var(--muted); font-size:.78rem}
+.loan-amt{text-align:right; white-space:nowrap}
+.loan-amt b{font-size:1rem}
+.loan-amt small{color:var(--muted); font-size:.75rem}
+.tag-borrow,.loan-top small.tag-borrow,.kv b.tag-borrow{color:var(--over)} .tag-lend,.loan-top small.tag-lend{color:var(--ok)}
+.progress{height:6px; border-radius:3px; background:var(--line); overflow:hidden; margin-top:10px}
+.progress i{display:block; height:100%; background:var(--ok)}
+.due{font-size:.78rem; margin-top:6px; color:var(--muted)}
+.due.late{color:var(--over); font-weight:600}
+.loan-actions{display:grid; grid-auto-flow:column; grid-auto-columns:1fr; gap:8px; margin-top:12px}
+.loan-actions .mini{white-space:nowrap; text-align:center; padding:9px 6px; min-height:38px}
+.mini{border:1.5px solid var(--line); background:transparent; border-radius:9px; padding:6px 11px; font-weight:600; font-size:.82rem}
+.mini.main{border-color:var(--ink); background:var(--ink); color:var(--bg)}
+.mini.danger{color:var(--over)}
+.pay-form{margin-top:10px; padding-top:10px; border-top:1px dashed var(--line)}
+.pay-form .row{display:grid; grid-template-columns:1fr 1fr; gap:8px}
+.pay-hist{margin-top:10px; padding-top:6px; border-top:1px dashed var(--line); font-size:.82rem}
+.pay-hist li{display:flex; justify-content:space-between; align-items:center; padding:5px 0; color:var(--muted)}
+.pay-hist li b{color:var(--ink); font-weight:600}
+.pay-hist button{border:0; background:transparent; color:var(--muted); padding:2px 6px}
+.loan{cursor:pointer; position:relative}
+.loan:active{transform:scale(.995)}
+.loan .more{font-size:.78rem; color:var(--muted); margin-top:8px; display:flex; justify-content:space-between}
+.back{border:0; background:transparent; color:var(--muted); font-weight:600; padding:4px 0; margin-bottom:10px; font-size:.9rem}
+.detail-card{background:var(--surface); border:1.5px solid var(--line); border-radius:14px; padding:14px}
+.detail-card h2{font-size:1.1rem; margin:0}
+.kv{display:grid; grid-template-columns:auto 1fr; gap:6px 14px; margin-top:12px; font-size:.88rem}
+.kv span{color:var(--muted)} .kv b{text-align:right; font-weight:600}
+.big-left{font-size:1.4rem; font-weight:800; margin-top:10px}
+.hist-head{display:flex; justify-content:space-between; align-items:center; margin:22px 0 6px}
+.hist-head h2{margin:0}
+.rec{display:flex; align-items:center; gap:8px; padding:10px 2px; border-bottom:1px solid var(--line)}
+.rec .rd{flex:1; min-width:0}
+.rec .rd div:first-child{font-weight:600}
+.rec .rd div:last-child{font-size:.78rem; color:var(--muted)}
+.rec{gap:14px}
+.rec button{min-height:36px; border-radius:9px; font-size:.82rem; font-weight:600; padding:6px 12px; background:transparent}
+.rec .rb-edit{border:1.5px solid var(--line); color:var(--ink)}
+.rec .rb-del{border:1.5px solid var(--over); color:var(--over); margin-left:6px}
+.armed{background:var(--over)!important; color:#fff!important; border-color:var(--over)!important; font-size:.78rem!important}
+.rec-edit{padding:10px 0; border-bottom:1px solid var(--line)}
+.rec-edit .row{display:grid; grid-template-columns:1fr 1fr; gap:8px}
+.rec-edit .acts{display:flex; gap:8px; margin-top:8px}
+.day-nav{display:grid; grid-template-columns:36px 1fr 36px; gap:8px; align-items:center}
+.day-nav button{border:1.5px solid var(--line); background:var(--surface); border-radius:10px; height:36px; font-size:1.1rem}
+.day-nav button:disabled{opacity:.35}
+.day-pick{position:relative; text-align:center; font-weight:600; font-size:.95rem; border:1.5px solid var(--line); background:var(--surface); border-radius:10px; height:36px; display:flex; align-items:center; justify-content:center; cursor:pointer}
+.day-pick input{position:absolute; inset:0; opacity:0; width:100%; height:100%; cursor:pointer}
+.day-sum{margin:8px 2px 2px; font-size:.85rem; color:var(--muted)}
+.day-sum strong{color:var(--ink)}
+.list-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:8px}
+.list-head h2{margin:0}
+.filter-btn{display:flex; align-items:center; gap:6px; border:1.5px solid var(--line); background:var(--surface); border-radius:999px; padding:6px 12px; font-weight:600; font-size:.85rem}
+.filter-btn.on{border-color:var(--ink); background:var(--ink); color:var(--bg)}
+.filter-btn svg{width:15px; height:15px}
+.active-filters{display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin:0 0 6px}
+.af{font-size:.78rem; background:var(--note-soft); border-radius:999px; padding:3px 10px}
+.af-clear{border:0; background:transparent; color:var(--over); font-weight:600; font-size:.8rem; padding:3px 4px}
+.ledger-note{font-size:.75rem; color:var(--muted); margin-top:4px}
+.sheet-back{position:fixed; inset:0; background:rgba(10,5,15,.45); z-index:80; opacity:0; transition:opacity .2s}
+.sheet-back.show{opacity:1}
+.sheet{position:fixed; left:0; right:0; bottom:0; z-index:81; background:var(--surface); border-radius:18px 18px 0 0;
+  max-height:85vh; overflow-y:auto; padding:8px 16px calc(16px + env(safe-area-inset-bottom,0px));
+  transform:translateY(100%); transition:transform .25s cubic-bezier(.2,.8,.2,1); box-shadow:0 -6px 30px rgba(0,0,0,.25);
+  max-width:520px; margin:0 auto}
+.sheet.show{transform:translateY(0)}
+.sheet .grab{width:40px; height:5px; border-radius:3px; background:var(--line); margin:4px auto 10px}
+.sheet-head{display:flex; justify-content:space-between; align-items:center}
+.sheet-head h2{margin:0; font-size:1rem}
+.sheet h3{font-size:.8rem; color:var(--muted); font-weight:600; margin:16px 0 6px}
+.seg3{grid-template-columns:repeat(3,1fr)}
+.seg button{white-space:nowrap}
+.range > div{min-width:0}
+.range{display:grid; grid-template-columns:1fr 1fr; gap:8px}
+.range label{font-size:.75rem; color:var(--muted); display:block; margin-bottom:3px}
+.sheet-foot{display:grid; grid-template-columns:1fr 2fr; gap:8px; margin-top:18px; position:sticky; bottom:0; background:var(--surface); padding-top:8px}
+.sheet-foot button{border-radius:12px; padding:12px; font-weight:700; font-size:.95rem}
+.sheet-foot .reset{border:1.5px solid var(--line); background:transparent}
+.sheet-foot .apply{border:0; background:var(--ink); color:var(--bg)}
+.hint{font-size:.75rem; color:var(--muted); margin:6px 0 0}
+@media (prefers-reduced-motion: reduce){ .sheet,.sheet-back{transition:none} }
+details{margin-top:28px; border-top:1px solid var(--line); padding-top:14px}
+summary{cursor:pointer; color:var(--muted); font-size:.92rem}
+.set-row{display:flex; gap:10px; margin-top:12px; align-items:center}
+.ghost{border:1.5px solid var(--line); background:var(--surface); border-radius:10px; padding:10px 14px; font-weight:600}
+.danger{color:var(--over)}
+.sync{font-size:.8rem; color:var(--muted); margin-top:14px}
+.backup-nudge{display:flex; align-items:center; gap:10px; margin-top:12px; padding:10px 12px; border:1.5px solid var(--line); border-radius:12px; background:var(--surface); font-size:.88rem}
+.backup-nudge p{margin:0; flex:1; line-height:1.4}
+.backup-nudge button{border:0; background:none; font:inherit; font-weight:700; color:var(--note); padding:6px 4px; white-space:nowrap}
+.backup-nudge .later{color:var(--muted); font-weight:500}
+.backup-state{margin:12px 2px 0; font-size:.88rem; line-height:1.45}
+.backup-state.stale{color:var(--over)}
+.file-btn{display:inline-flex; align-items:center; justify-content:center; cursor:pointer; text-align:center}
+.file-btn input{position:absolute; width:1px; height:1px; opacity:0; pointer-events:none}
+.set-row .grow{flex:1}
+.import-card{margin-top:12px; padding:14px; border:1.5px solid var(--note); border-radius:12px; background:var(--surface)}
+.import-card h3{margin:0 0 6px; font-size:.95rem}
+.import-card p{margin:0 0 4px; font-size:.88rem; color:var(--muted); line-height:1.45}
+.import-card .preview{color:var(--ink); font-weight:600}
+.import-card .primary{margin-top:10px}
+.import-card .row2{display:flex; gap:10px; margin-top:10px}
+.import-card .row2 .ghost{flex:1}
+.wipe-card{border-color:var(--over)}
+.sync-err{margin:10px 2px 0; color:var(--over); font-weight:600; font-size:.9rem}
+.undo-btn{border:0; background:none; font:inherit; color:var(--note); font-weight:700; padding:0 0 0 6px; text-decoration:underline}
+.how{margin-top:16px; font-size:.86rem; color:var(--muted); line-height:1.5}
+.how h3{font-size:.9rem; color:var(--ink); margin:0 0 4px; font-weight:600}
+.how ol{margin:0; padding-left:1.2em}
+.how li{margin:2px 0}
+.update-bar{position:fixed; left:12px; right:12px; bottom:calc(12px + env(safe-area-inset-bottom,0px)); z-index:60; display:flex; align-items:center; gap:10px; max-width:520px; margin:0 auto; padding:12px 14px; border-radius:14px; background:var(--ink); color:var(--bg); font-size:.9rem}
+.update-bar p{margin:0; flex:1}
+.update-bar button{border:0; border-radius:10px; padding:8px 12px; background:var(--bg); color:var(--ink); font:inherit; font-weight:700}
+@media (prefers-reduced-motion: reduce){ .note .spent-mask{transition:none} }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Ngày 50k</h1>
+    <span class="date" id="dateLabel"></span>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Menu">
+    <button role="tab" data-tab="today" aria-selected="true">Giao dịch</button>
+    <button role="tab" data-tab="money" aria-selected="false">Thu chi</button>
+    <button role="tab" data-tab="loans" aria-selected="false">Khoản vay</button>
+    <button role="tab" data-tab="people" aria-selected="false">Người nhận</button>
+  </nav>
+
+  <!-- ================= TAB: HÔM NAY ================= -->
+  <div id="tab-today" role="tabpanel">
+    <div class="note" id="note" role="img" aria-label="">
+      <div class="spent-mask" id="mask"></div>
+      <div class="note-top"><span class="face">Tờ tiền hôm nay</span><span class="corner num" id="corner">50</span></div>
+      <div class="note-bottom"><div>
+        <div class="remain num" id="remain">50.000đ</div>
+        <div class="remain-label" id="remainLabel">còn lại để tiêu</div>
+      </div></div>
+    </div>
+    <p class="status" id="status"></p>
+    <div class="backup-nudge" id="backupNudge" hidden>
+      <p id="nudgeText"></p>
+      <button id="nudgeGo">Sao lưu</button>
+      <button class="later" id="nudgeLater">Để sau</button>
+    </div>
+
+    <section id="startBox">
+      <label class="scan-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><path d="M8 12h8"/></svg>
+        Quét QR thanh toán
+        <input type="file" accept="image/*" id="photoAny">
+      </label>
+      <p class="scan-msg" id="scanMsg">Chụp mã QR ở quầy, hoặc chọn ảnh mã QR có sẵn trong máy.</p>
+      <div id="quickPeopleBox" hidden>
+        <p class="quick-label">Chuyển nhanh cho người hay chuyển</p>
+        <div class="people" id="quickPeople"></div>
+      </div>
+      <div class="links">
+        <button class="link-btn" id="manualTransferBtn">Chuyển khoản nhập tay</button>
+        <button class="link-btn" id="cashBtn">Trả tiền mặt</button>
+      </div>
+    </section>
+
+    <section id="formBox" hidden>
+      <div class="form">
+        <div class="form-head">
+          <h2 id="formTitle">Thông tin thanh toán</h2>
+          <button class="x" id="cancelForm" aria-label="Huỷ">✕</button>
+        </div>
+        <div class="who" id="whoBox" hidden></div>
+
+        <div class="field">
+          <label for="amt"><span>Số tiền</span><span id="amtSrc"></span></label>
+          <input id="amt" class="inp amount-inp num" inputmode="numeric" autocomplete="off" placeholder="0đ">
+          <div class="chips" id="amtChips"></div>
+        </div>
+
+        <div id="bankFields">
+          <div class="field">
+            <label for="acct"><span>Số tài khoản nhận</span><span id="acctSrc"></span></label>
+            <input id="acct" class="inp num" inputmode="numeric" autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="bank"><span>Ngân hàng nhận</span><span id="bankSrc"></span></label>
+            <input id="bank" class="inp" list="bankList" autocomplete="off" placeholder="vd: Vietcombank">
+          </div>
+          <div class="field">
+            <label for="memo"><span>Nội dung chuyển khoản</span><span id="memoSrc"></span></label>
+            <input id="memo" class="inp" autocomplete="off" maxlength="80">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="txDate"><span>Ngày giao dịch</span><span id="txDateHint"></span></label>
+          <input id="txDate" class="inp" type="date">
+        </div>
+
+        <div class="field">
+          <label><span>Loại chi</span></label>
+          <div class="chips" id="catChips" role="group" aria-label="Loại chi tiêu" style="margin-top:0"></div>
+        </div>
+        <div class="field">
+          <label for="desc"><span>Ghi chú của bạn</span></label>
+          <input id="desc" class="inp" maxlength="60" autocomplete="off" placeholder="vd: cơm trưa">
+        </div>
+
+        <div class="save-contact" id="saveContactBox" hidden>
+          <label class="check"><input type="checkbox" id="saveContact"> Lưu vào danh sách người hay chuyển</label>
+          <div class="field" id="contactNameField" hidden>
+            <label for="contactName"><span>Tên gợi nhớ</span></label>
+            <input id="contactName" class="inp" maxlength="40" autocomplete="off" placeholder="vd: Cô Lan bán cơm">
+          </div>
+        </div>
+
+        <p class="preview" id="preview"></p>
+        <button class="primary" id="saveBtn" disabled>Ghi khoản chi</button>
+        <p class="scan-msg err" id="saveErr" hidden></p>
+
+        <div class="result" id="resultBox" hidden>
+          <h2>✓ Đã ghi. Đoạn chuyển tiền để dán vào MB Bank</h2>
+          <textarea id="transferText" aria-label="Đoạn thông tin chuyển tiền"></textarea>
+          <div class="btn-row">
+            <button class="copy-btn" id="copyBtn">Sao chép đoạn này</button>
+            <a class="mb-btn" id="mbBtn" href="https://dl.vietqr.io/pay?app=mb" target="_blank" rel="noopener">Sao chép và mở <span class="tag">MB Bank</span></a>
+          </div>
+          <p class="subtle">Trong MB Bank, dán đoạn này vào ô trợ lý để tạo lệnh chuyển. Nhớ kiểm tra tên người nhận MB Bank hiển thị trước khi xác nhận.</p>
+          <button class="link-btn" id="doneBtn">Xong</button>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="day-nav">
+        <button id="prevDay" aria-label="Ngày trước">‹</button>
+        <label class="day-pick"><span id="dayLabel">Hôm nay</span><input type="date" id="dayPick" aria-label="Chọn ngày để xem"></label>
+        <button id="nextDay" aria-label="Ngày sau">›</button>
+      </div>
+      <p class="day-sum" id="daySum"></p>
+      <ul id="list"></ul>
+    </section>
+
+    <section>
+      <h2>7 ngày gần nhất</h2>
+      <div class="week" id="week"></div>
+      <div class="week-labels" id="weekLabels"></div>
+      <p class="week-sum" id="weekSum"></p>
+    </section>
+
+    <details>
+      <summary>Cài đặt</summary>
+      <div class="set-row">
+        <input id="budgetInput" class="inp num" inputmode="numeric" aria-label="Hạn mức mỗi ngày (đồng)" style="flex:1">
+        <button class="ghost" id="saveBudget">Lưu hạn mức</button>
+      </div>
+      <p class="inline-ok" id="budgetMsg" hidden></p>
+      <div class="set-row"><button class="ghost danger" id="clearToday">Xoá hết khoản chi hôm nay</button></div>
+      <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào.</p>
+    </details>
+
+    <details id="syncBox">
+      <summary>Sao lưu và đồng bộ</summary>
+      <p class="backup-state" id="backupState"></p>
+      <div class="set-row">
+        <button class="ghost grow" id="exportBtn">Xuất file sao lưu</button>
+        <label class="ghost grow file-btn">Nhập từ file<input type="file" id="importFile"></label>
+      </div>
+      <div class="import-card" id="importCard" hidden>
+        <h3>Nhập dữ liệu từ file</h3>
+        <p id="importInfo"></p>
+        <p class="preview" id="importPreview"></p>
+        <button class="primary" id="mergeBtn">Gộp vào dữ liệu trên máy này</button>
+        <div class="row2">
+          <button class="ghost danger" id="replaceBtn">Thay toàn bộ</button>
+          <button class="ghost" id="cancelImport">Huỷ</button>
+        </div>
+      </div>
+      <p class="inline-ok" id="syncMsg" hidden></p>
+      <p class="sync-err" id="syncErr" hidden></p>
+      <div class="how">
+        <h3>Đồng bộ sang máy khác</h3>
+        <ol>
+          <li>Trên máy đang có dữ liệu, bấm Xuất file sao lưu, rồi gửi file qua AirDrop, Zalo hoặc lưu vào iCloud Drive.</li>
+          <li>Trên máy kia, bấm Nhập từ file, chọn file đó, rồi chọn Gộp.</li>
+          <li>Muốn hai máy giống hệt nhau, làm thêm một lượt theo chiều ngược lại.</li>
+        </ol>
+        <p style="margin:8px 0 0">Gộp giữ lại khoản mới của cả hai máy, khoản nào đã xoá ở một máy cũng được xoá ở máy kia.</p>
+      </div>
+      <div class="set-row" style="margin-top:20px"><button class="ghost danger grow" id="wipeBtn">Xoá toàn bộ dữ liệu trên máy này</button></div>
+      <div class="import-card wipe-card" id="wipeCard" hidden>
+        <h3>Xoá toàn bộ dữ liệu?</h3>
+        <p class="preview" id="wipeInfo"></p>
+        <p>Không hoàn tác được. Dữ liệu trên máy khác và trong các file sao lưu vẫn còn.</p>
+        <button class="primary" id="wipeExport">Xuất file sao lưu trước</button>
+        <div class="row2">
+          <button class="ghost danger" id="wipeConfirm">Xoá vĩnh viễn</button>
+          <button class="ghost" id="wipeCancel">Huỷ</button>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- ================= TAB: THU CHI ================= -->
+  <div id="tab-money" role="tabpanel" hidden>
+    <div class="month">
+      <button id="prevMonth" aria-label="Tháng trước">‹</button>
+      <strong id="monthLabel"></strong>
+      <button id="nextMonth" aria-label="Tháng sau">›</button>
+    </div>
+    <div class="ledger">
+      <div class="ledger-row"><span>Tổng thu</span><b class="in num" id="sumIn">0đ</b></div>
+      <div class="ledger-row"><span>Tổng chi</span><b class="out num" id="sumOut">0đ</b></div>
+      <div class="ledger-row ledger-total"><span>Còn lại</span><b class="num" id="sumNet">0đ</b></div>
+    </div>
+
+    <button class="primary green" id="addIncomeBtn">+ Thêm khoản thu</button>
+
+    <section id="incomeForm" hidden>
+      <div class="form">
+        <div class="form-head"><h2>Thêm khoản thu</h2><button class="x" id="cancelIncome" aria-label="Huỷ">✕</button></div>
+        <div class="field">
+          <label for="incAmt"><span>Số tiền</span></label>
+          <input id="incAmt" class="inp amount-inp num" inputmode="numeric" autocomplete="off" placeholder="0đ">
+        </div>
+        <div class="field">
+          <label><span>Nguồn thu</span></label>
+          <div class="chips" id="incChips" style="margin-top:0"></div>
+        </div>
+        <div class="field">
+          <label for="incNote"><span>Ghi chú</span></label>
+          <input id="incNote" class="inp" maxlength="60" autocomplete="off" placeholder="vd: lương tháng 9">
+        </div>
+        <div class="field">
+          <label for="incDate"><span>Ngày nhận</span></label>
+          <input id="incDate" class="inp" type="date">
+        </div>
+        <button class="primary green" id="saveIncome" disabled>Lưu khoản thu</button>
+      </div>
+    </section>
+    <p class="inline-ok" id="incomeMsg" hidden></p>
+
+    <section>
+      <h2>Chi theo loại</h2>
+      <div class="cats" id="catBreakdown"></div>
+    </section>
+
+    <section>
+      <h2>Tất cả thu chi trong tháng</h2>
+      <div id="ledgerList"></div>
+    </section>
+  </div>
+
+  <!-- ================= TAB: KHOẢN VAY ================= -->
+  <div id="tab-loans" role="tabpanel" hidden>
+    <div id="loansMain">
+      <div class="ledger">
+        <div class="ledger-row"><span>Mình đang nợ</span><b class="out num" id="owe">0đ</b></div>
+        <div class="ledger-row"><span>Người khác nợ mình</span><b class="in num" id="owed">0đ</b></div>
+        <p class="ledger-note" id="ledgerNote" hidden>Tính theo bộ lọc đang chọn</p>
+      </div>
+      <button class="primary" id="addLoanBtn">+ Thêm khoản vay</button>
+      <p class="inline-ok" id="loanMsg" hidden></p>
+      <section>
+        <div class="list-head">
+          <h2 id="activeTitle">Đang theo dõi</h2>
+          <button class="filter-btn" id="filterBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
+            <span id="filterBtnText">Lọc</span>
+          </button>
+        </div>
+        <div class="active-filters" id="activeFilters" hidden></div>
+        <div id="loanList"></div>
+      </section>
+      <details id="doneLoansBox" hidden>
+        <summary id="doneLoansTitle">Đã tất toán</summary>
+        <div id="doneLoanList"></div>
+      </details>
+    </div>
+
+    <section id="loanForm" hidden style="margin-top:0">
+      <div class="form">
+        <div class="form-head"><h2 id="loanFormTitle">Thêm khoản vay</h2><button class="x" id="cancelLoan" aria-label="Huỷ">✕</button></div>
+        <div class="seg" id="loanType">
+          <button data-type="borrow" aria-pressed="true">Mình đi vay</button>
+          <button data-type="lend" aria-pressed="false">Mình cho vay</button>
+        </div>
+        <div class="field"><label for="lWho"><span id="lWhoLabel">Vay của ai</span></label><input id="lWho" class="inp" maxlength="40" placeholder="vd: Anh Tuấn, Home Credit"></div>
+        <div class="field"><label for="lAmt"><span>Số tiền</span></label><input id="lAmt" class="inp amount-inp num" inputmode="numeric" placeholder="0đ"></div>
+        <div class="field"><label for="lPaid"><span id="lPaidLabel">Số tiền đã trả</span></label><input id="lPaid" class="inp num" inputmode="numeric" placeholder="0đ"></div>
+        <p class="subtle" id="lPaidHint" hidden style="margin-top:4px"></p>
+        <div class="field"><label for="lDate"><span id="lDateLabel">Ngày vay</span></label><input id="lDate" class="inp" type="date"></div>
+        <div class="field"><label for="lDue"><span>Hạn trả (không bắt buộc)</span></label><input id="lDue" class="inp" type="date"></div>
+        <div class="field"><label for="lNote"><span>Ghi chú</span></label><input id="lNote" class="inp" maxlength="120" placeholder="vd: lãi 1%/tháng, trả dần mỗi tháng"></div>
+        <button class="primary" id="saveLoan" disabled>Lưu khoản vay</button>
+      </div>
+    </section>
+
+    <div id="loanDetail" hidden></div>
+  </div>
+
+  <!-- ================= TAB: NGƯỜI NHẬN ================= -->
+  <div id="tab-people" role="tabpanel" hidden>
+    <p class="subtle" style="margin-top:0">Lưu những người bạn hay chuyển tiền. Bấm Chuyển để điền sẵn thông tin, chỉ cần nhập số tiền.</p>
+    <button class="primary" id="addContactBtn">+ Thêm người nhận</button>
+
+    <section id="contactForm" hidden>
+      <div class="form">
+        <div class="form-head"><h2 id="contactFormTitle">Thêm người nhận</h2><button class="x" id="cancelContact" aria-label="Huỷ">✕</button></div>
+        <div class="field"><label for="cName"><span>Tên gợi nhớ</span></label><input id="cName" class="inp" maxlength="40" placeholder="vd: Cô Lan bán cơm"></div>
+        <div class="field"><label for="cAcct"><span>Số tài khoản</span></label><input id="cAcct" class="inp num" inputmode="numeric"></div>
+        <div class="field"><label for="cBank"><span>Ngân hàng</span></label><input id="cBank" class="inp" list="bankList" placeholder="vd: Vietcombank"></div>
+        <div class="field"><label for="cMemo"><span>Nội dung mặc định (không bắt buộc)</span></label><input id="cMemo" class="inp" maxlength="80"></div>
+        <div class="field"><label><span>Loại chi thường dùng</span></label><div class="chips" id="cCatChips" style="margin-top:0"></div></div>
+        <button class="primary" id="saveContactBtn" disabled>Lưu người nhận</button>
+      </div>
+    </section>
+
+    <section>
+      <h2 id="peopleTitle">Danh sách</h2>
+      <ul id="peopleList"></ul>
+    </section>
+  </div>
+</main>
+<div class="sheet-back" id="sheetBack" hidden></div>
+<div class="sheet" id="filterSheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" hidden>
+  <div class="grab" aria-hidden="true"></div>
+  <div class="sheet-head"><h2 id="sheetTitle">Lọc khoản vay</h2><button class="x" id="closeSheet" aria-label="Đóng">✕</button></div>
+
+  <h3>Loại khoản vay</h3>
+  <div class="seg seg3" id="fType">
+    <button data-v="all">Tất cả</button><button data-v="borrow">Mình vay</button><button data-v="lend">Cho vay</button>
+  </div>
+
+  <h3>Trạng thái</h3>
+  <div class="seg seg3" id="fStatus">
+    <button data-v="all">Tất cả</button><button data-v="open">Chưa xong</button><button data-v="done">Tất toán</button>
+  </div>
+
+  <h3>Lọc theo ngày</h3>
+  <div class="seg" id="fField">
+    <button data-v="date">Ngày khởi tạo</button><button data-v="due">Ngày đến hạn</button>
+  </div>
+  <div class="chips" id="fPresets"></div>
+  <div class="range" style="margin-top:10px">
+    <div><label for="fFrom">Từ ngày</label><input type="date" class="inp" id="fFrom"></div>
+    <div><label for="fTo">Đến ngày</label><input type="date" class="inp" id="fTo"></div>
+  </div>
+  <p class="hint" id="fHint"></p>
+
+  <div class="sheet-foot">
+    <button class="reset" id="fReset">Xoá lọc</button>
+    <button class="apply" id="fApply">Xem kết quả</button>
+  </div>
+</div>
+<datalist id="bankList"></datalist>
+<canvas id="canvas" hidden></canvas>
+
+<div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
+<script src="vendor/jsQR.js"></script>
+<script>
+(function(){
+  /* ---------- constants ---------- */
+  const CATS = [
+    {id:"an",label:"Ăn",icon:"🍜"},{id:"uong",label:"Uống",icon:"🧋"},
+    {id:"dilai",label:"Đi lại",icon:"🛵"},{id:"khac",label:"Khác",icon:"🛍️"}
+  ];
+  const INC = [
+    {id:"luong",label:"Lương",icon:"💼"},{id:"thuong",label:"Thưởng",icon:"🎁"},
+    {id:"ban",label:"Bán hàng",icon:"🏷️"},{id:"cho",label:"Được cho",icon:"🧧"},{id:"khac",label:"Khác",icon:"💰"}
+  ];
+  const QUICK = [5000,10000,15000,20000,30000];
+  const BANKS = {
+    "970436":"Vietcombank","970415":"VietinBank","970418":"BIDV","970405":"Agribank","970422":"MB Bank",
+    "970407":"Techcombank","970416":"ACB","970432":"VPBank","970423":"TPBank","970403":"Sacombank",
+    "970437":"HDBank","970441":"VIB","970443":"SHB","970431":"Eximbank","970426":"MSB","970448":"OCB",
+    "970454":"BVBank","970429":"SCB","970440":"SeABank","970425":"ABBANK","970427":"VietABank",
+    "970428":"Nam A Bank","970409":"Bac A Bank","970412":"PVcomBank","970419":"NCB","970414":"MBV",
+    "970438":"BaoViet Bank","970430":"PGBank","970400":"Saigonbank","970452":"KienlongBank",
+    "970449":"LPBank","970433":"VietBank","970406":"Vikki","970408":"GPBank","970424":"Shinhan Bank",
+    "970457":"Woori Bank","970458":"UOB","970442":"Hong Leong Bank","970421":"VRB","970434":"Indovina Bank",
+    "970439":"Public Bank","970410":"Standard Chartered","970446":"Co-op Bank","963388":"Timo",
+    "546034":"CAKE by VPBank","546035":"Ubank by VPBank","971005":"Viettel Money","971011":"VNPT Money"
+  };
+  const LS_KEY = "ngay50k:v1";
+  const WD = ["CN","T2","T3","T4","T5","T6","T7"];
+
+  /* ---------- state ---------- */
+  let state = { budget:50000, days:{}, income:{}, contacts:[], loans:[], payees:{}, updated:0 };
+  let sigs = {};
+  let selectedCat = "an", mode = "cash", scanned = null, locked = false, activeContact = null;
+  let incCat = "luong", cCat = "an", editingContactId = null;
+  let viewMonth = new Date(); viewMonth.setDate(1);
+  let viewDay = null; // null = today
+  const curDay = () => viewDay || todayKey();
+  const shiftKey = (k, n) => { const d = new Date(k + "T12:00:00"); d.setDate(d.getDate()+n); return keyOf(d); };
+  function dayName(k){
+    if(k === todayKey()) return "Hôm nay";
+    if(k === shiftKey(todayKey(), -1)) return "Hôm qua";
+    const d = new Date(k + "T12:00:00");
+    return WD[d.getDay()] + ", " + d.getDate() + "/" + (d.getMonth()+1) + (d.getFullYear() !== new Date().getFullYear() ? "/" + d.getFullYear() : "");
+  }
+  const txDay = () => { const v = $("txDate").value; return /^\d{4}-\d{2}-\d{2}$/.test(v) && v <= todayKey() ? v : todayKey(); };
+
+  const $ = id => document.getElementById(id);
+  const fmt = n => Math.round(n).toLocaleString("vi-VN") + "đ";
+  const pad = n => String(n).padStart(2,"0");
+  const keyOf = d => d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+  const todayKey = () => keyOf(new Date());
+  const digits = s => String(s||"").replace(/\D/g,"");
+  // Two-tap delete: pop-up confirm dialogs are blocked inside the Claude viewer.
+  function armed(btn){
+    if(!btn) return true;
+    if(btn.dataset.armed === "1"){ clearTimeout(btn._armT); return true; }
+    btn.dataset.armed = "1"; btn._orig = btn.innerHTML; btn.classList.add("armed");
+    btn.textContent = "Xác nhận xoá";
+    btn._armT = setTimeout(() => { btn.dataset.armed = ""; btn.classList.remove("armed"); btn.innerHTML = btn._orig; }, 4000);
+    return false;
+  }
+  const uid = () => Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+  const normBank = s => String(s||"").toLowerCase().replace(/\s+/g,"");
+
+  /* ---------- storage ---------- */
+  function normalize(src){
+    let s; try{ s = JSON.parse(JSON.stringify(src || {})); }catch(e){ s = {}; }
+    const obj = v => (v && typeof v==="object" && !Array.isArray(v)) ? v : {};
+    return {
+      budget: Number(s.budget)>0 ? Number(s.budget) : 50000,
+      days: obj(s.days), income: obj(s.income),
+      contacts: Array.isArray(s.contacts) ? s.contacts : [],
+      loans: Array.isArray(s.loans) ? s.loans : [],
+      payees: obj(s.payees), updated: s.updated || 0,
+      budgetM: Number(s.budgetM) || 0, deleted: obj(s.deleted)
+    };
+  }
+  function loadLocal(){
+    try{ const raw = localStorage.getItem(LS_KEY); if(raw) state = normalize(JSON.parse(raw)); }catch(e){}
+    sigs = collectSigs(state);
+  }
+  /* ---------- change tracking: lets two devices merge without losing edits or reviving deletions ---------- */
+  function sigOf(o, isLoan){ const c = Object.assign({}, o); delete c.m; if(isLoan) delete c.payments; return JSON.stringify(c); }
+  function eachRecord(st, fn){
+    for(const k in st.days) (st.days[k]||[]).forEach(it => fn(it.id, it, false));
+    for(const k in st.income) (st.income[k]||[]).forEach(it => fn(it.id, it, false));
+    st.contacts.forEach(c => fn(c.id, c, false));
+    st.loans.forEach(l => { fn(l.id, l, true); (l.payments||[]).forEach(p => fn(p.id, p, false)); });
+  }
+  function collectSigs(st){
+    const out = {};
+    eachRecord(st, (id, o, isLoan) => { if(id) out[id] = sigOf(o, isLoan); });
+    out.__budget = String(st.budget);
+    return out;
+  }
+  const KEEP_DAYS = 400;
+  function track(){
+    const now = Date.now(), next = {};
+    eachRecord(state, (id, o, isLoan) => {
+      if(!id) return;
+      const sg = sigOf(o, isLoan); next[id] = sg;
+      if(sigs[id] !== sg) o.m = now;
+    });
+    next.__budget = String(state.budget);
+    if(sigs.__budget !== undefined && sigs.__budget !== next.__budget) state.budgetM = now;
+    for(const id in sigs) if(id !== "__budget" && !(id in next)) state.deleted[id] = now;
+    const old = now - KEEP_DAYS*86400000;
+    for(const id in state.deleted) if(state.deleted[id] < old) delete state.deleted[id];
+    sigs = next;
+  }
+  function persist(){
+    const cutoff = new Date(); cutoff.setDate(cutoff.getDate()-KEEP_DAYS);
+    const ck = keyOf(cutoff);
+    for(const k of Object.keys(state.days)) if(k < ck) delete state.days[k];
+    for(const k of Object.keys(state.income)) if(k < ck) delete state.income[k];
+    track();
+    state.updated = Date.now();
+    try{ localStorage.setItem(LS_KEY, JSON.stringify(state)); }
+    catch(e){ showSyncErr("Máy hết chỗ lưu dữ liệu. Hãy xuất file sao lưu ngay."); }
+  }
+  const todays = () => state.days[todayKey()] || [];
+  const sumOf = items => (items||[]).reduce((a,b)=>a+(Number(b.amt)||0),0);
+  function flash(id, text){ const el = $(id); el.textContent = text; el.hidden = false; clearTimeout(el._t); el._t = setTimeout(()=>el.hidden = true, 3000); }
+
+  /* ---------- contacts ---------- */
+  function findContact(acct, bank){
+    return state.contacts.find(c => c.acct === acct && (!bank || !c.bank || normBank(c.bank) === normBank(bank))) || null;
+  }
+  function sortedContacts(){
+    return state.contacts.slice().sort((a,b)=> (b.uses||0)-(a.uses||0) || (b.last||0)-(a.last||0) || a.name.localeCompare(b.name));
+  }
+
+  /* ---------- VietQR ---------- */
+  function tlv(str){
+    const out = {}; let i = 0;
+    while(i + 4 <= str.length){
+      const id = str.substr(i,2), len = parseInt(str.substr(i+2,2),10);
+      if(isNaN(len)) break;
+      out[id] = str.substr(i+4,len); i += 4 + len;
+    }
+    return out;
+  }
+  function parseVietQR(raw){
+    const top = tlv(raw);
+    let bin = "", acct = "";
+    for(const tag of ["38","26","27","28","29"]){
+      if(!top[tag]) continue;
+      const m = tlv(top[tag]);
+      if(m["01"]){ const b = tlv(m["01"]); if(b["00"] && b["01"]){ bin = b["00"]; acct = b["01"]; break; } }
+    }
+    if(!acct) return null;
+    const add = top["62"] ? tlv(top["62"]) : {};
+    const amount = top["54"] ? Math.round(parseFloat(top["54"])) : 0;
+    return { bin, acct, bank: BANKS[bin] || "", amount: amount>0 ? amount : 0, memo: (add["08"]||"").trim() };
+  }
+
+  /* ---------- expense form ---------- */
+  function setSrc(id, kind){
+    const el = $(id);
+    const map = {qr:["từ mã QR","src"], saved:["đã lưu","src"], need:["cần điền","need"]};
+    const v = map[kind]; el.textContent = v ? v[0] : ""; el.className = v ? v[1] : "";
+  }
+  const amtValue = () => parseInt(digits($("amt").value),10) || 0;
+  const setAmt = v => { $("amt").value = v ? v.toLocaleString("vi-VN") : ""; };
+
+  function openForm(m, data, contact){
+    mode = m; scanned = data || null;
+    $("startBox").hidden = true; $("formBox").hidden = false; $("resultBox").hidden = true;
+    lockForm(false);
+    $("bankFields").hidden = (m === "cash");
+    $("formTitle").textContent = m === "cash" ? "Trả tiền mặt" : "Thông tin chuyển khoản";
+    ["amt","acct","bank","memo","desc","contactName"].forEach(id => { $(id).value = ""; $(id).classList.remove("missing"); });
+    ["amtSrc","acctSrc","bankSrc","memoSrc"].forEach(id => setSrc(id,""));
+    [...$("amtChips").children].forEach(c=>c.setAttribute("aria-pressed","false"));
+    $("saveContact").checked = false; $("contactNameField").hidden = true;
+    $("txDate").max = todayKey(); $("txDate").value = curDay(); updateTxHint();
+    selectCat("an");
+
+    if(data){
+      if(data.amount){ setAmt(data.amount); setSrc("amtSrc","qr"); } else setSrc("amtSrc","need");
+      $("acct").value = data.acct; setSrc("acctSrc","qr");
+      if(data.bank){ $("bank").value = data.bank; setSrc("bankSrc","qr"); }
+      if(data.memo){ $("memo").value = data.memo; setSrc("memoSrc","qr"); }
+      contact = contact || findContact(data.acct, data.bank);
+      const old = state.payees[data.bin + ":" + data.acct];
+      if(!contact && old){
+        if(!data.bank && old.bank){ $("bank").value = old.bank; setSrc("bankSrc","saved"); }
+        if(old.cat) selectCat(old.cat);
+        if(old.desc) $("desc").value = old.desc;
+      }
+      if(!$("bank").value) setSrc("bankSrc","need");
+    }
+    if(contact){
+      if(!data){ $("acct").value = contact.acct; $("bank").value = contact.bank; setSrc("acctSrc","saved"); setSrc("bankSrc","saved"); setSrc("amtSrc","need"); }
+      if(!$("bank").value && contact.bank){ $("bank").value = contact.bank; setSrc("bankSrc","saved"); }
+      if(!$("memo").value && contact.memo){ $("memo").value = contact.memo; setSrc("memoSrc","saved"); }
+      if(contact.cat) selectCat(contact.cat);
+      $("desc").value = contact.name;
+    }
+    activeContact = contact || null;
+    updateWho();
+    refreshForm();
+    $("formBox").scrollIntoView({block:"start"});
+  }
+  function updateTxHint(){
+    const k = txDay(), h = $("txDateHint");
+    h.textContent = k === todayKey() ? "hôm nay" : dayName(k).toLowerCase() === "hôm qua" ? "hôm qua" : "ghi bù";
+    h.className = k === todayKey() ? "" : "src";
+  }
+  function updateWho(){
+    const w = $("whoBox");
+    if(mode === "cash"){ w.hidden = true; $("saveContactBox").hidden = true; return; }
+    if(activeContact){
+      w.hidden = false; w.textContent = "Người nhận đã lưu: " + activeContact.name;
+      $("saveContactBox").hidden = true;
+    } else {
+      w.hidden = true; $("saveContactBox").hidden = false;
+    }
+  }
+  function closeForm(){
+    $("formBox").hidden = true; $("startBox").hidden = false; scanned = null; activeContact = null;
+  }
+  function selectCat(id){
+    selectedCat = id;
+    [...$("catChips").children].forEach((x,i)=>x.setAttribute("aria-pressed", CATS[i].id===id?"true":"false"));
+  }
+  function lockForm(on){
+    $("formBox").querySelectorAll(".inp,.chip,#saveContact").forEach(el => el.disabled = on);
+    $("saveBtn").hidden = on; $("saveErr").hidden = true; $("preview").hidden = on; locked = on;
+  }
+  function missingFields(){
+    const miss = [];
+    if(!amtValue()) miss.push("amt");
+    if(mode !== "cash"){
+      if(!digits($("acct").value)) miss.push("acct");
+      if(!$("bank").value.trim()) miss.push("bank");
+      if($("saveContact").checked && !activeContact && !$("contactName").value.trim()) miss.push("contactName");
+    }
+    return miss;
+  }
+  function refreshForm(){
+    if(locked) return;
+    const a = amtValue(), miss = missingFields();
+    ["amt","acct","bank","contactName"].forEach(id => $(id).classList.toggle("missing", miss.includes(id)));
+    const pv = $("preview");
+    if(!a){ pv.className="preview"; pv.textContent = "Nhập số tiền để xem hôm nay còn bao nhiêu."; }
+    else{
+      const k = txDay(), pre = k === todayKey() ? "" : dayName(k) + ": ";
+      const after = state.budget - sumOf(state.days[k]) - a;
+      pv.className = "preview" + (after<0 ? " bad" : "");
+      pv.innerHTML = pre + (after>=0 ? "sau khoản này còn <strong>"+fmt(after)+"</strong>."
+                              : "khoản này làm vượt hạn mức <strong>"+fmt(-after)+"</strong>.");
+      if(!pre) pv.innerHTML = pv.innerHTML.charAt(0).toUpperCase() + pv.innerHTML.slice(1);
+    }
+    const btn = $("saveBtn");
+    btn.disabled = miss.length > 0;
+    if(miss.length){
+      const names = {amt:"số tiền", acct:"số tài khoản", bank:"ngân hàng", contactName:"tên gợi nhớ"};
+      btn.textContent = "Còn thiếu " + miss.map(m=>names[m]).join(", ");
+    } else btn.textContent = mode==="cash" ? "Ghi " + fmt(a) : "Ghi " + fmt(a) + " và tạo đoạn chuyển tiền";
+  }
+  function buildText(it){
+    let t = "Chuyển khoản " + it.amt.toLocaleString("vi-VN") + " VND đến số tài khoản " + it.acct + ", ngân hàng " + it.bank;
+    if(it.memo) t += ", nội dung: " + it.memo;
+    return t;
+  }
+  function saveExpense(){
+    try{ doSaveExpense(); }
+    catch(e){ const el = $("saveErr"); el.hidden = false; el.textContent = "Chưa ghi được: " + (e && e.message ? e.message : e); }
+  }
+  function doSaveExpense(){
+    if(missingFields().length) return;
+    const k = txDay(), now = new Date();
+    const when = k === todayKey() ? now.getTime() : new Date(k + "T" + pad(now.getHours()) + ":" + pad(now.getMinutes()) + ":00").getTime();
+    const it = { id:uid(), amt:amtValue(), cat:selectedCat, note:$("desc").value.trim(), t:when };
+    if(mode !== "cash"){
+      it.acct = digits($("acct").value); it.bank = $("bank").value.trim(); it.memo = $("memo").value.trim();
+      let c = activeContact ? state.contacts.find(x=>x.id===activeContact.id) : null;
+      if(!c && $("saveContact").checked){
+        c = findContact(it.acct, it.bank);
+        if(!c){ c = { id:uid(), name:$("contactName").value.trim(), acct:it.acct, bank:it.bank, memo:"", cat:it.cat, uses:0 }; state.contacts.push(c); }
+      }
+      if(c){ c.uses = (c.uses||0) + 1; c.last = Date.now(); c.cat = it.cat; if(!c.bank) c.bank = it.bank; it.contactId = c.id; it.who = c.name; }
+      if(scanned) state.payees[scanned.bin + ":" + it.acct] = {bank:it.bank, cat:it.cat, desc:it.note};
+    }
+    (state.days[k] = state.days[k] || []).push(it);
+    viewDay = k === todayKey() ? null : k;
+    persist(true); renderAll();
+    if(mode === "cash"){ closeForm(); return; }
+    lockForm(true);
+    $("transferText").value = buildText(it);
+    $("copyBtn").textContent = "Sao chép đoạn này";
+    $("resultBox").hidden = false;
+  }
+  async function copyText(){
+    const ta = $("transferText"), text = ta.value; let ok = false;
+    try{ if(navigator.clipboard && navigator.clipboard.writeText){ await navigator.clipboard.writeText(text); ok = true; } }catch(e){}
+    if(!ok){ try{ ta.select(); ta.setSelectionRange(0, text.length); ok = document.execCommand("copy"); }catch(e){} }
+    return ok;
+  }
+
+  /* ---------- QR from photo ---------- */
+  function msg(t, err){ const m = $("scanMsg"); m.textContent = t; m.className = "scan-msg" + (err ? " err" : ""); }
+  function decodeFile(file){
+    if(!file) return;
+    if(!window.jsQR){ msg("Không tải được bộ đọc QR. Kiểm tra mạng rồi mở lại app.", true); return; }
+    msg("Đang đọc ảnh…");
+    const url = URL.createObjectURL(file), img = new Image();
+    img.onload = () => {
+      const c = $("canvas"), ctx = c.getContext("2d", {willReadFrequently:true});
+      let raw = null;
+      for(const max of [1000, 1600, 700]){
+        const s = Math.min(1, max / Math.max(img.width, img.height));
+        c.width = Math.round(img.width*s); c.height = Math.round(img.height*s);
+        ctx.drawImage(img, 0, 0, c.width, c.height);
+        const r = window.jsQR(ctx.getImageData(0,0,c.width,c.height).data, c.width, c.height, {inversionAttempts:"attemptBoth"});
+        if(r && r.data){ raw = r.data; break; }
+      }
+      URL.revokeObjectURL(url);
+      if(!raw){ msg("Không tìm thấy mã QR trong ảnh. Thử chụp gần hơn, đủ sáng, mã nằm gọn trong ảnh.", true); return; }
+      msg("Chụp mã QR ở quầy, hoặc chọn ảnh mã QR có sẵn trong máy.");
+      const data = parseVietQR(raw);
+      if(data) openForm("qr", data);
+      else { openForm("transfer"); msg("Mã QR này không có số tài khoản. Hãy điền tay.", true); }
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); msg("Không mở được ảnh này. Thử ảnh khác.", true); };
+    img.src = url;
+  }
+
+  /* ---------- render: today ---------- */
+  function itemRow(it, opts){
+    const c = CATS.find(x=>x.id===it.cat) || CATS[3], t = new Date(it.t);
+    const li = document.createElement("li"); li.className = "item";
+    li.innerHTML = '<span class="cat" aria-hidden="true"></span><div class="desc"><div></div><div></div></div><span class="amt num"></span><button class="del" aria-label="Xoá khoản này">✕</button>';
+    li.querySelector(".cat").textContent = c.icon;
+    li.querySelector(".desc div:first-child").textContent = it.note || it.who || (it.bank ? "Chuyển khoản " + it.bank : c.label);
+    li.querySelector(".desc div:last-child").textContent = pad(t.getHours())+":"+pad(t.getMinutes()) + " · " + (it.bank ? (it.who && it.note && it.note !== it.who ? it.who + " · " : "") + it.bank : c.label);
+    li.querySelector(".amt").textContent = (opts && opts.sign ? "−" : "") + fmt(it.amt);
+    li.querySelector(".del").onclick = (e) => {
+      if(!armed(e.currentTarget)) return;
+      const k = opts && opts.day ? opts.day : todayKey();
+      state.days[k] = (state.days[k]||[]).filter(x=>x.id!==it.id);
+      if(!state.days[k].length) delete state.days[k];
+      persist(); renderAll();
+    };
+    return li;
+  }
+  function renderToday(){
+    const now = new Date();
+    $("dateLabel").textContent = WD[now.getDay()] + ", " + now.getDate() + "/" + (now.getMonth()+1);
+    const b = state.budget, spent = sumOf(todays()), left = b - spent, pct = Math.min(100, spent/b*100);
+    const note = $("note");
+    $("corner").textContent = Math.round(b/1000);
+    $("mask").style.width = (left<0 ? 0 : pct) + "%";
+    note.classList.toggle("over", left<0);
+    $("remain").textContent = left<0 ? "−" + fmt(-left) : fmt(left);
+    $("remainLabel").textContent = left<0 ? "đã vượt hạn mức" : "còn lại để tiêu";
+    note.setAttribute("aria-label", left<0 ? "Đã vượt " + fmt(-left) : "Còn lại " + fmt(left) + " trên " + fmt(b));
+    let s;
+    if(spent===0) s = "Chưa tiêu đồng nào. Cứ thế nhé.";
+    else if(left<0) s = "Hôm nay vượt <strong>" + fmt(-left) + "</strong>. Mai làm lại từ đầu.";
+    else if(left===0) s = "Vừa tròn <strong>" + fmt(b) + "</strong>. Dừng ở đây là đẹp.";
+    else if(pct>=80) s = "Đã dùng " + Math.round(pct) + "%. Chỉ còn <strong>" + fmt(left) + "</strong> cho phần còn lại của ngày.";
+    else s = "Đã tiêu <strong>" + fmt(spent) + "</strong> trong " + fmt(b) + ".";
+    $("status").innerHTML = s;
+
+    // quick people
+    const qp = $("quickPeople"); qp.innerHTML = "";
+    const top = sortedContacts().slice(0, 8);
+    $("quickPeopleBox").hidden = !top.length;
+    top.forEach(c => {
+      const btn = document.createElement("button"); btn.className = "person";
+      btn.innerHTML = "<b></b><span></span>";
+      btn.querySelector("b").textContent = c.name;
+      btn.querySelector("span").textContent = c.bank + " · " + c.acct;
+      btn.onclick = () => openForm("transfer", null, c);
+      qp.appendChild(btn);
+    });
+
+    const dk = curDay();
+    $("dayLabel").textContent = dayName(dk);
+    $("dayPick").max = todayKey(); $("dayPick").value = dk;
+    $("nextDay").disabled = dk >= todayKey();
+    const list = $("list"); list.innerHTML = "";
+    const items = (state.days[dk] || []).slice().sort((a,b)=>b.t-a.t);
+    const dsum = sumOf(items);
+    $("daySum").innerHTML = items.length
+      ? "Đã chi <strong>" + fmt(dsum) + "</strong> / " + fmt(b) + (dsum > b ? " · vượt <strong style='color:var(--over)'>" + fmt(dsum-b) + "</strong>" : "")
+      : "";
+    if(!items.length){
+      const li = document.createElement("li"); li.className = "empty";
+      li.textContent = dk === todayKey() ? "Chưa có khoản nào hôm nay. Bấm Quét QR thanh toán mỗi lần trả tiền." : "Không có giao dịch ngày này. Có thể ghi bù bằng cách chọn ngày trong form.";
+      list.appendChild(li);
+    }
+    items.forEach(it => list.appendChild(itemRow(it, {day:dk})));
+
+    const week = $("week"), labels = $("weekLabels"); week.innerHTML = ""; labels.innerHTML = "";
+    const days = []; for(let i=6;i>=0;i--){ const d = new Date(); d.setDate(d.getDate()-i); days.push(d); }
+    const totals = days.map(d => sumOf(state.days[keyOf(d)]));
+    const maxV = Math.max(b*1.25, ...totals);
+    const line = document.createElement("div"); line.className = "limit-line"; line.style.bottom = (b/maxV*100) + "%"; week.appendChild(line);
+    let kept = 0, tracked = 0, total = 0;
+    days.forEach((d,i)=>{
+      const k = keyOf(d), v = totals[i], has = !!(state.days[k] && state.days[k].length);
+      const w = document.createElement("div"); w.className = "bar-wrap";
+      const bar = document.createElement("div");
+      bar.className = "bar" + (has ? (v<=b ? " under" : " overb") : "") + (i===6 ? " today" : "");
+      bar.style.height = Math.max(2, v/maxV*100) + "%"; bar.title = fmt(v);
+      w.appendChild(bar); week.appendChild(w);
+      const l = document.createElement("div"); l.textContent = i===6 ? "Nay" : WD[d.getDay()]; labels.appendChild(l);
+      if(has && i<6){ tracked++; if(v<=b) kept++; }
+      total += v;
+    });
+    $("weekSum").innerHTML = tracked
+      ? "Giữ đúng hạn mức <strong>" + kept + "/" + tracked + "</strong> ngày trước đó. Tổng 7 ngày: <strong>" + fmt(total) + "</strong>."
+      : "Ghi vài ngày để thấy mình giữ hạn mức thế nào.";
+    $("budgetInput").placeholder = b.toLocaleString("vi-VN") + "đ / ngày";
+    if(!$("formBox").hidden) refreshForm();
+  }
+
+  /* ---------- render: money ---------- */
+  function renderMoney(){
+    const y = viewMonth.getFullYear(), m = viewMonth.getMonth();
+    $("monthLabel").textContent = "Tháng " + (m+1) + "/" + y;
+    const prefix = y + "-" + pad(m+1) + "-";
+    const now = new Date();
+    $("nextMonth").disabled = (y > now.getFullYear()) || (y === now.getFullYear() && m >= now.getMonth());
+    const dayKeys = new Set([...Object.keys(state.days), ...Object.keys(state.income)].filter(k => k.startsWith(prefix)));
+    let tin = 0, tout = 0; const byCat = {};
+    dayKeys.forEach(k => {
+      (state.days[k]||[]).forEach(it => { tout += it.amt; byCat[it.cat] = (byCat[it.cat]||0) + it.amt; });
+      (state.income[k]||[]).forEach(it => { tin += it.amt; });
+    });
+    $("sumIn").textContent = "+" + fmt(tin);
+    $("sumOut").textContent = "−" + fmt(tout);
+    const net = tin - tout, ne = $("sumNet");
+    ne.textContent = (net<0 ? "−" : "") + fmt(Math.abs(net));
+    ne.style.color = net<0 ? "var(--over)" : "var(--ink)";
+
+    const cb = $("catBreakdown"); cb.innerHTML = "";
+    if(!tout){ cb.innerHTML = '<p class="empty">Chưa có khoản chi nào trong tháng này.</p>'; }
+    CATS.filter(c => byCat[c.id]).sort((a,b)=>byCat[b.id]-byCat[a.id]).forEach(c => {
+      const row = document.createElement("div"); row.className = "cat-row";
+      row.innerHTML = '<span></span><div class="cat-bar"><i></i></div><span class="num"></span>';
+      row.children[0].textContent = c.icon + " " + c.label;
+      row.querySelector("i").style.width = (byCat[c.id]/tout*100) + "%";
+      row.children[2].textContent = fmt(byCat[c.id]);
+      cb.appendChild(row);
+    });
+
+    const box = $("ledgerList"); box.innerHTML = "";
+    const keys = [...dayKeys].sort().reverse();
+    if(!keys.length){ box.innerHTML = '<p class="empty">Chưa có khoản thu chi nào trong tháng này.</p>'; return; }
+    keys.forEach(k => {
+      const d = new Date(k + "T00:00:00");
+      const din = sumOf(state.income[k]), dout = sumOf(state.days[k]);
+      const head = document.createElement("div"); head.className = "day-head";
+      head.innerHTML = "<span></span><span class='num'></span>";
+      head.children[0].textContent = WD[d.getDay()] + ", " + d.getDate() + "/" + (d.getMonth()+1);
+      head.children[1].textContent = (din ? "+" + fmt(din) + "  " : "") + (dout ? "−" + fmt(dout) : "");
+      box.appendChild(head);
+      const ul = document.createElement("ul");
+      const rows = [
+        ...(state.income[k]||[]).map(it => ({t:it.t, el:incomeRow(it, k)})),
+        ...(state.days[k]||[]).map(it => ({t:it.t, el:itemRow(it, {sign:true, day:k})}))
+      ].sort((a,b)=>b.t-a.t);
+      rows.forEach(r => ul.appendChild(r.el));
+      box.appendChild(ul);
+    });
+  }
+  function incomeRow(it, k){
+    const c = INC.find(x=>x.id===it.cat) || INC[4];
+    const li = document.createElement("li"); li.className = "item";
+    li.innerHTML = '<span class="cat" aria-hidden="true"></span><div class="desc"><div></div><div></div></div><span class="amt plus num"></span><button class="del" aria-label="Xoá khoản thu">✕</button>';
+    li.querySelector(".cat").textContent = c.icon;
+    li.querySelector(".desc div:first-child").textContent = it.note || c.label;
+    li.querySelector(".desc div:last-child").textContent = "Thu · " + c.label;
+    li.querySelector(".amt").textContent = "+" + fmt(it.amt);
+    li.querySelector(".del").onclick = (e) => {
+      if(!armed(e.currentTarget)) return;
+      state.income[k] = (state.income[k]||[]).filter(x=>x.id!==it.id);
+      if(!state.income[k].length) delete state.income[k];
+      persist(); renderAll();
+    };
+    return li;
+  }
+
+  /* ---------- income form ---------- */
+  const incAmt = () => parseInt(digits($("incAmt").value),10) || 0;
+  function openIncome(){
+    $("incomeForm").hidden = false; $("addIncomeBtn").hidden = true;
+    $("incAmt").value = ""; $("incNote").value = ""; $("incDate").value = todayKey();
+    selectInc("luong"); refreshIncome();
+  }
+  function closeIncome(){ $("incomeForm").hidden = true; $("addIncomeBtn").hidden = false; }
+  function selectInc(id){ incCat = id; [...$("incChips").children].forEach((x,i)=>x.setAttribute("aria-pressed", INC[i].id===id?"true":"false")); }
+  function refreshIncome(){
+    const a = incAmt(); $("saveIncome").disabled = !a;
+    $("saveIncome").textContent = a ? "Lưu khoản thu +" + fmt(a) : "Lưu khoản thu";
+  }
+  function saveIncome(){
+    const a = incAmt(); if(!a) return;
+    const k = /^\d{4}-\d{2}-\d{2}$/.test($("incDate").value) ? $("incDate").value : todayKey();
+    const t = k === todayKey() ? Date.now() : new Date(k + "T12:00:00").getTime();
+    (state.income[k] = state.income[k] || []).push({ id:uid(), amt:a, cat:incCat, note:$("incNote").value.trim(), t });
+    const [yy,mm] = k.split("-").map(Number); viewMonth = new Date(yy, mm-1, 1);
+    persist(true); closeIncome(); renderAll();
+    flash("incomeMsg", "✓ Đã lưu khoản thu " + fmt(a));
+  }
+
+  /* ---------- people tab ---------- */
+  function openContactForm(c){
+    editingContactId = c ? c.id : null;
+    $("contactForm").hidden = false; $("addContactBtn").hidden = true;
+    $("contactFormTitle").textContent = c ? "Sửa người nhận" : "Thêm người nhận";
+    $("cName").value = c ? c.name : ""; $("cAcct").value = c ? c.acct : "";
+    $("cBank").value = c ? c.bank : ""; $("cMemo").value = c ? (c.memo||"") : "";
+    selectCCat(c && c.cat ? c.cat : "an"); refreshContactForm();
+    $("contactForm").scrollIntoView({block:"start"});
+  }
+  function closeContactForm(){ $("contactForm").hidden = true; $("addContactBtn").hidden = false; editingContactId = null; }
+  function selectCCat(id){ cCat = id; [...$("cCatChips").children].forEach((x,i)=>x.setAttribute("aria-pressed", CATS[i].id===id?"true":"false")); }
+  function refreshContactForm(){
+    $("saveContactBtn").disabled = !($("cName").value.trim() && digits($("cAcct").value) && $("cBank").value.trim());
+  }
+  function saveContactForm(){
+    const data = { name:$("cName").value.trim(), acct:digits($("cAcct").value), bank:$("cBank").value.trim(), memo:$("cMemo").value.trim(), cat:cCat };
+    if(!data.name || !data.acct || !data.bank) return;
+    if(editingContactId){
+      const c = state.contacts.find(x=>x.id===editingContactId); if(c) Object.assign(c, data);
+    } else {
+      const dup = findContact(data.acct, data.bank);
+      if(dup) Object.assign(dup, data); else state.contacts.push(Object.assign({id:uid(), uses:0}, data));
+    }
+    persist(true); closeContactForm(); renderAll();
+  }
+  function renderPeople(){
+    const ul = $("peopleList"); ul.innerHTML = "";
+    const list = sortedContacts();
+    $("peopleTitle").textContent = "Danh sách (" + list.length + ")";
+    if(!list.length){ ul.innerHTML = '<li class="empty">Chưa có ai. Thêm ở đây, hoặc tick "Lưu vào danh sách người hay chuyển" khi quét QR.</li>'; return; }
+    list.forEach(c => {
+      const cat = CATS.find(x=>x.id===c.cat) || CATS[3];
+      const li = document.createElement("li"); li.className = "item";
+      li.innerHTML = '<span class="cat" aria-hidden="true"></span><div class="desc"><div></div><div></div></div><button class="act go">Chuyển</button><button class="act" aria-label="Sửa">✎</button><button class="del" aria-label="Xoá">✕</button>';
+      li.querySelector(".cat").textContent = cat.icon;
+      li.querySelector(".desc div:first-child").textContent = c.name;
+      li.querySelector(".desc div:last-child").textContent = c.bank + " · " + c.acct + (c.uses ? " · " + c.uses + " lần" : "");
+      li.querySelector(".go").onclick = () => { showTab("today"); openForm("transfer", null, c); };
+      li.querySelectorAll(".act")[1].onclick = () => openContactForm(c);
+      li.querySelector(".del").onclick = (e) => {
+        if(!armed(e.currentTarget)) return;
+        state.contacts = state.contacts.filter(x=>x.id!==c.id); persist(); renderAll();
+      };
+      ul.appendChild(li);
+    });
+  }
+
+  /* ---------- loans ---------- */
+  let loanType = "borrow", editingLoanId = null, detailLoanId = null, payOpen = false, editRecId = null;
+  const payOnly = l => (l.payments||[]).reduce((a,p)=>a+(Number(p.amt)||0),0);
+  const paidOf = l => payOnly(l) + (Number(l.prepaid)||0);
+  const leftOf = l => Math.max(0, l.amt - paidOf(l));
+  const lAmt = () => parseInt(digits($("lAmt").value),10) || 0;
+  const lPaid = () => parseInt(digits($("lPaid").value),10) || 0;
+  const money = v => v ? v.toLocaleString("vi-VN") : "";
+  const getLoan = id => state.loans.find(x=>x.id===id);
+  const verb = l => l.type==="borrow" ? "trả" : "thu";
+  function fmtDate(k){ if(!k) return ""; const [y,m,d] = k.split("-"); return d + "/" + m + "/" + y; }
+
+  function setLoanType(t){
+    loanType = t;
+    [...$("loanType").children].forEach(b => b.setAttribute("aria-pressed", b.dataset.type===t ? "true":"false"));
+    $("lWhoLabel").textContent = t==="borrow" ? "Vay của ai" : "Cho ai vay";
+    $("lDateLabel").textContent = t==="borrow" ? "Ngày vay" : "Ngày cho vay";
+    $("lPaidLabel").textContent = t==="borrow" ? "Số tiền đã trả" : "Số tiền đã thu";
+  }
+  function showLoanView(v){ // "main" | "form" | "detail"
+    $("loansMain").hidden = v !== "main"; $("loanForm").hidden = v !== "form"; $("loanDetail").hidden = v !== "detail";
+    window.scrollTo(0,0);
+  }
+  function openLoanForm(l){
+    editingLoanId = l ? l.id : null;
+    $("loanFormTitle").textContent = l ? "Sửa thông tin khoản vay" : "Thêm khoản vay";
+    $("lWho").value = l ? l.who : ""; $("lAmt").value = l ? money(l.amt) : "";
+    $("lPaid").value = l ? money(paidOf(l)) : "";
+    const hint = $("lPaidHint");
+    hint.hidden = !(l && (l.payments||[]).length);
+    if(l) hint.textContent = "Tổng đã " + verb(l) + ", gồm " + (l.payments||[]).length + " lần ghi trong lịch sử. Sửa số này sẽ cập nhật dòng \"nhập tay\" trong lịch sử.";
+    $("lDate").value = l ? (l.date || todayKey()) : todayKey();
+    $("lDue").value = l ? (l.due || "") : ""; $("lNote").value = l ? (l.note || "") : "";
+    setLoanType(l ? l.type : "borrow"); refreshLoanForm();
+    showLoanView("form");
+  }
+  function closeLoanForm(){ const back = editingLoanId ? "detail" : "main"; editingLoanId = null; renderLoans(); showLoanView(detailLoanId && back==="detail" ? "detail" : "main"); }
+  function refreshLoanForm(){
+    const a = lAmt(), p = lPaid();
+    const ok = a > 0 && $("lWho").value.trim() && p <= a;
+    $("lPaid").classList.toggle("missing", p > a && a > 0);
+    const btn = $("saveLoan"); btn.disabled = !ok;
+    if(p > a && a > 0) btn.textContent = "Số đã " + (loanType==="borrow"?"trả":"thu") + " lớn hơn số tiền vay";
+    else if(!ok) btn.textContent = editingLoanId ? "Lưu thay đổi" : "Lưu khoản vay";
+    else btn.textContent = (editingLoanId ? "Lưu thay đổi" : "Lưu khoản " + (loanType==="borrow" ? "vay " : "cho vay ") + fmt(a)) + " · còn " + fmt(a - p);
+  }
+  function saveLoan(){
+    if($("saveLoan").disabled) return;
+    const data = { type:loanType, who:$("lWho").value.trim(), amt:lAmt(),
+      date:$("lDate").value || todayKey(), due:$("lDue").value || "", note:$("lNote").value.trim() };
+    const paid = lPaid();
+    if(editingLoanId){
+      const l = getLoan(editingLoanId);
+      if(l){ Object.assign(l, data); l.prepaid = paid - payOnly(l); detailLoanId = l.id; }
+      persist(true); editingLoanId = null; renderLoans(); showLoanView("detail"); flash("detailMsg", "✓ Đã lưu thay đổi");
+    } else {
+      state.loans.push(Object.assign({ id:uid(), payments:[], prepaid:paid, t:Date.now() }, data));
+      persist(true); renderAll(); showLoanView("main"); flash("loanMsg", "✓ Đã lưu khoản vay");
+    }
+  }
+  function dueText(l){
+    if(!l.due) return {txt:"", late:false};
+    const d0 = new Date(todayKey()+"T00:00:00"), d1 = new Date(l.due+"T00:00:00");
+    const n = Math.round((d1-d0)/86400000);
+    if(n < 0) return {txt:"Quá hạn " + (-n) + " ngày", late:true};
+    if(n === 0) return {txt:"Đến hạn hôm nay", late:true};
+    return {txt:"Còn " + n + " ngày đến hạn", late:n<=3};
+  }
+  function el(tag, cls, text){ const e = document.createElement(tag); if(cls) e.className = cls; if(text!=null) e.textContent = text; return e; }
+
+  function loanCard(l){
+    const left = leftOf(l), paid = paidOf(l), done = left <= 0;
+    const card = el("div","loan"); card.setAttribute("role","button"); card.tabIndex = 0;
+    card.innerHTML = `
+      <div class="loan-top">
+        <div><b></b><small></small></div>
+        <div class="loan-amt"><b class="num"></b><small class="num"></small></div>
+      </div>
+      <div class="progress"><i></i></div>
+      <div class="more"><span class="due"></span><span>Xem chi tiết ›</span></div>`;
+    card.querySelector(".loan-top b").textContent = l.who;
+    const sm = card.querySelector(".loan-top small");
+    sm.appendChild(el("span", l.type==="borrow"?"tag-borrow":"tag-lend", l.type==="borrow" ? "Mình vay" : "Mình cho vay"));
+    sm.appendChild(document.createTextNode(" · " + fmtDate(l.date)));
+    card.querySelector(".loan-amt b").textContent = done ? "Đã xong" : "Còn " + fmt(left);
+    card.querySelector(".loan-amt small").textContent = "Đã " + verb(l) + " " + fmt(paid) + " / " + fmt(l.amt);
+    card.querySelector(".progress i").style.width = Math.min(100, paid/l.amt*100) + "%";
+    const dt = done ? {txt:"",late:false} : dueText(l), due = card.querySelector(".due");
+    due.textContent = dt.txt; due.className = "due" + (dt.late ? " late" : ""); due.style.marginTop = "0";
+    const open = () => { detailLoanId = l.id; payOpen = false; editRecId = null; renderLoans(); showLoanView("detail"); };
+    card.onclick = open; card.onkeydown = e => { if(e.key==="Enter"||e.key===" "){ e.preventDefault(); open(); } };
+    return card;
+  }
+
+  function renderLoanDetail(){
+    const box = $("loanDetail"); box.innerHTML = "";
+    const l = getLoan(detailLoanId);
+    if(!l){ detailLoanId = null; return; }
+    const left = leftOf(l), paid = paidOf(l), done = left <= 0, v = verb(l);
+
+    const back = el("button","back","‹ Tất cả khoản vay"); back.onclick = () => { detailLoanId = null; renderLoans(); showLoanView("main"); };
+    box.appendChild(back);
+
+    const card = el("div","detail-card");
+    const top = el("div","loan-top");
+    const t1 = el("div"); t1.appendChild(el("h2",null,l.who));
+    t1.appendChild(el("small", l.type==="borrow"?"tag-borrow":"tag-lend", l.type==="borrow" ? "Mình đi vay" : "Mình cho vay"));
+    top.appendChild(t1);
+    card.appendChild(top);
+    card.appendChild(el("div","big-left num", done ? "Đã tất toán" : "Còn " + fmt(left)));
+    const pr = el("div","progress"); const pi = el("i"); pi.style.width = Math.min(100, paid/l.amt*100) + "%"; pr.appendChild(pi); card.appendChild(pr);
+    const kv = el("div","kv");
+    const add = (k, val, cls) => { kv.appendChild(el("span",null,k)); kv.appendChild(el("b",cls||"num",val)); };
+    add("Số tiền " + (l.type==="borrow" ? "vay" : "cho vay"), fmt(l.amt));
+    add("Đã " + v, fmt(paid));
+    add(l.type==="borrow" ? "Ngày vay" : "Ngày cho vay", fmtDate(l.date));
+    if(l.due){ const dt = dueText(l); add("Hạn trả", fmtDate(l.due) + (done ? "" : " · " + dt.txt), dt.late && !done ? "num tag-borrow" : "num"); }
+    if(l.note) add("Ghi chú", l.note, "");
+    card.appendChild(kv);
+
+    const acts = el("div","loan-actions");
+    const mk = (txt, cls, fn) => { const b = el("button","mini " + (cls||""), txt); b.onclick = fn; acts.appendChild(b); return b; };
+    if(!done) mk(payOpen ? "Đóng" : "Ghi đã " + v, "main", () => { payOpen = !payOpen; renderLoanDetail(); });
+    mk("Sửa", "", () => openLoanForm(l));
+    mk("Xoá", "danger", (e) => {
+      if(!armed(e.currentTarget)) return;
+      state.loans = state.loans.filter(x=>x.id!==l.id); detailLoanId = null;
+      persist(); renderAll(); showLoanView("main"); flash("loanMsg", "✓ Đã xoá khoản vay");
+    });
+    card.appendChild(acts);
+
+    if(payOpen && !done){
+      const f = el("div","pay-form");
+      f.innerHTML = `<div class="row">
+          <div class="field" style="margin-top:0"><label><span>Số tiền</span></label><input class="inp num pAmt" inputmode="numeric"></div>
+          <div class="field" style="margin-top:0"><label><span>Ngày</span></label><input class="inp pDate" type="date"></div>
+        </div>
+        <div class="field"><label><span>Ghi chú (không bắt buộc)</span></label><input class="inp pNote" maxlength="60"></div>
+        <button class="primary pSave" style="margin-top:10px"></button>`;
+      const pa = f.querySelector(".pAmt"), pd = f.querySelector(".pDate"), pn = f.querySelector(".pNote"), ps = f.querySelector(".pSave");
+      pa.value = money(left); pd.value = todayKey();
+      const upd = () => { const x = parseInt(digits(pa.value),10)||0; pa.value = money(x); ps.disabled = !x; ps.textContent = x ? "Lưu " + fmt(Math.min(x,left)) + (x>=left ? " (tất toán)" : "") : "Nhập số tiền"; };
+      pa.addEventListener("input", upd); upd();
+      ps.onclick = () => {
+        const x = Math.min(parseInt(digits(pa.value),10)||0, left); if(!x) return;
+        (l.payments = l.payments || []).push({ id:uid(), amt:x, date:pd.value || todayKey(), note:pn.value.trim() });
+        payOpen = false; persist(true); renderAll();
+        flash("detailMsg", leftOf(l) <= 0 ? "✓ Đã tất toán" : "✓ Đã ghi " + fmt(x) + ", còn " + fmt(leftOf(l)));
+      };
+      card.appendChild(f);
+    }
+    box.appendChild(card);
+    const msgEl = el("p","inline-ok"); msgEl.id = "detailMsg"; msgEl.hidden = true; box.appendChild(msgEl);
+
+    // history
+    const recs = [];
+    if(l.prepaid) recs.push({ id:"__prepaid", amt:l.prepaid, date:l.date, note: l.prepaid < 0 ? "Điều chỉnh" : "Đã " + v + " (nhập tay)" });
+    (l.payments||[]).forEach(p => recs.push(p));
+    recs.sort((a,b)=> (b.date||"").localeCompare(a.date||""));
+
+    const hh = el("div","hist-head");
+    hh.appendChild(el("h2",null,"Lịch sử " + v + " (" + recs.length + ")"));
+    if(recs.length){
+      const clr = el("button","mini danger","Xoá hết lịch sử");
+      clr.onclick = (e) => {
+        if(!armed(e.currentTarget)) return;
+        l.payments = []; l.prepaid = 0; editRecId = null; persist(); renderAll(); flash("detailMsg", "✓ Đã xoá hết lịch sử");
+      };
+      hh.appendChild(clr);
+    }
+    box.appendChild(hh);
+    const ul = el("div");
+    if(!recs.length) ul.appendChild(el("p","empty","Chưa có lần " + v + " nào."));
+    recs.forEach(r => {
+      if(editRecId === r.id){
+        const f = el("div","rec-edit");
+        f.innerHTML = `<div class="row">
+            <div class="field" style="margin-top:0"><label><span>Số tiền</span></label><input class="inp num eAmt" inputmode="numeric"></div>
+            <div class="field" style="margin-top:0"><label><span>Ngày</span></label><input class="inp eDate" type="date"></div>
+          </div>
+          <div class="field"><label><span>Ghi chú</span></label><input class="inp eNote" maxlength="60"></div>
+          <div class="acts"><button class="mini main eSave">Lưu</button><button class="mini eCancel">Huỷ</button></div>`;
+        const ea = f.querySelector(".eAmt"), ed = f.querySelector(".eDate"), en = f.querySelector(".eNote");
+        ea.value = money(Math.abs(r.amt)); ed.value = r.date || todayKey(); en.value = r.id==="__prepaid" ? "" : (r.note||"");
+        if(r.id==="__prepaid"){ ed.disabled = true; en.disabled = true; en.placeholder = "Dòng nhập tay"; }
+        ea.addEventListener("input", () => { ea.value = money(parseInt(digits(ea.value),10)||0); });
+        f.querySelector(".eCancel").onclick = () => { editRecId = null; renderLoanDetail(); };
+        f.querySelector(".eSave").onclick = () => {
+          const x = parseInt(digits(ea.value),10)||0; if(!x){ ea.classList.add("missing"); return; }
+          const others = paidOf(l) - (r.id==="__prepaid" ? (Number(l.prepaid)||0) : r.amt);
+          if(others + x > l.amt){ ea.classList.add("missing"); en.value = en.value; flash("detailMsg", "Tổng đã " + v + " sẽ vượt số tiền vay, hãy nhập nhỏ hơn."); return; }
+          if(r.id==="__prepaid") l.prepaid = x;
+          else { const p = l.payments.find(y=>y.id===r.id); p.amt = x; p.date = ed.value || p.date; p.note = en.value.trim(); }
+          editRecId = null; persist(true); renderAll(); flash("detailMsg", "✓ Đã sửa bản ghi");
+        };
+        ul.appendChild(f);
+        return;
+      }
+      const row = el("div","rec");
+      const rd = el("div","rd");
+      rd.appendChild(el("div","num", (r.amt<0 ? "−" : "") + fmt(Math.abs(r.amt))));
+      rd.appendChild(el("div",null, fmtDate(r.date) + (r.note ? " · " + r.note : "")));
+      row.appendChild(rd);
+      const eb = el("button","rb-edit","Sửa"); eb.onclick = () => { editRecId = r.id; renderLoanDetail(); };
+      const db_ = el("button","rb-del","Xoá"); db_.setAttribute("aria-label","Xoá bản ghi này");
+      db_.onclick = (e) => {
+        if(!armed(e.currentTarget)) return;
+        if(r.id==="__prepaid") l.prepaid = 0; else l.payments = l.payments.filter(y=>y.id!==r.id);
+        persist(); renderAll(); flash("detailMsg", "✓ Đã xoá bản ghi");
+      };
+      row.appendChild(eb); row.appendChild(db_);
+      ul.appendChild(row);
+    });
+    box.appendChild(ul);
+  }
+
+  /* ----- loan filter ----- */
+  const EMPTY_FILTER = { type:"all", status:"all", field:"date", from:"", to:"" };
+  let loanFilter = Object.assign({}, EMPTY_FILTER), draft = null;
+  const hasDate = f => !!(f.from || f.to) || f.field === "due";
+  const filterCount = f => (f.type!=="all") + (f.status!=="all") + hasDate(f);
+  function matchLoan(l, f){
+    if(f.type !== "all" && l.type !== f.type) return false;
+    const done = leftOf(l) <= 0;
+    if(f.status === "open" && done) return false;
+    if(f.status === "done" && !done) return false;
+    if(f.field === "due" && !l.due) return false;
+    if(f.from || f.to){
+      const d = f.field === "due" ? l.due : l.date;
+      if(!d) return false;
+      if(f.from && d < f.from) return false;
+      if(f.to && d > f.to) return false;
+    }
+    return true;
+  }
+  function presetsFor(field){
+    const t = todayKey(), y = t.slice(0,4), m = t.slice(0,7);
+    const lastDay = k => { const [yy,mm] = k.split("-").map(Number); return keyOf(new Date(yy, mm, 0)); };
+    if(field === "due") return [
+      {label:"Quá hạn", from:"", to:shiftKey(t,-1)},
+      {label:"7 ngày tới", from:t, to:shiftKey(t,7)},
+      {label:"30 ngày tới", from:t, to:shiftKey(t,30)},
+      {label:"Tháng này", from:m+"-01", to:lastDay(t)},
+      {label:"Năm nay", from:y+"-01-01", to:y+"-12-31"}
+    ];
+    return [
+      {label:"Tháng này", from:m+"-01", to:lastDay(t)},
+      {label:"30 ngày qua", from:shiftKey(t,-30), to:t},
+      {label:"3 tháng qua", from:shiftKey(t,-90), to:t},
+      {label:"Năm nay", from:y+"-01-01", to:y+"-12-31"}
+    ];
+  }
+  function segSet(id, v){ [...$(id).children].forEach(b => b.setAttribute("aria-pressed", b.dataset.v === v ? "true" : "false")); }
+  function renderSheet(){
+    segSet("fType", draft.type); segSet("fStatus", draft.status); segSet("fField", draft.field);
+    $("fFrom").value = draft.from; $("fTo").value = draft.to;
+    const pr = $("fPresets"); pr.innerHTML = "";
+    presetsFor(draft.field).forEach(p => {
+      const b = el("button","chip",p.label);
+      b.setAttribute("aria-pressed", draft.from===p.from && draft.to===p.to ? "true" : "false");
+      b.onclick = () => { draft.from = p.from; draft.to = p.to; renderSheet(); };
+      pr.appendChild(b);
+    });
+    const bad = draft.from && draft.to && draft.from > draft.to;
+    $("fHint").textContent = bad ? "Ngày bắt đầu đang sau ngày kết thúc." :
+      draft.field === "due" ? ((draft.from || draft.to) ? "Chỉ hiện khoản vay có hạn trả nằm trong khoảng đã chọn." : "Chỉ hiện khoản vay có đặt hạn trả. Chọn thêm khoảng ngày để lọc hẹp hơn.") :
+      (draft.from || draft.to) ? "" : "Chọn khoảng ngày để lọc theo ngày khởi tạo.";
+    $("fHint").style.color = bad ? "var(--over)" : "";
+    const n = state.loans.filter(l => matchLoan(l, draft)).length;
+    $("fApply").disabled = bad;
+    $("fApply").textContent = "Xem " + n + " khoản vay";
+  }
+  function openSheet(){
+    draft = Object.assign({}, loanFilter);
+    $("sheetBack").hidden = false; $("filterSheet").hidden = false;
+    document.body.style.overflow = "hidden";
+    renderSheet();
+    requestAnimationFrame(() => { $("sheetBack").classList.add("show"); $("filterSheet").classList.add("show"); });
+  }
+  function closeSheet(){
+    $("sheetBack").classList.remove("show"); $("filterSheet").classList.remove("show");
+    document.body.style.overflow = "";
+    setTimeout(() => { $("sheetBack").hidden = true; $("filterSheet").hidden = true; }, 250);
+  }
+  function describeFilter(f){
+    const out = [];
+    if(f.type !== "all") out.push(f.type === "borrow" ? "Mình vay" : "Mình cho vay");
+    if(f.status !== "all") out.push(f.status === "open" ? "Chưa xong" : "Tất toán");
+    if(f.field === "due" && !f.from && !f.to) out.push("Có hạn trả");
+    if(f.from || f.to){
+      const lbl = f.field === "due" ? "Đến hạn " : "Khởi tạo ";
+      out.push(lbl + (f.from && f.to ? fmtDate(f.from) + " – " + fmtDate(f.to) : f.from ? "từ " + fmtDate(f.from) : "đến " + fmtDate(f.to)));
+    }
+    return out;
+  }
+
+  function renderLoans(){
+    const f = loanFilter, n = filterCount(f);
+    const shown = state.loans.filter(l => matchLoan(l, f));
+    let owe = 0, owed = 0;
+    shown.forEach(l => { const r = leftOf(l); if(l.type==="borrow") owe += r; else owed += r; });
+    $("owe").textContent = fmt(owe); $("owed").textContent = fmt(owed);
+    $("ledgerNote").hidden = !n;
+    $("filterBtn").classList.toggle("on", n > 0);
+    $("filterBtnText").textContent = n ? "Lọc (" + n + ")" : "Lọc";
+    const af = $("activeFilters"); af.innerHTML = ""; af.hidden = !n;
+    if(n){
+      describeFilter(f).forEach(t => af.appendChild(el("span","af",t)));
+      const c = el("button","af-clear","Xoá lọc"); c.onclick = () => { loanFilter = Object.assign({}, EMPTY_FILTER); renderLoans(); };
+      af.appendChild(c);
+    }
+    const active = shown.filter(l => leftOf(l) > 0).sort((a,b)=> (a.due||"9999").localeCompare(b.due||"9999") || b.t-a.t);
+    const done = shown.filter(l => leftOf(l) <= 0);
+    $("activeTitle").textContent = n ? "Kết quả lọc (" + shown.length + ")" : "Đang theo dõi";
+    const box = $("loanList"); box.innerHTML = "";
+    if(!active.length && !(n && done.length)) box.innerHTML = n ? '<p class="empty">Không có khoản vay nào khớp bộ lọc.</p>' : '<p class="empty">Không có khoản vay nào đang theo dõi.</p>';
+    active.forEach(l => box.appendChild(loanCard(l)));
+    $("doneLoansBox").hidden = !done.length;
+    if(n && done.length) $("doneLoansBox").open = true;
+    $("doneLoansTitle").textContent = "Đã tất toán (" + done.length + ")";
+    const dl2 = $("doneLoanList"); dl2.innerHTML = "";
+    done.forEach(l => dl2.appendChild(loanCard(l)));
+    if(detailLoanId) renderLoanDetail();
+    if(detailLoanId && !getLoan(detailLoanId)){ detailLoanId = null; if($("loanForm").hidden) showLoanView("main"); }
+  }
+
+  /* ---------- tabs ---------- */
+  let currentTab = "today";
+  function resetTab(name){
+    if(name === "today"){
+      viewDay = null;
+      if(!$("formBox").hidden) closeForm();
+      msg("Chụp mã QR ở quầy, hoặc chọn ảnh mã QR có sẵn trong máy.");
+      renderToday();
+    } else if(name === "money"){
+      viewMonth = new Date(); viewMonth.setDate(1);
+      closeIncome(); $("incomeMsg").hidden = true;
+      renderMoney();
+    } else if(name === "loans"){
+      detailLoanId = null; editingLoanId = null; payOpen = false; editRecId = null;
+      if(!$("filterSheet").hidden) closeSheet();
+      $("loanMsg").hidden = true;
+      renderLoans(); showLoanView("main");
+    } else if(name === "people"){
+      closeContactForm();
+      renderPeople();
+    }
+  }
+  function showTab(name){
+    if(name !== currentTab) resetTab(name);
+    currentTab = name;
+    document.querySelectorAll(".tabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.tab===name ? "true":"false"));
+    ["today","money","loans","people"].forEach(n => $("tab-"+n).hidden = n !== name);
+    window.scrollTo(0,0);
+  }
+  function renderAll(){ renderToday(); renderMoney(); renderLoans(); renderPeople(); }
+
+  /* ---------- wiring ---------- */
+  function chipSet(container, list, onPick){
+    list.forEach(c => {
+      const b = document.createElement("button"); b.className = "chip"; b.textContent = c.icon + " " + c.label;
+      b.onclick = () => onPick(c.id); container.appendChild(b);
+    });
+  }
+  QUICK.forEach(v=>{
+    const btn = document.createElement("button");
+    btn.className = "chip amt num"; btn.textContent = (v/1000) + "k"; btn.setAttribute("aria-pressed","false");
+    btn.onclick = () => { setAmt(v); setSrc("amtSrc",""); [...$("amtChips").children].forEach(c=>c.setAttribute("aria-pressed", c===btn?"true":"false")); refreshForm(); };
+    $("amtChips").appendChild(btn);
+  });
+  chipSet($("catChips"), CATS, selectCat);
+  chipSet($("incChips"), INC, selectInc);
+  chipSet($("cCatChips"), CATS, selectCCat);
+  [...new Set(Object.values(BANKS))].sort().forEach(n => { const o = document.createElement("option"); o.value = n; $("bankList").appendChild(o); });
+
+  document.querySelectorAll(".tabs button").forEach(b => b.onclick = () => showTab(b.dataset.tab));
+  $("amt").addEventListener("input", () => { setAmt(amtValue()); setSrc("amtSrc",""); [...$("amtChips").children].forEach(c=>c.setAttribute("aria-pressed","false")); refreshForm(); });
+  $("acct").addEventListener("input", e => { e.target.value = digits(e.target.value); setSrc("acctSrc",""); refreshForm(); });
+  $("bank").addEventListener("input", () => { setSrc("bankSrc",""); refreshForm(); });
+  $("memo").addEventListener("input", () => setSrc("memoSrc",""));
+  $("saveContact").addEventListener("change", e => {
+    $("contactNameField").hidden = !e.target.checked;
+    if(e.target.checked && !$("contactName").value) $("contactName").value = $("desc").value;
+    refreshForm();
+  });
+  $("contactName").addEventListener("input", refreshForm);
+  $("txDate").addEventListener("change", () => { updateTxHint(); refreshForm(); });
+  $("txDate").addEventListener("input", () => { updateTxHint(); refreshForm(); });
+  $("prevDay").onclick = () => { viewDay = shiftKey(curDay(), -1); renderToday(); };
+  $("nextDay").onclick = () => { const n = shiftKey(curDay(), 1); viewDay = n >= todayKey() ? null : n; renderToday(); };
+  $("dayPick").addEventListener("change", e => { const v = e.target.value; viewDay = (!v || v >= todayKey()) ? null : v; renderToday(); });
+  $("photoAny").onchange = e => { decodeFile(e.target.files[0]); e.target.value = ""; };
+  $("manualTransferBtn").onclick = () => openForm("transfer");
+  $("cashBtn").onclick = () => openForm("cash");
+  $("cancelForm").onclick = closeForm;
+  $("saveBtn").onclick = saveExpense;
+  $("doneBtn").onclick = closeForm;
+  $("copyBtn").onclick = async () => { $("copyBtn").textContent = await copyText() ? "✓ Đã sao chép" : "Chưa sao chép được, giữ tay lên đoạn chữ để chép"; };
+  $("mbBtn").addEventListener("click", () => { copyText().then(ok => { if(ok) $("copyBtn").textContent = "✓ Đã sao chép"; }); });
+
+  $("prevMonth").onclick = () => { viewMonth = new Date(viewMonth.getFullYear(), viewMonth.getMonth()-1, 1); renderMoney(); };
+  $("nextMonth").onclick = () => { viewMonth = new Date(viewMonth.getFullYear(), viewMonth.getMonth()+1, 1); renderMoney(); };
+  $("addIncomeBtn").onclick = openIncome;
+  $("cancelIncome").onclick = closeIncome;
+  $("incAmt").addEventListener("input", e => { const v = incAmt(); e.target.value = v ? v.toLocaleString("vi-VN") : ""; refreshIncome(); });
+  $("saveIncome").onclick = saveIncome;
+
+  $("addLoanBtn").onclick = () => openLoanForm(null);
+  $("filterBtn").onclick = openSheet;
+  $("closeSheet").onclick = closeSheet;
+  $("sheetBack").onclick = closeSheet;
+  [["fType","type"],["fStatus","status"]].forEach(([id,key]) => [...$(id).children].forEach(b => b.onclick = () => { draft[key] = b.dataset.v; renderSheet(); }));
+  [...$("fField").children].forEach(b => b.onclick = () => { if(draft.field !== b.dataset.v){ draft.field = b.dataset.v; draft.from = ""; draft.to = ""; } renderSheet(); });
+  $("fFrom").addEventListener("change", e => { draft.from = e.target.value; renderSheet(); });
+  $("fTo").addEventListener("change", e => { draft.to = e.target.value; renderSheet(); });
+  $("fReset").onclick = () => { draft = Object.assign({}, EMPTY_FILTER); renderSheet(); };
+  $("fApply").onclick = () => { loanFilter = Object.assign({}, draft); closeSheet(); renderLoans(); };
+  document.addEventListener("keydown", e => { if(e.key === "Escape" && !$("filterSheet").hidden) closeSheet(); });
+  $("cancelLoan").onclick = closeLoanForm;
+  [...$("loanType").children].forEach(b => b.onclick = () => { setLoanType(b.dataset.type); refreshLoanForm(); });
+  $("lWho").addEventListener("input", refreshLoanForm);
+  $("lPaid").addEventListener("input", e => { e.target.value = money(lPaid()); refreshLoanForm(); });
+  $("lAmt").addEventListener("input", e => { const v = lAmt(); e.target.value = v ? v.toLocaleString("vi-VN") : ""; refreshLoanForm(); });
+  $("saveLoan").onclick = saveLoan;
+
+  $("addContactBtn").onclick = () => openContactForm(null);
+  $("cancelContact").onclick = closeContactForm;
+  ["cName","cBank","cMemo"].forEach(id => $(id).addEventListener("input", refreshContactForm));
+  $("cAcct").addEventListener("input", e => { e.target.value = digits(e.target.value); refreshContactForm(); });
+  $("saveContactBtn").onclick = saveContactForm;
+
+  $("saveBudget").onclick = () => {
+    const v = parseInt(digits($("budgetInput").value),10);
+    if(!(v>=1000)){ flash("budgetMsg", "Nhập hạn mức theo đồng, vd: 50000"); return; }
+    state.budget = v; $("budgetInput").value = ""; persist(); renderAll(); flash("budgetMsg", "✓ Đã lưu hạn mức " + fmt(v) + "/ngày");
+  };
+  $("clearToday").onclick = () => {
+    if(!todays().length) return;
+    if(armed($("clearToday"))){ delete state.days[todayKey()]; persist(); renderAll(); }
+  };
+
+  let lastKey = todayKey();
+  function checkDay(){ if(todayKey()!==lastKey){ lastKey = todayKey(); renderAll(); } }
+  document.addEventListener("visibilitychange", ()=>{ if(!document.hidden) checkDay(); });
+  setInterval(checkDay, 60000);
+
+  loadLocal(); renderAll();
+
+  /* ---------- backup, restore & merge ---------- */
+  const BK_KEY = "ngay50k:lastBackup", SNOOZE_KEY = "ngay50k:nudgeSnooze", UNDO_KEY = "ngay50k:beforeImport";
+  const NUDGE_DAYS = 7;
+  let pending = null;
+  const lsGet = k => { try{ return localStorage.getItem(k); }catch(e){ return null; } };
+  const lsSet = (k, v) => { try{ localStorage.setItem(k, v); return true; }catch(e){ return false; } };
+  function countAll(st){ let n = 0; eachRecord(st, () => n++); return n; }
+  function hasData(){ return countAll(state) > 0; }
+  function daysAgo(ts){ return Math.floor((Date.now() - ts) / 86400000); }
+  function agoText(ts){
+    const d = daysAgo(ts);
+    if(d <= 0) return "hôm nay";
+    if(d === 1) return "hôm qua";
+    return d + " ngày trước";
+  }
+  function showSyncErr(msg){ const el = $("syncErr"); el.textContent = msg; el.hidden = false; $("syncMsg").hidden = true; }
+  function showSyncOk(html){ const el = $("syncMsg"); el.innerHTML = html; el.hidden = false; $("syncErr").hidden = true; }
+
+  function renderBackup(){
+    const last = Number(lsGet(BK_KEY)) || 0;
+    const st = $("backupState");
+    if(!last){
+      st.textContent = hasData() ? "Chưa sao lưu lần nào. Nếu xoá app hoặc mất máy, dữ liệu sẽ mất theo." : "Chưa có dữ liệu để sao lưu.";
+      st.classList.toggle("stale", hasData());
+    } else {
+      st.textContent = "Sao lưu gần nhất: " + agoText(last) + ".";
+      st.classList.toggle("stale", daysAgo(last) >= NUDGE_DAYS);
+    }
+    const snooze = Number(lsGet(SNOOZE_KEY)) || 0;
+    const due = hasData() && (!last || daysAgo(last) >= NUDGE_DAYS) && Date.now() > snooze;
+    $("backupNudge").hidden = !due;
+    if(due) $("nudgeText").textContent = last ? "Đã " + daysAgo(last) + " ngày chưa sao lưu dữ liệu." : "Bạn chưa sao lưu dữ liệu lần nào.";
+  }
+  const _renderAll = renderAll;
+  renderAll = function(){ _renderAll(); renderBackup(); };
+
+  function fileStamp(){ const d = new Date(); return keyOf(d) + "-" + pad(d.getHours()) + pad(d.getMinutes()); }
+  async function exportData(){
+    $("syncErr").hidden = true;
+    const payload = { app:"ngay50k", format:1, exportedAt:new Date().toISOString(), data:state };
+    const name = "ngay50k-saoluu-" + fileStamp() + ".json";
+    const text = JSON.stringify(payload);
+    const coarse = window.matchMedia && matchMedia("(pointer:coarse)").matches;
+    if(coarse && navigator.canShare && typeof File === "function"){
+      try{
+        const file = new File([text], name, { type:"application/json" });
+        if(navigator.canShare({ files:[file] })){
+          await navigator.share({ files:[file], title:"Sao lưu Ngày 50k" });
+          doneExport(); return;
+        }
+      }catch(e){ if(e && e.name === "AbortError") return; }
+    }
+    try{
+      const url = URL.createObjectURL(new Blob([text], { type:"application/json" }));
+      const a = document.createElement("a"); a.href = url; a.download = name;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 4000);
+      doneExport();
+    }catch(e){ showSyncErr("Chưa xuất được file: " + (e && e.message ? e.message : e)); }
+  }
+  function doneExport(){
+    lsSet(BK_KEY, String(Date.now()));
+    showSyncOk("✓ Đã xuất file sao lưu. Hãy cất file ở nơi an toàn, như iCloud Drive.");
+    renderBackup();
+  }
+
+  function mergeStates(a, b){
+    const del = Object.assign({}, a.deleted);
+    for(const k in b.deleted) del[k] = Math.max(del[k] || 0, Number(b.deleted[k]) || 0);
+    const alive = o => o && o.id && !(del[o.id] && del[o.id] >= (o.m || 0));
+    const newer = (x, y) => (!x ? y : !y ? x : (y.m || 0) > (x.m || 0) ? y : x);
+    const byId = (xs, ys) => {
+      const map = new Map();
+      (xs||[]).forEach(o => o && o.id && map.set(o.id, o));
+      (ys||[]).forEach(o => o && o.id && map.set(o.id, newer(map.get(o.id), o)));
+      return [...map.values()].filter(alive).map(o => JSON.parse(JSON.stringify(o)));
+    };
+    const byDay = (A, B) => {
+      const out = {};
+      new Set([...Object.keys(A), ...Object.keys(B)]).forEach(k => {
+        const list = byId(A[k], B[k]).sort((x, y) => (x.t || 0) - (y.t || 0));
+        if(list.length) out[k] = list;
+      });
+      return out;
+    };
+    const loanMap = new Map();
+    a.loans.forEach(l => loanMap.set(l.id, { a:l }));
+    b.loans.forEach(l => { const e = loanMap.get(l.id) || {}; e.b = l; loanMap.set(l.id, e); });
+    const loans = [];
+    loanMap.forEach(({ a:la, b:lb }) => {
+      const base = newer(la, lb);
+      if(!alive(base)) return;
+      const l = JSON.parse(JSON.stringify(base));
+      l.payments = byId(la && la.payments, lb && lb.payments);
+      loans.push(l);
+    });
+    loans.sort((x, y) => (x.t || 0) - (y.t || 0));
+    const useB = (b.budgetM || 0) > (a.budgetM || 0);
+    return normalize({
+      budget: useB ? b.budget : a.budget, budgetM: Math.max(a.budgetM || 0, b.budgetM || 0),
+      days: byDay(a.days, b.days), income: byDay(a.income, b.income),
+      contacts: byId(a.contacts, b.contacts), loans,
+      payees: Object.assign({}, b.payees, a.payees),
+      deleted: del, updated: Date.now()
+    });
+  }
+  function diffCount(before, after){
+    const A = collectSigs(before), B = collectSigs(after);
+    let add = 0, upd = 0, rem = 0;
+    for(const id in B){ if(id === "__budget") continue; if(!(id in A)) add++; else if(A[id] !== B[id]) upd++; }
+    for(const id in A){ if(id !== "__budget" && !(id in B)) rem++; }
+    return { add, upd, rem };
+  }
+  function diffText(d){
+    const parts = [];
+    if(d.add) parts.push("thêm " + d.add + " mục");
+    if(d.upd) parts.push("cập nhật " + d.upd + " mục");
+    if(d.rem) parts.push("xoá " + d.rem + " mục");
+    return parts.length ? parts.join(", ") : "không có gì thay đổi";
+  }
+  function summarize(st){
+    let exp = 0, inc = 0;
+    for(const k in st.days) exp += st.days[k].length;
+    for(const k in st.income) inc += st.income[k].length;
+    return exp + " khoản chi, " + inc + " khoản thu, " + st.loans.length + " khoản vay, " + st.contacts.length + " người nhận";
+  }
+  function fmtStamp(iso){
+    const d = new Date(iso); if(isNaN(d)) return "";
+    return pad(d.getHours()) + ":" + pad(d.getMinutes()) + " ngày " + d.getDate() + "/" + (d.getMonth()+1) + "/" + d.getFullYear();
+  }
+
+  $("importFile").addEventListener("change", e => {
+    const f = e.target.files && e.target.files[0]; e.target.value = "";
+    if(!f) return;
+    $("syncMsg").hidden = true; $("syncErr").hidden = true;
+    if(f.size > 20 * 1024 * 1024){ showSyncErr("File quá lớn, đây không phải file sao lưu của app."); return; }
+    const r = new FileReader();
+    r.onerror = () => showSyncErr("Không đọc được file này.");
+    r.onload = () => {
+      let obj;
+      try{ obj = JSON.parse(r.result); }catch(err){ showSyncErr("File này không phải file sao lưu của Ngày 50k."); return; }
+      if(!obj || obj.app !== "ngay50k" || !obj.data || typeof obj.data !== "object"){ showSyncErr("File này không phải file sao lưu của Ngày 50k."); return; }
+      const incoming = normalize(obj.data);
+      pending = { incoming, merged: mergeStates(state, incoming) };
+      const when = obj.exportedAt ? fmtStamp(obj.exportedAt) : "";
+      $("importInfo").textContent = "File " + (when ? "xuất lúc " + when + ", " : "") + "gồm " + summarize(incoming) + ".";
+      $("importPreview").textContent = "Gộp sẽ " + diffText(diffCount(state, pending.merged)) + ". Khoản mới ghi trên máy này vẫn được giữ.";
+      delete $("replaceBtn").dataset.armed;
+      $("replaceBtn").textContent = "Thay toàn bộ";
+      $("importCard").hidden = false;
+      $("importCard").scrollIntoView({ behavior:"smooth", block:"nearest" });
+    };
+    r.readAsText(f);
+  });
+  function applyImport(next, label){
+    lsSet(UNDO_KEY, JSON.stringify(state));
+    const d = diffCount(state, next);
+    state = next; sigs = collectSigs(state); state.updated = Date.now();
+    if(!lsSet(LS_KEY, JSON.stringify(state))){ showSyncErr("Máy hết chỗ lưu dữ liệu."); return; }
+    pending = null; $("importCard").hidden = true;
+    viewDay = null; renderAll();
+    showSyncOk("✓ " + label + ": " + diffText(d) + ".<button class=\"undo-btn\" id=\"undoImport\">Hoàn tác</button>");
+    $("undoImport").onclick = undoImport;
+  }
+  function undoImport(){
+    const raw = lsGet(UNDO_KEY); if(!raw) return;
+    try{
+      state = normalize(JSON.parse(raw)); sigs = collectSigs(state);
+      lsSet(LS_KEY, JSON.stringify(state));
+      try{ localStorage.removeItem(UNDO_KEY); }catch(e){}
+      renderAll(); showSyncOk("✓ Đã hoàn tác, dữ liệu trở lại như trước khi nhập.");
+    }catch(e){ showSyncErr("Không hoàn tác được."); }
+  }
+  $("mergeBtn").onclick = () => { if(pending) applyImport(pending.merged, "Đã gộp"); };
+  $("replaceBtn").onclick = () => {
+    const b = $("replaceBtn");
+    if(!pending) return;
+    if(b.dataset.armed !== "1"){ b.dataset.armed = "1"; b.textContent = "Bấm lần nữa để thay"; return; }
+    const next = normalize(pending.incoming); next.updated = Date.now();
+    applyImport(next, "Đã thay toàn bộ");
+  };
+  $("cancelImport").onclick = () => { pending = null; $("importCard").hidden = true; };
+  $("exportBtn").onclick = exportData;
+  $("nudgeGo").onclick = () => { $("syncBox").open = true; $("syncBox").scrollIntoView({ behavior:"smooth", block:"start" }); exportData(); };
+  $("nudgeLater").onclick = () => { lsSet(SNOOZE_KEY, String(Date.now() + 86400000)); renderBackup(); };
+  $("wipeBtn").onclick = () => {
+    $("syncMsg").hidden = true; $("syncErr").hidden = true;
+    if(!hasData() && !lsGet(BK_KEY)){ showSyncOk("Máy này chưa có dữ liệu nào."); return; }
+    const last = Number(lsGet(BK_KEY)) || 0;
+    $("wipeInfo").textContent = "Sẽ xoá " + summarize(state) + ". " + (last ? "Sao lưu gần nhất: " + agoText(last) + "." : "Bạn chưa sao lưu lần nào.");
+    $("wipeCard").hidden = false;
+    $("wipeCard").scrollIntoView({ behavior:"smooth", block:"nearest" });
+  };
+  $("wipeExport").onclick = async () => { await exportData(); if(!$("wipeCard").hidden){ const last = Number(lsGet(BK_KEY)) || 0; if(last) $("wipeInfo").textContent = "Sẽ xoá " + summarize(state) + ". Sao lưu gần nhất: " + agoText(last) + "."; } };
+  $("wipeCancel").onclick = () => { $("wipeCard").hidden = true; };
+  $("wipeConfirm").onclick = () => {
+    try{
+      Object.keys(localStorage).filter(k => k.indexOf("ngay50k:") === 0).forEach(k => localStorage.removeItem(k));
+    }catch(e){}
+    state = normalize({}); sigs = collectSigs(state); pending = null;
+    viewDay = null; $("importCard").hidden = true; $("wipeCard").hidden = true;
+    renderAll(); showSyncOk("✓ Đã xoá toàn bộ dữ liệu trên máy này.");
+  };
+  window.addEventListener("storage", e => { if(e.key === LS_KEY){ loadLocal(); renderAll(); } });
+  renderBackup();
+
+  /* ---------- offline app shell & updates ---------- */
+  if("serviceWorker" in navigator && /^https?:$/.test(location.protocol)){
+    navigator.serviceWorker.register("sw.js").then(reg => {
+      reg.addEventListener("updatefound", () => {
+        const w = reg.installing; if(!w) return;
+        w.addEventListener("statechange", () => {
+          if(w.state === "activated" && hadController) $("updateBar").hidden = false;
+        });
+      });
+      document.addEventListener("visibilitychange", () => { if(!document.hidden) reg.update().catch(()=>{}); });
+    }).catch(()=>{});
+    const hadController = !!navigator.serviceWorker.controller;
+    $("reloadBtn").onclick = () => location.reload();
+  }
+  if(navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(()=>{});
+})();
+</script>
+</body>
+</html>
