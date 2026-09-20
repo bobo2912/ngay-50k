@@ -1,6 +1,12 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v8, ngày 20/09/2026
+**Phiên bản hiện tại:** v9, ngày 20/09/2026
+
+---
+
+## Có gì mới trong v9 (so với v8)
+
+- **Chọn giao diện Sáng, Tối hoặc Tự động** trong Cài đặt. Tự động đổi theo chế độ sáng/tối của iPhone. Lựa chọn lưu riêng trên từng máy.
 
 ---
 
@@ -68,6 +74,7 @@
 - Bấm **Chuyển** để mở form đã điền sẵn thông tin.
 
 ### Cài đặt (bánh răng góc trên bên phải)
+- **Giao diện:** Tự động, Sáng hoặc Tối.
 - **Hạn mức chi một ngày.**
 - **Sao lưu và đồng bộ:**
   - Xuất file sao lưu.
@@ -92,6 +99,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v9** | Chọn giao diện Sáng, Tối hoặc Tự động |
 | **v8** | Giao diện Liquid Glass, màu xanh dương, thanh tab ở đáy, thẻ số tiền còn lại mới |
 | **v7** | Vuốt để quay lại, sửa khoản chi, thư viện tag và tag tự tạo, biểu đồ thu chi theo ngày, tuần, tháng |
 | **v6** | Nút 000, tên tài khoản, ghi chú giống nội dung chuyển khoản, chọn nhanh nội dung gần đây |
