@@ -626,6 +626,13 @@ header .date{font-size:1.65rem; font-weight:800; letter-spacing:-.02em; color:va
 /* no zoom: block double-tap zoom and focus auto-zoom */
 html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:100%}
 :where(input, select, textarea){font-size:16px}
+
+/* smooth view transitions */
+@keyframes viewIn{from{opacity:0; transform:translateX(18px)} to{opacity:1; transform:none}}
+@keyframes viewInBack{from{opacity:0; transform:translateX(-18px)} to{opacity:1; transform:none}}
+.view-in{animation:viewIn .28s cubic-bezier(.2,.8,.2,1) both}
+.view-in-back{animation:viewInBack .28s cubic-bezier(.2,.8,.2,1) both}
+@media (prefers-reduced-motion: reduce){ .view-in, .view-in-back{animation:none} }
 </style>
 </head>
 <body>
@@ -977,7 +984,7 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v12</p>
+      <p class="sync" id="appVersion">Phiên bản v13</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. Giới hạn khoảng 5 MB được tính chung cho các mini app cùng tài khoản GitHub.</p>
 
       <h4 class="sub">Xoá dữ liệu</h4>
@@ -2549,22 +2556,72 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
         sw.fn = backTarget(); if(!sw.fn){ sw = null; return; }
         sw.active = true;
         sw.panel = settingsOpenNow() && sw.fn === closeSettings ? $("settings") : null;
+        sw.view = sw.panel ? null : backViewEl();
         if(sw.panel) sw.panel.style.transition = "none";
+        if(sw.view){ sw.view.style.transition = "none"; sw.view.style.willChange = "transform, opacity"; }
       } else return;
     }
     sw.dx = Math.max(0, dx);
     const p = Math.min(sw.dx / SW_GO, 1);
     if(sw.panel) sw.panel.style.transform = "translateX(" + sw.dx + "px)";
+    if(sw.view){ sw.view.style.transform = "translateX(" + (sw.dx * 0.9) + "px)"; sw.view.style.opacity = String(1 - Math.min(sw.dx / 320, 0.6)); }
   }, { passive:true });
   function endSwipe(){
     if(!sw || !sw.active){ sw = null; return; }
     const v = sw.dx / Math.max(1, Date.now() - sw.t);
     const go = sw.dx >= SW_GO || (sw.dx > 40 && v > 0.6);
-    const panel = sw.panel, fn = sw.fn;
+    const panel = sw.panel, fn = sw.fn, view = sw.view;
     if(panel){ panel.style.transition = ""; panel.style.transform = ""; }
     sw = null;
-    if(go) fn();
+    if(view){
+      view.style.transition = "transform .2s cubic-bezier(.2,.8,.2,1), opacity .2s ease";
+      if(go){
+        view.style.transform = "translateX(" + Math.round(window.innerWidth * 0.6) + "px)"; view.style.opacity = "0";
+        setTimeout(() => { resetViewStyle(view); navDir = "back"; fn(); }, 170);
+      } else {
+        view.style.transform = ""; view.style.opacity = "";
+        setTimeout(() => resetViewStyle(view), 220);
+      }
+      return;
+    }
+    if(go){ navDir = "back"; fn(); }
   }
+  function resetViewStyle(el){ el.style.transition = ""; el.style.transform = ""; el.style.opacity = ""; el.style.willChange = ""; }
+  function backViewEl(){
+    for(const id of ["formBox","incomeForm","contactForm","loanForm","loanDetail"]) if(!$(id).hidden) return $(id);
+    if(!$("editSheet").hidden || !$("tagSheet").hidden || !$("filterSheet").hidden || !$("cam").hidden) return null;
+    if(currentTab !== "today") return $("tab-" + currentTab);
+    return null;
+  }
+
+  /* ---------- smooth view changes: fade + slide whenever a view appears ---------- */
+  let navDir = "fwd";
+  const TAB_ORDER = ["today","money","loans","people"];
+  const _showTabS = showTab;
+  showTab = function(n){
+    if(n !== currentTab && navDir !== "back") navDir = TAB_ORDER.indexOf(n) < TAB_ORDER.indexOf(currentTab) ? "back" : "fwd";
+    _showTabS(n);
+  };
+  document.addEventListener("click", e => {
+    if(e.target.closest && e.target.closest(".x, .back, #cancelForm, #cancelIncome, #cancelContact, #cancelLoan, #doneBtn")) navDir = "back";
+  }, true);
+  const reduceMotion = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function playIn(el){
+    if(reduceMotion) return;
+    el.classList.remove("view-in", "view-in-back");
+    void el.offsetWidth;
+    el.classList.add(navDir === "back" ? "view-in-back" : "view-in");
+    clearTimeout(el._vt); el._vt = setTimeout(() => el.classList.remove("view-in", "view-in-back"), 360);
+  }
+  let navReset = null;
+  const viewObs = new MutationObserver(list => {
+    const shown = new Set();
+    list.forEach(m => { if(m.attributeName === "hidden" && !m.target.hidden) shown.add(m.target); });
+    shown.forEach(playIn);
+    if(shown.size){ clearTimeout(navReset); navReset = setTimeout(() => { navDir = "fwd"; }, 60); }
+  });
+  ["tab-today","tab-money","tab-loans","tab-people","startBox","formBox","resultBox","incomeForm","contactForm","loansMain","loanForm","loanDetail"]
+    .forEach(id => { const el = $(id); if(el) viewObs.observe(el, { attributes:true, attributeFilter:["hidden"] }); });
   document.addEventListener("touchend", endSwipe, { passive:true });
   document.addEventListener("touchcancel", () => { if(sw && sw.panel){ sw.panel.style.transition = ""; sw.panel.style.transform = ""; } sw = null; }, { passive:true });
   document.addEventListener("keydown", e => {

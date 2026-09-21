@@ -1,6 +1,14 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v12, ngày 21/09/2026
+**Phiên bản hiện tại:** v13, ngày 21/09/2026
+
+---
+
+## Có gì mới trong v13 (so với v12)
+
+- **Vuốt quay lại mượt hơn.** Màn hình đang xem (chi tiết khoản vay, form, tab) trượt theo ngón tay và mờ dần. Thả tay đủ xa thì màn hình trượt hẳn ra, màn hình trước hiện lên bằng hiệu ứng mờ dần kèm trượt nhẹ. Vuốt chưa đủ xa thì màn hình trượt về chỗ cũ.
+- **Chuyển màn hình có hiệu ứng.** Mở chi tiết, mở form, đổi tab hay bấm nút quay lại đều mờ dần và trượt nhẹ theo đúng hướng đi tới hoặc quay lại, không còn nhảy đột ngột.
+- Tôn trọng cài đặt Giảm chuyển động của iPhone: nếu bạn bật, hiệu ứng sẽ tắt.
 
 ---
 
@@ -121,6 +129,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v13** | Vuốt quay lại trượt theo tay, hiệu ứng mờ và trượt khi chuyển màn hình |
 | **v12** | Số tài khoản có chữ, camera tự tắt sau 1 phút, chặn phóng to thu nhỏ |
 | **v11** | Camera chạy trong khung riêng, tắt hẳn khi đóng; hiện số phiên bản trong Cài đặt |
 | **v10** | Camera chỉ bật khi quét QR, bỏ mũi tên khi vuốt quay lại |
