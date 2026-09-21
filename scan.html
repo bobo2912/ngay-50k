@@ -58,6 +58,7 @@ video{position:fixed;inset:0;width:100%;height:100%;object-fit:cover}
     if(e.origin !== location.origin) return;
     var m = e.data || {};
     if(m.type === "stop") stop();
+    if(m.type === "start" && !stream){ done = false; start(); }
     if(m.type === "torch" && stream){
       var tr = stream.getVideoTracks()[0];
       tr.applyConstraints({ advanced:[{ torch: !!m.on }] })

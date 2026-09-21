@@ -1,6 +1,21 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v14, ngày 21/09/2026
+**Phiên bản hiện tại:** v16, ngày 21/09/2026
+
+---
+
+## Có gì mới trong v16 (so với v15)
+
+- **Quét QR không cần cấp quyền camera.** Cách quét mặc định mới là **Camera iPhone**: bấm Quét QR bằng camera sẽ mở camera của iPhone, bạn chụp mã, bấm Dùng ảnh, app tự đọc. Cách này không bao giờ hỏi quyền camera.
+- **Chọn cách quét trong Cài đặt → Quét mã QR:** Camera iPhone (không hỏi quyền) hoặc Quét trực tiếp (tự nhận mã trong khung, iPhone có thể hỏi quyền mỗi lần mở lại app).
+- Đọc tốt hơn ảnh chụp có mã QR nhỏ ở giữa ảnh.
+
+---
+
+## Có gì mới trong v15 (so với v14)
+
+- **Ít hỏi quyền camera hơn.** Khi đóng màn hình quét, camera tắt ngay nhưng app giữ quyền thêm 2 phút, nên quét lần nữa trong lúc đó sẽ không bị hỏi lại. App chỉ hỏi lại khi bạn mở app sau khi đã thoát, chuyển sang app khác, hoặc sau 2 phút không quét.
+- **Mở MB Bank không còn trang trắng.** Nút "Sao chép và mở MB Bank" mở thẳng app MB Bank, không đi qua trang web trung gian nên không còn trang trắng phải tắt tay. Nếu máy chưa cài MB Bank, app báo để bạn tự mở và dán.
 
 ---
 
@@ -78,7 +93,7 @@
 
 ### Tab Giao dịch
 - **Thẻ Hôm nay còn được tiêu:** số tiền còn lại, thanh tiến độ, chuyển đỏ khi vượt hạn mức.
-- **Quét QR bằng camera:** quét trực tiếp, tự nhận mã, không cần chụp. Có nút đèn flash nếu máy hỗ trợ.
+- **Quét QR bằng camera:** mặc định mở camera iPhone để chụp mã (không cần cấp quyền), hoặc quét trực tiếp trong app tự nhận mã (chọn trong Cài đặt).
 - **Chọn ảnh mã QR:** đọc mã QR từ ảnh chụp sẵn trong máy.
 - **Đọc mã VietQR:** tự điền số tài khoản, ngân hàng, số tiền, nội dung và tên tài khoản (nếu mã có chứa).
 - **Chuyển nhanh cho người hay chuyển:** chạm tên để điền sẵn thông tin.
@@ -113,6 +128,7 @@
 
 ### Cài đặt (bánh răng góc trên bên phải)
 - **Giao diện:** Tự động, Sáng hoặc Tối.
+- **Quét mã QR:** Camera iPhone hoặc Quét trực tiếp.
 - **Hạn mức chi một ngày.**
 - **Sao lưu và đồng bộ:**
   - Xuất file sao lưu.
@@ -137,6 +153,8 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v16** | Quét QR bằng camera iPhone không cần cấp quyền, chọn cách quét trong Cài đặt |
+| **v15** | Ít hỏi quyền camera hơn, mở thẳng MB Bank không qua trang trắng |
 | **v14** | Vuốt quay lại chỉ trong cùng menu, không áp dụng cho bảng hiện từ dưới lên và giữa các menu |
 | **v13** | Vuốt quay lại trượt theo tay, hiệu ứng mờ và trượt khi chuyển màn hình |
 | **v12** | Số tài khoản có chữ, camera tự tắt sau 1 phút, chặn phóng to thu nhỏ |
