@@ -673,6 +673,7 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><path d="M8 12h8"/></svg>
         Quét QR bằng camera
       </button>
+      <input type="file" accept="image/*" capture="environment" id="snapQR" hidden aria-hidden="true" tabindex="-1">
       <div class="quick3">
         <label class="q-btn"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/></svg><span>Ảnh QR</span><input type="file" accept="image/*" id="photoAny" aria-label="Chọn ảnh mã QR"></label>
         <button class="q-btn" id="manualTransferBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg><span>Nhập tay</span></button>
@@ -754,7 +755,8 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
           <textarea id="transferText" aria-label="Đoạn thông tin chuyển tiền"></textarea>
           <div class="btn-row">
             <button class="copy-btn" id="copyBtn">Sao chép đoạn này</button>
-            <a class="mb-btn" id="mbBtn" href="https://dl.vietqr.io/pay?app=mb" target="_blank" rel="noopener">Sao chép và mở <span class="tag">MB Bank</span></a>
+            <p class="inline-ok" id="mbMsg" hidden></p>
+            <a class="mb-btn" id="mbBtn" href="mbbank://">Sao chép và mở <span class="tag">MB Bank</span></a>
           </div>
           <p class="subtle">Trong MB Bank, dán đoạn này vào ô trợ lý để tạo lệnh chuyển. Nhớ kiểm tra tên người nhận MB Bank hiển thị trước khi xác nhận.</p>
           <button class="link-btn" id="doneBtn">Xong</button>
@@ -936,6 +938,15 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
       </div>
     </section>
 
+    <section class="set-group" aria-labelledby="gScan">
+      <h3 id="gScan">Quét mã QR</h3>
+      <div class="seg" id="scanSeg" role="group" aria-label="Cách quét mã QR" style="margin-top:10px">
+        <button data-scan="snap" aria-pressed="true">Camera iPhone</button>
+        <button data-scan="live" aria-pressed="false">Quét trực tiếp</button>
+      </div>
+      <p class="set-now" id="scanHint" style="margin-top:10px"></p>
+    </section>
+
     <section class="set-group" aria-labelledby="gBudget">
       <h3 id="gBudget">Hạn mức chi một ngày</h3>
       <p class="set-now">Đang đặt <strong class="num" id="budgetNow"></strong> mỗi ngày.</p>
@@ -984,7 +995,7 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v14</p>
+      <p class="sync" id="appVersion">Phiên bản v16</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. Giới hạn khoảng 5 MB được tính chung cho các mini app cùng tài khoản GitHub.</p>
 
       <h4 class="sub">Xoá dữ liệu</h4>
@@ -1435,10 +1446,12 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
     img.onload = () => {
       const c = $("canvas"), ctx = c.getContext("2d", {willReadFrequently:true});
       let raw = null;
-      for(const max of [1000, 1600, 700]){
-        const s = Math.min(1, max / Math.max(img.width, img.height));
-        c.width = Math.round(img.width*s); c.height = Math.round(img.height*s);
-        ctx.drawImage(img, 0, 0, c.width, c.height);
+      const tries = [[1000,1],[1600,1],[1000,0.6],[700,1],[1000,0.4]];
+      for(const [max, crop] of tries){
+        const sw = img.width*crop, sh = img.height*crop, sx = (img.width-sw)/2, sy = (img.height-sh)/2;
+        const s = Math.min(1, max / Math.max(sw, sh));
+        c.width = Math.round(sw*s); c.height = Math.round(sh*s);
+        ctx.drawImage(img, sx, sy, sw, sh, 0, 0, c.width, c.height);
         const r = window.jsQR(ctx.getImageData(0,0,c.width,c.height).data, c.width, c.height, {inversionAttempts:"attemptBoth"});
         if(r && r.data){ raw = r.data; break; }
       }
@@ -2127,7 +2140,18 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
   $("saveBtn").onclick = saveExpense;
   $("doneBtn").onclick = closeForm;
   $("copyBtn").onclick = async () => { $("copyBtn").textContent = await copyText() ? "✓ Đã sao chép" : "Chưa sao chép được, giữ tay lên đoạn chữ để chép"; };
-  $("mbBtn").addEventListener("click", () => { copyText().then(ok => { if(ok) $("copyBtn").textContent = "✓ Đã sao chép"; }); });
+  $("mbBtn").addEventListener("click", e => {
+    e.preventDefault();
+    copyText().then(ok => { if(ok) $("copyBtn").textContent = "✓ Đã sao chép"; });
+    let left = false;
+    const onHide = () => { if(document.hidden) left = true; };
+    document.addEventListener("visibilitychange", onHide);
+    window.location.href = "mbbank://";
+    setTimeout(() => {
+      document.removeEventListener("visibilitychange", onHide);
+      if(!left && !document.hidden) flash("mbMsg", "Chưa mở được app MB Bank. Đoạn chuyển khoản đã được sao chép, bạn mở MB Bank rồi dán vào nhé.");
+    }, 2000);
+  });
 
   $("prevMonth").onclick = () => { viewMonth = new Date(viewMonth.getFullYear(), viewMonth.getMonth()-1, 1); renderMoney(); };
   $("nextMonth").onclick = () => { viewMonth = new Date(viewMonth.getFullYear(), viewMonth.getMonth()+1, 1); renderMoney(); };
@@ -2178,20 +2202,30 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
   loadLocal(); renderAll();
 
 
-  /* ---------- live camera QR scan (isolated in a frame that is destroyed on close) ---------- */
-  let camFrame = null, torchOn = false, camIdle = null;
-  const CAM_IDLE_MS = 60000;
+  /* ---------- live camera QR scan ----------
+     Camera runs inside scan.html. Closing the scanner stops the camera right away but keeps that frame
+     for a couple of minutes, so scanning again does not ask for permission again. The frame is destroyed
+     when the app goes to the background or after the keep time, so iOS fully releases the camera. */
+  let camFrame = null, torchOn = false, camIdle = null, camKeep = null;
+  const CAM_IDLE_MS = 60000, CAM_KEEP_MS = 120000;
   function camHint(t, err){ const h = $("camHint"); h.textContent = t; h.className = "cam-hint" + (err ? " err" : ""); }
-  function killFrame(){
-    clearTimeout(camIdle); camIdle = null;
+  function postCam(msgObj){ try{ camFrame && camFrame.contentWindow.postMessage(msgObj, location.origin); }catch(e){} }
+  function destroyFrame(){
+    clearTimeout(camIdle); camIdle = null; clearTimeout(camKeep); camKeep = null;
     if(!camFrame) return;
-    try{ camFrame.contentWindow.postMessage({ type:"stop" }, location.origin); }catch(e){}
+    postCam({ type:"stop" });
     const f = camFrame; camFrame = null;
     try{ f.src = "about:blank"; }catch(e){}
     f.remove();
   }
+  function releaseFrame(){
+    clearTimeout(camIdle); camIdle = null;
+    if(!camFrame) return;
+    postCam({ type:"stop" });
+    clearTimeout(camKeep); camKeep = setTimeout(destroyFrame, CAM_KEEP_MS);
+  }
   function openCamera(){
-    if(camFrame) return;
+    if(!$("cam").hidden) return;
     if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.isSecureContext){
       msg("Máy này chưa mở được camera trong app. Dùng nút Ảnh QR để chụp.", true);
       $("photoAny").click(); return;
@@ -2199,6 +2233,8 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
     $("cam").hidden = false; document.body.style.overflow = "hidden";
     $("camFrame").classList.remove("hit"); $("camTorch").hidden = true; torchOn = false;
     camHint("Đang mở camera…");
+    clearTimeout(camKeep); camKeep = null;
+    if(camFrame){ postCam({ type:"start" }); return; }
     const f = document.createElement("iframe");
     f.setAttribute("allow", "camera");
     f.setAttribute("title", "Camera quét mã QR");
@@ -2210,36 +2246,55 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
     const m = e.data || {};
     if(m.src !== "ngay50k-scan" || !camFrame || e.source !== camFrame.contentWindow) return;
     if(m.type === "ready"){
+      if($("cam").hidden){ releaseFrame(); return; }
       clearTimeout(camIdle);
       camIdle = setTimeout(() => { closeCamera(); msg("Camera đã tự tắt sau 1 phút không quét, để máy có thể tự khoá màn hình.", true); }, CAM_IDLE_MS);
-      camHint("Đưa mã QR vào trong khung"); $("camTorch").hidden = !m.torch; $("camTorch").setAttribute("aria-pressed","false"); }
+      camHint("Đưa mã QR vào trong khung"); $("camTorch").hidden = !m.torch; $("camTorch").setAttribute("aria-pressed","false");
+    }
     else if(m.type === "qr"){
       $("camFrame").classList.add("hit");
       if(navigator.vibrate) try{ navigator.vibrate(60); }catch(err){}
-      const raw = m.data; killFrame();
+      const raw = m.data; releaseFrame();
       setTimeout(() => { closeCamera(); handleRaw(raw); }, 160);
     }
     else if(m.type === "torch"){ torchOn = !!m.on; $("camTorch").setAttribute("aria-pressed", String(torchOn)); if(m.fail) $("camTorch").hidden = true; }
     else if(m.type === "error"){
       const n = m.name;
-      if(n === "NotAllowedError" || n === "SecurityError") camHint("App chưa được phép dùng camera. Đóng lại rồi bấm Quét và chọn Cho phép. Nếu đã lỡ chặn, vào Cài đặt iPhone, chọn Safari, mục Camera, đổi thành Hỏi.", true);
+      if(n === "NotAllowedError" || n === "SecurityError") camHint("App chưa được phép dùng camera. Đóng lại rồi bấm Quét và chọn Cho phép. Nếu đã lỡ chặn, vào Cài đặt iPhone, chọn Safari, mục Camera, đổi thành Hỏi hoặc Cho phép.", true);
       else if(n === "NotFoundError" || n === "OverconstrainedError") camHint("Không tìm thấy camera trên máy này. Dùng Chọn ảnh thay thế.", true);
       else if(n === "NotReadableError") camHint("Camera đang bị app khác dùng. Tắt app đó rồi thử lại.", true);
       else camHint("Không mở được camera. Dùng Chọn ảnh thay thế.", true);
-      killFrame();
+      destroyFrame();
     }
   });
-  function stopCamera(keepOpen){
-    killFrame();
+  function stopCamera(keepOpen, destroy){
+    if(destroy) destroyFrame(); else releaseFrame();
     if(!keepOpen){ $("cam").hidden = true; document.body.style.overflow = ""; }
   }
   function closeCamera(){ stopCamera(false); $("camBtn").focus({ preventScroll:true }); }
-  $("camBtn").onclick = openCamera;
+  /* scan mode: "snap" opens the iPhone camera app (never asks for permission), "live" scans in-app */
+  const SCAN_KEY = "ngay50k-scanmode";
+  let scanMode = "snap";
+  try{ scanMode = localStorage.getItem(SCAN_KEY) === "live" ? "live" : "snap"; }catch(e){}
+  function renderScanMode(){
+    document.querySelectorAll("#scanSeg button").forEach(b => b.setAttribute("aria-pressed", b.dataset.scan === scanMode ? "true" : "false"));
+    $("scanHint").textContent = scanMode === "snap"
+      ? "Mở camera của iPhone để chụp mã rồi app tự đọc. Không bao giờ phải cấp quyền camera."
+      : "Đưa mã vào khung là app tự nhận, không cần bấm chụp. iPhone có thể hỏi quyền camera mỗi lần mở lại app.";
+  }
+  document.querySelectorAll("#scanSeg button").forEach(b => b.onclick = () => {
+    scanMode = b.dataset.scan;
+    try{ localStorage.setItem(SCAN_KEY, scanMode); }catch(e){}
+    renderScanMode();
+  });
+  renderScanMode();
+  $("snapQR").addEventListener("change", e => { const f = e.target.files && e.target.files[0]; e.target.value = ""; if(f) decodeFile(f); });
+  $("camBtn").onclick = () => { if(scanMode === "live") openCamera(); else $("snapQR").click(); };
   $("camClose").onclick = closeCamera;
-  $("camTorch").onclick = () => { if(camFrame) try{ camFrame.contentWindow.postMessage({ type:"torch", on:!torchOn }, location.origin); }catch(e){} };
+  $("camTorch").onclick = () => postCam({ type:"torch", on:!torchOn });
   $("camPhoto").onchange = e => { const f = e.target.files[0]; e.target.value = ""; closeCamera(); decodeFile(f); };
-  document.addEventListener("visibilitychange", () => { if(document.hidden && (camFrame || !$("cam").hidden)) closeCamera(); });
-  window.addEventListener("pagehide", () => stopCamera());
+  document.addEventListener("visibilitychange", () => { if(document.hidden) stopCamera(false, true); });
+  window.addEventListener("pagehide", () => stopCamera(false, true));
   document.addEventListener("keydown", e => { if(e.key === "Escape" && !$("cam").hidden) closeCamera(); });
 
   /* ---------- tag library ---------- */
