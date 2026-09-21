@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Ngày 50k</title>
 <meta name="description" content="Giữ mỗi ngày chi tiêu trong 50.000đ. Dữ liệu chỉ lưu trên máy của bạn.">
 <meta name="theme-color" content="#EEF3FF" media="(prefers-color-scheme: light)">
@@ -622,6 +622,10 @@ header .date{font-size:1.65rem; font-weight:800; letter-spacing:-.02em; color:va
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
   .note,.form,.ledger,.loan,.detail-card,.set-group,.tabs,.sheet{background:var(--glass-strong)}
 }
+
+/* no zoom: block double-tap zoom and focus auto-zoom */
+html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:100%}
+:where(input, select, textarea){font-size:16px}
 </style>
 </head>
 <body>
@@ -694,7 +698,7 @@ header .date{font-size:1.65rem; font-weight:800; letter-spacing:-.02em; color:va
         <div id="bankFields">
           <div class="field">
             <label for="acct"><span>Số tài khoản nhận</span><span id="acctSrc"></span></label>
-            <input id="acct" class="inp num" inputmode="numeric" autocomplete="off">
+            <input id="acct" class="inp num" inputmode="text" autocapitalize="characters" autocorrect="off" spellcheck="false" autocomplete="off">
           </div>
           <div class="field">
             <label for="holder"><span>Tên tài khoản <span class="opt">(không bắt buộc)</span></span><span id="holderSrc"></span></label>
@@ -892,7 +896,7 @@ header .date{font-size:1.65rem; font-weight:800; letter-spacing:-.02em; color:va
       <div class="form">
         <div class="form-head"><h2 id="contactFormTitle">Thêm người nhận</h2><button class="x" id="cancelContact" aria-label="Huỷ">✕</button></div>
         <div class="field"><label for="cName"><span>Tên gợi nhớ</span></label><input id="cName" class="inp" maxlength="40" placeholder="vd: Cô Lan bán cơm"></div>
-        <div class="field"><label for="cAcct"><span>Số tài khoản</span></label><input id="cAcct" class="inp num" inputmode="numeric"></div>
+        <div class="field"><label for="cAcct"><span>Số tài khoản</span></label><input id="cAcct" class="inp num" inputmode="text" autocapitalize="characters" autocorrect="off" spellcheck="false"></div>
         <div class="field"><label for="cBank"><span>Ngân hàng</span></label><input id="cBank" class="inp" list="bankList" placeholder="vd: Vietcombank"></div>
         <div class="field"><label for="cHolder"><span>Tên tài khoản <span class="opt">(không bắt buộc)</span></span></label><input id="cHolder" class="inp" maxlength="50" placeholder="vd: NGUYEN VAN A"></div>
         <div class="field"><label for="cMemo"><span>Nội dung mặc định (không bắt buộc)</span></label><input id="cMemo" class="inp" maxlength="80"></div>
@@ -973,7 +977,7 @@ header .date{font-size:1.65rem; font-weight:800; letter-spacing:-.02em; color:va
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v11</p>
+      <p class="sync" id="appVersion">Phiên bản v12</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. Giới hạn khoảng 5 MB được tính chung cho các mini app cùng tài khoản GitHub.</p>
 
       <h4 class="sub">Xoá dữ liệu</h4>
@@ -1148,6 +1152,7 @@ header .date{font-size:1.65rem; font-weight:800; letter-spacing:-.02em; color:va
   const keyOf = d => d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
   const todayKey = () => keyOf(new Date());
   const digits = s => String(s||"").replace(/\D/g,"");
+  const acctOf = s => String(s||"").toUpperCase().replace(/[^0-9A-Z]/g,"").slice(0, 24);
   // Two-tap delete: pop-up confirm dialogs are blocked inside the Claude viewer.
   function armed(btn){
     if(!btn) return true;
@@ -1224,7 +1229,7 @@ header .date{font-size:1.65rem; font-weight:800; letter-spacing:-.02em; color:va
 
   /* ---------- contacts ---------- */
   function findContact(acct, bank){
-    return state.contacts.find(c => c.acct === acct && (!bank || !c.bank || normBank(c.bank) === normBank(bank))) || null;
+    return state.contacts.find(c => acctOf(c.acct) === acctOf(acct) && (!bank || !c.bank || normBank(c.bank) === normBank(bank))) || null;
   }
   function sortedContacts(){
     return state.contacts.slice().sort((a,b)=> (b.uses||0)-(a.uses||0) || (b.last||0)-(a.last||0) || a.name.localeCompare(b.name));
@@ -1338,7 +1343,7 @@ header .date{font-size:1.65rem; font-weight:800; letter-spacing:-.02em; color:va
     const miss = [];
     if(!amtValue()) miss.push("amt");
     if(mode !== "cash"){
-      if(!digits($("acct").value)) miss.push("acct");
+      if(!acctOf($("acct").value)) miss.push("acct");
       if(!$("bank").value.trim()) miss.push("bank");
       if($("saveContact").checked && !activeContact && !$("contactName").value.trim()) miss.push("contactName");
     }
@@ -1381,7 +1386,7 @@ header .date{font-size:1.65rem; font-weight:800; letter-spacing:-.02em; color:va
     const when = k === todayKey() ? now.getTime() : new Date(k + "T" + pad(now.getHours()) + ":" + pad(now.getMinutes()) + ":00").getTime();
     const it = { id:uid(), amt:amtValue(), cat:selectedCat, note:$("desc").value.trim(), t:when };
     if(mode !== "cash"){
-      it.acct = digits($("acct").value); it.bank = $("bank").value.trim(); it.memo = $("memo").value.trim();
+      it.acct = acctOf($("acct").value); it.bank = $("bank").value.trim(); it.memo = $("memo").value.trim();
       const holder = $("holder").value.trim(); if(holder) it.holder = holder;
       let c = activeContact ? state.contacts.find(x=>x.id===activeContact.id) : null;
       if(!c && $("saveContact").checked){
@@ -1639,10 +1644,10 @@ header .date{font-size:1.65rem; font-weight:800; letter-spacing:-.02em; color:va
   function closeContactForm(){ $("contactForm").hidden = true; $("addContactBtn").hidden = false; editingContactId = null; }
   function selectCCat(id){ cCat = id; renderTagChips($("cCatChips"), id, selectCCat); }
   function refreshContactForm(){
-    $("saveContactBtn").disabled = !($("cName").value.trim() && digits($("cAcct").value) && $("cBank").value.trim());
+    $("saveContactBtn").disabled = !($("cName").value.trim() && acctOf($("cAcct").value) && $("cBank").value.trim());
   }
   function saveContactForm(){
-    const data = { name:$("cName").value.trim(), acct:digits($("cAcct").value), bank:$("cBank").value.trim(), holder:$("cHolder").value.trim(), memo:$("cMemo").value.trim(), cat:cCat };
+    const data = { name:$("cName").value.trim(), acct:acctOf($("cAcct").value), bank:$("cBank").value.trim(), holder:$("cHolder").value.trim(), memo:$("cMemo").value.trim(), cat:cCat };
     if(!data.name || !data.acct || !data.bank) return;
     if(editingContactId){
       const c = state.contacts.find(x=>x.id===editingContactId); if(c) Object.assign(c, data);
@@ -2051,7 +2056,7 @@ header .date{font-size:1.65rem; font-weight:800; letter-spacing:-.02em; color:va
 
   document.querySelectorAll(".tabs button").forEach(b => b.onclick = () => showTab(b.dataset.tab));
   $("amt").addEventListener("input", () => { setAmt(amtValue()); setSrc("amtSrc",""); [...$("amtChips").children].forEach(c=>c.setAttribute("aria-pressed","false")); refreshForm(); });
-  $("acct").addEventListener("input", e => { e.target.value = digits(e.target.value); setSrc("acctSrc",""); refreshForm(); });
+  $("acct").addEventListener("input", e => { e.target.value = acctOf(e.target.value); setSrc("acctSrc",""); refreshForm(); });
   $("bank").addEventListener("input", () => { setSrc("bankSrc",""); refreshForm(); });
   $("memo").addEventListener("input", () => { $("memo").dataset.typed = "1"; setSrc("memoSrc",""); renderSugg(); });
   $("desc").addEventListener("input", () => { $("desc").dataset.typed = "1"; renderSugg(); });
@@ -2145,7 +2150,7 @@ header .date{font-size:1.65rem; font-weight:800; letter-spacing:-.02em; color:va
   $("addContactBtn").onclick = () => openContactForm(null);
   $("cancelContact").onclick = closeContactForm;
   ["cName","cBank","cMemo"].forEach(id => $(id).addEventListener("input", refreshContactForm));
-  $("cAcct").addEventListener("input", e => { e.target.value = digits(e.target.value); refreshContactForm(); });
+  $("cAcct").addEventListener("input", e => { e.target.value = acctOf(e.target.value); refreshContactForm(); });
   $("saveContactBtn").onclick = saveContactForm;
 
   $("saveBudget").onclick = () => {
@@ -2167,9 +2172,11 @@ header .date{font-size:1.65rem; font-weight:800; letter-spacing:-.02em; color:va
 
 
   /* ---------- live camera QR scan (isolated in a frame that is destroyed on close) ---------- */
-  let camFrame = null, torchOn = false;
+  let camFrame = null, torchOn = false, camIdle = null;
+  const CAM_IDLE_MS = 60000;
   function camHint(t, err){ const h = $("camHint"); h.textContent = t; h.className = "cam-hint" + (err ? " err" : ""); }
   function killFrame(){
+    clearTimeout(camIdle); camIdle = null;
     if(!camFrame) return;
     try{ camFrame.contentWindow.postMessage({ type:"stop" }, location.origin); }catch(e){}
     const f = camFrame; camFrame = null;
@@ -2195,7 +2202,10 @@ header .date{font-size:1.65rem; font-weight:800; letter-spacing:-.02em; color:va
     if(e.origin !== location.origin) return;
     const m = e.data || {};
     if(m.src !== "ngay50k-scan" || !camFrame || e.source !== camFrame.contentWindow) return;
-    if(m.type === "ready"){ camHint("Đưa mã QR vào trong khung"); $("camTorch").hidden = !m.torch; $("camTorch").setAttribute("aria-pressed","false"); }
+    if(m.type === "ready"){
+      clearTimeout(camIdle);
+      camIdle = setTimeout(() => { closeCamera(); msg("Camera đã tự tắt sau 1 phút không quét, để máy có thể tự khoá màn hình.", true); }, CAM_IDLE_MS);
+      camHint("Đưa mã QR vào trong khung"); $("camTorch").hidden = !m.torch; $("camTorch").setAttribute("aria-pressed","false"); }
     else if(m.type === "qr"){
       $("camFrame").classList.add("hit");
       if(navigator.vibrate) try{ navigator.vibrate(60); }catch(err){}
@@ -2500,6 +2510,10 @@ header .date{font-size:1.65rem; font-weight:800; letter-spacing:-.02em; color:va
     try{ if(curTheme === "auto") localStorage.removeItem(THEME_KEY); else localStorage.setItem(THEME_KEY, curTheme); }catch(e){}
     applyTheme(curTheme);
   });
+
+  /* ---------- block pinch zoom (iOS ignores user-scalable=no) ---------- */
+  ["gesturestart","gesturechange","gestureend"].forEach(ev => document.addEventListener(ev, e => e.preventDefault(), { passive:false }));
+  document.addEventListener("touchmove", e => { if(e.touches.length > 1) e.preventDefault(); }, { passive:false });
 
   /* ---------- swipe right to go back ---------- */
   function backTarget(){
