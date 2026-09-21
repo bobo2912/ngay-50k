@@ -1,6 +1,14 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v13, ngày 21/09/2026
+**Phiên bản hiện tại:** v14, ngày 21/09/2026
+
+---
+
+## Có gì mới trong v14 (so với v13)
+
+- **Vuốt quay lại chỉ dùng trong cùng một menu:** từ trang con về trang trước, ví dụ từ chi tiết khoản vay về danh sách Khoản vay, từ form chuyển khoản về màn hình Giao dịch, từ form thêm khoản thu, form người nhận, form khoản vay. Màn hình Cài đặt vẫn vuốt để đóng.
+- **Không vuốt để đóng các bảng hiện từ dưới lên** (Sửa khoản chi, Chọn tag, Bộ lọc khoản vay). Các bảng này đóng bằng nút ✕.
+- **Không vuốt để chuyển giữa các menu.** Muốn đổi menu, bấm thanh tab ở đáy. Đổi tab không còn hiệu ứng trượt.
 
 ---
 
@@ -55,7 +63,7 @@
 
 ## Có gì mới trong v7 (so với v6)
 
-- **Vuốt ngang để quay lại.** Vuốt từ trái sang phải ở bất kỳ đâu để đóng form, bảng chọn, màn hình Cài đặt, camera, hoặc trở về tab Giao dịch. Vuốt chưa đủ xa thì huỷ.
+- **Vuốt ngang để quay lại** từ trang con về trang trước trong cùng menu. Vuốt chưa đủ xa thì huỷ.
 - **Sửa khoản chi đã lưu.** Chạm vào một khoản chi (ở tab Giao dịch hoặc Thu chi) để sửa số tiền, tag và ghi chú.
 - **Thư viện tag.** 20 tag có sẵn: Ăn, Uống, Đi lại, Xăng xe, Đi chợ, Mua sắm, Nhà cửa, Điện nước, Điện thoại và mạng, Sức khoẻ, Làm đẹp, Học tập, Giải trí, Du lịch, Con cái, Thú cưng, Hiếu hỷ và quà, Từ thiện, Sửa chữa, Khác.
   - Form chỉ hiện 5 tag bạn dùng nhiều nhất, còn lại nằm trong nút **＋ Tag khác**.
@@ -117,7 +125,7 @@
 
 ### Nền tảng
 - Cài lên màn hình chính như app, chạy **offline hoàn toàn**.
-- Vuốt từ trái sang phải để quay lại.
+- Vuốt từ trái sang phải để từ trang con quay về trang trước trong cùng menu.
 - Dữ liệu **chỉ lưu trên máy**, không gửi lên máy chủ nào. App không tải gì từ trang web khác.
 - Tự báo khi có bản mới, bấm **Tải lại** để cập nhật.
 - Giao diện Liquid Glass, sáng và tối theo cài đặt của máy. Thanh tab nổi ở đáy màn hình.
@@ -129,6 +137,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v14** | Vuốt quay lại chỉ trong cùng menu, không áp dụng cho bảng hiện từ dưới lên và giữa các menu |
 | **v13** | Vuốt quay lại trượt theo tay, hiệu ứng mờ và trượt khi chuyển màn hình |
 | **v12** | Số tài khoản có chữ, camera tự tắt sau 1 phút, chặn phóng to thu nhỏ |
 | **v11** | Camera chạy trong khung riêng, tắt hẳn khi đóng; hiện số phiên bản trong Cài đặt |
