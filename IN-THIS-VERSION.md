@@ -1,6 +1,14 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v11, ngày 20/09/2026
+**Phiên bản hiện tại:** v12, ngày 21/09/2026
+
+---
+
+## Có gì mới trong v12 (so với v11)
+
+- **Số tài khoản có chữ.** Đọc và lưu đúng số tài khoản ảo có chữ cái như `SPE1322649955230` (ví ShopeePay qua BIDV). Trước đây app bỏ mất phần chữ. Ô số tài khoản giờ cho gõ cả chữ.
+- **Camera tự tắt sau 1 phút** nếu mở màn hình quét mà không quét, để iPhone tự khoá màn hình theo thời gian cài đặt.
+- **Không phóng to, thu nhỏ được** bằng hai ngón tay hay chạm đúp. Chạm vào ô nhập cũng không còn bị tự phóng to.
 
 ---
 
@@ -113,6 +121,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v12** | Số tài khoản có chữ, camera tự tắt sau 1 phút, chặn phóng to thu nhỏ |
 | **v11** | Camera chạy trong khung riêng, tắt hẳn khi đóng; hiện số phiên bản trong Cài đặt |
 | **v10** | Camera chỉ bật khi quét QR, bỏ mũi tên khi vuốt quay lại |
 | **v9** | Chọn giao diện Sáng, Tối hoặc Tự động |
