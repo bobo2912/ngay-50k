@@ -55,7 +55,7 @@ Tất cả nằm trong **Cài đặt** (biểu tượng bánh răng ở góc tr�
 ## Khi muốn sửa app
 
 1. Tải các file mới lên GitHub (**Add file**, rồi **Upload files**).
-2. Mở `sw.js`, tăng số phiên bản ở dòng `const VERSION = "ngay50k-v12";` lên số tiếp theo (`v13`, `v14`…)
+2. Mở `sw.js`, tăng số phiên bản ở dòng `const VERSION = "ngay50k-v13";` lên số tiếp theo (`v14`, `v15`…)
 3. Kiểm tra số phiên bản ở cuối màn hình **Cài đặt**, mục **Dung lượng**, để chắc máy đã nhận bản mới.
 4. Lần sau mở app có mạng, app hiện thông báo **Đã có bản mới**, bấm **Tải lại** là xong. Dữ liệu vẫn giữ nguyên.
 
