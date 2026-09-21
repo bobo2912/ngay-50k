@@ -984,7 +984,7 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v13</p>
+      <p class="sync" id="appVersion">Phiên bản v14</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. Giới hạn khoảng 5 MB được tính chung cho các mini app cùng tài khoản GitHub.</p>
 
       <h4 class="sub">Xoá dữ liệu</h4>
@@ -2525,16 +2525,15 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
   /* ---------- swipe right to go back ---------- */
   function backTarget(){
     if(!$("cam").hidden) return closeCamera;
-    if(!$("tagSheet").hidden) return closeTagSheet;
-    if(!$("editSheet").hidden) return closeEdit;
-    if(!$("filterSheet").hidden) return closeSheet;
+    /* bottom-up popups close with their own ✕ button, not with a swipe */
+    if(!$("tagSheet").hidden || !$("editSheet").hidden || !$("filterSheet").hidden) return null;
     if(settingsOpenNow()) return closeSettings;
     if(!$("formBox").hidden) return () => $("cancelForm").click();
     if(!$("incomeForm").hidden) return () => $("cancelIncome").click();
     if(!$("contactForm").hidden) return () => $("cancelContact").click();
     if(!$("loanForm").hidden) return () => $("cancelLoan").click();
     if(!$("loanDetail").hidden){ const b = $("loanDetail").querySelector(".back"); if(b) return () => b.click(); }
-    if(currentTab !== "today") return () => showTab("today");
+    /* no swiping between menus: only sub-page -> its parent inside the same menu */
     return null;
   }
   let sw = null;
@@ -2589,19 +2588,11 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
   function resetViewStyle(el){ el.style.transition = ""; el.style.transform = ""; el.style.opacity = ""; el.style.willChange = ""; }
   function backViewEl(){
     for(const id of ["formBox","incomeForm","contactForm","loanForm","loanDetail"]) if(!$(id).hidden) return $(id);
-    if(!$("editSheet").hidden || !$("tagSheet").hidden || !$("filterSheet").hidden || !$("cam").hidden) return null;
-    if(currentTab !== "today") return $("tab-" + currentTab);
     return null;
   }
 
   /* ---------- smooth view changes: fade + slide whenever a view appears ---------- */
   let navDir = "fwd";
-  const TAB_ORDER = ["today","money","loans","people"];
-  const _showTabS = showTab;
-  showTab = function(n){
-    if(n !== currentTab && navDir !== "back") navDir = TAB_ORDER.indexOf(n) < TAB_ORDER.indexOf(currentTab) ? "back" : "fwd";
-    _showTabS(n);
-  };
   document.addEventListener("click", e => {
     if(e.target.closest && e.target.closest(".x, .back, #cancelForm, #cancelIncome, #cancelContact, #cancelLoan, #doneBtn")) navDir = "back";
   }, true);
@@ -2620,7 +2611,7 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
     shown.forEach(playIn);
     if(shown.size){ clearTimeout(navReset); navReset = setTimeout(() => { navDir = "fwd"; }, 60); }
   });
-  ["tab-today","tab-money","tab-loans","tab-people","startBox","formBox","resultBox","incomeForm","contactForm","loansMain","loanForm","loanDetail"]
+  ["startBox","formBox","resultBox","incomeForm","contactForm","loansMain","loanForm","loanDetail"]
     .forEach(id => { const el = $(id); if(el) viewObs.observe(el, { attributes:true, attributeFilter:["hidden"] }); });
   document.addEventListener("touchend", endSwipe, { passive:true });
   document.addEventListener("touchcancel", () => { if(sw && sw.panel){ sw.panel.style.transition = ""; sw.panel.style.transform = ""; } sw = null; }, { passive:true });
