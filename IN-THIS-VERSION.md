@@ -1,6 +1,26 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v20, ngày 24/09/2026
+**Phiên bản hiện tại:** v22, ngày 24/09/2026
+
+---
+
+## Có gì mới trong v22 (so với v21)
+
+- **Chạm vào cột trong biểu đồ 7 ngày để xem lại ngày đó.** Danh sách giao dịch nhảy sang đúng ngày, cột và nhãn ngày đang xem được tô xanh. Chạm cột "Nay" để quay về hôm nay.
+- **Thêm chi tiêu trung bình mỗi ngày** dưới biểu đồ 7 ngày, kèm so sánh với hạn mức, ví dụ "Trung bình 38.333đ/ngày trong 3 ngày có ghi · thấp hơn hạn mức 11.667đ".
+- **Sửa khoảng cách trong Cài đặt:** tiêu đề "Cài đặt" không còn dính sát mục đầu tiên của danh sách.
+
+---
+
+## Có gì mới trong v21 (so với v20)
+
+- **Giao diện gọn hơn.** Chỉ những thứ quan trọng nhất còn hiệu ứng kính và nổi lên: thẻ số tiền còn lại, thẻ tổng thu chi, và thanh tab. Mọi thẻ khác là nền phẳng viền mảnh, không đổ bóng. Nền màu dịu hơn nhiều.
+- **Bo góc nhỏ lại** (16–18px cho thẻ, 14px cho nút) và **chữ nhỏ lại**: mỗi màn hình chỉ còn một con số lớn, tiêu đề mục là chữ in hoa nhỏ màu xám.
+- **Ba nút nhanh Ảnh QR, Nhập tay, Tiền mặt** chuyển thành dòng chữ nhỏ dưới nút quét.
+- **Form ghi khoản chi trở thành bảng hiện từ dưới lên,** che màn hình chính thay vì đẩy nội dung xuống. Đóng bằng nút ✕ hoặc chạm ra ngoài.
+- **Thông tin từ mã QR hiển thị dạng tóm tắt để đọc** (số tài khoản, ngân hàng, tên tài khoản, nội dung), có nút **Sửa** khi cần đổi. Không còn 4 ô nhập chiếm chỗ.
+- **Ba nhóm trong form đổi tên:** Cần điền (kèm đếm "còn 1 mục" hoặc "✓ đủ rồi"), Đã điền sẵn từ mã QR, Bổ sung.
+- **Thanh tab dạng viên nổi** bo tròn, cách mép màn hình, tab đang chọn có nền xanh nhạt.
 
 ---
 
@@ -143,7 +163,7 @@
   - Báo trước nếu khoản chi làm vượt hạn mức.
 - **Đoạn chuyển tiền cho MB Bank:** sao chép và mở MB Bank bằng một lần chạm.
 - **Xem theo ngày:** lùi, tiến hoặc chọn ngày bất kỳ. Chạm khoản chi để sửa số tiền, ghi chú, ngày và tag. Xoá bằng hai lần chạm.
-- **Biểu đồ 7 ngày gần nhất** so với hạn mức.
+- **Biểu đồ 7 ngày gần nhất** so với hạn mức, có chi tiêu trung bình mỗi ngày. Chạm vào cột để xem lại giao dịch ngày đó.
 - **Nhắc sao lưu** khi quá 7 ngày chưa sao lưu.
 
 ### Tab Thu chi
@@ -189,6 +209,8 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v22** | Chạm cột biểu đồ 7 ngày để xem lại ngày đó, thêm chi tiêu trung bình mỗi ngày |
+| **v21** | Giao diện gọn: bớt kính, bớt bo góc, chữ nhỏ lại; form ghi khoản chi thành popup |
 | **v20** | Sửa được khoản thu, sửa được ngày của khoản chi và khoản thu |
 | **v19** | Cài đặt chia thành menu con, thêm trang Quản lý tag và chi tiết từng tag |
 | **v18** | Tag xuống cuối form, thu nhỏ các nút phụ như nhập nhanh và tag |
