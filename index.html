@@ -653,9 +653,9 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
 :root[data-theme="dark"]{--field-strong:rgba(255,255,255,.10); --field-focus:rgba(255,255,255,.16); --over-soft:rgba(255,125,117,.12)}
 
 /* secondary controls stay small and quiet so the important fields lead */
-#amtChips, #catChips, #eTagChips{gap:6px; margin-top:8px}
-#amtChips .chip, #catChips .chip, #eTagChips .chip, .chips.sugg .chip{font-size:.76rem; font-weight:600; padding:4px 9px; border-width:1px; color:var(--muted); box-shadow:none}
-#amtChips .chip[aria-pressed="true"], #catChips .chip[aria-pressed="true"], #eTagChips .chip[aria-pressed="true"]{color:#fff; box-shadow:none}
+#amtChips, #catChips, #eTagChips, #eIncChips, #incChips{gap:6px; margin-top:8px}
+#amtChips .chip, #catChips .chip, #eTagChips .chip, #eIncChips .chip, #incChips .chip, .chips.sugg .chip{font-size:.76rem; font-weight:600; padding:4px 9px; border-width:1px; color:var(--muted); box-shadow:none}
+#amtChips .chip[aria-pressed="true"], #catChips .chip[aria-pressed="true"], #eTagChips .chip[aria-pressed="true"], #eIncChips .chip[aria-pressed="true"], #incChips .chip[aria-pressed="true"]{color:#fff; box-shadow:none}
 #catChips .chip.more, #eTagChips .chip.more{color:var(--note); border-style:dashed}
 .blk-more .field > label > span:first-child, #eTagChips ~ * , .field:has(#catChips) > label > span:first-child{font-weight:600}
 .field:has(#catChips) > label, .field:has(#eTagChips) > label{margin-bottom:2px}
@@ -1108,7 +1108,7 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v19</p>
+      <p class="sync" id="appVersion">Phiên bản v20</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. Giới hạn khoảng 5 MB được tính chung cho các mini app cùng tài khoản GitHub.</p>
 
       <h4 class="sub">Xoá dữ liệu</h4>
@@ -1159,9 +1159,17 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
     <label for="eNote"><span>Ghi chú</span></label>
     <input id="eNote" class="inp" maxlength="60" autocomplete="off" placeholder="vd: cơm trưa">
   </div>
-  <div class="field">
+  <div class="field" id="eDateField">
+    <label for="eDate"><span>Ngày</span></label>
+    <input id="eDate" class="inp" type="date">
+  </div>
+  <div class="field" id="eTagField">
     <label><span>Tag</span></label>
     <div class="chips" id="eTagChips" style="margin-top:0"></div>
+  </div>
+  <div class="field" id="eIncField" hidden>
+    <label><span>Nguồn thu</span></label>
+    <div class="chips" id="eIncChips" style="margin-top:0"></div>
   </div>
   <p class="edit-hint" id="editHint" hidden>Chỉ sửa trong sổ chi tiêu, không thay đổi giao dịch đã chuyển ở ngân hàng.</p>
   <div class="sheet-foot">
@@ -1737,6 +1745,7 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
     });
   }
   function incomeRow(it, k){
+    const _k = k;
     const c = INC.find(x=>x.id===it.cat) || INC[4];
     const li = document.createElement("li"); li.className = "item";
     li.innerHTML = '<span class="cat" aria-hidden="true"></span><div class="desc"><div></div><div></div></div><span class="amt plus num"></span><button class="del" aria-label="Xoá khoản thu">✕</button>';
@@ -1744,7 +1753,12 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
     li.querySelector(".desc div:first-child").textContent = it.note || c.label;
     li.querySelector(".desc div:last-child").textContent = "Thu · " + c.label;
     li.querySelector(".amt").textContent = "+" + fmt(it.amt);
+    li.classList.add("tap"); li.tabIndex = 0; li.setAttribute("role","button");
+    li.setAttribute("aria-label", "Sửa khoản thu " + (it.note || "") + " " + fmt(it.amt));
+    li.addEventListener("click", e => { if(e.target.closest(".del")) return; openEdit(it.id, _k, "in"); });
+    li.addEventListener("keydown", e => { if(e.target === li && (e.key === "Enter" || e.key === " ")){ e.preventDefault(); openEdit(it.id, _k, "in"); } });
     li.querySelector(".del").onclick = (e) => {
+      e.stopPropagation();
       if(!armed(e.currentTarget)) return;
       state.income[k] = (state.income[k]||[]).filter(x=>x.id!==it.id);
       if(!state.income[k].length) delete state.income[k];
@@ -2543,27 +2557,42 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
   $("tagBack").onclick = closeTagSheet;
 
   /* ---------- edit a saved expense ---------- */
-  let editing = null, eCat = "an";
-  function findItem(id, day){
-    let list = state.days[day] || [], it = list.find(x => x.id === id);
+  let editing = null, eCat = "an", eInc = "luong";
+  function findItem(id, day, kind){
+    const src = kind === "in" ? state.income : state.days;
+    let list = src[day] || [], it = list.find(x => x.id === id);
     if(it) return { it, day };
-    for(const k in state.days){ it = (state.days[k]||[]).find(x => x.id === id); if(it) return { it, day:k }; }
+    for(const k in src){ it = (src[k]||[]).find(x => x.id === id); if(it) return { it, day:k }; }
     return null;
   }
   function selectECat(id){ eCat = id; renderTagChips($("eTagChips"), id, selectECat); }
+  function selectEInc(id){
+    eInc = id;
+    const box = $("eIncChips"); box.innerHTML = "";
+    INC.forEach(c => {
+      const b = document.createElement("button"); b.type = "button"; b.className = "chip";
+      b.textContent = c.icon + " " + c.label; b.setAttribute("aria-pressed", c.id === id ? "true" : "false");
+      b.onclick = () => selectEInc(c.id); box.appendChild(b);
+    });
+  }
   const eAmtVal = () => parseInt(digits($("eAmt").value), 10) || 0;
-  function openEdit(id, day){
-    const f = findItem(id, day); if(!f) return;
-    editing = { id, day:f.day };
+  function openEdit(id, day, kind){
+    kind = kind === "in" ? "in" : "out";
+    const f = findItem(id, day, kind); if(!f) return;
+    editing = { id, day:f.day, kind };
     const it = f.it, d = new Date(it.t);
+    $("editTitle").textContent = kind === "in" ? "Sửa khoản thu" : "Sửa khoản chi";
     $("eAmt").value = it.amt ? it.amt.toLocaleString("vi-VN") : "";
     $("eNote").value = it.note || "";
-    selectECat(it.cat);
-    const dk = f.day, parts = [pad(d.getHours()) + ":" + pad(d.getMinutes()) + " ngày " + fmtDate(dk)];
-    if(it.bank) parts.push("chuyển khoản " + it.bank + (it.acct ? " · " + it.acct : ""));
-    else parts.push("tiền mặt");
+    $("eDate").value = f.day; $("eDate").max = todayKey();
+    $("eDateField").querySelector("label span").textContent = kind === "in" ? "Ngày nhận" : "Ngày giao dịch";
+    $("eTagField").hidden = kind === "in"; $("eIncField").hidden = kind !== "in";
+    if(kind === "in") selectEInc(it.cat || "luong"); else selectECat(it.cat);
+    const parts = [pad(d.getHours()) + ":" + pad(d.getMinutes()) + " ngày " + fmtDate(f.day)];
+    if(kind === "out") parts.push(it.bank ? "chuyển khoản " + it.bank + (it.acct ? " · " + it.acct : "") : "tiền mặt");
+    else parts.push("khoản thu");
     $("editMeta").textContent = parts.join(" · ");
-    $("editHint").hidden = !it.bank;
+    $("editHint").hidden = !(kind === "out" && it.bank);
     $("saveEdit").disabled = !eAmtVal();
     showSheet("editSheet", "editBack");
   }
@@ -2573,10 +2602,26 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
   $("eAmt000").onclick = () => { const v = eAmtVal(); if(!v || v * 1000 > 999999999999){ $("eAmt").focus(); return; } $("eAmt").value = (v*1000).toLocaleString("vi-VN"); $("saveEdit").disabled = false; };
   $("saveEdit").onclick = () => {
     if(!editing) return;
-    const f = findItem(editing.id, editing.day); if(!f){ closeEdit(); return; }
+    const kind = editing.kind, src = kind === "in" ? state.income : state.days;
+    const f = findItem(editing.id, editing.day, kind); if(!f){ closeEdit(); return; }
     const v = eAmtVal(); if(!v) return;
-    f.it.amt = v; f.it.cat = eCat; f.it.note = $("eNote").value.trim();
-    if(f.it.contactId){ const c = state.contacts.find(x => x.id === f.it.contactId); if(c) c.cat = eCat; }
+    const it = f.it;
+    it.amt = v; it.note = $("eNote").value.trim();
+    it.cat = kind === "in" ? eInc : eCat;
+    if(kind === "out" && it.contactId){ const c = state.contacts.find(x => x.id === it.contactId); if(c) c.cat = eCat; }
+    const newDay = $("eDate").value || f.day;
+    if(newDay !== f.day){
+      const old = new Date(it.t), nd = new Date(newDay + "T00:00:00");
+      if(!isNaN(nd)){
+        nd.setHours(old.getHours(), old.getMinutes(), old.getSeconds(), 0);
+        it.t = nd.getTime();
+        src[f.day] = (src[f.day]||[]).filter(x => x.id !== it.id);
+        if(!src[f.day].length) delete src[f.day];
+        (src[newDay] = src[newDay] || []).push(it);
+        src[newDay].sort((a, b) => (a.t||0) - (b.t||0));
+        if(kind === "out") viewDay = newDay;
+      }
+    }
     persist(); renderAll(); closeEdit();
   };
   $("cancelEdit").onclick = closeEdit;
