@@ -1,6 +1,14 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v19, ngày 23/09/2026
+**Phiên bản hiện tại:** v20, ngày 24/09/2026
+
+---
+
+## Có gì mới trong v20 (so với v19)
+
+- **Sửa được khoản thu.** Chạm vào một khoản thu trong tab Thu chi để sửa số tiền, ghi chú, ngày nhận và nguồn thu.
+- **Sửa được ngày.** Cả khoản chi lẫn khoản thu đều đổi ngày được ngay trong bảng sửa. Khoản đó tự chuyển sang đúng ngày mới, giữ nguyên giờ.
+- Nút chọn nguồn thu cũng nhỏ và nhạt như các nút phụ khác.
 
 ---
 
@@ -134,13 +142,13 @@
   - Lưu người nhận vào danh sách ngay khi ghi.
   - Báo trước nếu khoản chi làm vượt hạn mức.
 - **Đoạn chuyển tiền cho MB Bank:** sao chép và mở MB Bank bằng một lần chạm.
-- **Xem theo ngày:** lùi, tiến hoặc chọn ngày bất kỳ. Chạm khoản chi để sửa số tiền, tag, ghi chú. Xoá bằng hai lần chạm.
+- **Xem theo ngày:** lùi, tiến hoặc chọn ngày bất kỳ. Chạm khoản chi để sửa số tiền, ghi chú, ngày và tag. Xoá bằng hai lần chạm.
 - **Biểu đồ 7 ngày gần nhất** so với hạn mức.
 - **Nhắc sao lưu** khi quá 7 ngày chưa sao lưu.
 
 ### Tab Thu chi
 - Xem tổng thu, tổng chi và số còn lại theo tháng.
-- Thêm khoản thu theo nguồn: Lương, Thưởng, Bán hàng, Được cho, Khác.
+- Thêm khoản thu theo nguồn: Lương, Thưởng, Bán hàng, Được cho, Khác. Chạm vào khoản thu để sửa số tiền, ghi chú, ngày nhận, nguồn thu.
 - Biểu đồ so sánh thu chi theo ngày, tuần, tháng.
 - Thống kê chi theo tag và danh sách tất cả thu chi trong tháng.
 
@@ -181,6 +189,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v20** | Sửa được khoản thu, sửa được ngày của khoản chi và khoản thu |
 | **v19** | Cài đặt chia thành menu con, thêm trang Quản lý tag và chi tiết từng tag |
 | **v18** | Tag xuống cuối form, thu nhỏ các nút phụ như nhập nhanh và tag |
 | **v17** | Form chia 3 nhóm rõ ràng, ô nhập nổi bật, đánh dấu ô còn thiếu |
