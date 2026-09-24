@@ -1,6 +1,14 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v23, ngày 24/09/2026
+**Phiên bản hiện tại:** v24, ngày 24/09/2026
+
+---
+
+## Có gì mới trong v24 (so với v23)
+
+- **Bảng nhập tiền không còn hở mảng trắng** khi kéo xuống: nền bảng, thanh vuốt và tiêu đề dùng chung một màu đặc, thay cho nền trong mờ.
+- **Chạm ra ngoài không đóng bảng nữa.** Chỉ nút ✕ (hoặc phím Esc trên máy tính) mới đóng, tránh mất dữ liệu đang nhập do lỡ tay.
+- **Thu thêm lề dưới** ở màn hình Giao dịch, khối cuối nằm gần thanh menu hơn.
 
 ---
 
@@ -218,6 +226,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v24** | Bảng nhập tiền nền đặc không hở, chỉ đóng bằng nút ✕, gọn lề dưới |
 | **v23** | Bỏ dòng hướng dẫn thừa, gọn khoảng trắng, sửa mép trên bảng nhập và lề ô số tiền |
 | **v22** | Chạm cột biểu đồ 7 ngày để xem lại ngày đó, thêm chi tiêu trung bình mỗi ngày |
 | **v21** | Giao diện gọn: bớt kính, bớt bo góc, chữ nhỏ lại; form ghi khoản chi thành popup |

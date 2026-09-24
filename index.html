@@ -819,6 +819,15 @@ main{padding-bottom:calc(86px + env(safe-area-inset-bottom,0px))}
 /* amount box: normal padding like the other inputs */
 .amount-inp{padding:10px 14px; border:1px solid var(--line); background:var(--field-strong); border-radius:12px}
 .form .amount-inp:focus{background:var(--field-focus); border-color:var(--note); box-shadow:0 0 0 3px var(--note-soft)}
+
+/* v24: solid sheet so no seam shows when the sheet is pulled down */
+:root{--sheet-bg:#F6F7FB}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){--sheet-bg:#131829} }
+:root[data-theme="dark"]{--sheet-bg:#131829}
+.sheet{background:var(--sheet-bg); -webkit-backdrop-filter:none; backdrop-filter:none}
+.form-sheet > .grab, .form-sheet .form-head{background:var(--sheet-bg); -webkit-backdrop-filter:none; backdrop-filter:none}
+.form-sheet .form-head{box-shadow:0 1px 0 var(--line)}
+main{padding-bottom:calc(74px + env(safe-area-inset-bottom,0px))}
 </style>
 </head>
 <body>
@@ -1163,7 +1172,7 @@ main{padding-bottom:calc(86px + env(safe-area-inset-bottom,0px))}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v23</p>
+      <p class="sync" id="appVersion">Phiên bản v24</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. Giới hạn khoảng 5 MB được tính chung cho các mini app cùng tài khoản GitHub.</p>
 
       <h4 class="sub">Xoá dữ liệu</h4>
@@ -2459,7 +2468,6 @@ main{padding-bottom:calc(86px + env(safe-area-inset-bottom,0px))}
   $("cashBtn").onclick = () => openForm("cash");
   $("bankEdit").onclick = () => { bankSummary = false; renderBankSummary(); $("acct").focus({ preventScroll:true }); };
   $("cancelForm").onclick = closeForm;
-  $("formBack").onclick = closeForm;
   $("saveBtn").onclick = saveExpense;
   $("doneBtn").onclick = closeForm;
   $("copyBtn").onclick = async () => { $("copyBtn").textContent = await copyText() ? "✓ Đã sao chép" : "Chưa sao chép được, giữ tay lên đoạn chữ để chép"; };
