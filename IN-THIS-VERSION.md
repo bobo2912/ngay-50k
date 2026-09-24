@@ -1,6 +1,33 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v16, ngày 21/09/2026
+**Phiên bản hiện tại:** v19, ngày 23/09/2026
+
+---
+
+## Có gì mới trong v19 (so với v18)
+
+- **Cài đặt gọn lại thành menu.** Màn hình Cài đặt giờ là danh sách 6 mục, mỗi mục hiện giá trị đang đặt ở bên phải: Giao diện, Quét mã QR, Hạn mức chi một ngày, Quản lý tag, Sao lưu và đồng bộ, Dung lượng. Chạm vào một mục để mở trang riêng, bấm "‹ Cài đặt" hoặc vuốt sang phải để quay lại. Số phiên bản nằm ở cuối danh sách.
+- **Quản lý tag:** xem toàn bộ tag kèm số khoản chi đang dùng và nhãn "tự tạo", "đang ẩn".
+- **Trang chi tiết từng tag:** đổi tên và icon (với tag tự tạo), ẩn hoặc hiện lại tag, xoá tag tự tạo. Ẩn tag chỉ bỏ nó khỏi danh sách chọn, các khoản chi cũ vẫn giữ nguyên tag.
+- **Tạo tag mới ngay trong Cài đặt.** Trạng thái ẩn tag cũng được đồng bộ giữa các máy khi gộp dữ liệu.
+
+---
+
+## Có gì mới trong v18 (so với v17)
+
+- **Tag chuyển xuống cuối cùng,** sau ngày giao dịch trong nhóm "Chi tiết khác". Thứ tự nhập giờ là: số tiền, ghi chú, thông tin chuyển khoản, rồi mới tới tag. Bảng Sửa khoản chi cũng theo thứ tự này: số tiền, ghi chú, tag.
+- **Các nút phụ nhỏ và nhạt hơn:** nút nhập nhanh 5k, 10k, 15k, 20k, 30k, các nút tag và các gợi ý nội dung gần đây. Nhờ vậy mắt tập trung vào ô số tiền và các ô quan trọng, nút được chọn vẫn nổi rõ.
+
+---
+
+## Có gì mới trong v17 (so với v16)
+
+- **Form ghi khoản chi chia thành 3 nhóm rõ ràng,** để biết ngay cần điền gì:
+  1. **Bạn cần điền:** số tiền, tag, ghi chú.
+  2. **Thông tin chuyển khoản:** số tài khoản, tên tài khoản, ngân hàng, nội dung. Có nhãn "✓ 4 ô đã tự điền" khi app đọc được từ mã QR. Nhóm này ẩn khi trả tiền mặt.
+  3. **Chi tiết khác:** ngày giao dịch.
+- **Ô cần điền nổi bật hơn:** ô nhập có nền và viền rõ, tách hẳn khỏi nền kính. Ô bắt buộc còn trống có dấu * đỏ và nhãn "cần điền", khi bấm vào có viền xanh đậm.
+- Đổi tên "Loại chi" thành "Tag" cho thống nhất với thư viện tag.
 
 ---
 
@@ -130,6 +157,7 @@
 - **Giao diện:** Tự động, Sáng hoặc Tối.
 - **Quét mã QR:** Camera iPhone hoặc Quét trực tiếp.
 - **Hạn mức chi một ngày.**
+- **Quản lý tag:** danh sách tag, chi tiết từng tag, đổi tên và icon, ẩn hoặc hiện, xoá tag tự tạo.
 - **Sao lưu và đồng bộ:**
   - Xuất file sao lưu.
   - Nhập từ file, chọn **Gộp** hoặc **Thay toàn bộ**, có xem trước thay đổi và **Hoàn tác**.
@@ -153,6 +181,9 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v19** | Cài đặt chia thành menu con, thêm trang Quản lý tag và chi tiết từng tag |
+| **v18** | Tag xuống cuối form, thu nhỏ các nút phụ như nhập nhanh và tag |
+| **v17** | Form chia 3 nhóm rõ ràng, ô nhập nổi bật, đánh dấu ô còn thiếu |
 | **v16** | Quét QR bằng camera iPhone không cần cấp quyền, chọn cách quét trong Cài đặt |
 | **v15** | Ít hỏi quyền camera hơn, mở thẳng MB Bank không qua trang trắng |
 | **v14** | Vuốt quay lại chỉ trong cùng menu, không áp dụng cho bảng hiện từ dưới lên và giữa các menu |
