@@ -682,6 +682,130 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
 .tag-preview{display:flex; align-items:center; gap:10px; margin:0 0 6px; font-size:1.15rem; font-weight:700}
 .tag-preview .ic{font-size:1.8rem}
 .set-page .set-group{margin-top:0}
+
+/* ================= CLEAN GLASS (v21) ================= */
+:root{
+  --note:#1D4ED8; --note-soft:rgba(29,78,216,.10); --ink:#16181D; --muted:#6B7280; --line:#E7E8EE;
+  --glass:rgba(255,255,255,.62); --glass-border:rgba(255,255,255,.78); --glass-hi:rgba(255,255,255,.9); --glass-strong:rgba(252,253,255,.88);
+  --shadow:0 6px 20px rgba(32,48,96,.10); --shadow-s:0 2px 8px rgba(32,48,96,.07);
+  --field-strong:#FFFFFF; --field:#FFFFFF; --field-focus:#FFFFFF;
+  --tint-a:#3B7BFF; --tint-b:#1D4ED8; --tint-shadow:rgba(29,78,216,.26);
+  --blob1:rgba(120,170,255,.30); --blob2:rgba(178,160,255,.24); --blob3:rgba(255,190,220,.22); --blob4:rgba(150,225,205,.18); --bg:#F2F4F9;
+  --flat:#FFFFFF;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --note:#78A8FF; --note-soft:rgba(120,168,255,.16); --ink:#EDF0F7; --muted:#9BA5BC; --line:rgba(255,255,255,.10);
+  --glass:rgba(32,40,66,.55); --glass-border:rgba(255,255,255,.10); --glass-hi:rgba(255,255,255,.10); --glass-strong:rgba(20,26,46,.90);
+  --shadow:0 8px 24px rgba(0,0,0,.35); --shadow-s:0 2px 10px rgba(0,0,0,.25);
+  --field-strong:rgba(255,255,255,.06); --field:rgba(255,255,255,.06); --field-focus:rgba(255,255,255,.10);
+  --blob1:rgba(40,80,190,.35); --blob2:rgba(90,60,170,.30); --blob3:rgba(130,45,95,.25); --blob4:rgba(20,90,80,.22); --bg:#0C1020;
+  --flat:rgba(255,255,255,.045);
+} }
+:root[data-theme="dark"]{
+  --note:#78A8FF; --note-soft:rgba(120,168,255,.16); --ink:#EDF0F7; --muted:#9BA5BC; --line:rgba(255,255,255,.10);
+  --glass:rgba(32,40,66,.55); --glass-border:rgba(255,255,255,.10); --glass-hi:rgba(255,255,255,.10); --glass-strong:rgba(20,26,46,.90);
+  --shadow:0 8px 24px rgba(0,0,0,.35); --shadow-s:0 2px 10px rgba(0,0,0,.25);
+  --field-strong:rgba(255,255,255,.06); --field:rgba(255,255,255,.06); --field-focus:rgba(255,255,255,.10);
+  --blob1:rgba(40,80,190,.35); --blob2:rgba(90,60,170,.30); --blob3:rgba(130,45,95,.25); --blob4:rgba(20,90,80,.22); --bg:#0C1020;
+  --flat:rgba(255,255,255,.045);
+}
+body::before, .settings::before{background:
+  radial-gradient(70% 45% at 8% 0%, var(--blob1) 0%, transparent 70%),
+  radial-gradient(60% 40% at 100% 18%, var(--blob2) 0%, transparent 70%),
+  radial-gradient(60% 40% at 0% 68%, var(--blob4) 0%, transparent 70%),
+  radial-gradient(75% 40% at 70% 100%, var(--blob3) 0%, transparent 70%),
+  var(--bg)}
+
+/* flat cards everywhere except the few that should float */
+#tab-today section:has(#list), #tab-today section:has(#week), .chart-sec, #tab-money section:has(#catBreakdown),
+#tab-money section:has(#ledgerList), #tab-people section:has(#peopleList), .loan, .detail-card, .set-group, .set-nav,
+.import-card, .backup-nudge, .result, .form{
+  background:var(--flat); -webkit-backdrop-filter:none; backdrop-filter:none;
+  border:1px solid var(--line); box-shadow:none; border-radius:16px}
+.note, .ledger, .tabs{background:var(--glass); -webkit-backdrop-filter:blur(20px) saturate(165%); backdrop-filter:blur(20px) saturate(165%);
+  border:1px solid var(--glass-border); box-shadow:var(--shadow); border-radius:18px}
+.form{border:0; background:transparent; padding:0}
+.result{border-radius:16px; padding:14px 16px}
+
+/* type scale: one big number, everything else calm */
+h2{font-size:1.02rem; font-weight:700}
+main{padding:12px 16px calc(104px + env(safe-area-inset-bottom,0px))}
+header{margin:2px 2px 14px}
+.date-small{font-size:.8rem}
+header .date{font-size:1.1rem; font-weight:600}
+.gear{width:38px; height:38px; border-radius:19px; background:transparent; border:0; box-shadow:none; color:var(--muted)}
+.note{padding:16px 18px 16px}
+.note .remain-label{font-size:.7rem; font-weight:600; letter-spacing:.07em; text-transform:uppercase}
+.note .remain{font-size:2.5rem; letter-spacing:-.025em; margin-top:2px}
+.badge{font-size:.68rem; letter-spacing:.04em; text-transform:uppercase}
+.hero-bar{height:5px; border-radius:3px; background:var(--line)}
+.note .spent-mask{border-radius:3px}
+.note .status{font-size:.8rem; color:var(--muted)}
+.item{padding:11px 2px}
+.item .cat{width:30px; height:30px; border-radius:9px; font-size:1rem; background:var(--note-soft)}
+.item .desc div:first-child{font-size:.94rem; font-weight:500}
+.item .desc div:last-child{font-size:.76rem}
+.item .amt{font-size:.94rem; font-variant-numeric:tabular-nums}
+.day-head{font-size:.78rem}
+
+/* buttons */
+.scan-btn{height:48px; border-radius:14px; font-size:.95rem}
+.q-btn{height:40px; border:0; background:transparent; box-shadow:none; color:var(--muted); font-size:.82rem; font-weight:500; border-radius:10px}
+.q-btn:active{background:var(--note-soft)}
+.quick3{gap:2px; margin-top:6px}
+.scan-msg{font-size:.78rem}
+.ghost{border-radius:12px; background:var(--flat); box-shadow:none; border:1px solid var(--line); font-size:.88rem}
+.chip{border-radius:9px; background:var(--flat); box-shadow:none; border:1px solid var(--line)}
+.k000{border-radius:10px; background:var(--flat); box-shadow:none; border:1px solid var(--line)}
+.primary{border-radius:14px; font-size:.95rem}
+.mini, .filter-btn, .month button, .day-nav button, .day-pick, .person, .copy-btn, .x{box-shadow:none; background:var(--flat); border:1px solid var(--line)}
+.x{border-radius:16px; width:32px; height:32px}
+.tabs{bottom:calc(16px + env(safe-area-inset-bottom,0px)); height:62px; padding:6px; border-radius:26px; width:min(calc(100% - 28px), 430px)}
+.tabs button{border-radius:20px; font-size:.68rem}
+.tabs button svg{width:20px; height:20px}
+
+/* section labels */
+#tab-today section:has(#list) > h2, #tab-today section:has(#week) > h2, .chart-sec h2,
+#tab-money section:has(#catBreakdown) > h2, #tab-money section:has(#ledgerList) > h2, #tab-people section:has(#peopleList) > h2{
+  font-size:.7rem; font-weight:600; letter-spacing:.07em; text-transform:uppercase; color:var(--muted)}
+
+/* the form sheet */
+.form-sheet{z-index:78} #formBack{z-index:77}
+.form-sheet .form-head{position:sticky; top:-8px; z-index:3; margin:0 -18px 4px; padding:8px 18px 10px; background:var(--glass-strong); -webkit-backdrop-filter:blur(18px); backdrop-filter:blur(18px)}
+.form-sheet #formBox{border:0}
+.blk{border-radius:16px; border:1px solid var(--line); background:var(--flat); padding:13px 15px 15px}
+.blk-need{background:var(--note-soft); border-color:transparent}
+.blk-h{font-size:.7rem; letter-spacing:.07em}
+.blk-note{font-size:.68rem}
+.blk-note.need{background:transparent; color:var(--note); padding:0}
+.blk-note.need.ok{color:var(--ok)}
+.blk-edit{margin-left:auto; border:0; background:none; font:inherit; font-size:.78rem; font-weight:600; text-transform:none; letter-spacing:0; color:var(--note); padding:0}
+.blk-h:has(.blk-edit) .blk-note{margin-left:0}
+.sum{margin:10px 0 0; display:flex; flex-direction:column; gap:7px}
+.sum div{display:flex; justify-content:space-between; gap:12px; font-size:.86rem}
+.sum dt{color:var(--muted)}
+.sum dd{margin:0; font-weight:600; text-align:right; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.blk-info.summary .field{display:none}
+.inp{border-radius:10px; border:1px solid var(--line); background:var(--field-strong); padding:10px 12px; font-size:16px}
+.form .inp{border:1px solid var(--line)}
+.amount-inp{font-size:1.6rem; font-weight:700; border:0; background:transparent; padding:2px 0}
+.form .amount-inp:focus{box-shadow:none; background:transparent}
+.amt-row{align-items:center; gap:8px}
+.save-contact{border:0; border-top:1px solid var(--line); border-radius:0; margin-top:12px; padding-top:12px}
+.preview{font-size:.82rem}
+
+/* settings header spacing + tappable week bars */
+.settings-in{padding-top:6px}
+.settings-head{padding:12px 16px 12px; margin-bottom:10px; border-radius:0 0 20px 20px}
+.set-page > .set-head{margin-top:2px}
+#setHome .set-list{margin-top:4px}
+.bar-wrap{padding:0; border:0; background:transparent; cursor:pointer; -webkit-tap-highlight-color:transparent}
+.bar-wrap:active .bar{filter:brightness(.9)}
+.bar-wrap.sel .bar{outline:2px solid var(--note); outline-offset:1px}
+.week-labels div.sel{color:var(--note); font-weight:700}
+.week-avg{margin:10px 0 0; font-size:.82rem; color:var(--muted); line-height:1.5}
+.week-avg strong{color:var(--ink)}
+.week-avg .over{color:var(--over)}
 </style>
 </head>
 <body>
@@ -735,89 +859,6 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
       </div>
     </section>
 
-    <section id="formBox" hidden>
-      <div class="form">
-        <div class="form-head">
-          <h2 id="formTitle">Thông tin thanh toán</h2>
-          <button class="x" id="cancelForm" aria-label="Huỷ">✕</button>
-        </div>
-        <div class="who" id="whoBox" hidden></div>
-
-        <div class="blk blk-need">
-          <p class="blk-h"><span class="blk-n">1</span>Bạn cần điền</p>
-        <div class="field">
-          <label for="amt"><span>Số tiền</span><span id="amtSrc"></span></label>
-          <div class="amt-row">
-            <input id="amt" class="inp amount-inp num" inputmode="numeric" autocomplete="off" placeholder="0đ">
-            <button type="button" class="k000 num" id="amt000" aria-label="Thêm 000 vào số tiền">000</button>
-          </div>
-          <div class="chips" id="amtChips"></div>
-        </div>
-        <div class="field">
-          <label for="desc"><span>Ghi chú của bạn</span></label>
-          <input id="desc" class="inp" maxlength="60" autocomplete="off" placeholder="vd: cơm trưa">
-          <div class="chips sugg" id="descChips" aria-label="Ghi chú gần đây"></div>
-        </div>
-        </div>
-
-        <div id="bankFields" class="blk blk-info">
-          <p class="blk-h"><span class="blk-n">2</span>Thông tin chuyển khoản<span class="blk-note" id="bankAuto"></span></p>
-          <div class="field">
-            <label for="acct"><span>Số tài khoản nhận</span><span id="acctSrc"></span></label>
-            <input id="acct" class="inp num" inputmode="text" autocapitalize="characters" autocorrect="off" spellcheck="false" autocomplete="off">
-          </div>
-          <div class="field">
-            <label for="holder"><span>Tên tài khoản <span class="opt">(không bắt buộc)</span></span><span id="holderSrc"></span></label>
-            <input id="holder" class="inp" autocomplete="off" maxlength="50" placeholder="vd: NGUYEN VAN A">
-          </div>
-          <div class="field">
-            <label for="bank"><span>Ngân hàng nhận</span><span id="bankSrc"></span></label>
-            <input id="bank" class="inp" list="bankList" autocomplete="off" placeholder="vd: Vietcombank">
-          </div>
-          <div class="field">
-            <label for="memo"><span>Nội dung chuyển khoản</span><span id="memoSrc"></span></label>
-            <input id="memo" class="inp" autocomplete="off" maxlength="80">
-            <div class="chips sugg" id="memoChips" aria-label="Nội dung gần đây"></div>
-          </div>
-        </div>
-
-
-        <div class="blk blk-more">
-          <p class="blk-h"><span class="blk-n">3</span>Chi tiết khác</p>
-        <div class="field">
-          <label for="txDate"><span>Ngày giao dịch</span><span id="txDateHint"></span></label>
-          <input id="txDate" class="inp" type="date">
-        </div>
-        <div class="field">
-          <label><span>Tag</span></label>
-          <div class="chips" id="catChips" role="group" aria-label="Loại chi tiêu" style="margin-top:0"></div>
-        </div>
-
-        <div class="save-contact" id="saveContactBox" hidden>
-          <label class="check"><input type="checkbox" id="saveContact"> Lưu vào danh sách người hay chuyển</label>
-          <div class="field" id="contactNameField" hidden>
-            <label for="contactName"><span>Tên gợi nhớ</span></label>
-            <input id="contactName" class="inp" maxlength="40" autocomplete="off" placeholder="vd: Cô Lan bán cơm">
-          </div>
-        </div>
-
-        <p class="preview" id="preview"></p>
-        <button class="primary" id="saveBtn" disabled>Ghi khoản chi</button>
-        <p class="scan-msg err" id="saveErr" hidden></p>
-
-        <div class="result" id="resultBox" hidden>
-          <h2>✓ Đã ghi. Đoạn chuyển tiền để dán vào MB Bank</h2>
-          <textarea id="transferText" aria-label="Đoạn thông tin chuyển tiền"></textarea>
-          <div class="btn-row">
-            <button class="copy-btn" id="copyBtn">Sao chép đoạn này</button>
-            <p class="inline-ok" id="mbMsg" hidden></p>
-            <a class="mb-btn" id="mbBtn" href="mbbank://">Sao chép và mở <span class="tag">MB Bank</span></a>
-          </div>
-          <p class="subtle">Trong MB Bank, dán đoạn này vào ô trợ lý để tạo lệnh chuyển. Nhớ kiểm tra tên người nhận MB Bank hiển thị trước khi xác nhận.</p>
-          <button class="link-btn" id="doneBtn">Xong</button>
-        </div>
-      </div>
-    </section>
 
     <section>
       <div class="day-nav">
@@ -833,6 +874,7 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
       <h2>7 ngày gần nhất</h2>
       <div class="week" id="week"></div>
       <div class="week-labels" id="weekLabels"></div>
+      <p class="week-avg" id="weekAvg" hidden></p>
       <p class="week-sum" id="weekSum"></p>
     </section>
 
@@ -1108,7 +1150,7 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v20</p>
+      <p class="sync" id="appVersion">Phiên bản v22</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. Giới hạn khoảng 5 MB được tính chung cho các mini app cùng tài khoản GitHub.</p>
 
       <h4 class="sub">Xoá dữ liệu</h4>
@@ -1141,6 +1183,94 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
       <label>Chọn ảnh thay thế<input type="file" accept="image/*" id="camPhoto"></label>
     </div>
   </div>
+</div>
+<div class="sheet-back" id="formBack" hidden></div>
+<div class="sheet form-sheet" id="formSheet" role="dialog" aria-modal="true" aria-labelledby="formTitle" hidden>
+  <div class="grab" aria-hidden="true"></div>
+    <section id="formBox" hidden>
+      <div class="form">
+        <div class="form-head">
+          <h2 id="formTitle">Thông tin thanh toán</h2>
+          <button class="x" id="cancelForm" aria-label="Huỷ">✕</button>
+        </div>
+        <div class="who" id="whoBox" hidden></div>
+
+        <div class="blk blk-need">
+          <p class="blk-h">Cần điền<span class="blk-note need" id="needCount"></span></p>
+        <div class="field">
+          <label for="amt"><span>Số tiền</span><span id="amtSrc"></span></label>
+          <div class="amt-row">
+            <input id="amt" class="inp amount-inp num" inputmode="numeric" autocomplete="off" placeholder="0đ">
+            <button type="button" class="k000 num" id="amt000" aria-label="Thêm 000 vào số tiền">000</button>
+          </div>
+          <div class="chips" id="amtChips"></div>
+        </div>
+        <div class="field">
+          <label for="desc"><span>Ghi chú của bạn</span></label>
+          <input id="desc" class="inp" maxlength="60" autocomplete="off" placeholder="vd: cơm trưa">
+          <div class="chips sugg" id="descChips" aria-label="Ghi chú gần đây"></div>
+        </div>
+        </div>
+
+        <div id="bankFields" class="blk blk-info">
+          <p class="blk-h"><span id="bankTitle">Thông tin chuyển khoản</span><span class="blk-note" id="bankAuto"></span><button type="button" class="blk-edit" id="bankEdit" hidden>Sửa</button></p>
+          <dl class="sum" id="bankSummary" hidden></dl>
+          <div class="field">
+            <label for="acct"><span>Số tài khoản nhận</span><span id="acctSrc"></span></label>
+            <input id="acct" class="inp num" inputmode="text" autocapitalize="characters" autocorrect="off" spellcheck="false" autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="holder"><span>Tên tài khoản <span class="opt">(không bắt buộc)</span></span><span id="holderSrc"></span></label>
+            <input id="holder" class="inp" autocomplete="off" maxlength="50" placeholder="vd: NGUYEN VAN A">
+          </div>
+          <div class="field">
+            <label for="bank"><span>Ngân hàng nhận</span><span id="bankSrc"></span></label>
+            <input id="bank" class="inp" list="bankList" autocomplete="off" placeholder="vd: Vietcombank">
+          </div>
+          <div class="field">
+            <label for="memo"><span>Nội dung chuyển khoản</span><span id="memoSrc"></span></label>
+            <input id="memo" class="inp" autocomplete="off" maxlength="80">
+            <div class="chips sugg" id="memoChips" aria-label="Nội dung gần đây"></div>
+          </div>
+        </div>
+
+
+        <div class="blk blk-more">
+          <p class="blk-h">Bổ sung</p>
+        <div class="field">
+          <label for="txDate"><span>Ngày giao dịch</span><span id="txDateHint"></span></label>
+          <input id="txDate" class="inp" type="date">
+        </div>
+        <div class="field">
+          <label><span>Tag</span></label>
+          <div class="chips" id="catChips" role="group" aria-label="Loại chi tiêu" style="margin-top:0"></div>
+        </div>
+
+        <div class="save-contact" id="saveContactBox" hidden>
+          <label class="check"><input type="checkbox" id="saveContact"> Lưu vào danh sách người hay chuyển</label>
+          <div class="field" id="contactNameField" hidden>
+            <label for="contactName"><span>Tên gợi nhớ</span></label>
+            <input id="contactName" class="inp" maxlength="40" autocomplete="off" placeholder="vd: Cô Lan bán cơm">
+          </div>
+        </div>
+
+        <p class="preview" id="preview"></p>
+        <button class="primary" id="saveBtn" disabled>Ghi khoản chi</button>
+        <p class="scan-msg err" id="saveErr" hidden></p>
+
+        <div class="result" id="resultBox" hidden>
+          <h2>✓ Đã ghi. Đoạn chuyển tiền để dán vào MB Bank</h2>
+          <textarea id="transferText" aria-label="Đoạn thông tin chuyển tiền"></textarea>
+          <div class="btn-row">
+            <button class="copy-btn" id="copyBtn">Sao chép đoạn này</button>
+            <p class="inline-ok" id="mbMsg" hidden></p>
+            <a class="mb-btn" id="mbBtn" href="mbbank://">Sao chép và mở <span class="tag">MB Bank</span></a>
+          </div>
+          <p class="subtle">Trong MB Bank, dán đoạn này vào ô trợ lý để tạo lệnh chuyển. Nhớ kiểm tra tên người nhận MB Bank hiển thị trước khi xác nhận.</p>
+          <button class="link-btn" id="doneBtn">Xong</button>
+        </div>
+      </div>
+    </section>
 </div>
 <div class="sheet-back top" id="editBack" hidden></div>
 <div class="sheet top" id="editSheet" role="dialog" aria-modal="true" aria-labelledby="editTitle" hidden>
@@ -1413,8 +1543,8 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
   const setAmt = v => { $("amt").value = v ? v.toLocaleString("vi-VN") : ""; };
 
   function openForm(m, data, contact){
-    mode = m; scanned = data || null;
-    $("startBox").hidden = true; $("formBox").hidden = false; $("resultBox").hidden = true;
+    mode = m; scanned = data || null; bankSummary = false;
+    $("formBox").hidden = false; $("resultBox").hidden = true; showSheet("formSheet", "formBack");
     lockForm(false);
     $("bankFields").hidden = (m === "cash");
     $("formTitle").textContent = m === "cash" ? "Trả tiền mặt" : "Thông tin chuyển khoản";
@@ -1427,6 +1557,7 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
 
     if(data){
       if(data.amount){ setAmt(data.amount); setSrc("amtSrc","qr"); } else setSrc("amtSrc","need");
+      bankSummary = true;
       $("acct").value = data.acct; setSrc("acctSrc","qr");
       if(data.name){ $("holder").value = data.name; setSrc("holderSrc","qr"); }
       if(data.bank){ $("bank").value = data.bank; setSrc("bankSrc","qr"); }
@@ -1471,7 +1602,7 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
     }
   }
   function closeForm(){
-    $("formBox").hidden = true; $("startBox").hidden = false; scanned = null; activeContact = null;
+    $("formBox").hidden = true; hideSheet("formSheet", "formBack"); scanned = null; activeContact = null;
   }
   function selectCat(id){
     selectedCat = id;
@@ -1502,8 +1633,10 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
     });
     const auto = ["acctSrc","bankSrc","memoSrc","holderSrc"].filter(x => $(x).className === "src").length;
     $("bankAuto").textContent = auto ? "✓ " + auto + " ô đã tự điền" : "";
-    let n = 0;
-    $("formBox").querySelectorAll(".blk").forEach(blk => { if(blk.offsetParent === null) return; n++; blk.querySelector(".blk-n").textContent = String(n); });
+    const needN = $("formBox").querySelectorAll(".blk-need .field.need").length;
+    $("needCount").textContent = needN ? "còn " + needN + " mục" : "✓ đủ rồi";
+    $("needCount").classList.toggle("ok", !needN);
+    renderBankSummary();
     const pv = $("preview");
     if(!a){ pv.className="preview"; pv.textContent = "Nhập số tiền để xem hôm nay còn bao nhiêu."; }
     else{
@@ -1563,6 +1696,25 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
     return ok;
   }
 
+  /* ---------- transfer info: read-only summary when it came from a QR ---------- */
+  let bankSummary = false;
+  function renderBankSummary(){
+    const box = $("bankSummary"), on = bankSummary && !$("bankFields").hidden;
+    $("bankFields").classList.toggle("summary", on);
+    box.hidden = !on; $("bankEdit").hidden = !on;
+    $("bankTitle").textContent = on ? "Đã điền sẵn từ mã QR" : "Thông tin chuyển khoản";
+    $("bankAuto").hidden = on;
+    if(!on) return;
+    box.innerHTML = "";
+    [["Số tài khoản", $("acct").value], ["Ngân hàng", $("bank").value], ["Tên tài khoản", $("holder").value], ["Nội dung", $("memo").value]]
+      .forEach(([k, v]) => {
+        if(!v) return;
+        const row = document.createElement("div");
+        const dt = document.createElement("dt"); dt.textContent = k;
+        const dd = document.createElement("dd"); dd.textContent = v; dd.className = "num";
+        row.append(dt, dd); box.appendChild(row);
+      });
+  }
   /* ---------- QR from photo ---------- */
   function handleRaw(raw){
     msg("Quét mã ở quầy, chọn ảnh QR có sẵn, hoặc ghi tay.");
@@ -1675,21 +1827,37 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
     const totals = days.map(d => sumOf(state.days[keyOf(d)]));
     const maxV = Math.max(b*1.25, ...totals);
     const line = document.createElement("div"); line.className = "limit-line"; line.style.bottom = (b/maxV*100) + "%"; week.appendChild(line);
-    let kept = 0, tracked = 0, total = 0;
+    let kept = 0, tracked = 0, total = 0, withData = 0;
     days.forEach((d,i)=>{
       const k = keyOf(d), v = totals[i], has = !!(state.days[k] && state.days[k].length);
-      const w = document.createElement("div"); w.className = "bar-wrap";
+      const w = document.createElement("button"); w.type = "button"; w.className = "bar-wrap" + (k === dk ? " sel" : "");
+      w.setAttribute("aria-label", "Xem giao dịch ngày " + fmtDate(k) + ", đã chi " + fmt(v));
+      w.onclick = () => {
+        viewDay = (k === todayKey()) ? null : k;
+        renderAll();
+        const sec = $("list").closest("section");
+        if(sec) sec.scrollIntoView({ behavior:"smooth", block:"start" });
+      };
       const bar = document.createElement("div");
       bar.className = "bar" + (has ? (v<=b ? " under" : " overb") : "") + (i===6 ? " today" : "");
       bar.style.height = Math.max(2, v/maxV*100) + "%"; bar.title = fmt(v);
       w.appendChild(bar); week.appendChild(w);
-      const l = document.createElement("div"); l.textContent = i===6 ? "Nay" : WD[d.getDay()]; labels.appendChild(l);
+      const l = document.createElement("div"); l.textContent = i===6 ? "Nay" : WD[d.getDay()];
+      if(k === dk) l.className = "sel";
+      labels.appendChild(l);
       if(has && i<6){ tracked++; if(v<=b) kept++; }
+      if(has) withData++;
       total += v;
     });
+    const avg = withData ? Math.round(total / withData) : 0;
+    $("weekAvg").innerHTML = withData
+      ? "Trung bình <strong>" + fmt(avg) + "</strong>/ngày trong " + withData + " ngày có ghi · "
+        + (avg <= b ? "thấp hơn hạn mức " + fmt(b - avg) : "<span class=\"over\">cao hơn hạn mức " + fmt(avg - b) + "</span>")
+      : "";
+    $("weekAvg").hidden = !withData;
     $("weekSum").innerHTML = tracked
       ? "Giữ đúng hạn mức <strong>" + kept + "/" + tracked + "</strong> ngày trước đó. Tổng 7 ngày: <strong>" + fmt(total) + "</strong>."
-      : "Ghi vài ngày để thấy mình giữ hạn mức thế nào.";
+      : "Ghi vài ngày để thấy mình giữ hạn mức thế nào. Chạm vào một cột để xem lại ngày đó.";
     $("budgetInput").placeholder = "Hạn mức mới, vd: " + (b === 50000 ? "60.000" : "50.000");
     if(!$("formBox").hidden) refreshForm();
   }
@@ -2275,7 +2443,9 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
   $("photoAny").onchange = e => { decodeFile(e.target.files[0]); e.target.value = ""; };
   $("manualTransferBtn").onclick = () => openForm("transfer");
   $("cashBtn").onclick = () => openForm("cash");
+  $("bankEdit").onclick = () => { bankSummary = false; renderBankSummary(); $("acct").focus({ preventScroll:true }); };
   $("cancelForm").onclick = closeForm;
+  $("formBack").onclick = closeForm;
   $("saveBtn").onclick = saveExpense;
   $("doneBtn").onclick = closeForm;
   $("copyBtn").onclick = async () => { $("copyBtn").textContent = await copyText() ? "✓ Đã sao chép" : "Chưa sao chép được, giữ tay lên đoạn chữ để chép"; };
@@ -2751,9 +2921,8 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
   function backTarget(){
     if(!$("cam").hidden) return closeCamera;
     /* bottom-up popups close with their own ✕ button, not with a swipe */
-    if(!$("tagSheet").hidden || !$("editSheet").hidden || !$("filterSheet").hidden) return null;
+    if(!$("tagSheet").hidden || !$("editSheet").hidden || !$("filterSheet").hidden || !$("formSheet").hidden) return null;
     if(settingsOpenNow()) return setPage === "setHome" ? closeSettings : () => showSetPage(setPage === "setTagOne" ? "setTags" : "setHome", true);
-    if(!$("formBox").hidden) return () => $("cancelForm").click();
     if(!$("incomeForm").hidden) return () => $("cancelIncome").click();
     if(!$("contactForm").hidden) return () => $("cancelContact").click();
     if(!$("loanForm").hidden) return () => $("cancelLoan").click();
@@ -2836,13 +3005,14 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
     shown.forEach(playIn);
     if(shown.size){ clearTimeout(navReset); navReset = setTimeout(() => { navDir = "fwd"; }, 60); }
   });
-  ["startBox","formBox","resultBox","incomeForm","contactForm","loansMain","loanForm","loanDetail"]
+  ["incomeForm","contactForm","loansMain","loanForm","loanDetail"]
     .forEach(id => { const el = $(id); if(el) viewObs.observe(el, { attributes:true, attributeFilter:["hidden"] }); });
   document.addEventListener("touchend", endSwipe, { passive:true });
   document.addEventListener("touchcancel", () => { if(sw && sw.panel){ sw.panel.style.transition = ""; sw.panel.style.transform = ""; } sw = null; }, { passive:true });
   document.addEventListener("keydown", e => {
     if(e.key !== "Escape") return;
     if(!$("tagSheet").hidden){ closeTagSheet(); e.stopImmediatePropagation(); }
+    else if(!$("formSheet").hidden){ closeForm(); e.stopImmediatePropagation(); }
     else if(!$("editSheet").hidden){ closeEdit(); e.stopImmediatePropagation(); }
   }, true);
   /* ---------- backup, restore & merge ---------- */
