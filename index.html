@@ -806,6 +806,19 @@ header .date{font-size:1.1rem; font-weight:600}
 .week-avg{margin:10px 0 0; font-size:.82rem; color:var(--muted); line-height:1.5}
 .week-avg strong{color:var(--ink)}
 .week-avg .over{color:var(--over)}
+
+/* v23 polish */
+main{padding-bottom:calc(86px + env(safe-area-inset-bottom,0px))}
+.scan-msg[hidden]{display:none}
+.scan-msg{margin-top:10px}
+/* the sheet header sits flush with the top edge */
+.form-sheet{padding-top:0}
+.form-sheet > .grab{width:auto; height:auto; margin:0 -18px; padding:10px 0 6px; display:flex; justify-content:center; background:var(--glass-strong); -webkit-backdrop-filter:blur(18px); backdrop-filter:blur(18px); border-radius:32px 32px 0 0; position:sticky; top:0; z-index:4}
+.form-sheet > .grab::before{content:""; width:38px; height:4px; border-radius:2px; background:var(--line)}
+.form-sheet .form-head{top:20px; padding-top:4px}
+/* amount box: normal padding like the other inputs */
+.amount-inp{padding:10px 14px; border:1px solid var(--line); background:var(--field-strong); border-radius:12px}
+.form .amount-inp:focus{background:var(--field-focus); border-color:var(--note); box-shadow:0 0 0 3px var(--note-soft)}
 </style>
 </head>
 <body>
@@ -852,7 +865,7 @@ header .date{font-size:1.1rem; font-weight:600}
         <button class="q-btn" id="manualTransferBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg><span>Nhập tay</span></button>
         <button class="q-btn" id="cashBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/></svg><span>Tiền mặt</span></button>
       </div>
-      <p class="scan-msg" id="scanMsg">Quét mã ở quầy, chọn ảnh QR có sẵn, hoặc ghi tay.</p>
+      <p class="scan-msg" id="scanMsg" hidden></p>
       <div id="quickPeopleBox" hidden>
         <p class="quick-label">Chuyển nhanh cho người hay chuyển</p>
         <div class="people" id="quickPeople"></div>
@@ -1150,7 +1163,7 @@ header .date{font-size:1.1rem; font-weight:600}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v22</p>
+      <p class="sync" id="appVersion">Phiên bản v23</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. Giới hạn khoảng 5 MB được tính chung cho các mini app cùng tài khoản GitHub.</p>
 
       <h4 class="sub">Xoá dữ liệu</h4>
@@ -1717,12 +1730,13 @@ header .date{font-size:1.1rem; font-weight:600}
   }
   /* ---------- QR from photo ---------- */
   function handleRaw(raw){
-    msg("Quét mã ở quầy, chọn ảnh QR có sẵn, hoặc ghi tay.");
+    msg("");
     const data = parseVietQR(raw);
     if(data) openForm("qr", data);
     else { openForm("transfer"); msg("Mã QR này không có số tài khoản. Hãy điền tay.", true); }
   }
-  function msg(t, err){ const m = $("scanMsg"); m.textContent = t; m.className = "scan-msg" + (err ? " err" : ""); }
+  function msg(t, err){
+    $("scanMsg").hidden = !t; const m = $("scanMsg"); m.textContent = t; m.className = "scan-msg" + (err ? " err" : ""); }
   function decodeFile(file){
     if(!file) return;
     if(!window.jsQR){ msg("Không tải được bộ đọc QR. Kiểm tra mạng rồi mở lại app.", true); return; }
@@ -1742,7 +1756,7 @@ header .date{font-size:1.1rem; font-weight:600}
       }
       URL.revokeObjectURL(url);
       if(!raw){ msg("Không tìm thấy mã QR trong ảnh. Thử chụp gần hơn, đủ sáng, mã nằm gọn trong ảnh.", true); return; }
-      msg("Quét mã ở quầy, chọn ảnh QR có sẵn, hoặc ghi tay.");
+      msg("");
       handleRaw(raw);
     };
     img.onerror = () => { URL.revokeObjectURL(url); msg("Không mở được ảnh này. Thử ảnh khác.", true); };
@@ -2338,7 +2352,7 @@ header .date{font-size:1.1rem; font-weight:600}
     if(name === "today"){
       viewDay = null;
       if(!$("formBox").hidden) closeForm();
-      msg("Quét mã ở quầy, chọn ảnh QR có sẵn, hoặc ghi tay.");
+      msg("");
       renderToday();
     } else if(name === "money"){
       viewMonth = new Date(); viewMonth.setDate(1);

@@ -1,6 +1,15 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v22, ngày 24/09/2026
+**Phiên bản hiện tại:** v23, ngày 24/09/2026
+
+---
+
+## Có gì mới trong v23 (so với v22)
+
+- **Bỏ dòng chữ hướng dẫn** "Quét mã ở quầy, chọn ảnh QR có sẵn, hoặc ghi tay" dưới ba nút nhanh. Chỗ đó giờ chỉ hiện khi có cảnh báo, ví dụ không đọc được mã QR.
+- **Thu hẹp khoảng trắng** giữa khối cuối màn hình Giao dịch và thanh menu.
+- **Bảng nhập tiền sát mép trên:** tiêu đề (ví dụ "Trả tiền mặt") và thanh vuốt giờ nằm trên cùng một nền trắng liền mạch, không còn hở một vạch màu ở trên.
+- **Ô nhập số tiền có lề trong,** số không còn dính sát mép trái của ô.
 
 ---
 
@@ -209,6 +218,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v23** | Bỏ dòng hướng dẫn thừa, gọn khoảng trắng, sửa mép trên bảng nhập và lề ô số tiền |
 | **v22** | Chạm cột biểu đồ 7 ngày để xem lại ngày đó, thêm chi tiêu trung bình mỗi ngày |
 | **v21** | Giao diện gọn: bớt kính, bớt bo góc, chữ nhỏ lại; form ghi khoản chi thành popup |
 | **v20** | Sửa được khoản thu, sửa được ngày của khoản chi và khoản thu |
