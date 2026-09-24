@@ -633,6 +633,55 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
 .view-in{animation:viewIn .28s cubic-bezier(.2,.8,.2,1) both}
 .view-in-back{animation:viewInBack .28s cubic-bezier(.2,.8,.2,1) both}
 @media (prefers-reduced-motion: reduce){ .view-in, .view-in-back{animation:none} }
+
+/* clearer form: grouped blocks + fields that stand out from the glass */
+.blk{margin-top:14px; padding:12px 14px 14px; border-radius:18px; border:1px solid var(--line); background:var(--blk-bg, transparent)}
+.blk-need{--blk-bg:var(--note-soft); border-color:transparent}
+.blk-h{display:flex; align-items:center; gap:8px; margin:0 0 2px; font-size:.82rem; font-weight:700; letter-spacing:.02em; text-transform:uppercase; color:var(--muted)}
+.blk-n{display:grid; place-items:center; width:20px; height:20px; border-radius:10px; background:var(--note); color:#fff; font-size:.72rem; font-weight:800; text-transform:none}
+.blk-need .blk-h{color:var(--note)}
+.blk-note{margin-left:auto; font-size:.72rem; font-weight:600; text-transform:none; color:var(--ok); background:var(--ok-soft); padding:3px 8px; border-radius:999px}
+.blk .field:first-of-type{margin-top:10px}
+.form .inp{background:var(--field-strong); border:1.5px solid var(--line); box-shadow:none}
+.form .inp::placeholder{color:var(--muted); opacity:.75}
+.form .inp:focus{border-color:var(--note); background:var(--field-focus); box-shadow:0 0 0 4px var(--note-soft)}
+.form .inp.missing{border-color:var(--over); background:var(--over-soft)}
+.form label > span:first-child{color:var(--ink); font-weight:600}
+.form .field.need > label > span:first-child::after{content:" *"; color:var(--over)}
+:root{--field-strong:rgba(255,255,255,.9); --field-focus:#fff; --over-soft:rgba(195,52,44,.08)}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){--field-strong:rgba(255,255,255,.10); --field-focus:rgba(255,255,255,.16); --over-soft:rgba(255,125,117,.12)} }
+:root[data-theme="dark"]{--field-strong:rgba(255,255,255,.10); --field-focus:rgba(255,255,255,.16); --over-soft:rgba(255,125,117,.12)}
+
+/* secondary controls stay small and quiet so the important fields lead */
+#amtChips, #catChips, #eTagChips{gap:6px; margin-top:8px}
+#amtChips .chip, #catChips .chip, #eTagChips .chip, .chips.sugg .chip{font-size:.76rem; font-weight:600; padding:4px 9px; border-width:1px; color:var(--muted); box-shadow:none}
+#amtChips .chip[aria-pressed="true"], #catChips .chip[aria-pressed="true"], #eTagChips .chip[aria-pressed="true"]{color:#fff; box-shadow:none}
+#catChips .chip.more, #eTagChips .chip.more{color:var(--note); border-style:dashed}
+.blk-more .field > label > span:first-child, #eTagChips ~ * , .field:has(#catChips) > label > span:first-child{font-weight:600}
+.field:has(#catChips) > label, .field:has(#eTagChips) > label{margin-bottom:2px}
+.field:has(#catChips), .field:has(#eTagChips){margin-top:10px}
+
+/* settings: menu + sub pages */
+.set-page{animation:viewIn .24s cubic-bezier(.2,.8,.2,1) both}
+.set-page.back{animation-name:viewInBack}
+@media (prefers-reduced-motion: reduce){ .set-page{animation:none} }
+.set-head{display:flex; flex-direction:column; gap:2px; margin:6px 2px 14px}
+.set-head h2{margin:0; font-size:1.35rem; font-weight:800; outline:none}
+.set-back{align-self:flex-start; border:0; background:none; padding:4px 0; font:inherit; font-size:.92rem; font-weight:600; color:var(--note)}
+.set-list{display:flex; flex-direction:column; gap:8px}
+.set-nav{display:flex; align-items:center; gap:10px; width:100%; padding:14px 16px; border-radius:18px; font:inherit; text-align:left;
+  background:var(--glass); -webkit-backdrop-filter:blur(16px) saturate(170%); backdrop-filter:blur(16px) saturate(170%);
+  border:1px solid var(--glass-border); box-shadow:inset 0 1px 0 var(--glass-hi), var(--shadow-s); color:var(--ink)}
+.set-nav:active{background:var(--note-soft)}
+.set-nav .nav-t{font-weight:600}
+.set-nav .nav-v{margin-left:auto; color:var(--muted); font-size:.86rem; text-align:right; max-width:52%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.set-nav svg{width:18px; height:18px; flex:none; fill:none; stroke:var(--muted); stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round}
+.set-nav.tag-row .ic{font-size:1.25rem}
+.set-nav.off .nav-t{color:var(--muted); text-decoration:line-through}
+.set-ver{margin:18px 2px 0; text-align:center; font-size:.8rem; color:var(--muted)}
+.tag-preview{display:flex; align-items:center; gap:10px; margin:0 0 6px; font-size:1.15rem; font-weight:700}
+.tag-preview .ic{font-size:1.8rem}
+.set-page .set-group{margin-top:0}
 </style>
 </head>
 <body>
@@ -694,6 +743,8 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
         </div>
         <div class="who" id="whoBox" hidden></div>
 
+        <div class="blk blk-need">
+          <p class="blk-h"><span class="blk-n">1</span>Bạn cần điền</p>
         <div class="field">
           <label for="amt"><span>Số tiền</span><span id="amtSrc"></span></label>
           <div class="amt-row">
@@ -702,8 +753,15 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
           </div>
           <div class="chips" id="amtChips"></div>
         </div>
+        <div class="field">
+          <label for="desc"><span>Ghi chú của bạn</span></label>
+          <input id="desc" class="inp" maxlength="60" autocomplete="off" placeholder="vd: cơm trưa">
+          <div class="chips sugg" id="descChips" aria-label="Ghi chú gần đây"></div>
+        </div>
+        </div>
 
-        <div id="bankFields">
+        <div id="bankFields" class="blk blk-info">
+          <p class="blk-h"><span class="blk-n">2</span>Thông tin chuyển khoản<span class="blk-note" id="bankAuto"></span></p>
           <div class="field">
             <label for="acct"><span>Số tài khoản nhận</span><span id="acctSrc"></span></label>
             <input id="acct" class="inp num" inputmode="text" autocapitalize="characters" autocorrect="off" spellcheck="false" autocomplete="off">
@@ -723,19 +781,16 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
           </div>
         </div>
 
+
+        <div class="blk blk-more">
+          <p class="blk-h"><span class="blk-n">3</span>Chi tiết khác</p>
         <div class="field">
           <label for="txDate"><span>Ngày giao dịch</span><span id="txDateHint"></span></label>
           <input id="txDate" class="inp" type="date">
         </div>
-
         <div class="field">
-          <label><span>Loại chi</span></label>
+          <label><span>Tag</span></label>
           <div class="chips" id="catChips" role="group" aria-label="Loại chi tiêu" style="margin-top:0"></div>
-        </div>
-        <div class="field">
-          <label for="desc"><span>Ghi chú của bạn</span></label>
-          <input id="desc" class="inp" maxlength="60" autocomplete="off" placeholder="vd: cơm trưa">
-          <div class="chips sugg" id="descChips" aria-label="Ghi chú gần đây"></div>
         </div>
 
         <div class="save-contact" id="saveContactBox" hidden>
@@ -928,8 +983,21 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
       <button class="done" id="closeSettings">Xong</button>
     </div>
 
-    <section class="set-group" aria-labelledby="gTheme">
-      <h3 id="gTheme">Giao diện</h3>
+    <div class="set-page" id="setHome">
+      <div class="set-list">
+        <button class="set-nav" data-go="setTheme"><span class="nav-t">Giao diện</span><span class="nav-v" id="navTheme"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+        <button class="set-nav" data-go="setScan"><span class="nav-t">Quét mã QR</span><span class="nav-v" id="navScan"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+        <button class="set-nav" data-go="setBudget"><span class="nav-t">Hạn mức chi một ngày</span><span class="nav-v" id="navBudget"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+        <button class="set-nav" data-go="setTags"><span class="nav-t">Quản lý tag</span><span class="nav-v" id="navTags"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+        <button class="set-nav" data-go="setSync"><span class="nav-t">Sao lưu và đồng bộ</span><span class="nav-v" id="navSync"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+        <button class="set-nav" data-go="setStore"><span class="nav-t">Dung lượng</span><span class="nav-v" id="navStore"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+      </div>
+      <p class="set-ver" id="appVersionHome"></p>
+    </div>
+
+    <div class="set-page" id="setTheme" hidden>
+      <div class="set-head"><button class="set-back" data-back>‹ Cài đặt</button><h2 tabindex="-1">Giao diện</h2></div>
+<section class="set-group" aria-labelledby="gTheme">
       <p class="set-now">Tự động sẽ sáng hay tối theo cài đặt của iPhone.</p>
       <div class="seg seg3" id="themeSeg" role="group" aria-label="Chọn giao diện" style="margin-top:12px">
         <button data-theme-opt="auto" aria-pressed="true">Tự động</button>
@@ -937,18 +1005,22 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
         <button data-theme-opt="dark" aria-pressed="false">Tối</button>
       </div>
     </section>
+    </div>
 
-    <section class="set-group" aria-labelledby="gScan">
-      <h3 id="gScan">Quét mã QR</h3>
+    <div class="set-page" id="setScan" hidden>
+      <div class="set-head"><button class="set-back" data-back>‹ Cài đặt</button><h2 tabindex="-1">Quét mã QR</h2></div>
+<section class="set-group" aria-labelledby="gScan">
       <div class="seg" id="scanSeg" role="group" aria-label="Cách quét mã QR" style="margin-top:10px">
         <button data-scan="snap" aria-pressed="true">Camera iPhone</button>
         <button data-scan="live" aria-pressed="false">Quét trực tiếp</button>
       </div>
       <p class="set-now" id="scanHint" style="margin-top:10px"></p>
     </section>
+    </div>
 
-    <section class="set-group" aria-labelledby="gBudget">
-      <h3 id="gBudget">Hạn mức chi một ngày</h3>
+    <div class="set-page" id="setBudget" hidden>
+      <div class="set-head"><button class="set-back" data-back>‹ Cài đặt</button><h2 tabindex="-1">Hạn mức chi một ngày</h2></div>
+<section class="set-group" aria-labelledby="gBudget">
       <p class="set-now">Đang đặt <strong class="num" id="budgetNow"></strong> mỗi ngày.</p>
       <div class="set-row">
         <input id="budgetInput" class="inp num" inputmode="numeric" placeholder="Nhập hạn mức mới, vd: 60000" aria-label="Hạn mức mới mỗi ngày (đồng)" style="flex:1">
@@ -956,9 +1028,48 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
       </div>
       <p class="inline-ok" id="budgetMsg" hidden></p>
     </section>
+    </div>
 
-    <section class="set-group" id="syncBox" aria-labelledby="gSync">
-      <h3 id="gSync">Sao lưu và đồng bộ</h3>
+    <div class="set-page" id="setTags" hidden>
+      <div class="set-head"><button class="set-back" data-back>‹ Cài đặt</button><h2 tabindex="-1">Quản lý tag</h2></div>
+      <p class="set-now" style="margin:0 2px 10px">Chạm vào một tag để xem chi tiết, đổi tên, đổi icon hoặc ẩn đi.</p>
+      <div class="set-list" id="tagList"></div>
+      <button class="ghost" id="newTagSet" style="width:100%; margin-top:14px">＋ Tạo tag mới</button>
+      <div class="set-group" id="newTagSetBox" hidden>
+        <h3>Tag mới</h3>
+        <div class="field"><label for="ntName2"><span>Tên tag</span><span class="nt-preview" id="ntPreview2"></span></label><input id="ntName2" class="inp" maxlength="20" autocomplete="off" placeholder="vd: Cà phê sáng"></div>
+        <div class="field"><label><span>Chọn icon</span></label><div class="icon-grid" id="ntIcons2" role="group" aria-label="Icon cho tag"></div>
+        <input id="ntEmoji2" class="inp" maxlength="8" autocomplete="off" placeholder="hoặc gõ một emoji bất kỳ" style="margin-top:8px"></div>
+        <div class="set-row"><button class="ghost grow" id="ntCancel2">Huỷ</button><button class="primary grow" id="ntSave2" style="margin:0" disabled>Lưu tag</button></div>
+      </div>
+    </div>
+
+    <div class="set-page" id="setTagOne" hidden>
+      <div class="set-head"><button class="set-back" data-back="setTags">‹ Quản lý tag</button><h2 tabindex="-1" id="tagOneTitle">Tag</h2></div>
+      <div class="set-group">
+        <p class="tag-preview" id="tagOnePreview"></p>
+        <p class="set-now" id="tagOneUse"></p>
+        <div id="tagOneEdit" hidden>
+          <div class="field"><label for="tagOneName"><span>Tên tag</span></label><input id="tagOneName" class="inp" maxlength="20" autocomplete="off"></div>
+          <div class="field"><label><span>Icon</span></label><div class="icon-grid" id="tagOneIcons" role="group" aria-label="Icon cho tag"></div>
+          <input id="tagOneEmoji" class="inp" maxlength="8" autocomplete="off" placeholder="hoặc gõ một emoji bất kỳ" style="margin-top:8px"></div>
+          <button class="primary" id="tagOneSave">Lưu thay đổi</button>
+        </div>
+        <p class="set-now" id="tagOneFixed" hidden>Tag có sẵn nên không đổi được tên và icon. Bạn có thể ẩn nó đi, hoặc tạo tag riêng của mình.</p>
+        <h4 class="sub">Hiển thị</h4>
+        <button class="ghost" id="tagOneToggle" style="width:100%"></button>
+        <p class="set-now" style="margin-top:8px">Ẩn tag chỉ bỏ nó khỏi danh sách chọn. Các khoản chi cũ vẫn giữ nguyên tag này.</p>
+        <div id="tagOneDelBox" hidden>
+          <h4 class="sub">Xoá</h4>
+          <button class="ghost danger" id="tagOneDel" style="width:100%">Xoá tag này</button>
+        </div>
+        <p class="inline-ok" id="tagOneMsg" hidden></p>
+      </div>
+    </div>
+
+    <div class="set-page" id="setSync" hidden>
+      <div class="set-head"><button class="set-back" data-back>‹ Cài đặt</button><h2 tabindex="-1">Sao lưu và đồng bộ</h2></div>
+<section class="set-group" id="syncBox" aria-labelledby="gSync">
       <p class="backup-state" id="backupState"></p>
       <div class="set-row">
         <button class="ghost grow" id="exportBtn">Xuất file sao lưu</button>
@@ -986,16 +1097,18 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
         <p>Gộp giữ lại khoản mới của cả hai máy, khoản nào đã xoá ở một máy cũng được xoá ở máy kia.</p>
       </div>
     </section>
+    </div>
 
-    <section class="set-group" aria-labelledby="gStore">
-      <h3 id="gStore">Dung lượng</h3>
+    <div class="set-page" id="setStore" hidden>
+      <div class="set-head"><button class="set-back" data-back>‹ Cài đặt</button><h2 tabindex="-1">Dung lượng</h2></div>
+<section class="set-group" aria-labelledby="gStore">
       <div class="meter" aria-hidden="true"><span id="storBar"></span></div>
       <p class="meter-cap" id="storPct"></p>
       <dl class="stor">
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v16</p>
+      <p class="sync" id="appVersion">Phiên bản v19</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. Giới hạn khoảng 5 MB được tính chung cho các mini app cùng tài khoản GitHub.</p>
 
       <h4 class="sub">Xoá dữ liệu</h4>
@@ -1013,6 +1126,8 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
         </div>
       </div>
     </section>
+    </div>
+
   </div>
 </div>
 <div class="cam" id="cam" role="dialog" aria-modal="true" aria-labelledby="camTitle" hidden>
@@ -1039,13 +1154,14 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
       <button type="button" class="k000 num" id="eAmt000" aria-label="Thêm 000 vào số tiền">000</button>
     </div>
   </div>
-  <div class="field">
-    <label><span>Tag</span></label>
-    <div class="chips" id="eTagChips" style="margin-top:0"></div>
-  </div>
+
   <div class="field">
     <label for="eNote"><span>Ghi chú</span></label>
     <input id="eNote" class="inp" maxlength="60" autocomplete="off" placeholder="vd: cơm trưa">
+  </div>
+  <div class="field">
+    <label><span>Tag</span></label>
+    <div class="chips" id="eTagChips" style="margin-top:0"></div>
   </div>
   <p class="edit-hint" id="editHint" hidden>Chỉ sửa trong sổ chi tiêu, không thay đổi giao dịch đã chuyển ở ngân hàng.</p>
   <div class="sheet-foot">
@@ -1062,7 +1178,7 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
   <div class="tag-grid" id="myTagGrid"></div>
   <div class="tag-tools">
     <button class="ghost grow" id="newTagBtn">＋ Tạo tag mới</button>
-    <button class="ghost" id="manageTags" hidden>Sửa tag của bạn</button>
+    <button class="ghost" id="manageTags" hidden>Quản lý tag</button>
   </div>
   <div class="new-tag" id="newTagBox" hidden>
     <div class="field">
@@ -1148,7 +1264,7 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
   const WD = ["CN","T2","T3","T4","T5","T6","T7"];
 
   /* ---------- state ---------- */
-  let state = { budget:50000, days:{}, income:{}, contacts:[], loans:[], payees:{}, updated:0, budgetM:0, deleted:{}, tags:[] };
+  let state = { budget:50000, days:{}, income:{}, contacts:[], loans:[], payees:{}, updated:0, budgetM:0, deleted:{}, tags:[], tagOff:{} };
   let sigs = {};
   let selectedCat = "an", mode = "cash", scanned = null, locked = false, activeContact = null;
   let incCat = "luong", cCat = "an", editingContactId = null;
@@ -1194,7 +1310,7 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
       loans: Array.isArray(s.loans) ? s.loans : [],
       payees: obj(s.payees), updated: s.updated || 0,
       budgetM: Number(s.budgetM) || 0, deleted: obj(s.deleted),
-      tags: Array.isArray(s.tags) ? s.tags.filter(t => t && t.id) : []
+      tags: Array.isArray(s.tags) ? s.tags.filter(t => t && t.id) : [], tagOff: obj(s.tagOff)
     };
   }
   function loadLocal(){
@@ -1371,6 +1487,15 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
     if(locked) return;
     const a = amtValue(), miss = missingFields();
     ["amt","acct","bank","contactName"].forEach(id => $(id).classList.toggle("missing", miss.includes(id)));
+    ["amt","acct","bank","memo","desc"].forEach(id => {
+      const f = $(id).closest(".field"); if(!f) return;
+      const required = id === "amt" || ((id === "acct" || id === "bank") && mode !== "cash");
+      f.classList.toggle("need", required && !$(id).value.trim());
+    });
+    const auto = ["acctSrc","bankSrc","memoSrc","holderSrc"].filter(x => $(x).className === "src").length;
+    $("bankAuto").textContent = auto ? "✓ " + auto + " ô đã tự điền" : "";
+    let n = 0;
+    $("formBox").querySelectorAll(".blk").forEach(blk => { if(blk.offsetParent === null) return; n++; blk.querySelector(".blk-n").textContent = String(n); });
     const pv = $("preview");
     if(!a){ pv.className="preview"; pv.textContent = "Nhập số tiền để xem hôm nay còn bao nhiêu."; }
     else{
@@ -2298,7 +2423,9 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
   document.addEventListener("keydown", e => { if(e.key === "Escape" && !$("cam").hidden) closeCamera(); });
 
   /* ---------- tag library ---------- */
-  function allTags(){ return TAG_LIB.concat((state.tags||[]).filter(t => !t.hidden)); }
+  function tagIsOff(id){ const e = (state.tagOff||{})[id]; return !!(e && e.v); }
+  function setTagOff(id, off){ state.tagOff[id] = { v: off ? 1 : 0, m: Date.now() }; persist(); }
+  function allTags(){ return TAG_LIB.concat((state.tags||[]).filter(t => !t.hidden)).filter(t => !tagIsOff(t.id)); }
   function tagOf(id){
     return TAG_LIB.find(t => t.id === id) || (state.tags||[]).find(t => t.id === id) || FALLBACK_TAG;
   }
@@ -2370,10 +2497,7 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
       b.appendChild(rm); mg.appendChild(b);
     });
     $("myTagsTitle").hidden = !mine.length;
-    $("manageTags").hidden = !mine.length;
-    if(!mine.length) managing = false;
-    mg.classList.toggle("managing", managing);
-    $("manageTags").textContent = managing ? "Xong" : "Sửa tag của bạn";
+    mg.classList.toggle("managing", false);
   }
   function openTagSheet(sel, onPick){
     tagPick = onPick; tagSel = sel; managing = false;
@@ -2413,7 +2537,8 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
     persist(); renderAll();
     const fn = tagPick; closeTagSheet(); if(fn) fn(t.id);
   };
-  $("manageTags").onclick = () => { managing = !managing; renderTagSheet(); };
+  $("manageTags").hidden = false;
+  $("manageTags").onclick = () => { closeTagSheet(); setTimeout(() => { openSettings(); showSetPage("setTags"); }, 120); };
   $("closeTag").onclick = closeTagSheet;
   $("tagBack").onclick = closeTagSheet;
 
@@ -2582,7 +2707,7 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
     if(!$("cam").hidden) return closeCamera;
     /* bottom-up popups close with their own ✕ button, not with a swipe */
     if(!$("tagSheet").hidden || !$("editSheet").hidden || !$("filterSheet").hidden) return null;
-    if(settingsOpenNow()) return closeSettings;
+    if(settingsOpenNow()) return setPage === "setHome" ? closeSettings : () => showSetPage(setPage === "setTagOne" ? "setTags" : "setHome", true);
     if(!$("formBox").hidden) return () => $("cancelForm").click();
     if(!$("incomeForm").hidden) return () => $("cancelIncome").click();
     if(!$("contactForm").hidden) return () => $("cancelContact").click();
@@ -2725,6 +2850,7 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
     }catch(e){}
   }
   function renderStorage(){
+    if($("navStore") && setPage === "setHome") setTimeout(renderSetHome, 0);
     let data = 0, all = 0;
     try{
       for(let i = 0; i < localStorage.length; i++){
@@ -2751,7 +2877,7 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
   let settingsOpen = false;
   function openSettings(){
     if(settingsOpen) return; settingsOpen = true;
-    renderAll(); measureCache();
+    renderAll(); measureCache(); showSetPage("setHome");
     const el = $("settings"); el.hidden = false; el.scrollTop = 0;
     document.querySelector("main").setAttribute("aria-hidden", "true");
     document.body.style.overflow = "hidden";
@@ -2766,6 +2892,131 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
     setTimeout(() => { if(!settingsOpen) el.hidden = true; }, 260);
     $("openSettings").focus({ preventScroll:true });
   }
+  /* ---- settings navigation ---- */
+  const SET_PAGES = ["setHome","setTheme","setScan","setBudget","setTags","setTagOne","setSync","setStore"];
+  let setPage = "setHome";
+  function showSetPage(id, back){
+    setPage = id;
+    SET_PAGES.forEach(p => { const el = $(p); if(el) el.hidden = p !== id; });
+    const el = $(id);
+    el.classList.remove("back"); void el.offsetWidth; if(back) el.classList.add("back");
+    $("settings").scrollTop = 0;
+    const h = el.querySelector("h2"); if(h) h.focus({ preventScroll:true });
+    if(id === "setHome") renderSetHome();
+    if(id === "setStore"){ renderStorage(); measureCache(); }
+    if(id === "setTags") renderTagList();
+  }
+  function renderSetHome(){
+    $("navTheme").textContent = { auto:"Tự động", light:"Sáng", dark:"Tối" }[curTheme] || "Tự động";
+    $("navScan").textContent = scanMode === "live" ? "Quét trực tiếp" : "Camera iPhone";
+    $("navBudget").textContent = fmt(state.budget) + "/ngày";
+    $("navTags").textContent = allTags().length + " tag";
+    const last = Number(lsGet(BK_KEY)) || 0;
+    $("navSync").textContent = last ? agoText(last) : "chưa sao lưu";
+    $("navStore").textContent = $("storData").textContent === "–" ? "" : $("storData").textContent;
+    $("appVersionHome").textContent = $("appVersion").textContent;
+  }
+  document.querySelectorAll("[data-go]").forEach(b => b.onclick = () => showSetPage(b.dataset.go));
+  document.querySelectorAll("[data-back]").forEach(b => b.onclick = () => showSetPage(b.dataset.back || "setHome", true));
+  /* ---- tag management ---- */
+  let tagOneId = null, oneIcon = "";
+  function tagUses(id){
+    let n = 0;
+    for(const k in state.days) (state.days[k]||[]).forEach(it => { if(it.cat === id) n++; });
+    return n;
+  }
+  function renderTagList(){
+    const box = $("tagList"); box.innerHTML = "";
+    const mine = (state.tags||[]).filter(t => !t.hidden);
+    TAG_LIB.concat(mine).forEach(t => {
+      const b = document.createElement("button");
+      b.className = "set-nav tag-row" + (tagIsOff(t.id) ? " off" : "");
+      b.innerHTML = '<span class="ic" aria-hidden="true"></span><span class="nav-t"></span><span class="nav-v"></span>'
+        + '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>';
+      b.querySelector(".ic").textContent = t.icon;
+      b.querySelector(".nav-t").textContent = t.label;
+      const n = tagUses(t.id), bits = [];
+      if(mine.indexOf(t) >= 0) bits.push("tự tạo");
+      if(tagIsOff(t.id)) bits.push("đang ẩn");
+      bits.push(n ? n + " khoản" : "chưa dùng");
+      b.querySelector(".nav-v").textContent = bits.join(" · ");
+      b.onclick = () => openTagOne(t.id);
+      box.appendChild(b);
+    });
+  }
+  function isCustom(id){ return (state.tags||[]).some(t => t.id === id); }
+  function openTagOne(id){
+    tagOneId = id; oneIcon = "";
+    const t = tagOf(id), custom = isCustom(id);
+    $("tagOneTitle").textContent = t.label;
+    $("tagOnePreview").innerHTML = '<span class="ic"></span><span class="lb"></span>';
+    $("tagOnePreview").querySelector(".ic").textContent = t.icon;
+    $("tagOnePreview").querySelector(".lb").textContent = t.label;
+    const n = tagUses(id);
+    $("tagOneUse").textContent = n ? "Đang dùng ở " + n + " khoản chi." : "Chưa có khoản chi nào dùng tag này.";
+    $("tagOneEdit").hidden = !custom; $("tagOneFixed").hidden = custom; $("tagOneDelBox").hidden = !custom;
+    if(custom){
+      $("tagOneName").value = t.label; $("tagOneEmoji").value = ""; oneIcon = t.icon;
+      buildIcons($("tagOneIcons"), t.icon, ic => { oneIcon = ic; $("tagOneEmoji").value = ""; });
+    }
+    $("tagOneToggle").textContent = tagIsOff(id) ? "Hiện lại tag này" : "Ẩn tag này khỏi danh sách chọn";
+    delete $("tagOneDel").dataset.armed; $("tagOneDel").textContent = "Xoá tag này";
+    $("tagOneMsg").hidden = true;
+    showSetPage("setTagOne");
+  }
+  function buildIcons(box, sel, onPick){
+    box.innerHTML = "";
+    TAG_ICONS.forEach(ic => {
+      const b = document.createElement("button"); b.type = "button"; b.textContent = ic;
+      b.setAttribute("aria-label", "Icon " + ic);
+      b.setAttribute("aria-pressed", ic === sel ? "true" : "false");
+      b.onclick = () => { [...box.children].forEach(x => x.setAttribute("aria-pressed", x === b ? "true" : "false")); onPick(ic); };
+      box.appendChild(b);
+    });
+  }
+  function oneIconNow(){ const typed = $("tagOneEmoji").value.trim(); return typed ? [...typed][0] : oneIcon; }
+  $("tagOneSave").onclick = () => {
+    const t = (state.tags||[]).find(x => x.id === tagOneId); if(!t) return;
+    const name = $("tagOneName").value.trim(), icon = oneIconNow();
+    if(!name || !icon){ flash("tagOneMsg", "Cần có tên và icon."); return; }
+    t.label = name; t.icon = icon; persist(); renderAll(); renderTagList();
+    $("tagOneTitle").textContent = name;
+    $("tagOnePreview").querySelector(".ic").textContent = icon;
+    $("tagOnePreview").querySelector(".lb").textContent = name;
+    flash("tagOneMsg", "✓ Đã lưu tag " + icon + " " + name);
+  };
+  $("tagOneToggle").onclick = () => {
+    const off = !tagIsOff(tagOneId);
+    setTagOff(tagOneId, off);
+    $("tagOneToggle").textContent = off ? "Hiện lại tag này" : "Ẩn tag này khỏi danh sách chọn";
+    flash("tagOneMsg", off ? "Đã ẩn khỏi danh sách chọn." : "✓ Đã hiện lại tag này.");
+    renderAll(); renderTagList();
+  };
+  $("tagOneDel").onclick = () => {
+    const b = $("tagOneDel");
+    if(b.dataset.armed !== "1"){ b.dataset.armed = "1"; b.textContent = "Bấm lần nữa để xoá"; return; }
+    const t = (state.tags||[]).find(x => x.id === tagOneId); if(!t) return;
+    t.hidden = true; persist(); renderAll(); renderTagList(); showSetPage("setTags", true);
+  };
+  /* new tag, inside settings */
+  let newIcon2 = "";
+  function refreshNew2(){
+    const typed = $("ntEmoji2").value.trim(), icon = typed ? [...typed][0] : newIcon2, name = $("ntName2").value.trim();
+    $("ntPreview2").textContent = (icon || "") + (name ? " " + name : "");
+    $("ntSave2").disabled = !(icon && name);
+    return { icon, name };
+  }
+  buildIcons($("ntIcons2"), "", ic => { newIcon2 = ic; $("ntEmoji2").value = ""; refreshNew2(); });
+  $("ntName2").addEventListener("input", refreshNew2);
+  $("ntEmoji2").addEventListener("input", () => { [...$("ntIcons2").children].forEach(x => x.setAttribute("aria-pressed","false")); refreshNew2(); });
+  $("newTagSet").onclick = () => { $("newTagSetBox").hidden = false; $("newTagSet").hidden = true; $("ntName2").value = ""; $("ntEmoji2").value = ""; newIcon2 = ""; refreshNew2(); $("ntName2").focus(); };
+  $("ntCancel2").onclick = () => { $("newTagSetBox").hidden = true; $("newTagSet").hidden = false; };
+  $("ntSave2").onclick = () => {
+    const { icon, name } = refreshNew2(); if(!icon || !name) return;
+    state.tags.push({ id:"u_" + uid(), label:name, icon });
+    persist(); renderAll(); renderTagList();
+    $("newTagSetBox").hidden = true; $("newTagSet").hidden = false;
+  };
   $("openSettings").onclick = openSettings;
   $("closeSettings").onclick = closeSettings;
   document.addEventListener("keydown", e => { if(e.key === "Escape" && settingsOpen) closeSettings(); });
@@ -2842,9 +3093,14 @@ html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:
       budget: useB ? b.budget : a.budget, budgetM: Math.max(a.budgetM || 0, b.budgetM || 0),
       days: byDay(a.days, b.days), income: byDay(a.income, b.income),
       contacts: byId(a.contacts, b.contacts), loans, tags: byId(a.tags, b.tags),
-      payees: Object.assign({}, b.payees, a.payees),
+      payees: Object.assign({}, b.payees, a.payees), tagOff: mergeTagOff(a.tagOff, b.tagOff),
       deleted: del, updated: Date.now()
     });
+  }
+  function mergeTagOff(a, b){
+    const out = Object.assign({}, a);
+    for(const k in b){ const x = out[k], y = b[k]; if(!x || (y && (y.m||0) > (x.m||0))) out[k] = y; }
+    return out;
   }
   function diffCount(before, after){
     const A = collectSigs(before), B = collectSigs(after);
