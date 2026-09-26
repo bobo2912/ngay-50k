@@ -1,6 +1,17 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v34, ngày 27/09/2026
+**Phiên bản hiện tại:** v35, ngày 27/09/2026
+
+---
+
+## Có gì mới trong v35 (so với v34)
+
+- **Chọn cách tính còn lại thực tế.** Ngay dưới con số có ba lựa chọn: *Cả hai*, *Chi thường*, *Chi thẻ*. Ô chi bị loại khỏi phép tính sẽ mờ đi để thấy ngay đang tính những gì.
+- **Thống kê theo tag ăn theo lựa chọn đó**, và đổi tiêu đề cho khớp: *Chi theo tag*, *Chi thường theo tag* hoặc *Chi thẻ theo tag*.
+- **Bốn ô tổng bằng nhau.** Trước đây ô khoản vay cao hơn ba ô kia vì có thêm dòng chú thích, làm cả lưới xô lệch. Câu chú thích chuyển xuống thành một dòng dưới lưới.
+- **Bỏ phần đặt trần cho từng nhóm.**
+- **Nút thêm khoản thu** không còn là khối xanh to giữa trang, mà thành nút tròn **＋ Khoản thu** ở cuối hàng chọn tháng, giống nút **Thẻ · N** bên tab Thẻ.
+- **Người nhận giờ là một trang con thật của Cài đặt**, cùng thanh *Cài đặt · Xong*, cùng kiểu nút *‹ Cài đặt* và tiêu đề lớn như Quản lý tag hay Quét mã QR. Bấm **Chuyển** vẫn đóng Cài đặt và mở sẵn form chuyển tiền như trước.
 
 ---
 
@@ -27,22 +38,14 @@ App vẫn mở lên ở tab **Giao dịch** để ghi khoản chi không mất t
 
 ---
 
-## Có gì mới trong v33 (so với v32)
-
-- **Hai nút nhập chuyển vào hàng chân của ô tổng**, ngăn với phần số tiền bằng một nét mảnh: **Từ ảnh** và **Ghi tay**. Không còn chiếm hàng riêng giữa trang, và vì gắn liền ô "tháng này" nên rõ là thêm khoản cho tháng đang xem.
-- **Thanh menu dưới đổi thứ tự:** Giao dịch · Thu chi · **Thẻ** · Khoản vay · Người nhận. Tab Thẻ chuyển lên trước Khoản vay cho gần tay hơn.
-
----
-
 ## Tất cả tính năng của app
 
 ### Tab Tổng quan
-- **Còn lại thực tế** theo tháng = thu vào − chi thường − chi thẻ, kèm mức tăng giảm so với tháng trước.
+- **Còn lại thực tế** theo tháng, chọn được gồm chi thường, chi thẻ hay cả hai, kèm mức tăng giảm so với tháng trước.
 - Bốn ô tổng: thu vào, chi thường, chi thẻ, khoản vay. Khoản vay để riêng, không tính vào còn lại thực tế.
-- **Ngân sách theo nhóm:** đặt trần mỗi tháng cho từng tag, tính cả chi thường lẫn chi thẻ, thanh tiến độ ba màu.
 - Thêm khoản thu theo nguồn: Lương, Thưởng, Bán hàng, Được cho, Khác. Chạm vào khoản thu để sửa số tiền, ghi chú, ngày nhận, nguồn thu.
 - Biểu đồ so sánh thu chi theo ngày, tuần, tháng.
-- Thống kê chi theo tag và danh sách tất cả thu chi trong tháng.
+- Thống kê chi theo tag, ăn theo lựa chọn ở trên, và danh sách tất cả thu chi trong tháng.
 
 ### Tab Giao dịch
 - **Thẻ Hôm nay còn được tiêu:** số tiền còn lại, thanh tiến độ, chuyển đỏ khi vượt hạn mức.
@@ -66,7 +69,7 @@ App vẫn mở lên ở tab **Giao dịch** để ghi khoản chi không mất t
 
 ### Tab Thẻ
 - Quản lý thẻ trong bảng riêng (nút **Thẻ · N** ở hàng chọn tháng): tên thẻ, 6 số đầu, 4 số cuối, ngày sao kê.
-- Khoản chi thẻ gắn được nhóm để tính vào ngân sách, app tự đoán theo nơi chi đã gặp.
+- Khoản chi thẻ gắn được nhóm để vào thống kê theo tag, app tự đoán theo nơi chi đã gặp.
 - Dải chọn thẻ ngang, chạm để xem riêng từng thẻ; khoản chi thẻ không tính vào hạn mức mỗi ngày.
 - Ô tổng theo tháng: số khoản, số tiền và mức tăng giảm so với tháng trước.
 - Biểu đồ *Theo ngày* và *12 tháng*, chạm cột để nhảy tới ngày hoặc tháng đó.
@@ -111,7 +114,7 @@ App vẫn mở lên ở tab **Giao dịch** để ghi khoản chi không mất t
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v35** | Chọn cách tính còn lại thực tế, bỏ đặt trần, cân lại lưới ô tổng, Người nhận vào hẳn Cài đặt |
 | **v34** | Tab Tổng quan, ngân sách theo nhóm, tag cho khoản chi thẻ, ngày sao kê, thanh menu 4 tab |
-| **v33** | Nút nhập gắn vào ô tổng, tab Thẻ chuyển lên trước Khoản vay |
 
 *File này chỉ giữ ghi chú của hai bản gần nhất.*

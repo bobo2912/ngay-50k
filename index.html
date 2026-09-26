@@ -478,11 +478,11 @@ main{padding:14px 16px calc(112px + env(safe-area-inset-bottom,0px))}
 /* glass surfaces */
 .note, .form, .ledger, .loan, .detail-card, .set-group, .import-card, .backup-nudge, .result,
 #tab-today section:has(#list), #tab-today section:has(#week), .chart-sec, #tab-money section:has(#catBreakdown), #tab-money section:has(#ledgerList),
-#tab-people section:has(#peopleList), .settings-head, .tabs{
+#setPeople section:has(#peopleList), .settings-head, .tabs{
   background:var(--glass); -webkit-backdrop-filter:blur(22px) saturate(180%); backdrop-filter:blur(22px) saturate(180%);
   border:1px solid var(--glass-border); box-shadow:inset 0 1px 0 var(--glass-hi), var(--shadow);
 }
-#tab-today section:has(#list), #tab-today section:has(#week), .chart-sec, #tab-money section:has(#catBreakdown), #tab-money section:has(#ledgerList), #tab-people section:has(#peopleList){
+#tab-today section:has(#list), #tab-today section:has(#week), .chart-sec, #tab-money section:has(#catBreakdown), #tab-money section:has(#ledgerList), #setPeople section:has(#peopleList){
   border-radius:26px; padding:14px 16px; margin-top:16px}
 .form, .ledger, .detail-card, .set-group, .result{border-radius:26px}
 .form{padding:16px}
@@ -718,7 +718,7 @@ body::before, .settings::before{background:
 
 /* flat cards everywhere except the few that should float */
 #tab-today section:has(#list), #tab-today section:has(#week), .chart-sec, #tab-money section:has(#catBreakdown),
-#tab-money section:has(#ledgerList), #tab-people section:has(#peopleList), .loan, .detail-card, .set-group, .set-nav,
+#tab-money section:has(#ledgerList), #setPeople section:has(#peopleList), .loan, .detail-card, .set-group, .set-nav,
 .import-card, .backup-nudge, .result, .form{
   background:var(--flat); -webkit-backdrop-filter:none; backdrop-filter:none;
   border:1px solid var(--line); box-shadow:none; border-radius:16px}
@@ -766,7 +766,7 @@ header .date{font-size:1.1rem; font-weight:600}
 
 /* section labels */
 #tab-today section:has(#list) > h2, #tab-today section:has(#week) > h2, .chart-sec h2,
-#tab-money section:has(#catBreakdown) > h2, #tab-money section:has(#ledgerList) > h2, #tab-people section:has(#peopleList) > h2{
+#tab-money section:has(#catBreakdown) > h2, #tab-money section:has(#ledgerList) > h2, #setPeople section:has(#peopleList) > h2{
   font-size:.7rem; font-weight:600; letter-spacing:.07em; text-transform:uppercase; color:var(--muted)}
 
 /* the form sheet */
@@ -889,30 +889,16 @@ main{padding-bottom:calc(74px + env(safe-area-inset-bottom,0px))}
 .kpi small{display:block; font-size:.72rem; color:var(--muted); font-weight:600}
 .kpi b{display:block; font-size:1.05rem; font-weight:800; letter-spacing:-.02em; margin-top:2px}
 .kpi.inc b{color:var(--ok)} .kpi.card b{color:var(--note)}
-.kpi.loan{position:relative; padding-bottom:22px}
-.kpi.loan em{position:absolute; left:13px; right:13px; bottom:7px; font-style:normal; font-size:.64rem; color:var(--muted); line-height:1.2}
+.kpi4 > *{min-height:64px; display:flex; flex-direction:column; justify-content:center}
+.kpi.dim{opacity:.45}
+.kpi-note{margin:8px 2px 0; font-size:.72rem; color:var(--muted); line-height:1.5}
+.chero-foot.seg3{gap:0}
+.chero-foot.seg3 button{font-size:.8rem; padding:11px 2px}
+.chero-foot.seg3 button[aria-pressed="true"]{color:var(--note); background:var(--note-soft)}
+.chero-foot.seg3 button[aria-pressed="false"]{color:var(--muted); font-weight:500}
 .ctitle{display:flex; align-items:center; justify-content:space-between; gap:10px}
 .ctitle h2, .ctitle h3{margin:0; font-size:.95rem; font-weight:700}
 .linkbtn{border:0; background:transparent; color:var(--note); font-size:.8rem; font-weight:600; padding:2px 0}
-.bud{padding:11px 0 10px; border-bottom:1px solid var(--line)}
-.bud:last-child{border-bottom:0; padding-bottom:2px}
-.bud .r1{display:flex; align-items:baseline; gap:8px; font-size:.86rem}
-.bud .r1 .n{font-weight:600; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
-.bud .r1 .v{color:var(--muted); font-size:.78rem; white-space:nowrap}
-.bud .r1 .v b{color:var(--ink); font-weight:700; font-size:.86rem}
-.bud .pb{display:block; width:100%; height:7px; border-radius:4px; background:var(--line); margin-top:7px; overflow:hidden}
-.bud .pb i{display:block; height:100%; border-radius:4px; background:linear-gradient(90deg, var(--tint-a), var(--tint-b))}
-.bud.warn .pb i{background:linear-gradient(90deg,#F0A33C,#B45309)}
-.bud.over .pb i{background:linear-gradient(90deg,#FF8A80,var(--over))}
-.bud.over .r1 .v b{color:var(--over)}
-.bud .nt{display:block; font-size:.72rem; color:var(--muted); margin:5px 0 0; background:none; padding:0; border-radius:0; min-height:0; aspect-ratio:auto}
-.bud .nt::before{display:none}
-.bud.warn .nt{color:#B45309; font-weight:600}
-.bud.over .nt{color:var(--over); font-weight:600}
-.brow{display:flex; align-items:center; gap:11px; background:var(--flat); border:1px solid var(--line); border-radius:14px; padding:9px 12px; margin-top:8px}
-.brow .n{flex:1; min-width:0; font-size:.9rem; font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
-.brow input{width:124px; text-align:right; border:1px solid var(--line); background:var(--field); border-radius:10px; padding:7px 10px; font-size:.86rem; font-weight:700}
-.brow input:focus{background:var(--field-focus); border-color:var(--note); box-shadow:0 0 0 3px var(--note-soft); outline:none}
 .cardline{display:flex; align-items:center; gap:7px; width:100%; margin:11px -20px -16px; padding:11px 20px;
   border:0; border-top:1px solid var(--line); background:transparent; font-size:.78rem; color:var(--muted); border-radius:0 0 30px 30px}
 .cardline svg{width:15px; height:15px; flex:none; fill:none; stroke:var(--note); stroke-width:1.9}
@@ -1050,31 +1036,33 @@ header{margin-top:6px}
 
   <!-- ================= TAB: THU CHI ================= -->
   <div id="tab-money" role="tabpanel" hidden>
-    <div class="month">
+    <div class="month cardmonth">
       <button id="prevMonth" aria-label="Tháng trước">‹</button>
       <strong id="monthLabel"></strong>
       <button id="nextMonth" aria-label="Tháng sau">›</button>
+      <span class="mspace"></span>
+      <button class="cards-btn" id="addIncomeBtn">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Khoản thu
+      </button>
     </div>
     <div class="ledger chero">
-      <p class="chero-lb"><span>Còn lại thực tế tháng này</span><span class="chero-trend" id="netTrend" hidden></span></p>
+      <p class="chero-lb"><span id="netLabel">Còn lại thực tế tháng này</span><span class="chero-trend" id="netTrend" hidden></span></p>
       <p class="chero-big"><span class="num" id="sumNet">0đ</span></p>
       <p class="ov-sub" id="netSub"></p>
+      <div class="chero-foot seg3" id="netSeg" role="group" aria-label="Tính còn lại thực tế gồm">
+        <button type="button" data-nf="all" aria-pressed="true">Cả hai</button>
+        <button type="button" data-nf="cash" aria-pressed="false">Chi thường</button>
+        <button type="button" data-nf="card" aria-pressed="false">Chi thẻ</button>
+      </div>
     </div>
 
     <div class="kpi4">
       <div class="kpi inc"><small>Thu vào</small><b class="num" id="sumIn">0đ</b></div>
-      <div class="kpi"><small>Chi thường</small><b class="num" id="sumOut">0đ</b></div>
-      <div class="kpi card"><small>Chi thẻ</small><b class="num" id="sumCard">0đ</b></div>
-      <button class="kpi loan" id="kpiLoan"><small>Khoản vay</small><b class="num" id="sumLoan">0đ</b><em>không tính vào số trên</em></button>
+      <div class="kpi" id="kpiCash"><small>Chi thường</small><b class="num" id="sumOut">0đ</b></div>
+      <div class="kpi card" id="kpiCard"><small>Chi thẻ</small><b class="num" id="sumCard">0đ</b></div>
+      <button class="kpi" id="kpiLoan"><small>Khoản vay</small><b class="num" id="sumLoan">0đ</b></button>
     </div>
-
-    <section class="cchart" id="budgetBox" hidden>
-      <div class="ctitle"><h2>Ngân sách theo nhóm</h2><button class="linkbtn" id="openBudget">Đặt trần</button></div>
-      <div id="budgetList"></div>
-    </section>
-    <button class="ghost" id="openBudget2" style="width:100%; margin-top:12px">＋ Đặt trần chi cho từng nhóm</button>
-
-    <button class="primary green" id="addIncomeBtn">+ Thêm khoản thu</button>
+    <p class="kpi-note">Khoản vay không tính vào còn lại thực tế: tiền vay được không phải thu nhập, tiền trả nợ không phải chi tiêu.</p>
 
     <section id="incomeForm" hidden>
       <div class="form">
@@ -1116,7 +1104,7 @@ header{margin-top:6px}
     </section>
 
     <section>
-      <h2>Chi theo tag</h2>
+      <h2 id="catTitle">Chi theo tag</h2>
       <div class="cats" id="catBreakdown"></div>
     </section>
 
@@ -1175,30 +1163,6 @@ header{margin-top:6px}
   </div>
 
   <!-- ================= TAB: NGƯỜI NHẬN ================= -->
-  <div id="tab-people" role="tabpanel" hidden>
-    <button class="set-back" id="peopleBack" hidden>‹ Cài đặt</button>
-    <p class="subtle" style="margin-top:0">Lưu những người bạn hay chuyển tiền. Bấm Chuyển để điền sẵn thông tin, chỉ cần nhập số tiền.</p>
-    <button class="primary" id="addContactBtn">+ Thêm người nhận</button>
-
-    <section id="contactForm" hidden>
-      <div class="form">
-        <div class="form-head"><h2 id="contactFormTitle">Thêm người nhận</h2><button class="x" id="cancelContact" aria-label="Huỷ">✕</button></div>
-        <div class="field"><label for="cName"><span>Tên gợi nhớ</span></label><input id="cName" class="inp" maxlength="40" placeholder="vd: Cô Lan bán cơm"></div>
-        <div class="field"><label for="cAcct"><span>Số tài khoản</span></label><input id="cAcct" class="inp num" inputmode="text" autocapitalize="characters" autocorrect="off" spellcheck="false"></div>
-        <div class="field"><label for="cBank"><span>Ngân hàng</span></label><input id="cBank" class="inp" list="bankList" placeholder="vd: Vietcombank"></div>
-        <div class="field"><label for="cHolder"><span>Tên tài khoản <span class="opt">(không bắt buộc)</span></span></label><input id="cHolder" class="inp" maxlength="50" placeholder="vd: NGUYEN VAN A"></div>
-        <div class="field"><label for="cMemo"><span>Nội dung mặc định (không bắt buộc)</span></label><input id="cMemo" class="inp" maxlength="80"></div>
-        <div class="field"><label><span>Loại chi thường dùng</span></label><div class="chips" id="cCatChips" style="margin-top:0"></div></div>
-        <button class="primary" id="saveContactBtn" disabled>Lưu người nhận</button>
-      </div>
-    </section>
-
-    <section>
-      <h2 id="peopleTitle">Danh sách</h2>
-      <ul id="peopleList"></ul>
-    </section>
-  </div>
-
   <!-- ================= TAB: THẺ TÍN DỤNG ================= -->
   <div id="tab-cards" role="tabpanel" hidden>
     <div class="month cardmonth">
@@ -1255,7 +1219,7 @@ header{margin-top:6px}
         <button class="set-nav" data-go="setTheme"><span class="nav-t">Giao diện</span><span class="nav-v" id="navTheme"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
         <button class="set-nav" data-go="setScan"><span class="nav-t">Quét mã QR</span><span class="nav-v" id="navScan"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
         <button class="set-nav" data-go="setBudget"><span class="nav-t">Hạn mức chi một ngày</span><span class="nav-v" id="navBudget"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
-        <button class="set-nav" id="goPeople"><span class="nav-t">Người nhận</span><span class="nav-v" id="navPeople"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+        <button class="set-nav" data-go="setPeople"><span class="nav-t">Người nhận</span><span class="nav-v" id="navPeople"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
         <button class="set-nav" data-go="setTags"><span class="nav-t">Quản lý tag</span><span class="nav-v" id="navTags"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
         <button class="set-nav" data-go="setSync"><span class="nav-t">Sao lưu và đồng bộ</span><span class="nav-v" id="navSync"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
         <button class="set-nav" data-go="setStore"><span class="nav-t">Dung lượng</span><span class="nav-v" id="navStore"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
@@ -1303,6 +1267,30 @@ header{margin-top:6px}
         <button class="ghost" id="saveBudget">Lưu</button>
       </div>
       <p class="inline-ok" id="budgetMsg" hidden></p>
+    </section>
+    </div>
+
+    <div class="set-page" id="setPeople" hidden>
+      <div class="set-head"><button class="set-back" data-back>‹ Cài đặt</button><h2 tabindex="-1">Người nhận</h2></div>
+    <p class="set-now" style="margin:0 2px 10px">Lưu những người bạn hay chuyển tiền. Bấm Chuyển để điền sẵn thông tin, chỉ cần nhập số tiền.</p>
+    <button class="ghost" id="addContactBtn" style="width:100%">＋ Thêm người nhận</button>
+
+    <section id="contactForm" hidden>
+      <div class="form">
+        <div class="form-head"><h2 id="contactFormTitle">Thêm người nhận</h2><button class="x" id="cancelContact" aria-label="Huỷ">✕</button></div>
+        <div class="field"><label for="cName"><span>Tên gợi nhớ</span></label><input id="cName" class="inp" maxlength="40" placeholder="vd: Cô Lan bán cơm"></div>
+        <div class="field"><label for="cAcct"><span>Số tài khoản</span></label><input id="cAcct" class="inp num" inputmode="text" autocapitalize="characters" autocorrect="off" spellcheck="false"></div>
+        <div class="field"><label for="cBank"><span>Ngân hàng</span></label><input id="cBank" class="inp" list="bankList" placeholder="vd: Vietcombank"></div>
+        <div class="field"><label for="cHolder"><span>Tên tài khoản <span class="opt">(không bắt buộc)</span></span></label><input id="cHolder" class="inp" maxlength="50" placeholder="vd: NGUYEN VAN A"></div>
+        <div class="field"><label for="cMemo"><span>Nội dung mặc định (không bắt buộc)</span></label><input id="cMemo" class="inp" maxlength="80"></div>
+        <div class="field"><label><span>Loại chi thường dùng</span></label><div class="chips" id="cCatChips" style="margin-top:0"></div></div>
+        <button class="primary" id="saveContactBtn" disabled>Lưu người nhận</button>
+      </div>
+    </section>
+
+    <section>
+      <h2 id="peopleTitle">Danh sách</h2>
+      <ul id="peopleList"></ul>
     </section>
     </div>
 
@@ -1384,7 +1372,7 @@ header{margin-top:6px}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v34</p>
+      <p class="sync" id="appVersion">Phiên bản v35</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. Giới hạn khoảng 5 MB được tính chung cho các mini app cùng tài khoản GitHub.</p>
 
       <h4 class="sub">Xoá dữ liệu</h4>
@@ -1479,18 +1467,6 @@ header{margin-top:6px}
   <div class="sheet-foot">
     <button class="ghost" id="pasteCancel">Huỷ</button>
     <button class="primary" id="pasteImport" style="margin:0" disabled>Nhập khoản đã chọn</button>
-  </div>
-</div>
-
-<div class="sheet-back top" id="budgetBack" hidden></div>
-<div class="sheet top" id="budgetSheet" role="dialog" aria-modal="true" aria-labelledby="budgetTitle" hidden>
-  <div class="grab" aria-hidden="true"></div>
-  <div class="sheet-head"><h2 id="budgetTitle">Đặt trần mỗi tháng</h2><button class="x" id="closeBudget" aria-label="Đóng">✕</button></div>
-  <p class="set-now" style="margin:0 2px 10px">Để trống nghĩa là không theo dõi nhóm đó. Trần dùng lại cho các tháng sau, sửa lúc nào cũng được. Tính cả khoản chi thường lẫn chi thẻ.</p>
-  <div id="budgetRows"></div>
-  <div class="sheet-foot">
-    <button class="ghost" id="budgetCancel">Huỷ</button>
-    <button class="primary" id="budgetSave" style="margin:0">Lưu</button>
   </div>
 </div>
 
@@ -1789,7 +1765,7 @@ header{margin-top:6px}
       tags: Array.isArray(s.tags) ? s.tags.filter(t => t && t.id) : [], tagOff: obj(s.tagOff),
       cards: Array.isArray(s.cards) ? s.cards.filter(c => c && c.id) : [], cardTx: obj(s.cardTx),
       caps: obj(s.caps)
-    };
+    };  /* caps: giữ lại cho dữ liệu cũ, không còn dùng */
   }
   function loadLocal(){
     try{ const raw = localStorage.getItem(LS_KEY); if(raw) state = normalize(JSON.parse(raw)); }catch(e){}
@@ -2240,71 +2216,13 @@ header{margin-top:6px}
     });
     return flow;
   }
-  function netOfMonth(prefix){
+  function netOfMonth(prefix, inc, incC){
     let tin = 0, tout = 0;
     for(const k in state.income) if(k.indexOf(prefix) === 0) (state.income[k]||[]).forEach(it => tin += Number(it.amt)||0);
-    for(const k in state.days)   if(k.indexOf(prefix) === 0) (state.days[k]||[]).forEach(it => tout += Number(it.amt)||0);
-    for(const k in state.cardTx) if(k.indexOf(prefix) === 0) (state.cardTx[k]||[]).forEach(it => tout += Number(it.amt)||0);
+    if(inc) for(const k in state.days)   if(k.indexOf(prefix) === 0) (state.days[k]||[]).forEach(it => tout += Number(it.amt)||0);
+    if(incC) for(const k in state.cardTx) if(k.indexOf(prefix) === 0) (state.cardTx[k]||[]).forEach(it => tout += Number(it.amt)||0);
     return tin - tout;
   }
-  /* ---------- ngân sách theo nhóm ---------- */
-  function capsOf(){ return state.caps || (state.caps = {}); }
-  function capVal(id){ const e = capsOf()[id]; return e && Number(e.v) > 0 ? Number(e.v) : 0; }
-  function renderBudgets(byCat, prefix){
-    const box = $("budgetList"); if(!box) return;
-    box.innerHTML = "";
-    const ids = Object.keys(capsOf()).filter(id => capVal(id) > 0);
-    $("budgetBox").hidden = !ids.length;
-    $("openBudget2").hidden = !!ids.length;
-    if(!ids.length) return;
-    const now = new Date(), same = prefix === (now.getFullYear() + "-" + pad(now.getMonth()+1) + "-");
-    const dim = (() => { const a = prefix.split("-"); return new Date(+a[0], +a[1], 0).getDate(); })();
-    const left = same ? dim - now.getDate() : 0;
-    ids.sort((a,b) => (byCat[b]||0)/capVal(b) - (byCat[a]||0)/capVal(a)).forEach(id => {
-      const cap = capVal(id), used = byCat[id] || 0, pct = used / cap;
-      const t = tagOf(id);
-      const row = document.createElement("div");
-      row.className = "bud" + (pct > 1 ? " over" : pct >= .85 ? " warn" : "");
-      row.innerHTML = '<div class="r1"><span class="n"></span><span class="v"><b></b> / <span class="cap"></span></span></div>' +
-        '<div class="pb"><i></i></div><p class="nt"></p>';
-      row.querySelector(".n").textContent = t.icon + " " + t.label;
-      row.querySelector("b").textContent = fmtShort(used);
-      row.querySelector(".cap").textContent = fmtShort(cap);
-      row.querySelector("i").style.width = Math.min(100, Math.round(pct * 100)) + "%";
-      const note = row.querySelector(".nt");
-      if(pct > 1) note.textContent = "Vượt " + fmt(used - cap);
-      else if(pct >= .85) note.textContent = "Còn " + fmt(cap - used) + (left > 0 ? " cho " + left + " ngày cuối tháng" : "");
-      else note.hidden = true;
-      box.appendChild(row);
-    });
-  }
-  function fmtShort(n){
-    n = Number(n) || 0;
-    if(n >= 1000000) return (Math.round(n / 100000) / 10).toString().replace(".", ",") + "tr";
-    if(n >= 1000) return Math.round(n / 1000) + "k";
-    return fmt(n);
-  }
-  function openBudget(){
-    capDraft = {};
-    Object.keys(capsOf()).forEach(id => { if(capVal(id)) capDraft[id] = capVal(id); });
-    const box = $("budgetRows"); box.innerHTML = "";
-    const cnt = tagUse();
-    allTags().slice().sort((a,b) => (capDraft[b.id]?1:0) - (capDraft[a.id]?1:0) || (cnt[b.id]||0) - (cnt[a.id]||0)).forEach(t => {
-      const row = document.createElement("label"); row.className = "brow";
-      row.innerHTML = '<span class="n"></span><input inputmode="numeric" autocomplete="off" placeholder="chưa đặt">';
-      row.querySelector(".n").textContent = t.icon + " " + t.label;
-      const inp = row.querySelector("input");
-      inp.value = capDraft[t.id] ? capDraft[t.id].toLocaleString("vi-VN") : "";
-      inp.addEventListener("input", () => {
-        const v = parseInt(digits(inp.value), 10) || 0;
-        inp.value = v ? v.toLocaleString("vi-VN") : "";
-        if(v) capDraft[t.id] = v; else delete capDraft[t.id];
-      });
-      box.appendChild(row);
-    });
-    showSheet("budgetSheet", "budgetBack");
-  }
-  function closeBudget(){ hideSheet("budgetSheet", "budgetBack"); }
   function renderMoney(){
     const y = viewMonth.getFullYear(), m = viewMonth.getMonth();
     $("monthLabel").textContent = "Tháng " + (m+1) + "/" + y;
@@ -2314,14 +2232,14 @@ header{margin-top:6px}
     const dayKeys = new Set([...Object.keys(state.days), ...Object.keys(state.income)].filter(k => k.startsWith(prefix)));
     let tin = 0, tout = 0; const byCat = {};
     dayKeys.forEach(k => {
-      (state.days[k]||[]).forEach(it => { tout += it.amt; byCat[it.cat] = (byCat[it.cat]||0) + it.amt; });
+      (state.days[k]||[]).forEach(it => { tout += it.amt; if(netFilter !== "card") byCat[it.cat] = (byCat[it.cat]||0) + it.amt; });
       (state.income[k]||[]).forEach(it => { tin += it.amt; });
     });
     /* chi thẻ và khoản vay của tháng đang xem */
     let tcard = 0;
     for(const k in state.cardTx){ if(k.indexOf(prefix) === 0) (state.cardTx[k]||[]).forEach(x => {
       tcard += Number(x.amt) || 0;
-      if(x.cat) byCat[x.cat] = (byCat[x.cat]||0) + (Number(x.amt)||0);
+      if(netFilter !== "cash") byCat[x.cat || ""] = (byCat[x.cat || ""]||0) + (Number(x.amt)||0);
     }); }
     const tloan = loanFlowOfMonth(prefix);
 
@@ -2330,13 +2248,21 @@ header{margin-top:6px}
     $("sumCard").textContent = "−" + fmt(tcard);
     $("sumLoan").textContent = (tloan < 0 ? "−" : tloan > 0 ? "+" : "") + fmt(Math.abs(tloan));
 
-    const net = tin - tout - tcard, ne = $("sumNet");
+    const inc = netFilter !== "card", incC = netFilter !== "cash";
+    const spend = (inc ? tout : 0) + (incC ? tcard : 0);
+    const net = tin - spend, ne = $("sumNet");
     ne.textContent = (net<0 ? "−" : net>0 ? "+" : "") + fmt(Math.abs(net));
     ne.style.color = net<0 ? "var(--over)" : net>0 ? "var(--ok)" : "var(--ink)";
-    $("netSub").textContent = "Thu " + fmt(tin) + " · chi tất cả " + fmt(tout + tcard) + " · chưa kể vay mượn";
+    $("netLabel").textContent = netFilter === "cash" ? "Còn lại nếu chỉ tính chi thường"
+      : netFilter === "card" ? "Còn lại nếu chỉ tính chi thẻ" : "Còn lại thực tế tháng này";
+    $("netSub").textContent = "Thu " + fmt(tin) + " · " +
+      (netFilter === "cash" ? "chi thường " : netFilter === "card" ? "chi thẻ " : "chi tất cả ") + fmt(spend) +
+      " · chưa kể vay mượn";
+    $("kpiCash").classList.toggle("dim", !inc);
+    $("kpiCard").classList.toggle("dim", !incC);
 
     /* so với tháng trước */
-    const pm = new Date(y, m - 1, 1), pnet = netOfMonth(pm.getFullYear() + "-" + pad(pm.getMonth()+1) + "-");
+    const pm = new Date(y, m - 1, 1), pnet = netOfMonth(pm.getFullYear() + "-" + pad(pm.getMonth()+1) + "-", inc, incC);
     const nt = $("netTrend");
     if(pnet !== 0 && net !== 0){
       const pct = Math.round((net - pnet) / Math.abs(pnet) * 100);
@@ -2346,9 +2272,10 @@ header{margin-top:6px}
       nt.setAttribute("aria-label", "so với tháng trước");
     } else nt.hidden = true;
 
-    renderBudgets(byCat, prefix);
 
     const catTotal = Object.keys(byCat).reduce((a,k)=>a+byCat[k], 0);
+    $("catTitle").textContent = netFilter === "cash" ? "Chi thường theo tag"
+      : netFilter === "card" ? "Chi thẻ theo tag" : "Chi theo tag";
     const cb = $("catBreakdown"); cb.innerHTML = "";
     if(!catTotal){ cb.innerHTML = '<p class="empty">Chưa có khoản chi nào trong tháng này.</p>'; }
     Object.keys(byCat).map(tagOf).sort((a,b)=>byCat[b.id]-byCat[a.id]).forEach(c => {
@@ -2464,7 +2391,7 @@ header{margin-top:6px}
       li.querySelector(".cat").textContent = cat.icon;
       li.querySelector(".desc div:first-child").textContent = c.name;
       li.querySelector(".desc div:last-child").textContent = c.bank + " · " + c.acct + (c.uses ? " · " + c.uses + " lần" : "");
-      li.querySelector(".go").onclick = () => { showTab("today"); openForm("transfer", null, c); };
+      li.querySelector(".go").onclick = () => { closeSettings(); showTab("today"); openForm("transfer", null, c); };
       li.querySelectorAll(".act")[1].onclick = () => openContactForm(c);
       li.querySelector(".del").onclick = (e) => {
         if(!armed(e.currentTarget)) return;
@@ -2831,8 +2758,7 @@ header{margin-top:6px}
     if(name !== currentTab) resetTab(name);
     currentTab = name;
     document.querySelectorAll(".tabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.tab===name ? "true":"false"));
-    ["today","money","loans","people","cards"].forEach(n => $("tab-"+n).hidden = n !== name);
-    if(name !== "people") $("peopleBack").hidden = true;
+    ["today","money","loans","cards"].forEach(n => $("tab-"+n).hidden = n !== name);
     window.scrollTo(0,0);
   }
   function renderAll(){ renderToday(); renderMoney(); renderLoans(); renderPeople(); renderCards(); }
@@ -3515,7 +3441,7 @@ header{margin-top:6px}
   idleReset();
 
   /* ================= THẺ TÍN DỤNG ================= */
-  var cardMonth = null, cxEditing = null, cxCard = null, cdEditing = null, pasteCard = null, pasteItems = [], pasteShowOther = false, cardFilterId = null, cardChartMode = "day", cxTag = "", capDraft = null;
+  var cardMonth = null, cxEditing = null, cxCard = null, cdEditing = null, pasteCard = null, pasteItems = [], pasteShowOther = false, cardFilterId = null, cardChartMode = "day", cxTag = "", netFilter = "all";
   function monthKeyOf(d){ return d.getFullYear() + "-" + pad(d.getMonth()+1); }
   function cardOf(id){ return (state.cards||[]).find(c => c.id === id) || null; }
   function stmtText(d){
@@ -4275,23 +4201,13 @@ header{margin-top:6px}
   $("addCardBtn").onclick = () => openCardEdit(null);
   $("openCardsBtn").onclick = () => { renderCardBank(); showSheet("cardsSheet", "cardsBack"); };
   $("heroCard").onclick = () => showTab("cards");
-  $("openBudget").onclick = openBudget;
-  $("openBudget2").onclick = openBudget;
-  $("closeBudget").onclick = closeBudget;
-  $("budgetCancel").onclick = closeBudget;
-  $("budgetBack").onclick = closeBudget;
-  $("budgetSave").onclick = () => {
-    const now = Date.now();
-    allTags().forEach(t => {
-      const v = capDraft && capDraft[t.id] ? capDraft[t.id] : 0;
-      const cur = capVal(t.id);
-      if(v !== cur) capsOf()[t.id] = { v, m: now };
-    });
-    persist(); renderMoney(); closeBudget();
-  };
   $("kpiLoan").onclick = () => showTab("loans");
-  $("goPeople").onclick = () => { closeSettings(); showTab("people"); $("peopleBack").hidden = false; };
-  $("peopleBack").onclick = () => { $("peopleBack").hidden = true; showTab("today"); openSettings(); };
+  $("netSeg").onclick = e => {
+    const b = e.target.closest("button[data-nf]"); if(!b) return;
+    netFilter = b.dataset.nf;
+    [...$("netSeg").children].forEach(x => x.setAttribute("aria-pressed", x === b ? "true" : "false"));
+    renderMoney();
+  };
   $("closeCardsSheet").onclick = () => hideSheet("cardsSheet", "cardsBack");
   $("cardsBack").onclick = () => hideSheet("cardsSheet", "cardsBack");
   $("cardChartSeg").onclick = e => {
@@ -4409,7 +4325,7 @@ header{margin-top:6px}
   }
 
   /* ---- settings navigation ---- */
-  const SET_PAGES = ["setHome","setTheme","setScan","setBudget","setTags","setTagOne","setSync","setStore"];
+  const SET_PAGES = ["setHome","setTheme","setScan","setBudget","setPeople","setTags","setTagOne","setSync","setStore"];
   let setPage = "setHome";
   function showSetPage(id, back){
     setPage = id;
@@ -4421,12 +4337,14 @@ header{margin-top:6px}
     if(id === "setHome") renderSetHome();
     if(id === "setStore"){ renderStorage(); measureCache(); }
     if(id === "setTags") renderTagList();
+    if(id === "setPeople"){ closeContactForm(); renderPeople(); }
   }
   function renderSetHome(){
     $("navTheme").textContent = { auto:"Tự động", light:"Sáng", dark:"Tối" }[curTheme] || "Tự động";
     $("navScan").textContent = scanMode === "live" ? "Quét trực tiếp" : "Camera iPhone";
     $("navBudget").textContent = fmt(state.budget) + "/ngày";
     $("navTags").textContent = allTags().length + " tag";
+    $("navPeople").textContent = (state.contacts || []).length ? (state.contacts.length + " người") : "chưa có ai";
     const last = Number(lsGet(BK_KEY)) || 0;
     $("navSync").textContent = last ? agoText(last) : "chưa sao lưu";
     $("navStore").textContent = $("storData").textContent === "–" ? "" : $("storData").textContent;
