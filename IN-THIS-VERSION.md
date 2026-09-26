@@ -1,6 +1,16 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v26, ngày 26/09/2026
+**Phiên bản hiện tại:** v27, ngày 26/09/2026
+
+---
+
+## Có gì mới trong v27 (so với v26)
+
+- **Sao lưu trở lại như cũ:** chỉ còn Xuất file sao lưu và Nhập từ file. Bỏ phần chọn thư mục và danh sách bản lưu trong máy vì rối.
+- **Thẻ nhập 6 số đầu và 4 số cuối** thay cho 4 số cuối và hạn mức. App dùng hai phần này để tự gán khoản chi vào đúng thẻ, khớp với cách ngân hàng che số thẻ trong thông báo.
+- **Nhiều thẻ hiển thị thành một dải chọn ngang** ở đầu tab Thẻ: Tất cả thẻ và từng thẻ, mỗi ô kèm số tiền tháng này. Chạm một thẻ để chỉ xem khoản chi của thẻ đó.
+- **Chọn ảnh để nhập.** Trong bảng nhập, ngoài dán chữ giờ có nút **Chọn ảnh**: app đọc chữ trong ảnh chụp màn hình rồi tìm các khoản chi, bạn vẫn tick chọn khoản đúng trước khi ghi. Lần đầu dùng cần mạng để tải bộ đọc chữ.
+- **Cài đặt thời gian tự tắt camera:** 30 giây, 45 giây, 2 phút hoặc 5 phút, trong Cài đặt, Quét mã QR.
 
 ---
 
@@ -216,10 +226,10 @@
 - Lọc theo loại, trạng thái (chưa xong, tất toán), ngày khởi tạo hoặc ngày đến hạn.
 
 ### Tab Thẻ
-- Quản lý thẻ tín dụng: tên thẻ, 4 số cuối, hạn mức.
+- Quản lý thẻ tín dụng: tên thẻ, 6 số đầu, 4 số cuối. Nhiều thẻ hiện thành dải chọn ngang, chạm để lọc.
 - Khoản chi thẻ không tính vào hạn mức mỗi ngày.
 - Xem theo tháng, chia theo từng thẻ, danh sách theo ngày, sửa và xoá.
-- Dán thông báo ngân hàng để nhập nhanh, tick chọn khoản đúng.
+- Dán thông báo ngân hàng hoặc chọn ảnh chụp màn hình để nhập nhanh, tick chọn khoản đúng.
 
 ### Tab Người nhận
 - Lưu người hay chuyển tiền: tên gợi nhớ, số tài khoản, ngân hàng, tên tài khoản, nội dung mặc định, tag thường dùng.
@@ -227,7 +237,7 @@
 
 ### Cài đặt (bánh răng góc trên bên phải)
 - **Giao diện:** Tự động, Sáng hoặc Tối.
-- **Quét mã QR:** Camera iPhone hoặc Quét trực tiếp.
+- **Quét mã QR:** Camera iPhone hoặc Quét trực tiếp, kèm thời gian tự tắt camera.
 - **Hạn mức chi một ngày.**
 - **Quản lý tag:** danh sách tag, chi tiết từng tag, đổi tên và icon, ẩn hoặc hiện, xoá tag tự tạo.
 - **Sao lưu và đồng bộ:**
@@ -253,6 +263,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v27** | Sao lưu về bản đơn giản, thẻ dùng 6 số đầu và 4 số cuối, dải chọn nhiều thẻ, đọc chữ từ ảnh, chỉnh thời gian tắt camera |
 | **v26** | Menu Thẻ tín dụng, dán từ thông báo để nhập, bản lưu trong máy và thư mục lưu |
 | **v25** | Chừa khoảng an toàn phía trên, dải nền che thanh trạng thái, thanh Cài đặt nền đặc |
 | **v24** | Bảng nhập tiền nền đặc không hở, chỉ đóng bằng nút ✕, gọn lề dưới |
