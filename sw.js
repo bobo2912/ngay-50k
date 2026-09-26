@@ -1,6 +1,6 @@
 /* Ngày 50k – bộ nhớ đệm để app mở được khi không có mạng.
    Mỗi lần sửa app, hãy tăng số phiên bản dưới đây (v1 -> v2 ...) để máy nhận bản mới. */
-const VERSION = "ngay50k-v33";
+const VERSION = "ngay50k-v34";
 
 const ASSETS = [
   "./",
