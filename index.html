@@ -1265,7 +1265,7 @@ header{margin-top:6px}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v29</p>
+      <p class="sync" id="appVersion">Phiên bản v30</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. Giới hạn khoảng 5 MB được tính chung cho các mini app cùng tài khoản GitHub.</p>
 
       <h4 class="sub">Xoá dữ liệu</h4>
@@ -1339,6 +1339,7 @@ header{margin-top:6px}
     <button class="ghost grow" id="pasteFromClip">Dán từ bộ nhớ tạm</button>
     <label class="ghost grow file-btn">Chọn ảnh<input type="file" accept="image/*" id="ocrFile"></label>
   </div>
+  <p class="hint" style="margin:6px 2px 0">Chữ trong ảnh mờ thì iPhone đọc chuẩn hơn: mở ảnh trong <b>Ảnh</b>, chạm giữ vào chữ rồi chọn <b>Sao chép văn bản</b>, sau đó bấm <b>Dán từ bộ nhớ tạm</b>.</p>
   <button class="primary" id="parseBtn" style="margin-top:10px">Tìm khoản chi</button>
   <p class="set-now" id="ocrState" hidden></p>
   <p class="sync-err" id="pasteErr" hidden></p>
@@ -3483,7 +3484,7 @@ header{margin-top:6px}
   }
   function parseNotif(text){
     const out = [];
-    const BAL_LBL = /(^|[\s|(\[])(sd|s\.d|số dư|so du|balance|available|hạn mức|han muc|khả dụng|kha dung|dư nợ|du no)(\b|[\s:.])/i;
+    const BAL_LBL = /(^|[\s|(\[])(sd|s\.d|s[oốồộ]\s?d[uưứự]|balance|available|h[aạàâ]n\s?m[^\s:|]{1,3}c|c[oòơớ]n\s?l[aạ]i|kh[aả]\s?d[uụ]ng|d[uư]\s?n[oợ])(\b|[\s:.])/i;
     const CREDIT = /(ghi có|ghi co|nhận tiền|nhan tien|nhận được|hoàn tiền|hoan tien|refund|credited|tiền vào|tien vao)/i;
     const amtsOf = L => {
       const hits = []; let m;
@@ -3536,7 +3537,7 @@ header{margin-top:6px}
       return null;
     };
     const cleanWhere = (w, fallback) => {
-      let x = String(w || "").replace(/\s+/g, " ")
+      let x = String(w || "").split(/\.{3,}|…/)[0].replace(/\s+/g, " ")
         .replace(/\b(ng[aà]y|date|luc|lúc)\b/gi, " ")
         .replace(/\d{1,2}[\/\-]\d{1,2}(?:[\/\-]\d{2,4})?/g, " ")
         .replace(/20\d{2}-\d{1,2}-\d{1,2}/g, " ")
@@ -3551,7 +3552,7 @@ header{margin-top:6px}
     };
     const whereOf = s => {
       let m = s.match(/(?:\bt[aạ]i\b|\bmerchant\b)[:\s]+(.{2,60})/i);
-      if(!m) m = s.match(/(?:\bn[oộ]i dung(?: giao d[iị]ch)?\b|\bNDung\b|\bND\b)[:\s]+(.{2,70})/i);
+      if(!m) m = s.match(/(?:\bn[^\s]{1,2}i\s?dung(?: giao d[iị]ch)?|\bNDung\b|\bND\b)[:\s]+(.{2,70})/i);
       if(m) return m[1];
       const caps = s.match(/\b[A-Z][A-Z0-9&'._-]{2,}(?:\s+[A-Z0-9&'._-]{2,}){0,4}\b/g);
       if(caps){
@@ -3566,7 +3567,11 @@ header{margin-top:6px}
       /^(thông báo|thong bao|biến động|bien dong)/i.test(l) ||
       /(yesterday|hôm qua|hom qua)\s*,?\s*\d{1,2}:\d{2}/i.test(l) ||
       /\d{1,2}:\d{2}\s?(am|pm)\s*$/i.test(l);
-    const raw = String(text || "").replace(/ /g, " ").split(/\r?\n/)
+    const fixSep = t => String(t || "")
+      .replace(/ /g, " ")
+      .replace(/(VN[DĐ])\s*[|IlJj!\]\)}]+\s*/gi, "$1|")
+      .replace(/(\d)\s*[\]\)}]\s*(?=[A-ZĐ][A-Za-zĐ])/g, "$1|");
+    const raw = fixSep(text).split(/\r?\n/)
       .map(l => l.replace(/\s+/g, " ").trim()).filter(l => l.length > 1);
     const groups = []; let g = null;
     raw.forEach(l => { if(!g || isStart(l)){ g = []; groups.push(g); } g.push(l); });
@@ -3646,13 +3651,81 @@ header{margin-top:6px}
     });
     return ocrLoad;
   }
-  async function ocrImage(file, onProg){
+  /* ảnh chụp thông báo là chữ sáng trên nền mờ: làm sạch trước khi đọc chữ cho ăn chắc */
+  async function prepImage(file){
+    try{
+      const url = URL.createObjectURL(file);
+      const img = await new Promise((res, rej) => {
+        const i = new Image();
+        i.onload = () => res(i); i.onerror = () => rej(new Error("img"));
+        i.src = url;
+      });
+      const iw = img.naturalWidth || img.width, ih = img.naturalHeight || img.height;
+      if(!iw || !ih){ URL.revokeObjectURL(url); return file; }
+      let sc = Math.min(1400 / iw, Math.sqrt(3.4e6 / (iw * ih)), 2);
+      if(!(sc > 0)) sc = 1;
+      const W = Math.max(1, Math.round(iw * sc)), H = Math.max(1, Math.round(ih * sc)), N = W * H;
+      const cv = document.createElement("canvas"); cv.width = W; cv.height = H;
+      const cx = cv.getContext("2d", { willReadFrequently:true });
+      cx.drawImage(img, 0, 0, W, H);
+      URL.revokeObjectURL(url);
+      const im = cx.getImageData(0, 0, W, H), d = im.data;
+      const g = new Uint8Array(N);
+      let sum = 0;
+      for(let p = 0, i = 0; p < N; p++, i += 4){
+        const v = (d[i] * 0.299 + d[i+1] * 0.587 + d[i+2] * 0.114) | 0;
+        g[p] = v; sum += v;
+      }
+      if(sum / N < 130) for(let p = 0; p < N; p++) g[p] = 255 - g[p];   /* chữ sáng trên nền tối */
+      const r = Math.max(7, (Math.round(W / 40) | 1));
+      const tmp = new Float32Array(N);
+      for(let y = 0; y < H; y++){                                       /* trung bình theo hàng */
+        const o = y * W; let acc = 0;
+        for(let x = 0; x < Math.min(r, W); x++) acc += g[o + x];
+        for(let x = 0; x < W; x++){
+          const b = x + r, a = x - r - 1;
+          if(b < W) acc += g[o + b];
+          if(a >= 0) acc -= g[o + a];
+          tmp[o + x] = acc / (Math.min(W - 1, x + r) - Math.max(0, x - r) + 1);
+        }
+      }
+      const K = 0.18;
+      for(let x = 0; x < W; x++){                                       /* trung bình theo cột rồi tách nền */
+        let acc = 0;
+        for(let y = 0; y < Math.min(r, H); y++) acc += tmp[y * W + x];
+        for(let y = 0; y < H; y++){
+          const b = y + r, a = y - r - 1;
+          if(b < H) acc += tmp[b * W + x];
+          if(a >= 0) acc -= tmp[a * W + x];
+          const m = acc / (Math.min(H - 1, y + r) - Math.max(0, y - r) + 1);
+          const p = y * W + x, i = p * 4;
+          const v = g[p] < m * (1 - K) ? 0 : 255;
+          d[i] = d[i+1] = d[i+2] = v; d[i+3] = 255;
+        }
+      }
+      cx.putImageData(im, 0, 0);
+      const blob = await new Promise(res => { try{ cv.toBlob(b => res(b), "image/png"); }catch(e){ res(null); } });
+      cv.width = cv.height = 1;
+      return blob || file;
+    }catch(e){ return file; }
+  }
+  async function ocrImage(file, onProg, onStage){
     const T = await loadOCR();
     const cfg = ocrCfg();
     const langs = cfg.langs || ["vie", "eng"];
     const opts = Object.assign({ logger: m => { if(m && m.status === "recognizing text" && onProg) onProg(m.progress || 0); } }, cfg.opts || {});
     const worker = await T.createWorker(langs, 1, opts);
-    try{ const r = await worker.recognize(file); return (r && r.data && r.data.text) || ""; }
+    try{
+      if(onStage) onStage("Đang làm rõ chữ trong ảnh…");
+      await new Promise(r => setTimeout(r, 30));
+      const clean = cfg.raw ? file : await prepImage(file);
+      if(onStage) onStage("Đang đọc ảnh…");
+      let txt = ((await worker.recognize(clean)).data || {}).text || "";
+      if(txt.replace(/\s/g, "").length < 40 && clean !== file){        /* ảnh lạ thì đọc lại bản gốc */
+        txt = ((await worker.recognize(file)).data || {}).text || "";
+      }
+      return txt;
+    }
     finally{ try{ await worker.terminate(); }catch(e){} }
   }
   $("ocrFile").addEventListener("change", async e => {
@@ -3661,7 +3734,7 @@ header{margin-top:6px}
     $("pasteErr").hidden = true;
     const st = $("ocrState"); st.hidden = false; st.textContent = "Đang mở bộ đọc chữ…";
     try{
-      const text = await ocrImage(f, pr => { st.textContent = "Đang đọc ảnh… " + Math.round(pr * 100) + "%"; });
+      const text = await ocrImage(f, pr => { st.textContent = "Đang đọc ảnh… " + Math.round(pr * 100) + "%"; }, msg => { st.textContent = msg; });
       st.hidden = true;
       if(!text.trim()){ $("pasteErr").textContent = "Không đọc được chữ nào trong ảnh. Thử ảnh rõ hơn, hoặc chụp gần phần có số tiền."; $("pasteErr").hidden = false; return; }
       $("pasteText").value = text.trim();

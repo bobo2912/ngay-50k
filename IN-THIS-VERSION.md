@@ -1,6 +1,16 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v29, ngày 26/09/2026
+**Phiên bản hiện tại:** v30, ngày 26/09/2026
+
+---
+
+## Có gì mới trong v30 (so với v29)
+
+- **App tự làm rõ ảnh trước khi đọc chữ.** Ảnh chụp trung tâm thông báo là chữ sáng trên nền mờ chồng lên hình nền, bộ đọc chữ rất hay nhầm. App giờ tự chuyển ảnh thành chữ đen trên nền trắng rồi mới đọc, nên bắt được cả những thông báo trước đây bị bỏ sót.
+- **Đọc được thông báo thứ hai, thứ ba trong cùng một ảnh.** Trước đây chụp 3 thông báo thì thường chỉ ra 1 khoản.
+- **Chịu được lỗi đọc chữ thường gặp:** dấu `|` bị đọc thành `I`, `J` hay `]`; chữ *Hạn mức còn lại* bị đọc sai dấu. App vẫn tách đúng ô và vẫn bỏ qua số dư.
+- **Tên nơi chi không còn dính sang thông báo kế tiếp** khi thông báo bị cắt bằng dấu ba chấm.
+- **Gợi ý cách chính xác nhất** ngay trong bảng nhập: dùng tính năng chép chữ sẵn có của iPhone (chạm giữ vào ảnh, chọn *Sao chép văn bản*) rồi bấm *Dán từ bộ nhớ tạm*.
 
 ---
 
@@ -281,6 +291,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v30** | Tự làm rõ ảnh trước khi đọc chữ nên bắt đủ các thông báo trong một ảnh |
 | **v29** | Đọc đúng thông báo MB và Vietcombank kiểu một dòng ngăn bằng dấu gạch đứng, bỏ qua số dư và hạn mức còn lại |
 | **v28** | Nhận diện ảnh chỉ lấy khoản của thẻ đã lưu, thêm nút chọn tất cả và bỏ chọn tất cả |
 | **v27** | Sao lưu về bản đơn giản, thẻ dùng 6 số đầu và 4 số cuối, dải chọn nhiều thẻ, đọc chữ từ ảnh, chỉnh thời gian tắt camera |
