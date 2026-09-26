@@ -1,6 +1,19 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v25, ngày 26/09/2026
+**Phiên bản hiện tại:** v26, ngày 26/09/2026
+
+---
+
+## Có gì mới trong v26 (so với v25)
+
+- **Menu Thẻ tín dụng.** Tab thứ năm ở thanh dưới, quản lý riêng khoản chi bằng thẻ. Khoản chi thẻ **không tính vào hạn mức mỗi ngày**.
+  - Thêm thẻ: tên, 4 số cuối, hạn mức thẻ.
+  - Xem theo tháng: tổng chi thẻ, chia theo từng thẻ, danh sách theo ngày.
+  - Chạm một khoản để sửa số tiền, nơi chi, ngày, thẻ. Xoá bằng hai lần chạm.
+- **Dán từ thông báo.** Sao chép thông báo hoặc tin nhắn ngân hàng rồi dán vào app. App tự tìm số tiền, nơi chi, ngày giờ và 4 số cuối thẻ, bỏ qua dòng báo số dư và tiền vào. Bạn tick chọn khoản đúng rồi nhập. Khoản đã có sẵn được đánh dấu để khỏi nhập trùng.
+- **Bản lưu trong máy.** App tự giữ 10 bản sao lưu gần nhất, mỗi lần bạn xuất file. Vào Cài đặt, Sao lưu và đồng bộ, chạm một bản để xem và khôi phục, không cần mở app Tệp.
+- **Chọn thư mục lưu** (máy tính Chrome hoặc Edge): chọn một lần, sau đó mỗi lần xuất là lưu thẳng vào đó, và nhập lại bằng cách chọn bản trong chính thư mục ấy. iPhone không cho app web làm việc này, app sẽ nói rõ và bạn dùng Bản lưu trong máy.
+- **Giữ máy không bị chặn tự khoá:** sau 2 phút không chạm, app dọn sạch mọi thứ liên quan tới camera. Camera cũng tự tắt sớm hơn (45 giây) và bản giữ quyền rút xuống 30 giây.
 
 ---
 
@@ -202,6 +215,12 @@
 - Ghi từng lần trả, xem số còn lại, hạn trả, cảnh báo quá hạn.
 - Lọc theo loại, trạng thái (chưa xong, tất toán), ngày khởi tạo hoặc ngày đến hạn.
 
+### Tab Thẻ
+- Quản lý thẻ tín dụng: tên thẻ, 4 số cuối, hạn mức.
+- Khoản chi thẻ không tính vào hạn mức mỗi ngày.
+- Xem theo tháng, chia theo từng thẻ, danh sách theo ngày, sửa và xoá.
+- Dán thông báo ngân hàng để nhập nhanh, tick chọn khoản đúng.
+
 ### Tab Người nhận
 - Lưu người hay chuyển tiền: tên gợi nhớ, số tài khoản, ngân hàng, tên tài khoản, nội dung mặc định, tag thường dùng.
 - Bấm **Chuyển** để mở form đã điền sẵn thông tin.
@@ -234,6 +253,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v26** | Menu Thẻ tín dụng, dán từ thông báo để nhập, bản lưu trong máy và thư mục lưu |
 | **v25** | Chừa khoảng an toàn phía trên, dải nền che thanh trạng thái, thanh Cài đặt nền đặc |
 | **v24** | Bảng nhập tiền nền đặc không hở, chỉ đóng bằng nút ✕, gọn lề dưới |
 | **v23** | Bỏ dòng hướng dẫn thừa, gọn khoảng trắng, sửa mép trên bảng nhập và lề ô số tiền |

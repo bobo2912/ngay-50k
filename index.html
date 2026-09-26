@@ -847,6 +847,24 @@ header{margin-top:6px}
 .cam-top{padding-top:calc(12px + var(--safe-top))}
 /* the Cài đặt bar is solid, so rows no longer show through it */
 .settings-head{background:var(--sheet-bg); -webkit-backdrop-filter:none; backdrop-filter:none; border:0; box-shadow:0 1px 0 var(--line); border-radius:0}
+
+/* v26: credit cards */
+.tabs{grid-template-columns:repeat(5,minmax(0,1fr))}
+.tabs button{font-size:.62rem; gap:2px}
+.tabs button svg{width:19px; height:19px}
+.pick-row{display:flex; align-items:flex-start; gap:10px; padding:10px 2px; border-bottom:1px solid var(--line)}
+.pick-row:last-child{border-bottom:0}
+.pick-row input{width:20px; height:20px; margin-top:2px; flex:none; accent-color:var(--note)}
+.pick-row .pk{display:flex; flex-direction:column; gap:2px; min-width:0}
+.pick-row b{font-size:.98rem}
+.pick-row small{font-size:.78rem; color:var(--muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.pick-row.dup{opacity:.5}
+#pasteRows{margin-top:4px}
+#cardPerCard .ledger-row{font-size:.9rem; padding:3px 0}
+#cardPerCard .ledger-row b{font-size:.92rem; font-weight:600}
+#cardPerCard{margin-top:6px; border-top:1px solid var(--line); padding-top:6px}
+#cardBank .set-nav{margin-top:8px}
+#tab-cards .ledger-note{margin-top:2px}
 </style>
 </head>
 <body>
@@ -866,6 +884,7 @@ header{margin-top:6px}
     <button role="tab" data-tab="money" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span>Thu chi</span></button>
     <button role="tab" data-tab="loans" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 3l4 4-4 4"/><path d="M3 7h18"/><path d="M7 21l-4-4 4-4"/><path d="M21 17H3"/></svg><span>Khoản vay</span></button>
     <button role="tab" data-tab="people" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6.5 6.5 0 0 1 3.5 6"/></svg><span>Người nhận</span></button>
+    <button role="tab" data-tab="cards" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="8" width="14" height="11" rx="2"/><path d="M2 12h14"/><path d="M7 5h13a2 2 0 0 1 2 2v8"/></svg><span>Thẻ</span></button>
   </nav>
 
   <!-- ================= TAB: HÔM NAY ================= -->
@@ -1057,6 +1076,38 @@ header{margin-top:6px}
       <ul id="peopleList"></ul>
     </section>
   </div>
+
+  <!-- ================= TAB: THẺ TÍN DỤNG ================= -->
+  <div id="tab-cards" role="tabpanel" hidden>
+    <div class="month">
+      <button id="prevCardMonth" aria-label="Tháng trước">‹</button>
+      <strong id="cardMonthLabel"></strong>
+      <button id="nextCardMonth" aria-label="Tháng sau">›</button>
+    </div>
+
+    <div class="ledger" id="cardTotalBox">
+      <div class="ledger-row"><span>Chi bằng thẻ tháng này</span><b class="num" id="cardMonthSum">0đ</b></div>
+      <p class="ledger-note">Khoản chi thẻ không tính vào hạn mức mỗi ngày.</p>
+      <div id="cardPerCard"></div>
+    </div>
+
+    <div class="set-row" style="margin-top:14px">
+      <button class="ghost grow" id="pasteCardBtn">Dán từ thông báo</button>
+      <button class="ghost grow" id="addCardTxBtn">Ghi tay</button>
+    </div>
+    <p class="inline-ok" id="cardMsg" hidden></p>
+
+    <section>
+      <h2>Khoản chi thẻ trong tháng</h2>
+      <div id="cardList"></div>
+    </section>
+
+    <section>
+      <h2 id="cardsTitle">Thẻ của bạn</h2>
+      <div id="cardBank"></div>
+      <button class="ghost" id="addCardBtn" style="width:100%; margin-top:10px">＋ Thêm thẻ</button>
+    </section>
+  </div>
 </main>
 
 <div class="settings" id="settings" role="dialog" aria-modal="true" aria-labelledby="settingsTitle" hidden>
@@ -1170,6 +1221,20 @@ header{margin-top:6px}
       </div>
       <p class="inline-ok" id="syncMsg" hidden></p>
       <p class="sync-err" id="syncErr" hidden></p>
+      <h4 class="sub">Chỗ lưu file</h4>
+      <p class="set-now" id="folderState"></p>
+      <div class="set-row" id="folderRow">
+        <button class="ghost grow" id="pickFolder">Chọn thư mục lưu</button>
+        <button class="ghost" id="clearFolder" hidden>Bỏ chọn</button>
+      </div>
+      <button class="ghost" id="fromFolder" style="width:100%; margin-top:8px" hidden>Chọn bản trong thư mục</button>
+      <div class="set-list" id="folderList" hidden></div>
+
+      <h4 class="sub">Bản lưu trong máy</h4>
+      <p class="set-now">App tự giữ 10 bản gần nhất, mỗi lần bạn xuất file. Chạm một bản để xem rồi khôi phục.</p>
+      <div class="set-list" id="snapList"></div>
+      <button class="ghost" id="snapNow" style="width:100%; margin-top:10px">Tạo bản lưu ngay</button>
+
       <div class="how">
         <h4>Đồng bộ sang máy khác</h4>
         <ol>
@@ -1191,7 +1256,7 @@ header{margin-top:6px}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v25</p>
+      <p class="sync" id="appVersion">Phiên bản v26</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. Giới hạn khoảng 5 MB được tính chung cho các mini app cùng tài khoản GitHub.</p>
 
       <h4 class="sub">Xoá dữ liệu</h4>
@@ -1225,6 +1290,72 @@ header{margin-top:6px}
     </div>
   </div>
 </div>
+<div class="sheet-back top" id="cardBack" hidden></div>
+<div class="sheet top" id="cardSheet" role="dialog" aria-modal="true" aria-labelledby="cardSheetTitle" hidden>
+  <div class="grab" aria-hidden="true"></div>
+  <div class="sheet-head"><h2 id="cardSheetTitle">Khoản chi thẻ</h2><button class="x" id="closeCardSheet" aria-label="Đóng">✕</button></div>
+  <div class="field">
+    <label for="cxAmt"><span>Số tiền</span></label>
+    <div class="amt-row">
+      <input id="cxAmt" class="inp amount-inp num" inputmode="numeric" autocomplete="off" placeholder="0đ">
+      <button type="button" class="k000 num" id="cxAmt000" aria-label="Thêm 000 vào số tiền">000</button>
+    </div>
+  </div>
+  <div class="field">
+    <label for="cxWhere"><span>Nơi chi</span></label>
+    <input id="cxWhere" class="inp" maxlength="60" autocomplete="off" placeholder="vd: Shopee, Lotte Mart">
+    <div class="chips sugg" id="cxWhereChips" aria-label="Nơi chi gần đây"></div>
+  </div>
+  <div class="field">
+    <label for="cxDate"><span>Ngày chi</span></label>
+    <input id="cxDate" class="inp" type="date">
+  </div>
+  <div class="field">
+    <label><span>Thẻ</span></label>
+    <div class="chips" id="cxCardChips" style="margin-top:0"></div>
+  </div>
+  <div class="sheet-foot">
+    <button class="ghost" id="cxCancel">Huỷ</button>
+    <button class="primary" id="cxSave" style="margin:0">Lưu</button>
+  </div>
+</div>
+
+<div class="sheet-back top" id="pasteBack" hidden></div>
+<div class="sheet top" id="pasteSheet" role="dialog" aria-modal="true" aria-labelledby="pasteTitle" hidden>
+  <div class="grab" aria-hidden="true"></div>
+  <div class="sheet-head"><h2 id="pasteTitle">Dán từ thông báo</h2><button class="x" id="closePaste" aria-label="Đóng">✕</button></div>
+  <p class="set-now" style="margin:0 2px 8px">Mở Trung tâm thông báo hoặc tin nhắn ngân hàng, chọn và sao chép, rồi dán vào đây. Dán được nhiều dòng một lúc.</p>
+  <textarea id="pasteText" class="inp" rows="5" placeholder="vd: The tin dung ****1234 da thanh toan 1.250.000 VND tai LOTTE MART ngay 25/09/2026" style="min-height:104px; line-height:1.45"></textarea>
+  <div class="set-row">
+    <button class="ghost grow" id="pasteFromClip">Dán từ bộ nhớ tạm</button>
+    <button class="ghost grow" id="parseBtn">Tìm khoản chi</button>
+  </div>
+  <p class="sync-err" id="pasteErr" hidden></p>
+  <div id="pasteFound" hidden>
+    <h3 id="pasteFoundTitle">Tìm thấy</h3>
+    <div class="field" style="margin-top:6px"><label><span>Ghi vào thẻ</span></label><div class="chips" id="pasteCardChips" style="margin-top:0"></div></div>
+    <div id="pasteRows"></div>
+  </div>
+  <div class="sheet-foot">
+    <button class="ghost" id="pasteCancel">Huỷ</button>
+    <button class="primary" id="pasteImport" style="margin:0" disabled>Nhập khoản đã chọn</button>
+  </div>
+</div>
+
+<div class="sheet-back top" id="cardEditBack" hidden></div>
+<div class="sheet top" id="cardEditSheet" role="dialog" aria-modal="true" aria-labelledby="cardEditTitle" hidden>
+  <div class="grab" aria-hidden="true"></div>
+  <div class="sheet-head"><h2 id="cardEditTitle">Thêm thẻ</h2><button class="x" id="closeCardEdit" aria-label="Đóng">✕</button></div>
+  <div class="field"><label for="cdName"><span>Tên thẻ</span></label><input id="cdName" class="inp" maxlength="30" autocomplete="off" placeholder="vd: VIB Cash Back"></div>
+  <div class="field"><label for="cdLast4"><span>4 số cuối <span class="opt">(không bắt buộc)</span></span></label><input id="cdLast4" class="inp num" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="1234"></div>
+  <div class="field"><label for="cdLimit"><span>Hạn mức thẻ <span class="opt">(không bắt buộc)</span></span></label><input id="cdLimit" class="inp num" inputmode="numeric" autocomplete="off" placeholder="vd: 50.000.000"></div>
+  <p class="inline-ok" id="cdMsg" hidden></p>
+  <div class="sheet-foot">
+    <button class="ghost danger" id="cdDel">Xoá thẻ</button>
+    <button class="primary" id="cdSave" style="margin:0">Lưu thẻ</button>
+  </div>
+</div>
+
 <div class="sheet-back" id="formBack" hidden></div>
 <div class="sheet form-sheet" id="formSheet" role="dialog" aria-modal="true" aria-labelledby="formTitle" hidden>
   <div class="grab" aria-hidden="true"></div>
@@ -1443,7 +1574,7 @@ header{margin-top:6px}
   const WD = ["CN","T2","T3","T4","T5","T6","T7"];
 
   /* ---------- state ---------- */
-  let state = { budget:50000, days:{}, income:{}, contacts:[], loans:[], payees:{}, updated:0, budgetM:0, deleted:{}, tags:[], tagOff:{} };
+  let state = { budget:50000, days:{}, income:{}, contacts:[], loans:[], payees:{}, updated:0, budgetM:0, deleted:{}, tags:[], tagOff:{}, cards:[], cardTx:{} };
   let sigs = {};
   let selectedCat = "an", mode = "cash", scanned = null, locked = false, activeContact = null;
   let incCat = "luong", cCat = "an", editingContactId = null;
@@ -1489,7 +1620,8 @@ header{margin-top:6px}
       loans: Array.isArray(s.loans) ? s.loans : [],
       payees: obj(s.payees), updated: s.updated || 0,
       budgetM: Number(s.budgetM) || 0, deleted: obj(s.deleted),
-      tags: Array.isArray(s.tags) ? s.tags.filter(t => t && t.id) : [], tagOff: obj(s.tagOff)
+      tags: Array.isArray(s.tags) ? s.tags.filter(t => t && t.id) : [], tagOff: obj(s.tagOff),
+      cards: Array.isArray(s.cards) ? s.cards.filter(c => c && c.id) : [], cardTx: obj(s.cardTx)
     };
   }
   function loadLocal(){
@@ -1503,6 +1635,8 @@ header{margin-top:6px}
     for(const k in st.income) (st.income[k]||[]).forEach(it => fn(it.id, it, false));
     st.contacts.forEach(c => fn(c.id, c, false));
     (st.tags||[]).forEach(t => fn(t.id, t, false));
+    (st.cards||[]).forEach(c => fn(c.id, c, false));
+    for(const k in (st.cardTx||{})) (st.cardTx[k]||[]).forEach(it => fn(it.id, it, false));
     st.loans.forEach(l => { fn(l.id, l, true); (l.payments||[]).forEach(p => fn(p.id, p, false)); });
   }
   function collectSigs(st){
@@ -1531,6 +1665,7 @@ header{margin-top:6px}
     const ck = keyOf(cutoff);
     for(const k of Object.keys(state.days)) if(k < ck) delete state.days[k];
     for(const k of Object.keys(state.income)) if(k < ck) delete state.income[k];
+    for(const k of Object.keys(state.cardTx)) if(k < ck) delete state.cardTx[k];
     track();
     state.updated = Date.now();
     try{ localStorage.setItem(LS_KEY, JSON.stringify(state)); }
@@ -2394,16 +2529,20 @@ header{margin-top:6px}
     } else if(name === "people"){
       closeContactForm();
       renderPeople();
+    } else if(name === "cards"){
+      cardMonth = new Date(); cardMonth.setDate(1);
+      $("cardMsg").hidden = true;
+      renderCards();
     }
   }
   function showTab(name){
     if(name !== currentTab) resetTab(name);
     currentTab = name;
     document.querySelectorAll(".tabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.tab===name ? "true":"false"));
-    ["today","money","loans","people"].forEach(n => $("tab-"+n).hidden = n !== name);
+    ["today","money","loans","people","cards"].forEach(n => $("tab-"+n).hidden = n !== name);
     window.scrollTo(0,0);
   }
-  function renderAll(){ renderToday(); renderMoney(); renderLoans(); renderPeople(); }
+  function renderAll(){ renderToday(); renderMoney(); renderLoans(); renderPeople(); renderCards(); }
 
   /* ---------- wiring ---------- */
   function chipSet(container, list, onPick){
@@ -2557,7 +2696,7 @@ header{margin-top:6px}
      for a couple of minutes, so scanning again does not ask for permission again. The frame is destroyed
      when the app goes to the background or after the keep time, so iOS fully releases the camera. */
   let camFrame = null, torchOn = false, camIdle = null, camKeep = null;
-  const CAM_IDLE_MS = 60000, CAM_KEEP_MS = 120000;
+  const CAM_IDLE_MS = 45000, CAM_KEEP_MS = 30000;
   function camHint(t, err){ const h = $("camHint"); h.textContent = t; h.className = "cam-hint" + (err ? " err" : ""); }
   function postCam(msgObj){ try{ camFrame && camFrame.contentWindow.postMessage(msgObj, location.origin); }catch(e){} }
   function destroyFrame(){
@@ -2962,7 +3101,8 @@ header{margin-top:6px}
   function backTarget(){
     if(!$("cam").hidden) return closeCamera;
     /* bottom-up popups close with their own ✕ button, not with a swipe */
-    if(!$("tagSheet").hidden || !$("editSheet").hidden || !$("filterSheet").hidden || !$("formSheet").hidden) return null;
+    if(!$("tagSheet").hidden || !$("editSheet").hidden || !$("filterSheet").hidden || !$("formSheet").hidden
+       || !$("cardSheet").hidden || !$("pasteSheet").hidden || !$("cardEditSheet").hidden) return null;
     if(settingsOpenNow()) return setPage === "setHome" ? closeSettings : () => showSetPage(setPage === "setTagOne" ? "setTags" : "setHome", true);
     if(!$("incomeForm").hidden) return () => $("cancelIncome").click();
     if(!$("contactForm").hidden) return () => $("cancelContact").click();
@@ -3056,6 +3196,372 @@ header{margin-top:6px}
     else if(!$("formSheet").hidden){ closeForm(); e.stopImmediatePropagation(); }
     else if(!$("editSheet").hidden){ closeEdit(); e.stopImmediatePropagation(); }
   }, true);
+
+  /* ---------- nothing may hold the screen awake while the app sits idle ---------- */
+  var idleT = null;
+  const IDLE_MS = 120000;
+  function idleReset(){
+    clearTimeout(idleT);
+    idleT = setTimeout(() => {
+      try{ if(!$("cam").hidden) closeCamera(); else stopCamera(false, true); }catch(e){}
+    }, IDLE_MS);
+  }
+  ["touchstart","pointerdown","keydown","focusin"].forEach(ev => document.addEventListener(ev, idleReset, { passive:true }));
+  document.addEventListener("visibilitychange", idleReset);
+  idleReset();
+
+  /* ================= THẺ TÍN DỤNG ================= */
+  var cardMonth = null, cxEditing = null, cxCard = null, cdEditing = null, pasteCard = null, pasteItems = [];
+  function monthKeyOf(d){ return d.getFullYear() + "-" + pad(d.getMonth()+1); }
+  function cardOf(id){ return (state.cards||[]).find(c => c.id === id) || null; }
+  function cardLabel(c){ return c ? (c.name + (c.last4 ? " ·" + c.last4 : "")) : "Chưa gán thẻ"; }
+  function cardTxOfMonth(mk){
+    const out = [];
+    for(const k in state.cardTx) if(k.indexOf(mk) === 0) (state.cardTx[k]||[]).forEach(it => out.push({ it, day:k }));
+    return out.sort((a,b) => a.day < b.day ? 1 : a.day > b.day ? -1 : (b.it.t||0) - (a.it.t||0));
+  }
+  function recentWheres(){
+    const all = [];
+    for(const k in state.cardTx) (state.cardTx[k]||[]).forEach(it => { if(it.where) all.push(it); });
+    all.sort((a,b) => (b.t||0) - (a.t||0));
+    const seen = new Set(), out = [];
+    for(const it of all){ const f = it.where.trim().toLowerCase(); if(seen.has(f)) continue; seen.add(f); out.push(it.where.trim()); if(out.length >= 6) break; }
+    return out;
+  }
+  function renderCards(){
+    if(!$("tab-cards")) return;
+    if(!cardMonth){ cardMonth = new Date(); cardMonth.setDate(1); }
+    const mk = monthKeyOf(cardMonth), now = new Date();
+    $("cardMonthLabel").textContent = "Tháng " + (cardMonth.getMonth()+1) + "/" + cardMonth.getFullYear();
+    $("nextCardMonth").disabled = (cardMonth.getFullYear() > now.getFullYear()) ||
+      (cardMonth.getFullYear() === now.getFullYear() && cardMonth.getMonth() >= now.getMonth());
+    const rows = cardTxOfMonth(mk);
+    const total = rows.reduce((a, r) => a + (Number(r.it.amt) || 0), 0);
+    $("cardMonthSum").textContent = fmt(total);
+
+    const per = $("cardPerCard"); per.innerHTML = "";
+    const byCard = {};
+    rows.forEach(r => { const k = r.it.cardId || "__none"; byCard[k] = (byCard[k] || 0) + (Number(r.it.amt) || 0); });
+    Object.keys(byCard).sort((a, b) => byCard[b] - byCard[a]).forEach(k => {
+      const c = cardOf(k), row = document.createElement("div"); row.className = "ledger-row";
+      const sp = document.createElement("span"); sp.textContent = c ? cardLabel(c) : "Chưa gán thẻ";
+      const b = document.createElement("b"); b.className = "num"; b.textContent = fmt(byCard[k]);
+      row.append(sp, b); per.appendChild(row);
+    });
+
+    const box = $("cardList"); box.innerHTML = "";
+    if(!rows.length){
+      box.innerHTML = '<p class="empty">Chưa có khoản chi thẻ nào trong tháng này. Bấm Dán từ thông báo để nhập nhanh.</p>';
+    } else {
+      let curDayKey = null, ul = null;
+      rows.forEach(r => {
+        if(r.day !== curDayKey){
+          curDayKey = r.day;
+          const head = document.createElement("div"); head.className = "day-head";
+          const d = new Date(r.day + "T00:00:00");
+          const dayTotal = (state.cardTx[r.day] || []).reduce((a, x) => a + (Number(x.amt) || 0), 0);
+          head.innerHTML = "<span></span><span class='num'></span>";
+          head.children[0].textContent = WD[d.getDay()] + ", " + d.getDate() + "/" + (d.getMonth()+1);
+          head.children[1].textContent = fmt(dayTotal);
+          box.appendChild(head);
+          ul = document.createElement("ul"); box.appendChild(ul);
+        }
+        ul.appendChild(cardRow(r.it, r.day));
+      });
+    }
+
+    const bank = $("cardBank"); bank.innerHTML = "";
+    const cards = state.cards || [];
+    $("cardsTitle").textContent = "Thẻ của bạn (" + cards.length + ")";
+    if(!cards.length) bank.innerHTML = '<p class="empty">Chưa có thẻ nào. Thêm thẻ để biết khoản nào thuộc thẻ nào.</p>';
+    cards.forEach(c => {
+      const spent = rows.filter(r => r.it.cardId === c.id).reduce((a, r) => a + (Number(r.it.amt) || 0), 0);
+      const b = document.createElement("button"); b.className = "set-nav";
+      b.innerHTML = '<span class="nav-t"></span><span class="nav-v"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>';
+      b.querySelector(".nav-t").textContent = cardLabel(c);
+      b.querySelector(".nav-v").textContent = fmt(spent) + (c.limit ? " / " + fmt(c.limit) : "") + " tháng này";
+      b.onclick = () => openCardEdit(c.id);
+      bank.appendChild(b);
+    });
+    if($("navCards")) $("navCards").textContent = cards.length + " thẻ";
+  }
+  function cardRow(it, day){
+    const li = document.createElement("li"); li.className = "item tap"; li.tabIndex = 0; li.setAttribute("role","button");
+    li.setAttribute("aria-label", "Sửa khoản thẻ " + (it.where || "") + " " + fmt(it.amt));
+    li.innerHTML = '<span class="cat" aria-hidden="true"></span><div class="desc"><div></div><div></div></div><span class="amt num"></span><button class="del" aria-label="Xoá khoản này">✕</button>';
+    li.querySelector(".cat").textContent = "💳";
+    li.querySelector(".desc div:first-child").textContent = it.where || "Chi bằng thẻ";
+    const t = new Date(it.t || 0);
+    const bits = [];
+    if(it.t) bits.push(pad(t.getHours()) + ":" + pad(t.getMinutes()));
+    bits.push(cardLabel(cardOf(it.cardId)));
+    li.querySelector(".desc div:last-child").textContent = bits.join(" · ");
+    li.querySelector(".amt").textContent = fmt(it.amt);
+    li.addEventListener("click", e => { if(e.target.closest(".del")) return; openCardTx(it.id, day); });
+    li.addEventListener("keydown", e => { if(e.target === li && (e.key === "Enter" || e.key === " ")){ e.preventDefault(); openCardTx(it.id, day); } });
+    li.querySelector(".del").onclick = e => {
+      e.stopPropagation();
+      if(!armed(e.currentTarget)) return;
+      state.cardTx[day] = (state.cardTx[day] || []).filter(x => x.id !== it.id);
+      if(!state.cardTx[day].length) delete state.cardTx[day];
+      persist(); renderCards();
+    };
+    return li;
+  }
+  /* ---- one card transaction ---- */
+  function cxAmtVal(){ return parseInt(digits($("cxAmt").value), 10) || 0; }
+  function selectCxCard(id){
+    cxCard = id;
+    const box = $("cxCardChips"); box.innerHTML = "";
+    const list = (state.cards || []).slice();
+    if(!list.length){
+      const p = document.createElement("p"); p.className = "hint"; p.textContent = "Chưa có thẻ nào. Bạn vẫn lưu được, gán thẻ sau cũng không sao.";
+      box.appendChild(p); return;
+    }
+    list.forEach(c => {
+      const b = document.createElement("button"); b.type = "button"; b.className = "chip";
+      b.textContent = cardLabel(c); b.setAttribute("aria-pressed", c.id === id ? "true" : "false");
+      b.onclick = () => selectCxCard(c.id); box.appendChild(b);
+    });
+  }
+  function findCardTx(id, day){
+    let list = state.cardTx[day] || [], it = list.find(x => x.id === id);
+    if(it) return { it, day };
+    for(const k in state.cardTx){ it = (state.cardTx[k] || []).find(x => x.id === id); if(it) return { it, day:k }; }
+    return null;
+  }
+  function openCardTx(id, day){
+    const f = id ? findCardTx(id, day) : null;
+    cxEditing = f ? { id, day:f.day } : null;
+    const it = f ? f.it : null;
+    $("cardSheetTitle").textContent = it ? "Sửa khoản chi thẻ" : "Ghi khoản chi thẻ";
+    $("cxAmt").value = it && it.amt ? it.amt.toLocaleString("vi-VN") : "";
+    $("cxWhere").value = it ? (it.where || "") : "";
+    $("cxDate").value = f ? f.day : todayKey(); $("cxDate").max = todayKey();
+    selectCxCard(it ? it.cardId : ((state.cards || [])[0] || {}).id || null);
+    const wc = $("cxWhereChips"); wc.innerHTML = "";
+    recentWheres().forEach(w => {
+      const b = document.createElement("button"); b.type = "button"; b.className = "chip"; b.textContent = w;
+      b.addEventListener("pointerdown", e => e.preventDefault());
+      b.onclick = () => { $("cxWhere").value = w; };
+      wc.appendChild(b);
+    });
+    $("cxSave").disabled = !cxAmtVal();
+    showSheet("cardSheet", "cardBack");
+  }
+  function closeCardTx(){ cxEditing = null; hideSheet("cardSheet", "cardBack"); }
+  $("cxAmt").addEventListener("input", () => { const v = cxAmtVal(); $("cxAmt").value = v ? v.toLocaleString("vi-VN") : ""; $("cxSave").disabled = !v; });
+  $("cxAmt000").addEventListener("pointerdown", e => e.preventDefault());
+  $("cxAmt000").onclick = () => { const v = cxAmtVal(); if(!v || v * 1000 > 999999999999){ $("cxAmt").focus(); return; } $("cxAmt").value = (v*1000).toLocaleString("vi-VN"); $("cxSave").disabled = false; };
+  $("cxSave").onclick = () => {
+    const v = cxAmtVal(); if(!v) return;
+    const day = $("cxDate").value || todayKey();
+    const where = $("cxWhere").value.trim();
+    if(cxEditing){
+      const f = findCardTx(cxEditing.id, cxEditing.day);
+      if(f){
+        const it = f.it; it.amt = v; it.where = where; it.cardId = cxCard || null;
+        if(day !== f.day){
+          const old = new Date(it.t || Date.now()), nd = new Date(day + "T00:00:00");
+          if(!isNaN(nd)){ nd.setHours(old.getHours(), old.getMinutes(), 0, 0); it.t = nd.getTime(); }
+          state.cardTx[f.day] = (state.cardTx[f.day] || []).filter(x => x.id !== it.id);
+          if(!state.cardTx[f.day].length) delete state.cardTx[f.day];
+          (state.cardTx[day] = state.cardTx[day] || []).push(it);
+        }
+      }
+    } else {
+      const now = new Date(), nd = new Date(day + "T00:00:00");
+      if(!isNaN(nd)) nd.setHours(now.getHours(), now.getMinutes(), 0, 0);
+      (state.cardTx[day] = state.cardTx[day] || []).push({ id:uid(), amt:v, where, cardId:cxCard || null, t:(isNaN(nd) ? Date.now() : nd.getTime()) });
+    }
+    cardMonth = new Date(day + "T00:00:00"); cardMonth.setDate(1);
+    persist(); renderCards(); closeCardTx();
+  };
+  $("cxCancel").onclick = closeCardTx;
+  $("closeCardSheet").onclick = closeCardTx;
+
+  /* ---- cards themselves ---- */
+  function openCardEdit(id){
+    cdEditing = id || null;
+    const c = id ? cardOf(id) : null;
+    $("cardEditTitle").textContent = c ? "Sửa thẻ" : "Thêm thẻ";
+    $("cdName").value = c ? c.name : "";
+    $("cdLast4").value = c ? (c.last4 || "") : "";
+    $("cdLimit").value = c && c.limit ? c.limit.toLocaleString("vi-VN") : "";
+    $("cdDel").hidden = !c; $("cdMsg").hidden = true;
+    delete $("cdDel").dataset.armed; $("cdDel").textContent = "Xoá thẻ";
+    showSheet("cardEditSheet", "cardEditBack");
+  }
+  $("cdLast4").addEventListener("input", e => { e.target.value = digits(e.target.value).slice(0,4); });
+  $("cdLimit").addEventListener("input", e => { const v = parseInt(digits(e.target.value),10) || 0; e.target.value = v ? v.toLocaleString("vi-VN") : ""; });
+  $("cdSave").onclick = () => {
+    const name = $("cdName").value.trim();
+    if(!name){ flash("cdMsg", "Cần có tên thẻ."); return; }
+    const data = { name, last4:digits($("cdLast4").value).slice(0,4), limit:parseInt(digits($("cdLimit").value),10) || 0 };
+    if(cdEditing){ const c = cardOf(cdEditing); if(c) Object.assign(c, data); }
+    else state.cards.push(Object.assign({ id:uid() }, data));
+    persist(); renderCards(); hideSheet("cardEditSheet", "cardEditBack");
+  };
+  $("cdDel").onclick = () => {
+    const b = $("cdDel");
+    if(b.dataset.armed !== "1"){ b.dataset.armed = "1"; b.textContent = "Bấm lần nữa để xoá"; return; }
+    state.cards = (state.cards || []).filter(c => c.id !== cdEditing);
+    for(const k in state.cardTx) (state.cardTx[k] || []).forEach(it => { if(it.cardId === cdEditing) it.cardId = null; });
+    persist(); renderCards(); hideSheet("cardEditSheet", "cardEditBack");
+  };
+  $("closeCardEdit").onclick = () => hideSheet("cardEditSheet", "cardEditBack");
+
+  /* ---- read a pasted bank notification ---- */
+  function vnAmount(raw){
+    let t = String(raw).trim().replace(/\s/g, "");
+    if(/[.,]\d{2}$/.test(t) && t.replace(/[^\d]/g, "").length > 4) t = t.slice(0, -3);
+    const n = parseInt(t.replace(/[^\d]/g, ""), 10);
+    return isNaN(n) ? 0 : n;
+  }
+  function parseNotif(text){
+    const out = [];
+    String(text || "").replace(/ /g, " ").split(/\r?\n/).forEach(line => {
+      const L = line.trim(); if(L.length < 6) return;
+      const low = L.toLowerCase();
+      if(/(ghi có|ghi co|nhận tiền|nhan tien|nhận được|hoàn tiền|hoan tien|refund|credited)/.test(low)) return;
+      const hits = [];
+      let m;
+      const re1 = /([+\-]?\s?[\d][\d.,]{2,})\s*(?:vnd|vnđ|đ|d)\b/gi;
+      while((m = re1.exec(L))) hits.push({ raw:m[1], at:m.index });
+      if(!hits.length){
+        const re2 = /(?:^|[^\d])([+\-]?\s?\d{1,3}(?:[.,]\d{3})+)(?!\d)/g;
+        while((m = re2.exec(L))) hits.push({ raw:m[1], at:m.index });
+      }
+      hits.forEach(h => {
+        const before = L.slice(Math.max(0, h.at - 16), h.at).toLowerCase();
+        if(/(sd|s\.d|số dư|so du|balance|available|hạn mức|han muc|khả dụng|kha dung)[:\s]*$/.test(before)) return;
+        if(/\+\s?$/.test(before) || /^\s?\+/.test(h.raw)) return;
+        const amt = vnAmount(h.raw);
+        if(amt < 1000) return;
+        let day = todayKey();
+        const dm = L.match(/(\d{1,2})[\/\-](\d{1,2})(?:[\/\-](\d{2,4}))?/);
+        if(dm){
+          let y = dm[3] ? parseInt(dm[3], 10) : new Date().getFullYear();
+          if(y < 100) y += 2000;
+          const d = new Date(y, parseInt(dm[2], 10) - 1, parseInt(dm[1], 10));
+          if(!isNaN(d) && d.getDate() === parseInt(dm[1], 10)) day = keyOf(d);
+        }
+        let where = "";
+        const wm = L.match(/(?:\bt[aạ]i\b|\bat\b|\bND\b|\bNDung\b|\bn[oộ]i dung\b|\bmerchant\b)[:\s]+([^.;|]{2,60})/i);
+        if(wm) where = wm[1];
+        if(!where){
+          const caps = L.match(/\b[A-Z][A-Z0-9&'._-]{2,}(?:\s+[A-Z0-9&'._-]{2,}){0,4}\b/g);
+          if(caps){
+            const best = caps.filter(x => !/^(VND|VNĐ|GD|TK|SD|ATM|POS|OTP|THE|CARD)$/.test(x)).sort((a,b) => b.length - a.length)[0];
+            if(best) where = best;
+          }
+        }
+        if(!where) where = L;
+        where = where.replace(/\s+/g, " ")
+          .replace(/\b(ng[aà]y|date|luc|lúc)\b/gi, " ")
+          .replace(/\d{1,2}[\/\-]\d{1,2}(?:[\/\-]\d{2,4})?/g, " ")
+          .replace(/\d{1,2}:\d{2}(?::\d{2})?/g, " ")
+          .replace(/\b(vnd|vnđ)\b/gi, " ")
+          .replace(/\s+/g, " ").replace(/^[\s,;.:\-]+/, "").replace(/[\s,;.:\-]+$/, "")
+          .slice(0, 60).trim();
+        if(where.length < 2) where = "Chi bằng thẻ";
+        let last4 = "";
+        const lm = L.match(/(?:\*{2,}|x{3,}|X{3,})\s?(\d{4})/) || L.match(/(?:thẻ|the|card|tk)\D{0,6}(\d{4})\b/i);
+        if(lm) last4 = lm[1];
+        let hm = 12, mi = 0;
+        const tm = L.match(/\b(\d{1,2}):(\d{2})\b/);
+        if(tm && Number(tm[1]) < 24){ hm = Number(tm[1]); mi = Number(tm[2]); }
+        out.push({ amt, where, day, last4, hm, mi, raw:L, pick:true });
+      });
+    });
+    return out;
+  }
+  function renderPasteRows(){
+    const box = $("pasteRows"); box.innerHTML = "";
+    pasteItems.forEach((p, i) => {
+      const row = document.createElement("label"); row.className = "pick-row";
+      row.innerHTML = '<input type="checkbox"><span class="pk"><b class="num"></b><small></small></span>';
+      const cb = row.querySelector("input"); cb.checked = p.pick;
+      cb.onchange = () => { p.pick = cb.checked; updatePasteBtn(); };
+      row.querySelector("b").textContent = fmt(p.amt);
+      row.querySelector("small").textContent = p.where + " · " + fmtDate(p.day) + (p.dup ? " · đã có, bỏ qua" : "");
+      if(p.dup){ row.classList.add("dup"); cb.checked = false; p.pick = false; }
+      box.appendChild(row);
+    });
+    updatePasteBtn();
+  }
+  function updatePasteBtn(){
+    const n = pasteItems.filter(p => p.pick).length;
+    $("pasteImport").disabled = !n;
+    $("pasteImport").textContent = n ? "Nhập " + n + " khoản" : "Nhập khoản đã chọn";
+  }
+  function selectPasteCard(id){
+    pasteCard = id;
+    const box = $("pasteCardChips"); box.innerHTML = "";
+    const list = (state.cards || []);
+    if(!list.length){ const p = document.createElement("p"); p.className = "hint"; p.textContent = "Chưa có thẻ nào, khoản nhập vào sẽ để trống thẻ."; box.appendChild(p); return; }
+    list.forEach(c => {
+      const b = document.createElement("button"); b.type = "button"; b.className = "chip";
+      b.textContent = cardLabel(c); b.setAttribute("aria-pressed", c.id === id ? "true" : "false");
+      b.onclick = () => selectPasteCard(c.id); box.appendChild(b);
+    });
+  }
+  function openPaste(){
+    pasteItems = []; $("pasteText").value = ""; $("pasteFound").hidden = true; $("pasteErr").hidden = true;
+    selectPasteCard(((state.cards || [])[0] || {}).id || null);
+    updatePasteBtn();
+    showSheet("pasteSheet", "pasteBack");
+  }
+  function closePaste(){ hideSheet("pasteSheet", "pasteBack"); }
+  $("closePaste").onclick = closePaste;
+  $("pasteCancel").onclick = closePaste;
+  $("pasteFromClip").onclick = async () => {
+    try{
+      const t = await navigator.clipboard.readText();
+      if(t){ $("pasteText").value = t; $("parseBtn").click(); }
+      else $("pasteErr").textContent = "Bộ nhớ tạm đang trống.", $("pasteErr").hidden = false;
+    }catch(e){
+      $("pasteErr").textContent = "Máy không cho đọc bộ nhớ tạm. Bạn chạm vào ô trên rồi chọn Dán.";
+      $("pasteErr").hidden = false; $("pasteText").focus();
+    }
+  };
+  $("parseBtn").onclick = () => {
+    $("pasteErr").hidden = true;
+    const found = parseNotif($("pasteText").value);
+    found.forEach(p => {
+      p.dup = (state.cardTx[p.day] || []).some(x => x.amt === p.amt && (x.where || "").toLowerCase() === p.where.toLowerCase());
+      const c = p.last4 ? (state.cards || []).find(x => x.last4 === p.last4) : null;
+      if(c) p.cardId = c.id;
+    });
+    pasteItems = found;
+    if(!found.length){
+      $("pasteFound").hidden = true;
+      $("pasteErr").textContent = "Không tìm thấy số tiền nào trong đoạn vừa dán. Thử dán cả dòng có số tiền và chữ VND.";
+      $("pasteErr").hidden = false; updatePasteBtn(); return;
+    }
+    $("pasteFoundTitle").textContent = "Tìm thấy " + found.length + " khoản, bỏ tick khoản không đúng";
+    $("pasteFound").hidden = false;
+    renderPasteRows();
+  };
+  $("pasteImport").onclick = () => {
+    const picks = pasteItems.filter(p => p.pick); if(!picks.length) return;
+    let last = null;
+    picks.forEach(p => {
+      const d = new Date(p.day + "T00:00:00"); d.setHours(p.hm == null ? 12 : p.hm, p.mi || 0, 0, 0);
+      (state.cardTx[p.day] = state.cardTx[p.day] || []).push({ id:uid(), amt:p.amt, where:p.where, cardId:p.cardId || pasteCard || null, t:d.getTime() });
+      last = p.day;
+    });
+    if(last){ cardMonth = new Date(last + "T00:00:00"); cardMonth.setDate(1); }
+    persist(); renderCards(); closePaste();
+    flash("cardMsg", "✓ Đã nhập " + picks.length + " khoản chi thẻ.");
+  };
+
+  $("prevCardMonth").onclick = () => { cardMonth.setMonth(cardMonth.getMonth()-1); renderCards(); };
+  $("nextCardMonth").onclick = () => { cardMonth.setMonth(cardMonth.getMonth()+1); renderCards(); };
+  $("addCardTxBtn").onclick = () => openCardTx(null, todayKey());
+  $("addCardBtn").onclick = () => openCardEdit(null);
+  $("pasteCardBtn").onclick = openPaste;
+
   /* ---------- backup, restore & merge ---------- */
   const BK_KEY = "ngay50k:lastBackup", SNOOZE_KEY = "ngay50k:nudgeSnooze", UNDO_KEY = "ngay50k:beforeImport";
   const NUDGE_DAYS = 7;
@@ -3148,6 +3654,155 @@ header{margin-top:6px}
     setTimeout(() => { if(!settingsOpen) el.hidden = true; }, 260);
     $("openSettings").focus({ preventScroll:true });
   }
+
+  /* ================= chỗ lưu file & bản lưu trong máy ================= */
+  var dirHandle = null, snapCache = [];
+  const CAN_DIR = typeof window.showDirectoryPicker === "function";
+  const IDB_DB = "ngay50k", SNAP_ST = "backups", META_ST = "meta", SNAP_MAX = 10;
+  function idbOpen(){
+    return new Promise((res, rej) => {
+      let r;
+      try{ r = indexedDB.open(IDB_DB, 1); }catch(e){ rej(e); return; }
+      r.onupgradeneeded = () => {
+        const db = r.result;
+        if(!db.objectStoreNames.contains(SNAP_ST)) db.createObjectStore(SNAP_ST, { keyPath:"id" });
+        if(!db.objectStoreNames.contains(META_ST)) db.createObjectStore(META_ST);
+      };
+      r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
+    });
+  }
+  function idbRun(store, mode, fn){
+    return idbOpen().then(db => new Promise((res, rej) => {
+      const tx = db.transaction(store, mode), st = tx.objectStore(store);
+      const req = fn(st);
+      tx.oncomplete = () => res(req && "result" in req ? req.result : undefined);
+      tx.onerror = () => rej(tx.error); tx.onabort = () => rej(tx.error);
+    }));
+  }
+  async function snapList(){
+    try{ const all = await idbRun(SNAP_ST, "readonly", st => st.getAll()); return (all || []).sort((a,b) => b.at - a.at); }
+    catch(e){ return []; }
+  }
+  async function saveSnapshot(quiet){
+    try{
+      const text = JSON.stringify({ app:"ngay50k", format:1, exportedAt:new Date().toISOString(), data:state });
+      const rec = { id:String(Date.now()), at:Date.now(), size:text.length, json:text };
+      await idbRun(SNAP_ST, "readwrite", st => st.put(rec));
+      const all = await snapList();
+      for(const old of all.slice(SNAP_MAX)) await idbRun(SNAP_ST, "readwrite", st => st.delete(old.id));
+      await renderSnaps();
+      if(!quiet) showSyncOk("✓ Đã tạo bản lưu trong máy.");
+    }catch(e){ if(!quiet) showSyncErr("Máy không cho tạo bản lưu trong app."); }
+  }
+  async function renderSnaps(){
+    const box = $("snapList"); if(!box) return;
+    snapCache = await snapList();
+    box.innerHTML = "";
+    if(!snapCache.length){ box.innerHTML = '<p class="empty">Chưa có bản lưu nào trong máy.</p>'; return; }
+    snapCache.forEach(r => {
+      const b = document.createElement("button"); b.className = "set-nav";
+      b.innerHTML = '<span class="nav-t"></span><span class="nav-v"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>';
+      b.querySelector(".nav-t").textContent = fmtStamp(new Date(r.at).toISOString());
+      b.querySelector(".nav-v").textContent = kb(r.size * 2);
+      b.onclick = () => {
+        $("syncMsg").hidden = true; $("syncErr").hidden = true;
+        let obj; try{ obj = JSON.parse(r.json); }catch(e){ showSyncErr("Bản lưu này hỏng rồi."); return; }
+        offerImport(obj, "Bản lưu trong máy");
+      };
+      box.appendChild(b);
+    });
+  }
+  function offerImport(obj, label){
+    if(!obj || obj.app !== "ngay50k" || !obj.data || typeof obj.data !== "object"){ showSyncErr("Đây không phải bản sao lưu của Ngày 50k."); return; }
+    const incoming = normalize(obj.data);
+    pending = { incoming, merged: mergeStates(state, incoming) };
+    const when = obj.exportedAt ? fmtStamp(obj.exportedAt) : "";
+    $("importInfo").textContent = (label || "File") + (when ? " lúc " + when : "") + ", gồm " + summarize(incoming) + ".";
+    $("importPreview").textContent = "Gộp sẽ " + diffText(diffCount(state, pending.merged)) + ". Khoản mới ghi trên máy này vẫn được giữ.";
+    delete $("replaceBtn").dataset.armed;
+    $("replaceBtn").textContent = "Thay toàn bộ";
+    $("importCard").hidden = false;
+    $("importCard").scrollIntoView({ behavior:"smooth", block:"nearest" });
+  }
+  /* ---- folder ---- */
+  async function loadDir(){
+    if(!CAN_DIR) return null;
+    try{ dirHandle = (await idbRun(META_ST, "readonly", st => st.get("dir"))) || null; }catch(e){ dirHandle = null; }
+    return dirHandle;
+  }
+  async function dirOk(ask){
+    if(!dirHandle) return false;
+    try{
+      const opts = { mode:"readwrite" };
+      if((await dirHandle.queryPermission(opts)) === "granted") return true;
+      if(!ask) return false;
+      return (await dirHandle.requestPermission(opts)) === "granted";
+    }catch(e){ return false; }
+  }
+  async function renderFolder(){
+    if(!$("folderState")) return;
+    if(!CAN_DIR){
+      $("folderState").textContent = "iPhone không cho app web tự lưu vào một thư mục cố định, nên mỗi lần xuất máy sẽ hỏi chỗ lưu. Dùng Bản lưu trong máy ở dưới cho nhanh.";
+      $("folderRow").hidden = true; $("fromFolder").hidden = true; return;
+    }
+    await loadDir();
+    const ok = await dirOk(false);
+    $("folderState").textContent = dirHandle
+      ? (ok ? "Đang lưu thẳng vào thư mục " + dirHandle.name + "." : "Thư mục " + dirHandle.name + " cần cấp quyền lại, bấm Xuất file sao lưu để cấp.")
+      : "Chọn một thư mục để mỗi lần xuất là lưu thẳng vào đó, không phải chọn lại.";
+    $("pickFolder").textContent = dirHandle ? "Đổi thư mục" : "Chọn thư mục lưu";
+    $("clearFolder").hidden = !dirHandle;
+    $("fromFolder").hidden = !dirHandle;
+  }
+  async function writeToDir(name, text){
+    const fh = await dirHandle.getFileHandle(name, { create:true });
+    const w = await fh.createWritable();
+    await w.write(text); await w.close();
+  }
+  async function listDirBackups(){
+    const out = [];
+    for await (const [name, h] of dirHandle.entries()){
+      if(h.kind !== "file" || !/\.json$/i.test(name)) continue;
+      let at = 0, size = 0;
+      try{ const f = await h.getFile(); at = f.lastModified; size = f.size; }catch(e){}
+      out.push({ name, h, at, size });
+    }
+    return out.sort((a,b) => b.at - a.at).slice(0, 30);
+  }
+  if($("pickFolder")) $("pickFolder").onclick = async () => {
+    try{
+      const h = await window.showDirectoryPicker({ mode:"readwrite", id:"ngay50k" });
+      dirHandle = h; await idbRun(META_ST, "readwrite", st => st.put(h, "dir"));
+      await renderFolder(); showSyncOk("✓ Sẽ lưu thẳng vào thư mục " + h.name + ".");
+    }catch(e){ if(e && e.name !== "AbortError") showSyncErr("Chưa chọn được thư mục."); }
+  };
+  if($("clearFolder")) $("clearFolder").onclick = async () => {
+    dirHandle = null;
+    try{ await idbRun(META_ST, "readwrite", st => st.delete("dir")); }catch(e){}
+    $("folderList").hidden = true; await renderFolder();
+  };
+  if($("fromFolder")) $("fromFolder").onclick = async () => {
+    $("syncErr").hidden = true; $("syncMsg").hidden = true;
+    if(!(await dirOk(true))){ showSyncErr("Chưa được phép đọc thư mục đó."); return; }
+    let files = [];
+    try{ files = await listDirBackups(); }catch(e){ showSyncErr("Không đọc được thư mục."); return; }
+    const box = $("folderList"); box.innerHTML = ""; box.hidden = false;
+    if(!files.length){ box.innerHTML = '<p class="empty">Thư mục này chưa có file sao lưu nào.</p>'; return; }
+    files.forEach(f => {
+      const b = document.createElement("button"); b.className = "set-nav";
+      b.innerHTML = '<span class="nav-t"></span><span class="nav-v"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>';
+      b.querySelector(".nav-t").textContent = f.name;
+      b.querySelector(".nav-v").textContent = f.at ? fmtStamp(new Date(f.at).toISOString()) : "";
+      b.onclick = async () => {
+        try{
+          const file = await f.h.getFile(), text = await file.text();
+          offerImport(JSON.parse(text), "Bản " + f.name);
+        }catch(e){ showSyncErr("Không đọc được file này."); }
+      };
+      box.appendChild(b);
+    });
+  };
+  if($("snapNow")) $("snapNow").onclick = () => saveSnapshot(false);
   /* ---- settings navigation ---- */
   const SET_PAGES = ["setHome","setTheme","setScan","setBudget","setTags","setTagOne","setSync","setStore"];
   let setPage = "setHome";
@@ -3160,6 +3815,7 @@ header{margin-top:6px}
     const h = el.querySelector("h2"); if(h) h.focus({ preventScroll:true });
     if(id === "setHome") renderSetHome();
     if(id === "setStore"){ renderStorage(); measureCache(); }
+    if(id === "setSync"){ renderFolder(); renderSnaps(); }
     if(id === "setTags") renderTagList();
   }
   function renderSetHome(){
@@ -3289,6 +3945,11 @@ header{margin-top:6px}
     const payload = { app:"ngay50k", format:1, exportedAt:new Date().toISOString(), data:state };
     const name = "ngay50k-saoluu-" + fileStamp() + ".json";
     const text = JSON.stringify(payload);
+    saveSnapshot(true);
+    if(CAN_DIR && dirHandle && (await dirOk(true))){
+      try{ await writeToDir(name, text); doneExport("✓ Đã lưu vào thư mục " + dirHandle.name + ": " + name); return; }
+      catch(e){ showSyncErr("Chưa ghi được vào thư mục, app sẽ hỏi chỗ lưu như cũ."); }
+    }
     const coarse = window.matchMedia && matchMedia("(pointer:coarse)").matches;
     if(coarse && navigator.canShare && typeof File === "function"){
       try{
@@ -3307,9 +3968,9 @@ header{margin-top:6px}
       doneExport();
     }catch(e){ showSyncErr("Chưa xuất được file: " + (e && e.message ? e.message : e)); }
   }
-  function doneExport(){
+  function doneExport(msgText){
     lsSet(BK_KEY, String(Date.now()));
-    showSyncOk("✓ Đã xuất file sao lưu. Hãy cất file ở nơi an toàn, như iCloud Drive.");
+    showSyncOk(msgText || "✓ Đã xuất file sao lưu. Hãy cất file ở nơi an toàn, như iCloud Drive.");
     renderBackup();
   }
 
@@ -3349,6 +4010,7 @@ header{margin-top:6px}
       budget: useB ? b.budget : a.budget, budgetM: Math.max(a.budgetM || 0, b.budgetM || 0),
       days: byDay(a.days, b.days), income: byDay(a.income, b.income),
       contacts: byId(a.contacts, b.contacts), loans, tags: byId(a.tags, b.tags),
+      cards: byId(a.cards, b.cards), cardTx: byDay(a.cardTx || {}, b.cardTx || {}),
       payees: Object.assign({}, b.payees, a.payees), tagOff: mergeTagOff(a.tagOff, b.tagOff),
       deleted: del, updated: Date.now()
     });
@@ -3376,7 +4038,8 @@ header{margin-top:6px}
     let exp = 0, inc = 0;
     for(const k in st.days) exp += st.days[k].length;
     for(const k in st.income) inc += st.income[k].length;
-    return exp + " khoản chi, " + inc + " khoản thu, " + st.loans.length + " khoản vay, " + st.contacts.length + " người nhận";
+    let ctx = 0; for(const k in (st.cardTx||{})) ctx += st.cardTx[k].length;
+    return exp + " khoản chi, " + inc + " khoản thu, " + ctx + " khoản thẻ, " + st.loans.length + " khoản vay, " + st.contacts.length + " người nhận";
   }
   function fmtStamp(iso){
     const d = new Date(iso); if(isNaN(d)) return "";
@@ -3394,15 +4057,7 @@ header{margin-top:6px}
       let obj;
       try{ obj = JSON.parse(r.result); }catch(err){ showSyncErr("File này không phải file sao lưu của Ngày 50k."); return; }
       if(!obj || obj.app !== "ngay50k" || !obj.data || typeof obj.data !== "object"){ showSyncErr("File này không phải file sao lưu của Ngày 50k."); return; }
-      const incoming = normalize(obj.data);
-      pending = { incoming, merged: mergeStates(state, incoming) };
-      const when = obj.exportedAt ? fmtStamp(obj.exportedAt) : "";
-      $("importInfo").textContent = "File " + (when ? "xuất lúc " + when + ", " : "") + "gồm " + summarize(incoming) + ".";
-      $("importPreview").textContent = "Gộp sẽ " + diffText(diffCount(state, pending.merged)) + ". Khoản mới ghi trên máy này vẫn được giữ.";
-      delete $("replaceBtn").dataset.armed;
-      $("replaceBtn").textContent = "Thay toàn bộ";
-      $("importCard").hidden = false;
-      $("importCard").scrollIntoView({ behavior:"smooth", block:"nearest" });
+      offerImport(obj, "File");
     };
     r.readAsText(f);
   });
