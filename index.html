@@ -881,6 +881,46 @@ main{padding-bottom:calc(74px + env(safe-area-inset-bottom,0px))}
 .card-nav .t small{display:block; font-size:.78rem; color:var(--muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
 .card-nav .ch{flex:none; width:16px; height:16px; fill:none; stroke:var(--line); stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round}
 
+
+/* ================= v34: tổng quan & ngân sách ================= */
+.ov-sub{margin:5px 0 0; font-size:.8rem; color:var(--muted)}
+.kpi4{display:grid; grid-template-columns:1fr 1fr; gap:9px; margin-top:12px}
+.kpi{background:var(--flat); border:1px solid var(--line); border-radius:15px; padding:11px 13px; text-align:left}
+.kpi small{display:block; font-size:.72rem; color:var(--muted); font-weight:600}
+.kpi b{display:block; font-size:1.05rem; font-weight:800; letter-spacing:-.02em; margin-top:2px}
+.kpi.inc b{color:var(--ok)} .kpi.card b{color:var(--note)}
+.kpi.loan{position:relative; padding-bottom:22px}
+.kpi.loan em{position:absolute; left:13px; right:13px; bottom:7px; font-style:normal; font-size:.64rem; color:var(--muted); line-height:1.2}
+.ctitle{display:flex; align-items:center; justify-content:space-between; gap:10px}
+.ctitle h2, .ctitle h3{margin:0; font-size:.95rem; font-weight:700}
+.linkbtn{border:0; background:transparent; color:var(--note); font-size:.8rem; font-weight:600; padding:2px 0}
+.bud{padding:11px 0 10px; border-bottom:1px solid var(--line)}
+.bud:last-child{border-bottom:0; padding-bottom:2px}
+.bud .r1{display:flex; align-items:baseline; gap:8px; font-size:.86rem}
+.bud .r1 .n{font-weight:600; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.bud .r1 .v{color:var(--muted); font-size:.78rem; white-space:nowrap}
+.bud .r1 .v b{color:var(--ink); font-weight:700; font-size:.86rem}
+.bud .pb{display:block; width:100%; height:7px; border-radius:4px; background:var(--line); margin-top:7px; overflow:hidden}
+.bud .pb i{display:block; height:100%; border-radius:4px; background:linear-gradient(90deg, var(--tint-a), var(--tint-b))}
+.bud.warn .pb i{background:linear-gradient(90deg,#F0A33C,#B45309)}
+.bud.over .pb i{background:linear-gradient(90deg,#FF8A80,var(--over))}
+.bud.over .r1 .v b{color:var(--over)}
+.bud .nt{display:block; font-size:.72rem; color:var(--muted); margin:5px 0 0; background:none; padding:0; border-radius:0; min-height:0; aspect-ratio:auto}
+.bud .nt::before{display:none}
+.bud.warn .nt{color:#B45309; font-weight:600}
+.bud.over .nt{color:var(--over); font-weight:600}
+.brow{display:flex; align-items:center; gap:11px; background:var(--flat); border:1px solid var(--line); border-radius:14px; padding:9px 12px; margin-top:8px}
+.brow .n{flex:1; min-width:0; font-size:.9rem; font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.brow input{width:124px; text-align:right; border:1px solid var(--line); background:var(--field); border-radius:10px; padding:7px 10px; font-size:.86rem; font-weight:700}
+.brow input:focus{background:var(--field-focus); border-color:var(--note); box-shadow:0 0 0 3px var(--note-soft); outline:none}
+.cardline{display:flex; align-items:center; gap:7px; width:100%; margin:11px -20px -16px; padding:11px 20px;
+  border:0; border-top:1px solid var(--line); background:transparent; font-size:.78rem; color:var(--muted); border-radius:0 0 30px 30px}
+.cardline svg{width:15px; height:15px; flex:none; fill:none; stroke:var(--note); stroke-width:1.9}
+.cardline b{color:var(--ink); font-weight:700; font-size:.84rem}
+.cardline .ch{margin-left:auto; color:var(--line); font-size:1rem}
+.cardline[hidden]{display:none}
+#peopleBack{margin-bottom:10px}
+
 /* ================= v25: top safe area ================= */
 :root{--safe-top:max(env(safe-area-inset-top,0px), 18px); padding-top:var(--safe-top)}
 /* an opaque strip, cut from the very same background, so nothing scrolls into the status bar */
@@ -901,8 +941,8 @@ header{margin-top:6px}
 .settings-head{background:var(--sheet-bg); -webkit-backdrop-filter:none; backdrop-filter:none; border:0; box-shadow:0 1px 0 var(--line); border-radius:0}
 
 /* v26: credit cards */
-.tabs{grid-template-columns:repeat(5,minmax(0,1fr))}
-.tabs button{font-size:.62rem; gap:2px}
+.tabs{grid-template-columns:repeat(4,minmax(0,1fr))}
+.tabs button{font-size:.68rem; gap:3px}
 .tabs button svg{width:19px; height:19px}
 .pick-row{display:flex; align-items:flex-start; gap:10px; padding:10px 2px; border-bottom:1px solid var(--line)}
 .pick-row:last-child{border-bottom:0}
@@ -945,11 +985,10 @@ header{margin-top:6px}
   </header>
 
   <nav class="tabs" role="tablist" aria-label="Menu">
+    <button role="tab" data-tab="money" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9h-9z"/><path d="M14 3.3A9 9 0 0 1 20.7 10H14z"/></svg><span>Tổng quan</span></button>
     <button role="tab" data-tab="today" aria-selected="true"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 10h18"/></svg><span>Giao dịch</span></button>
-    <button role="tab" data-tab="money" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span>Thu chi</span></button>
     <button role="tab" data-tab="cards" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="8" width="14" height="11" rx="2"/><path d="M2 12h14"/><path d="M7 5h13a2 2 0 0 1 2 2v8"/></svg><span>Thẻ</span></button>
     <button role="tab" data-tab="loans" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 3l4 4-4 4"/><path d="M3 7h18"/><path d="M7 21l-4-4 4-4"/><path d="M21 17H3"/></svg><span>Khoản vay</span></button>
-    <button role="tab" data-tab="people" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6.5 6.5 0 0 1 3.5 6"/></svg><span>Người nhận</span></button>
   </nav>
 
   <!-- ================= TAB: HÔM NAY ================= -->
@@ -959,6 +998,10 @@ header{margin-top:6px}
       <div class="remain num" id="remain">50.000đ</div>
       <div class="hero-bar"><div class="spent-mask" id="mask"></div></div>
       <p class="status" id="status"></p>
+      <button type="button" class="cardline" id="heroCard" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2.5"/><path d="M2 10h20"/></svg>
+        <span>Thẻ tháng này</span><b class="num" id="heroCardSum">0đ</b><span class="ch" aria-hidden="true">›</span>
+      </button>
     </div>
     <div class="backup-nudge" id="backupNudge" hidden>
       <p id="nudgeText"></p>
@@ -1012,11 +1055,24 @@ header{margin-top:6px}
       <strong id="monthLabel"></strong>
       <button id="nextMonth" aria-label="Tháng sau">›</button>
     </div>
-    <div class="ledger">
-      <div class="ledger-row"><span>Tổng thu</span><b class="in num" id="sumIn">0đ</b></div>
-      <div class="ledger-row"><span>Tổng chi</span><b class="out num" id="sumOut">0đ</b></div>
-      <div class="ledger-row ledger-total"><span>Còn lại</span><b class="num" id="sumNet">0đ</b></div>
+    <div class="ledger chero">
+      <p class="chero-lb"><span>Còn lại thực tế tháng này</span><span class="chero-trend" id="netTrend" hidden></span></p>
+      <p class="chero-big"><span class="num" id="sumNet">0đ</span></p>
+      <p class="ov-sub" id="netSub"></p>
     </div>
+
+    <div class="kpi4">
+      <div class="kpi inc"><small>Thu vào</small><b class="num" id="sumIn">0đ</b></div>
+      <div class="kpi"><small>Chi thường</small><b class="num" id="sumOut">0đ</b></div>
+      <div class="kpi card"><small>Chi thẻ</small><b class="num" id="sumCard">0đ</b></div>
+      <button class="kpi loan" id="kpiLoan"><small>Khoản vay</small><b class="num" id="sumLoan">0đ</b><em>không tính vào số trên</em></button>
+    </div>
+
+    <section class="cchart" id="budgetBox" hidden>
+      <div class="ctitle"><h2>Ngân sách theo nhóm</h2><button class="linkbtn" id="openBudget">Đặt trần</button></div>
+      <div id="budgetList"></div>
+    </section>
+    <button class="ghost" id="openBudget2" style="width:100%; margin-top:12px">＋ Đặt trần chi cho từng nhóm</button>
 
     <button class="primary green" id="addIncomeBtn">+ Thêm khoản thu</button>
 
@@ -1120,6 +1176,7 @@ header{margin-top:6px}
 
   <!-- ================= TAB: NGƯỜI NHẬN ================= -->
   <div id="tab-people" role="tabpanel" hidden>
+    <button class="set-back" id="peopleBack" hidden>‹ Cài đặt</button>
     <p class="subtle" style="margin-top:0">Lưu những người bạn hay chuyển tiền. Bấm Chuyển để điền sẵn thông tin, chỉ cần nhập số tiền.</p>
     <button class="primary" id="addContactBtn">+ Thêm người nhận</button>
 
@@ -1198,6 +1255,7 @@ header{margin-top:6px}
         <button class="set-nav" data-go="setTheme"><span class="nav-t">Giao diện</span><span class="nav-v" id="navTheme"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
         <button class="set-nav" data-go="setScan"><span class="nav-t">Quét mã QR</span><span class="nav-v" id="navScan"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
         <button class="set-nav" data-go="setBudget"><span class="nav-t">Hạn mức chi một ngày</span><span class="nav-v" id="navBudget"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+        <button class="set-nav" id="goPeople"><span class="nav-t">Người nhận</span><span class="nav-v" id="navPeople"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
         <button class="set-nav" data-go="setTags"><span class="nav-t">Quản lý tag</span><span class="nav-v" id="navTags"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
         <button class="set-nav" data-go="setSync"><span class="nav-t">Sao lưu và đồng bộ</span><span class="nav-v" id="navSync"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
         <button class="set-nav" data-go="setStore"><span class="nav-t">Dung lượng</span><span class="nav-v" id="navStore"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
@@ -1326,7 +1384,7 @@ header{margin-top:6px}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v33</p>
+      <p class="sync" id="appVersion">Phiên bản v34</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. Giới hạn khoảng 5 MB được tính chung cho các mini app cùng tài khoản GitHub.</p>
 
       <h4 class="sub">Xoá dữ liệu</h4>
@@ -1384,6 +1442,10 @@ header{margin-top:6px}
     <label><span>Thẻ</span></label>
     <div class="chips" id="cxCardChips" style="margin-top:0"></div>
   </div>
+  <div class="field">
+    <label><span>Nhóm <span class="opt">(để tính ngân sách)</span></span></label>
+    <div class="chips" id="cxTagChips" style="margin-top:0"></div>
+  </div>
   <div class="sheet-foot">
     <button class="ghost" id="cxCancel">Huỷ</button>
     <button class="primary" id="cxSave" style="margin:0">Lưu</button>
@@ -1420,6 +1482,18 @@ header{margin-top:6px}
   </div>
 </div>
 
+<div class="sheet-back top" id="budgetBack" hidden></div>
+<div class="sheet top" id="budgetSheet" role="dialog" aria-modal="true" aria-labelledby="budgetTitle" hidden>
+  <div class="grab" aria-hidden="true"></div>
+  <div class="sheet-head"><h2 id="budgetTitle">Đặt trần mỗi tháng</h2><button class="x" id="closeBudget" aria-label="Đóng">✕</button></div>
+  <p class="set-now" style="margin:0 2px 10px">Để trống nghĩa là không theo dõi nhóm đó. Trần dùng lại cho các tháng sau, sửa lúc nào cũng được. Tính cả khoản chi thường lẫn chi thẻ.</p>
+  <div id="budgetRows"></div>
+  <div class="sheet-foot">
+    <button class="ghost" id="budgetCancel">Huỷ</button>
+    <button class="primary" id="budgetSave" style="margin:0">Lưu</button>
+  </div>
+</div>
+
 <div class="sheet-back top" id="cardsBack" hidden></div>
 <div class="sheet top" id="cardsSheet" role="dialog" aria-modal="true" aria-labelledby="cardsSheetTitle" hidden>
   <div class="grab" aria-hidden="true"></div>
@@ -1440,6 +1514,7 @@ header{margin-top:6px}
     <div class="field" style="flex:1; min-width:0"><label for="cdLast4"><span>4 số cuối</span></label><input id="cdLast4" class="inp num" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="1234"></div>
   </div>
   <p class="hint">Thông báo ngân hàng thường chỉ hiện 6 số đầu và 4 số cuối. Điền đúng hai phần này để app tự gán khoản chi vào đúng thẻ.</p>
+  <div class="field"><label for="cdStmt"><span>Ngày sao kê hằng tháng <span class="opt">(không bắt buộc)</span></span></label><input id="cdStmt" class="inp num" inputmode="numeric" maxlength="2" autocomplete="off" placeholder="vd: 15"></div>
   <p class="inline-ok" id="cdMsg" hidden></p>
   <div class="sheet-foot">
     <button class="ghost danger" id="cdDel">Xoá thẻ</button>
@@ -1665,7 +1740,7 @@ header{margin-top:6px}
   const WD = ["CN","T2","T3","T4","T5","T6","T7"];
 
   /* ---------- state ---------- */
-  let state = { budget:50000, days:{}, income:{}, contacts:[], loans:[], payees:{}, updated:0, budgetM:0, deleted:{}, tags:[], tagOff:{}, cards:[], cardTx:{} };
+  let state = { budget:50000, days:{}, income:{}, contacts:[], loans:[], payees:{}, updated:0, budgetM:0, deleted:{}, tags:[], tagOff:{}, cards:[], cardTx:{}, caps:{} };
   let sigs = {};
   let selectedCat = "an", mode = "cash", scanned = null, locked = false, activeContact = null;
   let incCat = "luong", cCat = "an", editingContactId = null;
@@ -1712,7 +1787,8 @@ header{margin-top:6px}
       payees: obj(s.payees), updated: s.updated || 0,
       budgetM: Number(s.budgetM) || 0, deleted: obj(s.deleted),
       tags: Array.isArray(s.tags) ? s.tags.filter(t => t && t.id) : [], tagOff: obj(s.tagOff),
-      cards: Array.isArray(s.cards) ? s.cards.filter(c => c && c.id) : [], cardTx: obj(s.cardTx)
+      cards: Array.isArray(s.cards) ? s.cards.filter(c => c && c.id) : [], cardTx: obj(s.cardTx),
+      caps: obj(s.caps)
     };
   }
   function loadLocal(){
@@ -2040,6 +2116,16 @@ header{margin-top:6px}
     };
     return li;
   }
+  /* hạn mức còn lại của cả tuần, tính từ thứ hai */
+  function weekLeft(b){
+    const now = new Date(), dow = (now.getDay() + 6) % 7;
+    let used = 0;
+    for(let i = 0; i <= dow; i++){
+      const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - dow + i);
+      used += sumOf(state.days[keyOf(d)] || []);
+    }
+    return (dow === 0) ? null : b * (dow + 1) - used;
+  }
   function renderToday(){
     const now = new Date();
     $("dateSmall").textContent = ["Chủ nhật","Thứ hai","Thứ ba","Thứ tư","Thứ năm","Thứ sáu","Thứ bảy"][now.getDay()];
@@ -2058,7 +2144,17 @@ header{margin-top:6px}
     else if(left===0) s = "Vừa tròn <strong>" + fmt(b) + "</strong>. Dừng ở đây là đẹp.";
     else if(pct>=80) s = "Đã dùng " + Math.round(pct) + "%. Chỉ còn <strong>" + fmt(left) + "</strong> cho phần còn lại của ngày.";
     else s = "Đã tiêu <strong>" + fmt(spent) + "</strong> trong " + fmt(b) + ".";
+    const wk = weekLeft(b);
+    if(wk !== null) s += wk >= 0 ? " Tuần này còn dư <strong>" + fmt(wk) + "</strong>."
+                                 : " Tuần này đã vượt <strong>" + fmt(-wk) + "</strong>.";
     $("status").innerHTML = s;
+
+    /* chi thẻ tháng này, để không bị quên */
+    const mp = now.getFullYear() + "-" + pad(now.getMonth()+1) + "-";
+    let cs = 0;
+    for(const k in state.cardTx) if(k.indexOf(mp) === 0) (state.cardTx[k]||[]).forEach(x => cs += Number(x.amt) || 0);
+    $("heroCard").hidden = !cs;
+    if(cs) $("heroCardSum").textContent = fmt(cs);
 
     // quick people
     const qp = $("quickPeople"); qp.innerHTML = "";
@@ -2131,6 +2227,84 @@ header{margin-top:6px}
   }
 
   /* ---------- render: money ---------- */
+  /* tiền ra vào của khoản vay trong tháng, chỉ để hiển thị riêng */
+  function loanFlowOfMonth(prefix){
+    let flow = 0;
+    (state.loans || []).forEach(l => {
+      const out = l.type === "lend";                    /* mình cho vay: tiền ra */
+      if((l.date || "").indexOf(prefix) === 0) flow += out ? -(Number(l.amt)||0) : (Number(l.amt)||0);
+      (l.payments || []).forEach(pm => {
+        if((pm.date || "").indexOf(prefix) !== 0) return;
+        flow += out ? (Number(pm.amt)||0) : -(Number(pm.amt)||0);
+      });
+    });
+    return flow;
+  }
+  function netOfMonth(prefix){
+    let tin = 0, tout = 0;
+    for(const k in state.income) if(k.indexOf(prefix) === 0) (state.income[k]||[]).forEach(it => tin += Number(it.amt)||0);
+    for(const k in state.days)   if(k.indexOf(prefix) === 0) (state.days[k]||[]).forEach(it => tout += Number(it.amt)||0);
+    for(const k in state.cardTx) if(k.indexOf(prefix) === 0) (state.cardTx[k]||[]).forEach(it => tout += Number(it.amt)||0);
+    return tin - tout;
+  }
+  /* ---------- ngân sách theo nhóm ---------- */
+  function capsOf(){ return state.caps || (state.caps = {}); }
+  function capVal(id){ const e = capsOf()[id]; return e && Number(e.v) > 0 ? Number(e.v) : 0; }
+  function renderBudgets(byCat, prefix){
+    const box = $("budgetList"); if(!box) return;
+    box.innerHTML = "";
+    const ids = Object.keys(capsOf()).filter(id => capVal(id) > 0);
+    $("budgetBox").hidden = !ids.length;
+    $("openBudget2").hidden = !!ids.length;
+    if(!ids.length) return;
+    const now = new Date(), same = prefix === (now.getFullYear() + "-" + pad(now.getMonth()+1) + "-");
+    const dim = (() => { const a = prefix.split("-"); return new Date(+a[0], +a[1], 0).getDate(); })();
+    const left = same ? dim - now.getDate() : 0;
+    ids.sort((a,b) => (byCat[b]||0)/capVal(b) - (byCat[a]||0)/capVal(a)).forEach(id => {
+      const cap = capVal(id), used = byCat[id] || 0, pct = used / cap;
+      const t = tagOf(id);
+      const row = document.createElement("div");
+      row.className = "bud" + (pct > 1 ? " over" : pct >= .85 ? " warn" : "");
+      row.innerHTML = '<div class="r1"><span class="n"></span><span class="v"><b></b> / <span class="cap"></span></span></div>' +
+        '<div class="pb"><i></i></div><p class="nt"></p>';
+      row.querySelector(".n").textContent = t.icon + " " + t.label;
+      row.querySelector("b").textContent = fmtShort(used);
+      row.querySelector(".cap").textContent = fmtShort(cap);
+      row.querySelector("i").style.width = Math.min(100, Math.round(pct * 100)) + "%";
+      const note = row.querySelector(".nt");
+      if(pct > 1) note.textContent = "Vượt " + fmt(used - cap);
+      else if(pct >= .85) note.textContent = "Còn " + fmt(cap - used) + (left > 0 ? " cho " + left + " ngày cuối tháng" : "");
+      else note.hidden = true;
+      box.appendChild(row);
+    });
+  }
+  function fmtShort(n){
+    n = Number(n) || 0;
+    if(n >= 1000000) return (Math.round(n / 100000) / 10).toString().replace(".", ",") + "tr";
+    if(n >= 1000) return Math.round(n / 1000) + "k";
+    return fmt(n);
+  }
+  function openBudget(){
+    capDraft = {};
+    Object.keys(capsOf()).forEach(id => { if(capVal(id)) capDraft[id] = capVal(id); });
+    const box = $("budgetRows"); box.innerHTML = "";
+    const cnt = tagUse();
+    allTags().slice().sort((a,b) => (capDraft[b.id]?1:0) - (capDraft[a.id]?1:0) || (cnt[b.id]||0) - (cnt[a.id]||0)).forEach(t => {
+      const row = document.createElement("label"); row.className = "brow";
+      row.innerHTML = '<span class="n"></span><input inputmode="numeric" autocomplete="off" placeholder="chưa đặt">';
+      row.querySelector(".n").textContent = t.icon + " " + t.label;
+      const inp = row.querySelector("input");
+      inp.value = capDraft[t.id] ? capDraft[t.id].toLocaleString("vi-VN") : "";
+      inp.addEventListener("input", () => {
+        const v = parseInt(digits(inp.value), 10) || 0;
+        inp.value = v ? v.toLocaleString("vi-VN") : "";
+        if(v) capDraft[t.id] = v; else delete capDraft[t.id];
+      });
+      box.appendChild(row);
+    });
+    showSheet("budgetSheet", "budgetBack");
+  }
+  function closeBudget(){ hideSheet("budgetSheet", "budgetBack"); }
   function renderMoney(){
     const y = viewMonth.getFullYear(), m = viewMonth.getMonth();
     $("monthLabel").textContent = "Tháng " + (m+1) + "/" + y;
@@ -2143,19 +2317,45 @@ header{margin-top:6px}
       (state.days[k]||[]).forEach(it => { tout += it.amt; byCat[it.cat] = (byCat[it.cat]||0) + it.amt; });
       (state.income[k]||[]).forEach(it => { tin += it.amt; });
     });
+    /* chi thẻ và khoản vay của tháng đang xem */
+    let tcard = 0;
+    for(const k in state.cardTx){ if(k.indexOf(prefix) === 0) (state.cardTx[k]||[]).forEach(x => {
+      tcard += Number(x.amt) || 0;
+      if(x.cat) byCat[x.cat] = (byCat[x.cat]||0) + (Number(x.amt)||0);
+    }); }
+    const tloan = loanFlowOfMonth(prefix);
+
     $("sumIn").textContent = "+" + fmt(tin);
     $("sumOut").textContent = "−" + fmt(tout);
-    const net = tin - tout, ne = $("sumNet");
-    ne.textContent = (net<0 ? "−" : "") + fmt(Math.abs(net));
-    ne.style.color = net<0 ? "var(--over)" : "var(--ink)";
+    $("sumCard").textContent = "−" + fmt(tcard);
+    $("sumLoan").textContent = (tloan < 0 ? "−" : tloan > 0 ? "+" : "") + fmt(Math.abs(tloan));
 
+    const net = tin - tout - tcard, ne = $("sumNet");
+    ne.textContent = (net<0 ? "−" : net>0 ? "+" : "") + fmt(Math.abs(net));
+    ne.style.color = net<0 ? "var(--over)" : net>0 ? "var(--ok)" : "var(--ink)";
+    $("netSub").textContent = "Thu " + fmt(tin) + " · chi tất cả " + fmt(tout + tcard) + " · chưa kể vay mượn";
+
+    /* so với tháng trước */
+    const pm = new Date(y, m - 1, 1), pnet = netOfMonth(pm.getFullYear() + "-" + pad(pm.getMonth()+1) + "-");
+    const nt = $("netTrend");
+    if(pnet !== 0 && net !== 0){
+      const pct = Math.round((net - pnet) / Math.abs(pnet) * 100);
+      nt.hidden = false;
+      nt.className = "chero-trend " + (pct >= 0 ? "dn" : "up");
+      nt.textContent = (pct > 0 ? "↑" : pct < 0 ? "↓" : "") + Math.abs(pct) + "%";
+      nt.setAttribute("aria-label", "so với tháng trước");
+    } else nt.hidden = true;
+
+    renderBudgets(byCat, prefix);
+
+    const catTotal = Object.keys(byCat).reduce((a,k)=>a+byCat[k], 0);
     const cb = $("catBreakdown"); cb.innerHTML = "";
-    if(!tout){ cb.innerHTML = '<p class="empty">Chưa có khoản chi nào trong tháng này.</p>'; }
+    if(!catTotal){ cb.innerHTML = '<p class="empty">Chưa có khoản chi nào trong tháng này.</p>'; }
     Object.keys(byCat).map(tagOf).sort((a,b)=>byCat[b.id]-byCat[a.id]).forEach(c => {
       const row = document.createElement("div"); row.className = "cat-row";
       row.innerHTML = '<span></span><div class="cat-bar"><i></i></div><span class="num"></span>';
       row.children[0].textContent = c.icon + " " + c.label;
-      row.querySelector("i").style.width = (byCat[c.id]/tout*100) + "%";
+      row.querySelector("i").style.width = (byCat[c.id]/catTotal*100) + "%";
       row.children[2].textContent = fmt(byCat[c.id]);
       cb.appendChild(row);
     });
@@ -2632,6 +2832,7 @@ header{margin-top:6px}
     currentTab = name;
     document.querySelectorAll(".tabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.tab===name ? "true":"false"));
     ["today","money","loans","people","cards"].forEach(n => $("tab-"+n).hidden = n !== name);
+    if(name !== "people") $("peopleBack").hidden = true;
     window.scrollTo(0,0);
   }
   function renderAll(){ renderToday(); renderMoney(); renderLoans(); renderPeople(); renderCards(); }
@@ -3314,9 +3515,17 @@ header{margin-top:6px}
   idleReset();
 
   /* ================= THẺ TÍN DỤNG ================= */
-  var cardMonth = null, cxEditing = null, cxCard = null, cdEditing = null, pasteCard = null, pasteItems = [], pasteShowOther = false, cardFilterId = null, cardChartMode = "day";
+  var cardMonth = null, cxEditing = null, cxCard = null, cdEditing = null, pasteCard = null, pasteItems = [], pasteShowOther = false, cardFilterId = null, cardChartMode = "day", cxTag = "", capDraft = null;
   function monthKeyOf(d){ return d.getFullYear() + "-" + pad(d.getMonth()+1); }
   function cardOf(id){ return (state.cards||[]).find(c => c.id === id) || null; }
+  function stmtText(d){
+    if(!d) return "";
+    const now = new Date();
+    let next = new Date(now.getFullYear(), now.getMonth(), d);
+    if(next < new Date(now.getFullYear(), now.getMonth(), now.getDate())) next = new Date(now.getFullYear(), now.getMonth() + 1, d);
+    const left = Math.round((next - new Date(now.getFullYear(), now.getMonth(), now.getDate())) / 86400000);
+    return "sao kê ngày " + d + (left === 0 ? " · hôm nay" : left <= 7 ? " · còn " + left + " ngày" : "");
+  }
   function cardMask(c){
     if(!c) return "";
     if(c.first6 && c.last4) return c.first6 + "••" + c.last4;
@@ -3434,8 +3643,10 @@ header{margin-top:6px}
         '<span class="t"><b></b><small></small></span>' +
         '<svg class="ch" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>';
       b.querySelector("b").textContent = c.name;
-      b.querySelector("small").textContent = (cardMask(c) || "chưa điền số thẻ") + " · " +
-        (mine.length ? mine.length + " khoản tháng này" : "chưa có khoản");
+      const bits = [cardMask(c) || "chưa điền số thẻ"];
+      if(c.stmt) bits.push(stmtText(c.stmt));
+      bits.push(mine.length ? mine.length + " khoản tháng này" : "chưa có khoản");
+      b.querySelector("small").textContent = bits.join(" · ");
       b.onclick = () => openCardEdit(c.id);
       bank.appendChild(b);
     });
@@ -3516,6 +3727,7 @@ header{margin-top:6px}
     const t = new Date(it.t || 0);
     const bits = [];
     if(it.t) bits.push(pad(t.getHours()) + ":" + pad(t.getMinutes()));
+    if(it.cat){ const tg = tagOf(it.cat); bits.push(tg.icon + " " + tg.label); }
     li.querySelector(".desc div:last-child").textContent = bits.join(" · ");
     if(showCard){
       const c = cardOf(it.cardId);
@@ -3558,6 +3770,24 @@ header{margin-top:6px}
     for(const k in state.cardTx){ it = (state.cardTx[k] || []).find(x => x.id === id); if(it) return { it, day:k }; }
     return null;
   }
+  /* đoán nhóm theo nơi chi đã từng gặp */
+  function guessTag(where){
+    const w = String(where || "").trim().toLowerCase();
+    if(!w) return "";
+    for(const k in state.cardTx){
+      const hit = (state.cardTx[k] || []).find(x => x.cat && (x.where || "").trim().toLowerCase() === w);
+      if(hit) return hit.cat;
+    }
+    for(const k in state.days){
+      const hit = (state.days[k] || []).find(x => x.cat && (x.note || "").trim().toLowerCase() === w);
+      if(hit) return hit.cat;
+    }
+    return "";
+  }
+  function selectCxTag(id){
+    cxTag = id || "";
+    renderTagChips($("cxTagChips"), cxTag, t => selectCxTag(t === cxTag ? "" : t));
+  }
   function openCardTx(id, day){
     const f = id ? findCardTx(id, day) : null;
     cxEditing = f ? { id, day:f.day } : null;
@@ -3567,11 +3797,12 @@ header{margin-top:6px}
     $("cxWhere").value = it ? (it.where || "") : "";
     $("cxDate").value = f ? f.day : todayKey(); $("cxDate").max = todayKey();
     selectCxCard(it ? it.cardId : ((state.cards || [])[0] || {}).id || null);
+    selectCxTag(it ? (it.cat || "") : guessTag($("cxWhere").value));
     const wc = $("cxWhereChips"); wc.innerHTML = "";
     recentWheres().forEach(w => {
       const b = document.createElement("button"); b.type = "button"; b.className = "chip"; b.textContent = w;
       b.addEventListener("pointerdown", e => e.preventDefault());
-      b.onclick = () => { $("cxWhere").value = w; };
+      b.onclick = () => { $("cxWhere").value = w; if(!cxTag) selectCxTag(guessTag(w)); };
       wc.appendChild(b);
     });
     $("cxSave").disabled = !cxAmtVal();
@@ -3588,7 +3819,7 @@ header{margin-top:6px}
     if(cxEditing){
       const f = findCardTx(cxEditing.id, cxEditing.day);
       if(f){
-        const it = f.it; it.amt = v; it.where = where; it.cardId = cxCard || null;
+        const it = f.it; it.amt = v; it.where = where; it.cardId = cxCard || null; it.cat = cxTag || "";
         if(day !== f.day){
           const old = new Date(it.t || Date.now()), nd = new Date(day + "T00:00:00");
           if(!isNaN(nd)){ nd.setHours(old.getHours(), old.getMinutes(), 0, 0); it.t = nd.getTime(); }
@@ -3600,11 +3831,12 @@ header{margin-top:6px}
     } else {
       const now = new Date(), nd = new Date(day + "T00:00:00");
       if(!isNaN(nd)) nd.setHours(now.getHours(), now.getMinutes(), 0, 0);
-      (state.cardTx[day] = state.cardTx[day] || []).push({ id:uid(), amt:v, where, cardId:cxCard || null, t:(isNaN(nd) ? Date.now() : nd.getTime()) });
+      (state.cardTx[day] = state.cardTx[day] || []).push({ id:uid(), amt:v, where, cardId:cxCard || null, cat:cxTag || "", t:(isNaN(nd) ? Date.now() : nd.getTime()) });
     }
     cardMonth = new Date(day + "T00:00:00"); cardMonth.setDate(1);
     persist(); renderCards(); closeCardTx();
   };
+  $("cxWhere").addEventListener("blur", () => { if(!cxTag) selectCxTag(guessTag($("cxWhere").value)); });
   $("cxCancel").onclick = closeCardTx;
   $("closeCardSheet").onclick = closeCardTx;
 
@@ -3616,16 +3848,20 @@ header{margin-top:6px}
     $("cdName").value = c ? c.name : "";
     $("cdFirst6").value = c ? (c.first6 || "") : "";
     $("cdLast4").value = c ? (c.last4 || "") : "";
+    $("cdStmt").value = c && c.stmt ? String(c.stmt) : "";
     $("cdDel").hidden = !c; $("cdMsg").hidden = true;
     delete $("cdDel").dataset.armed; $("cdDel").textContent = "Xoá thẻ";
     showSheet("cardEditSheet", "cardEditBack");
   }
   $("cdLast4").addEventListener("input", e => { e.target.value = digits(e.target.value).slice(0,4); });
   $("cdFirst6").addEventListener("input", e => { e.target.value = digits(e.target.value).slice(0,6); });
+  $("cdStmt").addEventListener("input", e => { let v = parseInt(digits(e.target.value).slice(0,2), 10); e.target.value = v > 0 && v <= 31 ? String(v) : (digits(e.target.value).slice(0,2) || ""); });
   $("cdSave").onclick = () => {
     const name = $("cdName").value.trim();
     if(!name){ flash("cdMsg", "Cần có tên thẻ."); return; }
-    const data = { name, first6:digits($("cdFirst6").value).slice(0,6), last4:digits($("cdLast4").value).slice(0,4) };
+    const stmtN = parseInt(digits($("cdStmt").value), 10);
+    const data = { name, first6:digits($("cdFirst6").value).slice(0,6), last4:digits($("cdLast4").value).slice(0,4),
+      stmt: (stmtN > 0 && stmtN <= 31) ? stmtN : 0 };
     if(cdEditing){ const c = cardOf(cdEditing); if(c) Object.assign(c, data); }
     else state.cards.push(Object.assign({ id:uid() }, data));
     persist(); renderCards(); hideSheet("cardEditSheet", "cardEditBack");
@@ -4038,6 +4274,24 @@ header{margin-top:6px}
   $("addCardTxBtn").onclick = () => openCardTx(null, todayKey());
   $("addCardBtn").onclick = () => openCardEdit(null);
   $("openCardsBtn").onclick = () => { renderCardBank(); showSheet("cardsSheet", "cardsBack"); };
+  $("heroCard").onclick = () => showTab("cards");
+  $("openBudget").onclick = openBudget;
+  $("openBudget2").onclick = openBudget;
+  $("closeBudget").onclick = closeBudget;
+  $("budgetCancel").onclick = closeBudget;
+  $("budgetBack").onclick = closeBudget;
+  $("budgetSave").onclick = () => {
+    const now = Date.now();
+    allTags().forEach(t => {
+      const v = capDraft && capDraft[t.id] ? capDraft[t.id] : 0;
+      const cur = capVal(t.id);
+      if(v !== cur) capsOf()[t.id] = { v, m: now };
+    });
+    persist(); renderMoney(); closeBudget();
+  };
+  $("kpiLoan").onclick = () => showTab("loans");
+  $("goPeople").onclick = () => { closeSettings(); showTab("people"); $("peopleBack").hidden = false; };
+  $("peopleBack").onclick = () => { $("peopleBack").hidden = true; showTab("today"); openSettings(); };
   $("closeCardsSheet").onclick = () => hideSheet("cardsSheet", "cardsBack");
   $("cardsBack").onclick = () => hideSheet("cardsSheet", "cardsBack");
   $("cardChartSeg").onclick = e => {
