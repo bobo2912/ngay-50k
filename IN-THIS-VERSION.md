@@ -1,6 +1,16 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v31, ngày 27/09/2026
+**Phiên bản hiện tại:** v32, ngày 27/09/2026
+
+---
+
+## Có gì mới trong v32 (so với v31)
+
+Gọt tiếp tab Thẻ cho bớt chữ thừa.
+
+- **Ô tổng chỉ còn đúng thứ cần biết:** nhãn tháng, số khoản nằm cùng dòng bên phải, rồi tới số tiền và mức tăng giảm. Bỏ dòng trung bình mỗi ngày và câu nhắc về hạn mức.
+- **Hai nút nhập thu nhỏ thành nút tròn có icon** — *Từ ảnh* và *Ghi tay* — nằm ngay cạnh tiêu đề danh sách thay vì hai khối lớn chiếm nguyên một hàng.
+- **Bỏ icon 💳 ở đầu mỗi khoản chi.** Tab này toàn giao dịch thẻ nên icon giống nhau ở mọi dòng chỉ làm rối; tên nơi chi giờ bắt đầu ngay từ lề.
 
 ---
 
@@ -16,16 +26,6 @@ Tab **Thẻ** được sắp xếp lại cho gọn và dễ theo dõi hơn.
   - *12 tháng* — xu hướng dài hạn. Chạm một cột để mở tháng đó.
 - **Mỗi khoản chi có nhãn thẻ nhỏ** khi đang xem tất cả thẻ, nên biết ngay khoản nào của thẻ nào. Khi đã lọc một thẻ thì nhãn ẩn đi vì thừa.
 - **Dải chọn thẻ chỉ hiện thẻ có phát sinh** trong tháng đang xem, đỡ rối khi có nhiều thẻ.
-
----
-
-## Có gì mới trong v30 (so với v29)
-
-- **App tự làm rõ ảnh trước khi đọc chữ.** Ảnh chụp trung tâm thông báo là chữ sáng trên nền mờ chồng lên hình nền, bộ đọc chữ rất hay nhầm. App giờ tự chuyển ảnh thành chữ đen trên nền trắng rồi mới đọc, nên bắt được cả những thông báo trước đây bị bỏ sót.
-- **Đọc được thông báo thứ hai, thứ ba trong cùng một ảnh.** Trước đây chụp 3 thông báo thì thường chỉ ra 1 khoản.
-- **Chịu được lỗi đọc chữ thường gặp:** dấu `|` bị đọc thành `I`, `J` hay `]`; chữ *Hạn mức còn lại* bị đọc sai dấu. App vẫn tách đúng ô và vẫn bỏ qua số dư.
-- **Tên nơi chi không còn dính sang thông báo kế tiếp** khi thông báo bị cắt bằng dấu ba chấm.
-- **Gợi ý cách chính xác nhất** ngay trong bảng nhập: dùng tính năng chép chữ sẵn có của iPhone (chạm giữ vào ảnh, chọn *Sao chép văn bản*) rồi bấm *Dán từ bộ nhớ tạm*.
 
 ---
 
@@ -65,7 +65,7 @@ Tab **Thẻ** được sắp xếp lại cho gọn và dễ theo dõi hơn.
 ### Tab Thẻ
 - Quản lý thẻ trong bảng riêng (nút **Thẻ · N** ở hàng chọn tháng): tên thẻ, 6 số đầu, 4 số cuối.
 - Dải chọn thẻ ngang, chạm để xem riêng từng thẻ; khoản chi thẻ không tính vào hạn mức mỗi ngày.
-- Ô tổng theo tháng kèm mức tăng giảm so với tháng trước, số khoản và trung bình mỗi ngày.
+- Ô tổng theo tháng: số khoản, số tiền và mức tăng giảm so với tháng trước.
 - Biểu đồ *Theo ngày* và *12 tháng*, chạm cột để nhảy tới ngày hoặc tháng đó.
 - Danh sách theo ngày kèm nhãn thẻ, sửa và xoá.
 - Dán thông báo ngân hàng hoặc chọn ảnh chụp màn hình để nhập nhanh, tick chọn khoản đúng.
@@ -102,7 +102,7 @@ Tab **Thẻ** được sắp xếp lại cho gọn và dễ theo dõi hơn.
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v32** | Gọt thêm tab Thẻ: ô tổng ngắn gọn, nút nhập thu nhỏ, bỏ icon lặp ở mỗi khoản |
 | **v31** | Tab Thẻ gọn lại: bỏ khối trùng lặp, gom quản lý thẻ vào một bảng, thêm biểu đồ xu hướng |
-| **v30** | Tự làm rõ ảnh trước khi đọc chữ nên bắt đủ các thông báo trong một ảnh |
 
 *File này chỉ giữ ghi chú của hai bản gần nhất.*

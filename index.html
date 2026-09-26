@@ -836,19 +836,27 @@ main{padding-bottom:calc(74px + env(safe-area-inset-bottom,0px))}
 .cards-btn{display:inline-flex; align-items:center; gap:6px; height:36px; padding:0 12px 0 10px;
   border:1px solid var(--line); background:var(--flat); border-radius:999px; font-size:.84rem; font-weight:600; color:var(--ink)}
 .cards-btn svg{width:17px; height:17px; flex:none; fill:none; stroke:var(--muted); stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round}
-.chero{padding:15px 17px 14px}
-.chero-lb{margin:0; font-size:.86rem; font-weight:600; color:var(--muted)}
+.chero{padding:15px 17px 15px}
+.chero-lb{margin:0; font-size:.86rem; font-weight:600; color:var(--muted); display:flex; align-items:baseline; justify-content:space-between; gap:10px}
+.chero-lb > span:first-child{min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.chero-n{flex:none; font-weight:500}
 .chero-big{margin:2px 0 0; font-size:1.85rem; font-weight:800; letter-spacing:-.03em; line-height:1.15;
   display:flex; align-items:center; gap:9px; flex-wrap:wrap}
 .chero-trend{font-size:.76rem; font-weight:700; border-radius:999px; padding:3px 9px; letter-spacing:0; white-space:nowrap}
 .chero-trend.up{background:var(--over-soft,rgba(192,50,42,.10)); color:var(--over)}
 .chero-trend.dn{background:var(--ok-soft); color:var(--ok)}
-.chero-sub{margin:5px 0 0; font-size:.8rem; color:var(--muted); line-height:1.5}
 .cchart{background:var(--flat); border:1px solid var(--line); border-radius:16px; padding:12px 13px 10px; margin-top:12px}
 .cchart[hidden]{display:none}
 .cchart .cseg{display:flex; width:100%; background:var(--line); border-radius:12px}
 .cchart .cseg button{flex:1; font-size:.8rem; padding:6px 0}
-.card-actions button{font-size:.86rem; padding-left:6px; padding-right:6px; white-space:nowrap}
+.listbar{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-top:18px}
+.listbar h2{margin:0; font-size:.95rem}
+.listbar-act{display:flex; gap:8px; flex:none}
+.pillbtn{display:inline-flex; align-items:center; gap:5px; height:32px; padding:0 12px 0 10px;
+  border:1px solid var(--line); background:var(--flat); border-radius:999px;
+  font-size:.8rem; font-weight:600; color:var(--note); white-space:nowrap}
+.pillbtn svg{width:15px; height:15px; flex:none; fill:none; stroke:currentColor; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round}
+.pillbtn:active{background:var(--note-soft)}
 .cbars{display:flex; align-items:flex-end; gap:2px; height:96px; margin-top:12px}
 .cbars button{flex:1; min-width:0; padding:0; border:0; background:transparent; height:100%; display:flex; align-items:flex-end; border-radius:4px}
 .cbars button i{display:block; width:100%; min-height:2px; border-radius:3px 3px 0 0; background:var(--note-soft)}
@@ -1150,9 +1158,8 @@ header{margin-top:6px}
     <div class="cardstrip" id="cardFilter"></div>
 
     <div class="ledger chero" id="cardTotalBox">
-      <p class="chero-lb" id="cardSumLabel">Chi bằng thẻ tháng này</p>
+      <p class="chero-lb"><span id="cardSumLabel">Chi bằng thẻ tháng này</span><span class="chero-n" id="cardCount"></span></p>
       <p class="chero-big"><span class="num" id="cardMonthSum">0đ</span><span class="chero-trend" id="cardTrend" hidden></span></p>
-      <p class="chero-sub" id="cardSumSub"></p>
     </div>
 
     <section class="cchart" id="cardChartBox" hidden>
@@ -1164,14 +1171,18 @@ header{margin-top:6px}
       <p class="cbars-tip" id="cardBarsTip"></p>
     </section>
 
-    <div class="set-row card-actions" style="margin-top:14px">
-      <button class="primary grow" id="pasteCardBtn" style="margin:0">Dán hoặc chọn ảnh</button>
-      <button class="ghost grow" id="addCardTxBtn">Ghi tay</button>
-    </div>
     <p class="inline-ok" id="cardMsg" hidden></p>
 
     <section>
-      <h2 id="cardListTitle">Khoản chi trong tháng</h2>
+      <div class="listbar">
+        <h2 id="cardListTitle">Khoản chi trong tháng</h2>
+        <div class="listbar-act">
+          <button class="pillbtn" id="pasteCardBtn">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="15" rx="2.5"/><circle cx="12" cy="12.5" r="3.4"/><path d="M8 5l1.4-2h5.2L16 5"/></svg>Từ ảnh</button>
+          <button class="pillbtn" id="addCardTxBtn">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Ghi tay</button>
+        </div>
+      </div>
       <div id="cardList"></div>
     </section>
   </div>
@@ -1317,7 +1328,7 @@ header{margin-top:6px}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v31</p>
+      <p class="sync" id="appVersion">Phiên bản v32</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. Giới hạn khoảng 5 MB được tính chung cho các mini app cùng tài khoản GitHub.</p>
 
       <h4 class="sub">Xoá dữ liệu</h4>
@@ -3359,17 +3370,7 @@ header{margin-top:6px}
       tr.setAttribute("aria-label", (pct > 0 ? "tăng " : "giảm ") + Math.abs(pct) + "% so với tháng trước");
     } else tr.hidden = true;
 
-    /* dòng phụ: số khoản, trung bình mỗi ngày */
-    const dim = new Date(cardMonth.getFullYear(), cardMonth.getMonth() + 1, 0).getDate();
-    const sameMonth = cardMonth.getFullYear() === now.getFullYear() && cardMonth.getMonth() === now.getMonth();
-    const days = sameMonth ? now.getDate() : dim;
-    const bits = [];
-    if(shown.length){
-      bits.push(shown.length + " khoản");
-      bits.push(fmt(Math.round(total / Math.max(1, days))) + " mỗi ngày");
-      bits.push("không tính vào hạn mức ngày");
-    } else bits.push("Chưa có khoản chi thẻ nào trong tháng này");
-    $("cardSumSub").textContent = bits.join(" · ");
+    $("cardCount").textContent = shown.length ? shown.length + " khoản" : "";
 
     const byCard = {};
     rows.forEach(r => { const k = r.it.cardId || "__none"; byCard[k] = (byCard[k] || 0) + (Number(r.it.amt) || 0); });
@@ -3512,8 +3513,7 @@ header{margin-top:6px}
   function cardRow(it, day, showCard){
     const li = document.createElement("li"); li.className = "item tap"; li.tabIndex = 0; li.setAttribute("role","button");
     li.setAttribute("aria-label", "Sửa khoản thẻ " + (it.where || "") + " " + fmt(it.amt));
-    li.innerHTML = '<span class="cat" aria-hidden="true"></span><div class="desc"><div></div><div></div></div><span class="amt num"></span><button class="del" aria-label="Xoá khoản này">✕</button>';
-    li.querySelector(".cat").textContent = "💳";
+    li.innerHTML = '<div class="desc"><div></div><div></div></div><span class="amt num"></span><button class="del" aria-label="Xoá khoản này">✕</button>';
     li.querySelector(".desc div:first-child").textContent = it.where || "Chi bằng thẻ";
     const t = new Date(it.t || 0);
     const bits = [];
