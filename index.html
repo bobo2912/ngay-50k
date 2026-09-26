@@ -849,14 +849,14 @@ main{padding-bottom:calc(74px + env(safe-area-inset-bottom,0px))}
 .cchart[hidden]{display:none}
 .cchart .cseg{display:flex; width:100%; background:var(--line); border-radius:12px}
 .cchart .cseg button{flex:1; font-size:.8rem; padding:6px 0}
-.listbar{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-top:18px}
-.listbar h2{margin:0; font-size:.95rem}
-.listbar-act{display:flex; gap:8px; flex:none}
-.pillbtn{display:inline-flex; align-items:center; gap:5px; height:32px; padding:0 12px 0 10px;
-  border:1px solid var(--line); background:var(--flat); border-radius:999px;
-  font-size:.8rem; font-weight:600; color:var(--note); white-space:nowrap}
-.pillbtn svg{width:15px; height:15px; flex:none; fill:none; stroke:currentColor; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round}
-.pillbtn:active{background:var(--note-soft)}
+.chero-foot{display:flex; margin:14px -17px -15px; border-top:1px solid var(--line)}
+.chero-foot button{flex:1; display:flex; align-items:center; justify-content:center; gap:7px;
+  border:0; background:transparent; padding:12px 4px; font-size:.86rem; font-weight:600; color:var(--note); border-radius:0}
+.chero-foot button:first-child{border-radius:0 0 0 20px}
+.chero-foot button:last-child{border-radius:0 0 20px 0}
+.chero-foot button + button{border-left:1px solid var(--line)}
+.chero-foot button:active{background:var(--note-soft)}
+.chero-foot svg{width:16px; height:16px; flex:none; fill:none; stroke:currentColor; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round}
 .cbars{display:flex; align-items:flex-end; gap:2px; height:96px; margin-top:12px}
 .cbars button{flex:1; min-width:0; padding:0; border:0; background:transparent; height:100%; display:flex; align-items:flex-end; border-radius:4px}
 .cbars button i{display:block; width:100%; min-height:2px; border-radius:3px 3px 0 0; background:var(--note-soft)}
@@ -947,9 +947,9 @@ header{margin-top:6px}
   <nav class="tabs" role="tablist" aria-label="Menu">
     <button role="tab" data-tab="today" aria-selected="true"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 10h18"/></svg><span>Giao dịch</span></button>
     <button role="tab" data-tab="money" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span>Thu chi</span></button>
+    <button role="tab" data-tab="cards" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="8" width="14" height="11" rx="2"/><path d="M2 12h14"/><path d="M7 5h13a2 2 0 0 1 2 2v8"/></svg><span>Thẻ</span></button>
     <button role="tab" data-tab="loans" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 3l4 4-4 4"/><path d="M3 7h18"/><path d="M7 21l-4-4 4-4"/><path d="M21 17H3"/></svg><span>Khoản vay</span></button>
     <button role="tab" data-tab="people" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6.5 6.5 0 0 1 3.5 6"/></svg><span>Người nhận</span></button>
-    <button role="tab" data-tab="cards" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="8" width="14" height="11" rx="2"/><path d="M2 12h14"/><path d="M7 5h13a2 2 0 0 1 2 2v8"/></svg><span>Thẻ</span></button>
   </nav>
 
   <!-- ================= TAB: HÔM NAY ================= -->
@@ -1160,6 +1160,12 @@ header{margin-top:6px}
     <div class="ledger chero" id="cardTotalBox">
       <p class="chero-lb"><span id="cardSumLabel">Chi bằng thẻ tháng này</span><span class="chero-n" id="cardCount"></span></p>
       <p class="chero-big"><span class="num" id="cardMonthSum">0đ</span><span class="chero-trend" id="cardTrend" hidden></span></p>
+      <div class="chero-foot">
+        <button type="button" id="pasteCardBtn">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="14" rx="2.5"/><circle cx="12" cy="13" r="3.4"/><path d="M8.5 6l1.2-2h4.6l1.2 2"/></svg>Từ ảnh</button>
+        <button type="button" id="addCardTxBtn">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Ghi tay</button>
+      </div>
     </div>
 
     <section class="cchart" id="cardChartBox" hidden>
@@ -1174,15 +1180,7 @@ header{margin-top:6px}
     <p class="inline-ok" id="cardMsg" hidden></p>
 
     <section>
-      <div class="listbar">
-        <h2 id="cardListTitle">Khoản chi trong tháng</h2>
-        <div class="listbar-act">
-          <button class="pillbtn" id="pasteCardBtn">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="15" rx="2.5"/><circle cx="12" cy="12.5" r="3.4"/><path d="M8 5l1.4-2h5.2L16 5"/></svg>Từ ảnh</button>
-          <button class="pillbtn" id="addCardTxBtn">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Ghi tay</button>
-        </div>
-      </div>
+      <h2 id="cardListTitle">Khoản chi trong tháng</h2>
       <div id="cardList"></div>
     </section>
   </div>
@@ -1328,7 +1326,7 @@ header{margin-top:6px}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v32</p>
+      <p class="sync" id="appVersion">Phiên bản v33</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. Giới hạn khoảng 5 MB được tính chung cho các mini app cùng tài khoản GitHub.</p>
 
       <h4 class="sub">Xoá dữ liệu</h4>
