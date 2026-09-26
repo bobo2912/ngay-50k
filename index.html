@@ -1265,7 +1265,7 @@ header{margin-top:6px}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v27</p>
+      <p class="sync" id="appVersion">Phiên bản v28</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. Giới hạn khoảng 5 MB được tính chung cho các mini app cùng tài khoản GitHub.</p>
 
       <h4 class="sub">Xoá dữ liệu</h4>
@@ -1344,8 +1344,13 @@ header{margin-top:6px}
   <p class="sync-err" id="pasteErr" hidden></p>
   <div id="pasteFound" hidden>
     <h3 id="pasteFoundTitle">Tìm thấy</h3>
-    <div class="field" style="margin-top:6px"><label><span>Ghi vào thẻ</span></label><div class="chips" id="pasteCardChips" style="margin-top:0"></div></div>
+    <div class="field" style="margin-top:6px" id="pasteCardField"><label><span>Ghi vào thẻ <span class="opt">(cho khoản chưa khớp thẻ)</span></span></label><div class="chips" id="pasteCardChips" style="margin-top:0"></div></div>
+    <div class="set-row" style="margin:2px 0 0">
+      <button class="ghost grow" type="button" id="pastePickAll">Chọn tất cả</button>
+      <button class="ghost grow" type="button" id="pastePickNone">Bỏ chọn tất cả</button>
+    </div>
     <div id="pasteRows"></div>
+    <button class="ghost" type="button" id="pasteShowOther" style="margin-top:8px" hidden></button>
   </div>
   <div class="sheet-foot">
     <button class="ghost" id="pasteCancel">Huỷ</button>
@@ -3237,7 +3242,7 @@ header{margin-top:6px}
   idleReset();
 
   /* ================= THẺ TÍN DỤNG ================= */
-  var cardMonth = null, cxEditing = null, cxCard = null, cdEditing = null, pasteCard = null, pasteItems = [], cardFilterId = null;
+  var cardMonth = null, cxEditing = null, cxCard = null, cdEditing = null, pasteCard = null, pasteItems = [], pasteShowOther = false, cardFilterId = null;
   function monthKeyOf(d){ return d.getFullYear() + "-" + pad(d.getMonth()+1); }
   function cardOf(id){ return (state.cards||[]).find(c => c.id === id) || null; }
   function cardMask(c){
@@ -3594,25 +3599,56 @@ header{margin-top:6px}
     }
   });
 
+  function pasteFiltering(){ return (state.cards || []).length > 0; }
+  function pasteVisible(){
+    if(!pasteFiltering() || pasteShowOther) return pasteItems;
+    return pasteItems.filter(p => p.cardId);
+  }
   function renderPasteRows(){
     const box = $("pasteRows"); box.innerHTML = "";
-    pasteItems.forEach((p, i) => {
+    if(pasteFiltering() && !pasteShowOther) pasteItems.forEach(p => { if(!p.cardId) p.pick = false; });
+    const list = pasteVisible();
+    list.forEach(p => {
       const row = document.createElement("label"); row.className = "pick-row";
       row.innerHTML = '<input type="checkbox"><span class="pk"><b class="num"></b><small></small></span>';
-      const cb = row.querySelector("input"); cb.checked = p.pick;
+      const cb = row.querySelector("input");
+      if(p.dup){ row.classList.add("dup"); p.pick = false; }
+      cb.checked = p.pick;
       cb.onchange = () => { p.pick = cb.checked; updatePasteBtn(); };
       row.querySelector("b").textContent = fmt(p.amt);
-      row.querySelector("small").textContent = p.where + " · " + fmtDate(p.day) + (p.dup ? " · đã có, bỏ qua" : "");
-      if(p.dup){ row.classList.add("dup"); cb.checked = false; p.pick = false; }
+      const card = p.cardId ? (state.cards || []).find(x => x.id === p.cardId) : null;
+      let note = p.where + " · " + fmtDate(p.day);
+      if(card) note += " · " + cardShort(card);
+      else if(pasteFiltering()) note += " · không khớp thẻ nào";
+      if(p.dup) note += " · đã có, bỏ qua";
+      row.querySelector("small").textContent = note;
       box.appendChild(row);
     });
+    if(!list.length){
+      const p = document.createElement("p"); p.className = "hint"; p.style.margin = "8px 2px";
+      p.textContent = "Không có khoản nào khớp với thẻ đã lưu. Kiểm tra lại 6 số đầu và 4 số cuối của thẻ trong phần Quản lý thẻ, hoặc mở danh sách bên dưới để chọn tay.";
+      box.appendChild(p);
+    }
+    const other = pasteFiltering() ? pasteItems.filter(p => !p.cardId).length : 0;
+    const tog = $("pasteShowOther");
+    tog.hidden = !other;
+    if(other) tog.textContent = pasteShowOther ? "Ẩn " + other + " khoản không khớp thẻ" : "Hiện " + other + " khoản không khớp thẻ";
     updatePasteBtn();
+  }
+  function setAllPicks(on){
+    pasteVisible().forEach(p => { if(!p.dup) p.pick = on; });
+    renderPasteRows();
   }
   function updatePasteBtn(){
     const n = pasteItems.filter(p => p.pick).length;
+    const f = $("pasteCardField");
+    if(f) f.hidden = pasteFiltering() && !pasteItems.some(p => p.pick && !p.cardId);
     $("pasteImport").disabled = !n;
     $("pasteImport").textContent = n ? "Nhập " + n + " khoản" : "Nhập khoản đã chọn";
   }
+  $("pastePickAll").onclick = () => setAllPicks(true);
+  $("pastePickNone").onclick = () => setAllPicks(false);
+  $("pasteShowOther").onclick = () => { pasteShowOther = !pasteShowOther; renderPasteRows(); };
   function selectPasteCard(id){
     pasteCard = id;
     const box = $("pasteCardChips"); box.innerHTML = "";
@@ -3625,7 +3661,7 @@ header{margin-top:6px}
     });
   }
   function openPaste(){
-    pasteItems = []; $("pasteText").value = ""; $("pasteFound").hidden = true; $("pasteErr").hidden = true; $("ocrState").hidden = true;
+    pasteItems = []; pasteShowOther = false; $("pasteText").value = ""; $("pasteFound").hidden = true; $("pasteErr").hidden = true; $("ocrState").hidden = true;
     selectPasteCard(((state.cards || [])[0] || {}).id || null);
     updatePasteBtn();
     showSheet("pasteSheet", "pasteBack");
@@ -3656,12 +3692,18 @@ header{margin-top:6px}
       if(c) p.cardId = c.id;
     });
     pasteItems = found;
+    pasteShowOther = false;
     if(!found.length){
       $("pasteFound").hidden = true;
       $("pasteErr").textContent = "Không tìm thấy số tiền nào trong đoạn vừa dán. Thử dán cả dòng có số tiền và chữ VND.";
       $("pasteErr").hidden = false; updatePasteBtn(); return;
     }
-    $("pasteFoundTitle").textContent = "Tìm thấy " + found.length + " khoản, bỏ tick khoản không đúng";
+    const mine = pasteFiltering() ? found.filter(p => p.cardId).length : found.length;
+    $("pasteFoundTitle").textContent = !pasteFiltering()
+      ? "Tìm thấy " + found.length + " khoản, bỏ tick khoản không đúng"
+      : mine
+        ? "Tìm thấy " + mine + " khoản của thẻ đã lưu, bỏ tick khoản không đúng"
+        : "Không có khoản nào khớp thẻ đã lưu";
     $("pasteFound").hidden = false;
     renderPasteRows();
   };

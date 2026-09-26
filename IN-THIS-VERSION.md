@@ -1,6 +1,15 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v27, ngày 26/09/2026
+**Phiên bản hiện tại:** v28, ngày 26/09/2026
+
+---
+
+## Có gì mới trong v28 (so với v27)
+
+- **Chỉ nhập khoản chi của thẻ đã lưu.** Khi đọc ảnh hoặc dán chữ, app so 6 số đầu và 4 số cuối với các thẻ bạn đã lưu. Chỉ những khoản khớp thẻ mới hiện ra để chọn, nên không còn lẫn giao dịch rác của thẻ người khác hay dòng quảng cáo trong ảnh.
+- **Vẫn xem được khoản không khớp.** Dưới danh sách có nút *Hiện N khoản không khớp thẻ*: chạm vào là hiện đủ, chọn tay khoản nào cần rồi chọn thẻ ở ô *Ghi vào thẻ*. Chạm lại để ẩn đi.
+- **Chọn tất cả và bỏ chọn tất cả.** Hai nút ngay trên danh sách, không phải tick từng khoản một nữa. Khoản đã có sẵn trong app vẫn bị bỏ qua để khỏi nhập trùng.
+- **Mỗi dòng ghi rõ vào thẻ nào,** ví dụ *LOTTE MART · 25/09/2026 · VIB Cash Back ·1234*, để kiểm lại trước khi nhập.
 
 ---
 
@@ -263,6 +272,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v28** | Nhận diện ảnh chỉ lấy khoản của thẻ đã lưu, thêm nút chọn tất cả và bỏ chọn tất cả |
 | **v27** | Sao lưu về bản đơn giản, thẻ dùng 6 số đầu và 4 số cuối, dải chọn nhiều thẻ, đọc chữ từ ảnh, chỉnh thời gian tắt camera |
 | **v26** | Menu Thẻ tín dụng, dán từ thông báo để nhập, bản lưu trong máy và thư mục lưu |
 | **v25** | Chừa khoảng an toàn phía trên, dải nền che thanh trạng thái, thanh Cài đặt nền đặc |
