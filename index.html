@@ -865,6 +865,19 @@ header{margin-top:6px}
 #cardPerCard{margin-top:6px; border-top:1px solid var(--line); padding-top:6px}
 #cardBank .set-nav{margin-top:8px}
 #tab-cards .ledger-note{margin-top:2px}
+
+/* v27: card filter strip */
+.cardstrip{display:flex; gap:8px; overflow-x:auto; padding:2px 2px 8px; margin:0 -2px; scrollbar-width:none}
+.cardstrip::-webkit-scrollbar{display:none}
+.cardstrip[hidden]{display:none}
+.cardchip{flex:0 0 auto; min-width:118px; text-align:left; padding:9px 13px; border-radius:13px; border:1px solid var(--line); background:var(--flat); color:var(--ink); font:inherit; display:flex; flex-direction:column; gap:2px}
+.cardchip b{font-size:.84rem; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:150px}
+.cardchip small{font-size:.78rem; color:var(--muted)}
+.cardchip[aria-pressed="true"]{border-color:var(--note); background:var(--note-soft)}
+.cardchip[aria-pressed="true"] b, .cardchip[aria-pressed="true"] small{color:var(--note)}
+.seg4{grid-template-columns:repeat(4,1fr)}
+.seg4 button{padding:7px 4px; font-size:.78rem}
+#cardPerCard[hidden]{display:none}
 </style>
 </head>
 <body>
@@ -1085,14 +1098,16 @@ header{margin-top:6px}
       <button id="nextCardMonth" aria-label="Tháng sau">›</button>
     </div>
 
+    <div class="cardstrip" id="cardFilter"></div>
+
     <div class="ledger" id="cardTotalBox">
-      <div class="ledger-row"><span>Chi bằng thẻ tháng này</span><b class="num" id="cardMonthSum">0đ</b></div>
+      <div class="ledger-row"><span id="cardSumLabel">Chi bằng thẻ tháng này</span><b class="num" id="cardMonthSum">0đ</b></div>
       <p class="ledger-note">Khoản chi thẻ không tính vào hạn mức mỗi ngày.</p>
       <div id="cardPerCard"></div>
     </div>
 
     <div class="set-row" style="margin-top:14px">
-      <button class="ghost grow" id="pasteCardBtn">Dán từ thông báo</button>
+      <button class="ghost grow" id="pasteCardBtn">Dán hoặc chọn ảnh</button>
       <button class="ghost grow" id="addCardTxBtn">Ghi tay</button>
     </div>
     <p class="inline-ok" id="cardMsg" hidden></p>
@@ -1149,6 +1164,14 @@ header{margin-top:6px}
         <button data-scan="live" aria-pressed="false">Quét trực tiếp</button>
       </div>
       <p class="set-now" id="scanHint" style="margin-top:10px"></p>
+      <h4 class="sub">Tự tắt camera</h4>
+      <p class="set-now">Chỉ dùng cho cách Quét trực tiếp. Mở khung quét mà không quét gì trong khoảng này thì app tự tắt camera, để iPhone tự khoá màn hình được.</p>
+      <div class="seg seg4" id="camOffSeg" role="group" aria-label="Thời gian tự tắt camera" style="margin-top:10px">
+        <button data-off="30">30 giây</button>
+        <button data-off="45">45 giây</button>
+        <button data-off="120">2 phút</button>
+        <button data-off="300">5 phút</button>
+      </div>
     </section>
     </div>
 
@@ -1221,20 +1244,6 @@ header{margin-top:6px}
       </div>
       <p class="inline-ok" id="syncMsg" hidden></p>
       <p class="sync-err" id="syncErr" hidden></p>
-      <h4 class="sub">Chỗ lưu file</h4>
-      <p class="set-now" id="folderState"></p>
-      <div class="set-row" id="folderRow">
-        <button class="ghost grow" id="pickFolder">Chọn thư mục lưu</button>
-        <button class="ghost" id="clearFolder" hidden>Bỏ chọn</button>
-      </div>
-      <button class="ghost" id="fromFolder" style="width:100%; margin-top:8px" hidden>Chọn bản trong thư mục</button>
-      <div class="set-list" id="folderList" hidden></div>
-
-      <h4 class="sub">Bản lưu trong máy</h4>
-      <p class="set-now">App tự giữ 10 bản gần nhất, mỗi lần bạn xuất file. Chạm một bản để xem rồi khôi phục.</p>
-      <div class="set-list" id="snapList"></div>
-      <button class="ghost" id="snapNow" style="width:100%; margin-top:10px">Tạo bản lưu ngay</button>
-
       <div class="how">
         <h4>Đồng bộ sang máy khác</h4>
         <ol>
@@ -1256,7 +1265,7 @@ header{margin-top:6px}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v26</p>
+      <p class="sync" id="appVersion">Phiên bản v27</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. Giới hạn khoảng 5 MB được tính chung cho các mini app cùng tài khoản GitHub.</p>
 
       <h4 class="sub">Xoá dữ liệu</h4>
@@ -1323,13 +1332,15 @@ header{margin-top:6px}
 <div class="sheet-back top" id="pasteBack" hidden></div>
 <div class="sheet top" id="pasteSheet" role="dialog" aria-modal="true" aria-labelledby="pasteTitle" hidden>
   <div class="grab" aria-hidden="true"></div>
-  <div class="sheet-head"><h2 id="pasteTitle">Dán từ thông báo</h2><button class="x" id="closePaste" aria-label="Đóng">✕</button></div>
-  <p class="set-now" style="margin:0 2px 8px">Mở Trung tâm thông báo hoặc tin nhắn ngân hàng, chọn và sao chép, rồi dán vào đây. Dán được nhiều dòng một lúc.</p>
+  <div class="sheet-head"><h2 id="pasteTitle">Nhập từ thông báo</h2><button class="x" id="closePaste" aria-label="Đóng">✕</button></div>
+  <p class="set-now" style="margin:0 2px 8px">Sao chép thông báo hoặc tin nhắn ngân hàng rồi dán vào đây, hoặc chọn ảnh chụp màn hình để app đọc chữ trong ảnh. Nhiều giao dịch một lúc cũng được.</p>
   <textarea id="pasteText" class="inp" rows="5" placeholder="vd: The tin dung ****1234 da thanh toan 1.250.000 VND tai LOTTE MART ngay 25/09/2026" style="min-height:104px; line-height:1.45"></textarea>
   <div class="set-row">
     <button class="ghost grow" id="pasteFromClip">Dán từ bộ nhớ tạm</button>
-    <button class="ghost grow" id="parseBtn">Tìm khoản chi</button>
+    <label class="ghost grow file-btn">Chọn ảnh<input type="file" accept="image/*" id="ocrFile"></label>
   </div>
+  <button class="primary" id="parseBtn" style="margin-top:10px">Tìm khoản chi</button>
+  <p class="set-now" id="ocrState" hidden></p>
   <p class="sync-err" id="pasteErr" hidden></p>
   <div id="pasteFound" hidden>
     <h3 id="pasteFoundTitle">Tìm thấy</h3>
@@ -1347,8 +1358,11 @@ header{margin-top:6px}
   <div class="grab" aria-hidden="true"></div>
   <div class="sheet-head"><h2 id="cardEditTitle">Thêm thẻ</h2><button class="x" id="closeCardEdit" aria-label="Đóng">✕</button></div>
   <div class="field"><label for="cdName"><span>Tên thẻ</span></label><input id="cdName" class="inp" maxlength="30" autocomplete="off" placeholder="vd: VIB Cash Back"></div>
-  <div class="field"><label for="cdLast4"><span>4 số cuối <span class="opt">(không bắt buộc)</span></span></label><input id="cdLast4" class="inp num" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="1234"></div>
-  <div class="field"><label for="cdLimit"><span>Hạn mức thẻ <span class="opt">(không bắt buộc)</span></span></label><input id="cdLimit" class="inp num" inputmode="numeric" autocomplete="off" placeholder="vd: 50.000.000"></div>
+  <div class="row2" style="gap:10px; display:flex">
+    <div class="field" style="flex:1; min-width:0"><label for="cdFirst6"><span>6 số đầu</span></label><input id="cdFirst6" class="inp num" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="970436"></div>
+    <div class="field" style="flex:1; min-width:0"><label for="cdLast4"><span>4 số cuối</span></label><input id="cdLast4" class="inp num" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="1234"></div>
+  </div>
+  <p class="hint">Thông báo ngân hàng thường chỉ hiện 6 số đầu và 4 số cuối. Điền đúng hai phần này để app tự gán khoản chi vào đúng thẻ.</p>
   <p class="inline-ok" id="cdMsg" hidden></p>
   <div class="sheet-foot">
     <button class="ghost danger" id="cdDel">Xoá thẻ</button>
@@ -2531,6 +2545,7 @@ header{margin-top:6px}
       renderPeople();
     } else if(name === "cards"){
       cardMonth = new Date(); cardMonth.setDate(1);
+      cardFilterId = null;
       $("cardMsg").hidden = true;
       renderCards();
     }
@@ -2696,7 +2711,8 @@ header{margin-top:6px}
      for a couple of minutes, so scanning again does not ask for permission again. The frame is destroyed
      when the app goes to the background or after the keep time, so iOS fully releases the camera. */
   let camFrame = null, torchOn = false, camIdle = null, camKeep = null;
-  const CAM_IDLE_MS = 45000, CAM_KEEP_MS = 30000;
+  const CAM_KEEP_MS = 30000, CAM_OFF_KEY = "ngay50k-camoff";
+  function camOffSec(){ let v = 45; try{ v = parseInt(localStorage.getItem(CAM_OFF_KEY), 10) || 45; }catch(e){} return [30,45,120,300].indexOf(v) < 0 ? 45 : v; }
   function camHint(t, err){ const h = $("camHint"); h.textContent = t; h.className = "cam-hint" + (err ? " err" : ""); }
   function postCam(msgObj){ try{ camFrame && camFrame.contentWindow.postMessage(msgObj, location.origin); }catch(e){} }
   function destroyFrame(){
@@ -2737,7 +2753,8 @@ header{margin-top:6px}
     if(m.type === "ready"){
       if($("cam").hidden){ releaseFrame(); return; }
       clearTimeout(camIdle);
-      camIdle = setTimeout(() => { closeCamera(); msg("Camera đã tự tắt sau 1 phút không quét, để máy có thể tự khoá màn hình.", true); }, CAM_IDLE_MS);
+      const secs = camOffSec();
+      camIdle = setTimeout(() => { closeCamera(); msg("Camera đã tự tắt sau " + (secs < 60 ? secs + " giây" : (secs/60) + " phút") + " không quét, để máy có thể tự khoá màn hình.", true); }, secs * 1000);
       camHint("Đưa mã QR vào trong khung"); $("camTorch").hidden = !m.torch; $("camTorch").setAttribute("aria-pressed","false");
     }
     else if(m.type === "qr"){
@@ -2777,6 +2794,15 @@ header{margin-top:6px}
     renderScanMode();
   });
   renderScanMode();
+  function renderCamOff(){
+    const v = camOffSec();
+    document.querySelectorAll("#camOffSeg button").forEach(b => b.setAttribute("aria-pressed", Number(b.dataset.off) === v ? "true" : "false"));
+  }
+  document.querySelectorAll("#camOffSeg button").forEach(b => b.onclick = () => {
+    try{ localStorage.setItem(CAM_OFF_KEY, b.dataset.off); }catch(e){}
+    renderCamOff();
+  });
+  renderCamOff();
   $("snapQR").addEventListener("change", e => { const f = e.target.files && e.target.files[0]; e.target.value = ""; if(f) decodeFile(f); });
   $("camBtn").onclick = () => { if(scanMode === "live") openCamera(); else $("snapQR").click(); };
   $("camClose").onclick = closeCamera;
@@ -3211,10 +3237,18 @@ header{margin-top:6px}
   idleReset();
 
   /* ================= THẺ TÍN DỤNG ================= */
-  var cardMonth = null, cxEditing = null, cxCard = null, cdEditing = null, pasteCard = null, pasteItems = [];
+  var cardMonth = null, cxEditing = null, cxCard = null, cdEditing = null, pasteCard = null, pasteItems = [], cardFilterId = null;
   function monthKeyOf(d){ return d.getFullYear() + "-" + pad(d.getMonth()+1); }
   function cardOf(id){ return (state.cards||[]).find(c => c.id === id) || null; }
-  function cardLabel(c){ return c ? (c.name + (c.last4 ? " ·" + c.last4 : "")) : "Chưa gán thẻ"; }
+  function cardMask(c){
+    if(!c) return "";
+    if(c.first6 && c.last4) return c.first6 + "••" + c.last4;
+    if(c.last4) return "••••" + c.last4;
+    if(c.first6) return c.first6 + "••••";
+    return "";
+  }
+  function cardLabel(c){ if(!c) return "Chưa gán thẻ"; const m = cardMask(c); return c.name + (m ? " · " + m : ""); }
+  function cardShort(c){ if(!c) return "Chưa gán thẻ"; return c.name + (c.last4 ? " ·" + c.last4 : ""); }
   function cardTxOfMonth(mk){
     const out = [];
     for(const k in state.cardTx) if(k.indexOf(mk) === 0) (state.cardTx[k]||[]).forEach(it => out.push({ it, day:k }));
@@ -3236,13 +3270,36 @@ header{margin-top:6px}
     $("nextCardMonth").disabled = (cardMonth.getFullYear() > now.getFullYear()) ||
       (cardMonth.getFullYear() === now.getFullYear() && cardMonth.getMonth() >= now.getMonth());
     const rows = cardTxOfMonth(mk);
-    const total = rows.reduce((a, r) => a + (Number(r.it.amt) || 0), 0);
+    const cardsAll = state.cards || [];
+    if(cardFilterId && !cardOf(cardFilterId)) cardFilterId = null;
+    const shown = cardFilterId ? rows.filter(r => r.it.cardId === cardFilterId) : rows;
+    const total = shown.reduce((a, r) => a + (Number(r.it.amt) || 0), 0);
     $("cardMonthSum").textContent = fmt(total);
+    $("cardSumLabel").textContent = cardFilterId ? (cardOf(cardFilterId).name + " tháng này") : "Chi bằng thẻ tháng này";
 
-    const per = $("cardPerCard"); per.innerHTML = "";
     const byCard = {};
     rows.forEach(r => { const k = r.it.cardId || "__none"; byCard[k] = (byCard[k] || 0) + (Number(r.it.amt) || 0); });
-    Object.keys(byCard).sort((a, b) => byCard[b] - byCard[a]).forEach(k => {
+
+    const strip = $("cardFilter"); strip.innerHTML = "";
+    strip.hidden = cardsAll.length < 2;
+    if(!strip.hidden){
+      const mk1 = (id, title, sub) => {
+        const b = document.createElement("button"); b.type = "button"; b.className = "cardchip";
+        b.setAttribute("aria-pressed", cardFilterId === id ? "true" : "false");
+        b.innerHTML = '<b></b><small class="num"></small>';
+        b.querySelector("b").textContent = title;
+        b.querySelector("small").textContent = sub;
+        b.onclick = () => { cardFilterId = id; renderCards(); };
+        strip.appendChild(b);
+      };
+      mk1(null, "Tất cả thẻ", fmt(rows.reduce((a, r) => a + (Number(r.it.amt) || 0), 0)));
+      cardsAll.forEach(c => mk1(c.id, c.name, fmt(byCard[c.id] || 0)));
+      if(byCard.__none) mk1("__none", "Chưa gán thẻ", fmt(byCard.__none));
+    }
+
+    const per = $("cardPerCard"); per.innerHTML = "";
+    per.hidden = !!cardFilterId || cardsAll.length < 2;
+    if(!per.hidden) Object.keys(byCard).sort((a, b) => byCard[b] - byCard[a]).forEach(k => {
       const c = cardOf(k), row = document.createElement("div"); row.className = "ledger-row";
       const sp = document.createElement("span"); sp.textContent = c ? cardLabel(c) : "Chưa gán thẻ";
       const b = document.createElement("b"); b.className = "num"; b.textContent = fmt(byCard[k]);
@@ -3250,16 +3307,16 @@ header{margin-top:6px}
     });
 
     const box = $("cardList"); box.innerHTML = "";
-    if(!rows.length){
-      box.innerHTML = '<p class="empty">Chưa có khoản chi thẻ nào trong tháng này. Bấm Dán từ thông báo để nhập nhanh.</p>';
+    if(!shown.length){
+      box.innerHTML = '<p class="empty">' + (cardFilterId ? "Thẻ này chưa có khoản chi nào trong tháng." : "Chưa có khoản chi thẻ nào trong tháng này. Bấm Dán từ thông báo hoặc Chọn ảnh để nhập nhanh.") + '</p>';
     } else {
       let curDayKey = null, ul = null;
-      rows.forEach(r => {
+      shown.forEach(r => {
         if(r.day !== curDayKey){
           curDayKey = r.day;
           const head = document.createElement("div"); head.className = "day-head";
           const d = new Date(r.day + "T00:00:00");
-          const dayTotal = (state.cardTx[r.day] || []).reduce((a, x) => a + (Number(x.amt) || 0), 0);
+          const dayTotal = (state.cardTx[r.day] || []).filter(x => !cardFilterId || x.cardId === cardFilterId).reduce((a, x) => a + (Number(x.amt) || 0), 0);
           head.innerHTML = "<span></span><span class='num'></span>";
           head.children[0].textContent = WD[d.getDay()] + ", " + d.getDate() + "/" + (d.getMonth()+1);
           head.children[1].textContent = fmt(dayTotal);
@@ -3279,7 +3336,8 @@ header{margin-top:6px}
       const b = document.createElement("button"); b.className = "set-nav";
       b.innerHTML = '<span class="nav-t"></span><span class="nav-v"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>';
       b.querySelector(".nav-t").textContent = cardLabel(c);
-      b.querySelector(".nav-v").textContent = fmt(spent) + (c.limit ? " / " + fmt(c.limit) : "") + " tháng này";
+      const n = rows.filter(r => r.it.cardId === c.id).length;
+      b.querySelector(".nav-v").textContent = n ? fmt(spent) : "chưa có khoản";
       b.onclick = () => openCardEdit(c.id);
       bank.appendChild(b);
     });
@@ -3294,7 +3352,7 @@ header{margin-top:6px}
     const t = new Date(it.t || 0);
     const bits = [];
     if(it.t) bits.push(pad(t.getHours()) + ":" + pad(t.getMinutes()));
-    bits.push(cardLabel(cardOf(it.cardId)));
+    bits.push(cardShort(cardOf(it.cardId)));
     li.querySelector(".desc div:last-child").textContent = bits.join(" · ");
     li.querySelector(".amt").textContent = fmt(it.amt);
     li.addEventListener("click", e => { if(e.target.closest(".del")) return; openCardTx(it.id, day); });
@@ -3386,18 +3444,18 @@ header{margin-top:6px}
     const c = id ? cardOf(id) : null;
     $("cardEditTitle").textContent = c ? "Sửa thẻ" : "Thêm thẻ";
     $("cdName").value = c ? c.name : "";
+    $("cdFirst6").value = c ? (c.first6 || "") : "";
     $("cdLast4").value = c ? (c.last4 || "") : "";
-    $("cdLimit").value = c && c.limit ? c.limit.toLocaleString("vi-VN") : "";
     $("cdDel").hidden = !c; $("cdMsg").hidden = true;
     delete $("cdDel").dataset.armed; $("cdDel").textContent = "Xoá thẻ";
     showSheet("cardEditSheet", "cardEditBack");
   }
   $("cdLast4").addEventListener("input", e => { e.target.value = digits(e.target.value).slice(0,4); });
-  $("cdLimit").addEventListener("input", e => { const v = parseInt(digits(e.target.value),10) || 0; e.target.value = v ? v.toLocaleString("vi-VN") : ""; });
+  $("cdFirst6").addEventListener("input", e => { e.target.value = digits(e.target.value).slice(0,6); });
   $("cdSave").onclick = () => {
     const name = $("cdName").value.trim();
     if(!name){ flash("cdMsg", "Cần có tên thẻ."); return; }
-    const data = { name, last4:digits($("cdLast4").value).slice(0,4), limit:parseInt(digits($("cdLimit").value),10) || 0 };
+    const data = { name, first6:digits($("cdFirst6").value).slice(0,6), last4:digits($("cdLast4").value).slice(0,4) };
     if(cdEditing){ const c = cardOf(cdEditing); if(c) Object.assign(c, data); }
     else state.cards.push(Object.assign({ id:uid() }, data));
     persist(); renderCards(); hideSheet("cardEditSheet", "cardEditBack");
@@ -3420,18 +3478,28 @@ header{margin-top:6px}
   }
   function parseNotif(text){
     const out = [];
-    String(text || "").replace(/ /g, " ").split(/\r?\n/).forEach(line => {
-      const L = line.trim(); if(L.length < 6) return;
-      const low = L.toLowerCase();
-      if(/(ghi có|ghi co|nhận tiền|nhan tien|nhận được|hoàn tiền|hoan tien|refund|credited)/.test(low)) return;
-      const hits = [];
-      let m;
+    const lines = String(text || "").replace(/ /g, " ").split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 1);
+    const amtsOf = L => {
+      const hits = []; let m;
       const re1 = /([+\-]?\s?[\d][\d.,]{2,})\s*(?:vnd|vnđ|đ|d)\b/gi;
       while((m = re1.exec(L))) hits.push({ raw:m[1], at:m.index });
       if(!hits.length){
         const re2 = /(?:^|[^\d])([+\-]?\s?\d{1,3}(?:[.,]\d{3})+)(?!\d)/g;
         while((m = re2.exec(L))) hits.push({ raw:m[1], at:m.index });
       }
+      return hits;
+    };
+    const hasAmt = lines.map(L => amtsOf(L).length > 0);
+    lines.forEach((L, i) => {
+      const low = L.toLowerCase();
+      if(/(ghi có|ghi co|nhận tiền|nhan tien|nhận được|hoàn tiền|hoan tien|refund|credited)/.test(low)) return;
+      const hits = amtsOf(L);
+      if(!hits.length) return;
+      /* a notification often wraps: pull in neighbouring lines that carry no amount of their own */
+      let ctx = L;
+      if(i > 0 && !hasAmt[i-1]) ctx = lines[i-1] + " " + ctx;
+      const isCardHead = L2 => /(\*{2,}|x{3,}|X{3,}|•{2,})\s?\d{4}|\b\d{6}[^\d]{1,8}\d{4}\b/.test(L2);
+      if(i + 1 < lines.length && !hasAmt[i+1] && !isCardHead(lines[i+1])) ctx = ctx + " " + lines[i+1];
       hits.forEach(h => {
         const before = L.slice(Math.max(0, h.at - 16), h.at).toLowerCase();
         if(/(sd|s\.d|số dư|so du|balance|available|hạn mức|han muc|khả dụng|kha dung)[:\s]*$/.test(before)) return;
@@ -3439,20 +3507,20 @@ header{margin-top:6px}
         const amt = vnAmount(h.raw);
         if(amt < 1000) return;
         let day = todayKey();
-        const dm = L.match(/(\d{1,2})[\/\-](\d{1,2})(?:[\/\-](\d{2,4}))?/);
+        const dm = ctx.match(/(\d{1,2})[\/\-](\d{1,2})(?:[\/\-](\d{2,4}))?/);
         if(dm){
           let y = dm[3] ? parseInt(dm[3], 10) : new Date().getFullYear();
           if(y < 100) y += 2000;
           const d = new Date(y, parseInt(dm[2], 10) - 1, parseInt(dm[1], 10));
-          if(!isNaN(d) && d.getDate() === parseInt(dm[1], 10)) day = keyOf(d);
+          if(!isNaN(d) && d.getDate() === parseInt(dm[1], 10) && d <= new Date()) day = keyOf(d);
         }
         let where = "";
-        const wm = L.match(/(?:\bt[aạ]i\b|\bat\b|\bND\b|\bNDung\b|\bn[oộ]i dung\b|\bmerchant\b)[:\s]+([^.;|]{2,60})/i);
+        const wm = ctx.match(/(?:\bt[aạ]i\b|\bat\b|\bND\b|\bNDung\b|\bn[oộ]i dung\b|\bmerchant\b)[:\s]+([^.;|]{2,60})/i);
         if(wm) where = wm[1];
         if(!where){
-          const caps = L.match(/\b[A-Z][A-Z0-9&'._-]{2,}(?:\s+[A-Z0-9&'._-]{2,}){0,4}\b/g);
+          const caps = ctx.match(/\b[A-Z][A-Z0-9&'._-]{2,}(?:\s+[A-Z0-9&'._-]{2,}){0,4}\b/g);
           if(caps){
-            const best = caps.filter(x => !/^(VND|VNĐ|GD|TK|SD|ATM|POS|OTP|THE|CARD)$/.test(x)).sort((a,b) => b.length - a.length)[0];
+            const best = caps.filter(x => !/^(VND|VNĐ|GD|TK|SD|ATM|POS|OTP|THE|CARD|VIB|MB|BIDV)$/.test(x)).sort((a,b) => b.length - a.length)[0];
             if(best) where = best;
           }
         }
@@ -3462,20 +3530,70 @@ header{margin-top:6px}
           .replace(/\d{1,2}[\/\-]\d{1,2}(?:[\/\-]\d{2,4})?/g, " ")
           .replace(/\d{1,2}:\d{2}(?::\d{2})?/g, " ")
           .replace(/\b(vnd|vnđ)\b/gi, " ")
-          .replace(/\s+/g, " ").replace(/^[\s,;.:\-]+/, "").replace(/[\s,;.:\-]+$/, "")
+          .replace(/[\d.,]{4,}/g, " ")
+          .replace(/\s+/g, " ").replace(/^[\s,;.:*\-]+/, "").replace(/[\s,;.:*\-]+$/, "")
           .slice(0, 60).trim();
         if(where.length < 2) where = "Chi bằng thẻ";
-        let last4 = "";
-        const lm = L.match(/(?:\*{2,}|x{3,}|X{3,})\s?(\d{4})/) || L.match(/(?:thẻ|the|card|tk)\D{0,6}(\d{4})\b/i);
-        if(lm) last4 = lm[1];
+        let last4 = "", first6 = "";
+        const pair = ctx.match(/\b(\d{6})[^\d\n]{1,8}(\d{4})\b/);
+        if(pair){ first6 = pair[1]; last4 = pair[2]; }
+        if(!last4){
+          const lm = ctx.match(/(?:\*{2,}|x{3,}|X{3,}|•{2,})\s?(\d{4})\b/) || ctx.match(/(?:thẻ|the|card|tk)\D{0,6}(\d{4})\b/i);
+          if(lm) last4 = lm[1];
+        }
         let hm = 12, mi = 0;
-        const tm = L.match(/\b(\d{1,2}):(\d{2})\b/);
+        const tm = ctx.match(/\b(\d{1,2}):(\d{2})\b/);
         if(tm && Number(tm[1]) < 24){ hm = Number(tm[1]); mi = Number(tm[2]); }
-        out.push({ amt, where, day, last4, hm, mi, raw:L, pick:true });
+        out.push({ amt, where, day, last4, first6, hm, mi, raw:L, pick:true });
       });
     });
     return out;
   }
+  /* ---- đọc chữ trong ảnh ---- */
+  var ocrLoad = null;
+  function ocrCfg(){ return window.__OCR || {}; }
+  function loadOCR(){
+    if(ocrLoad) return ocrLoad;
+    const src = ocrCfg().js || "https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js";
+    ocrLoad = new Promise((res, rej) => {
+      if(window.Tesseract) return res(window.Tesseract);
+      const sc = document.createElement("script");
+      sc.src = src;
+      sc.onload = () => window.Tesseract ? res(window.Tesseract) : rej(new Error("no-lib"));
+      sc.onerror = () => { ocrLoad = null; rej(new Error("offline")); };
+      document.head.appendChild(sc);
+    });
+    return ocrLoad;
+  }
+  async function ocrImage(file, onProg){
+    const T = await loadOCR();
+    const cfg = ocrCfg();
+    const langs = cfg.langs || ["vie", "eng"];
+    const opts = Object.assign({ logger: m => { if(m && m.status === "recognizing text" && onProg) onProg(m.progress || 0); } }, cfg.opts || {});
+    const worker = await T.createWorker(langs, 1, opts);
+    try{ const r = await worker.recognize(file); return (r && r.data && r.data.text) || ""; }
+    finally{ try{ await worker.terminate(); }catch(e){} }
+  }
+  $("ocrFile").addEventListener("change", async e => {
+    const f = e.target.files && e.target.files[0]; e.target.value = "";
+    if(!f) return;
+    $("pasteErr").hidden = true;
+    const st = $("ocrState"); st.hidden = false; st.textContent = "Đang mở bộ đọc chữ…";
+    try{
+      const text = await ocrImage(f, pr => { st.textContent = "Đang đọc ảnh… " + Math.round(pr * 100) + "%"; });
+      st.hidden = true;
+      if(!text.trim()){ $("pasteErr").textContent = "Không đọc được chữ nào trong ảnh. Thử ảnh rõ hơn, hoặc chụp gần phần có số tiền."; $("pasteErr").hidden = false; return; }
+      $("pasteText").value = text.trim();
+      $("parseBtn").click();
+    }catch(err){
+      st.hidden = true;
+      $("pasteErr").textContent = (err && err.message === "offline")
+        ? "Lần đầu đọc ảnh cần mạng để tải bộ đọc chữ. Bật mạng rồi thử lại, hoặc dùng cách chép chữ sẵn có của iPhone rồi dán vào ô trên."
+        : "Chưa đọc được ảnh này. Bạn thử chép chữ trong ảnh bằng iPhone rồi dán vào ô trên.";
+      $("pasteErr").hidden = false;
+    }
+  });
+
   function renderPasteRows(){
     const box = $("pasteRows"); box.innerHTML = "";
     pasteItems.forEach((p, i) => {
@@ -3507,7 +3625,7 @@ header{margin-top:6px}
     });
   }
   function openPaste(){
-    pasteItems = []; $("pasteText").value = ""; $("pasteFound").hidden = true; $("pasteErr").hidden = true;
+    pasteItems = []; $("pasteText").value = ""; $("pasteFound").hidden = true; $("pasteErr").hidden = true; $("ocrState").hidden = true;
     selectPasteCard(((state.cards || [])[0] || {}).id || null);
     updatePasteBtn();
     showSheet("pasteSheet", "pasteBack");
@@ -3530,7 +3648,11 @@ header{margin-top:6px}
     const found = parseNotif($("pasteText").value);
     found.forEach(p => {
       p.dup = (state.cardTx[p.day] || []).some(x => x.amt === p.amt && (x.where || "").toLowerCase() === p.where.toLowerCase());
-      const c = p.last4 ? (state.cards || []).find(x => x.last4 === p.last4) : null;
+      const cs = state.cards || [];
+      let c = null;
+      if(p.first6 && p.last4) c = cs.find(x => x.first6 === p.first6 && x.last4 === p.last4);
+      if(!c && p.last4) c = cs.find(x => x.last4 === p.last4);
+      if(!c && p.first6) c = cs.find(x => x.first6 === p.first6);
       if(c) p.cardId = c.id;
     });
     pasteItems = found;
@@ -3655,154 +3777,19 @@ header{margin-top:6px}
     $("openSettings").focus({ preventScroll:true });
   }
 
-  /* ================= chỗ lưu file & bản lưu trong máy ================= */
-  var dirHandle = null, snapCache = [];
-  const CAN_DIR = typeof window.showDirectoryPicker === "function";
-  const IDB_DB = "ngay50k", SNAP_ST = "backups", META_ST = "meta", SNAP_MAX = 10;
-  function idbOpen(){
-    return new Promise((res, rej) => {
-      let r;
-      try{ r = indexedDB.open(IDB_DB, 1); }catch(e){ rej(e); return; }
-      r.onupgradeneeded = () => {
-        const db = r.result;
-        if(!db.objectStoreNames.contains(SNAP_ST)) db.createObjectStore(SNAP_ST, { keyPath:"id" });
-        if(!db.objectStoreNames.contains(META_ST)) db.createObjectStore(META_ST);
-      };
-      r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
-    });
-  }
-  function idbRun(store, mode, fn){
-    return idbOpen().then(db => new Promise((res, rej) => {
-      const tx = db.transaction(store, mode), st = tx.objectStore(store);
-      const req = fn(st);
-      tx.oncomplete = () => res(req && "result" in req ? req.result : undefined);
-      tx.onerror = () => rej(tx.error); tx.onabort = () => rej(tx.error);
-    }));
-  }
-  async function snapList(){
-    try{ const all = await idbRun(SNAP_ST, "readonly", st => st.getAll()); return (all || []).sort((a,b) => b.at - a.at); }
-    catch(e){ return []; }
-  }
-  async function saveSnapshot(quiet){
-    try{
-      const text = JSON.stringify({ app:"ngay50k", format:1, exportedAt:new Date().toISOString(), data:state });
-      const rec = { id:String(Date.now()), at:Date.now(), size:text.length, json:text };
-      await idbRun(SNAP_ST, "readwrite", st => st.put(rec));
-      const all = await snapList();
-      for(const old of all.slice(SNAP_MAX)) await idbRun(SNAP_ST, "readwrite", st => st.delete(old.id));
-      await renderSnaps();
-      if(!quiet) showSyncOk("✓ Đã tạo bản lưu trong máy.");
-    }catch(e){ if(!quiet) showSyncErr("Máy không cho tạo bản lưu trong app."); }
-  }
-  async function renderSnaps(){
-    const box = $("snapList"); if(!box) return;
-    snapCache = await snapList();
-    box.innerHTML = "";
-    if(!snapCache.length){ box.innerHTML = '<p class="empty">Chưa có bản lưu nào trong máy.</p>'; return; }
-    snapCache.forEach(r => {
-      const b = document.createElement("button"); b.className = "set-nav";
-      b.innerHTML = '<span class="nav-t"></span><span class="nav-v"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>';
-      b.querySelector(".nav-t").textContent = fmtStamp(new Date(r.at).toISOString());
-      b.querySelector(".nav-v").textContent = kb(r.size * 2);
-      b.onclick = () => {
-        $("syncMsg").hidden = true; $("syncErr").hidden = true;
-        let obj; try{ obj = JSON.parse(r.json); }catch(e){ showSyncErr("Bản lưu này hỏng rồi."); return; }
-        offerImport(obj, "Bản lưu trong máy");
-      };
-      box.appendChild(b);
-    });
-  }
   function offerImport(obj, label){
     if(!obj || obj.app !== "ngay50k" || !obj.data || typeof obj.data !== "object"){ showSyncErr("Đây không phải bản sao lưu của Ngày 50k."); return; }
     const incoming = normalize(obj.data);
     pending = { incoming, merged: mergeStates(state, incoming) };
     const when = obj.exportedAt ? fmtStamp(obj.exportedAt) : "";
-    $("importInfo").textContent = (label || "File") + (when ? " lúc " + when : "") + ", gồm " + summarize(incoming) + ".";
+    $("importInfo").textContent = (label || "File") + (when ? " xuất lúc " + when : "") + ", gồm " + summarize(incoming) + ".";
     $("importPreview").textContent = "Gộp sẽ " + diffText(diffCount(state, pending.merged)) + ". Khoản mới ghi trên máy này vẫn được giữ.";
     delete $("replaceBtn").dataset.armed;
     $("replaceBtn").textContent = "Thay toàn bộ";
     $("importCard").hidden = false;
     $("importCard").scrollIntoView({ behavior:"smooth", block:"nearest" });
   }
-  /* ---- folder ---- */
-  async function loadDir(){
-    if(!CAN_DIR) return null;
-    try{ dirHandle = (await idbRun(META_ST, "readonly", st => st.get("dir"))) || null; }catch(e){ dirHandle = null; }
-    return dirHandle;
-  }
-  async function dirOk(ask){
-    if(!dirHandle) return false;
-    try{
-      const opts = { mode:"readwrite" };
-      if((await dirHandle.queryPermission(opts)) === "granted") return true;
-      if(!ask) return false;
-      return (await dirHandle.requestPermission(opts)) === "granted";
-    }catch(e){ return false; }
-  }
-  async function renderFolder(){
-    if(!$("folderState")) return;
-    if(!CAN_DIR){
-      $("folderState").textContent = "iPhone không cho app web tự lưu vào một thư mục cố định, nên mỗi lần xuất máy sẽ hỏi chỗ lưu. Dùng Bản lưu trong máy ở dưới cho nhanh.";
-      $("folderRow").hidden = true; $("fromFolder").hidden = true; return;
-    }
-    await loadDir();
-    const ok = await dirOk(false);
-    $("folderState").textContent = dirHandle
-      ? (ok ? "Đang lưu thẳng vào thư mục " + dirHandle.name + "." : "Thư mục " + dirHandle.name + " cần cấp quyền lại, bấm Xuất file sao lưu để cấp.")
-      : "Chọn một thư mục để mỗi lần xuất là lưu thẳng vào đó, không phải chọn lại.";
-    $("pickFolder").textContent = dirHandle ? "Đổi thư mục" : "Chọn thư mục lưu";
-    $("clearFolder").hidden = !dirHandle;
-    $("fromFolder").hidden = !dirHandle;
-  }
-  async function writeToDir(name, text){
-    const fh = await dirHandle.getFileHandle(name, { create:true });
-    const w = await fh.createWritable();
-    await w.write(text); await w.close();
-  }
-  async function listDirBackups(){
-    const out = [];
-    for await (const [name, h] of dirHandle.entries()){
-      if(h.kind !== "file" || !/\.json$/i.test(name)) continue;
-      let at = 0, size = 0;
-      try{ const f = await h.getFile(); at = f.lastModified; size = f.size; }catch(e){}
-      out.push({ name, h, at, size });
-    }
-    return out.sort((a,b) => b.at - a.at).slice(0, 30);
-  }
-  if($("pickFolder")) $("pickFolder").onclick = async () => {
-    try{
-      const h = await window.showDirectoryPicker({ mode:"readwrite", id:"ngay50k" });
-      dirHandle = h; await idbRun(META_ST, "readwrite", st => st.put(h, "dir"));
-      await renderFolder(); showSyncOk("✓ Sẽ lưu thẳng vào thư mục " + h.name + ".");
-    }catch(e){ if(e && e.name !== "AbortError") showSyncErr("Chưa chọn được thư mục."); }
-  };
-  if($("clearFolder")) $("clearFolder").onclick = async () => {
-    dirHandle = null;
-    try{ await idbRun(META_ST, "readwrite", st => st.delete("dir")); }catch(e){}
-    $("folderList").hidden = true; await renderFolder();
-  };
-  if($("fromFolder")) $("fromFolder").onclick = async () => {
-    $("syncErr").hidden = true; $("syncMsg").hidden = true;
-    if(!(await dirOk(true))){ showSyncErr("Chưa được phép đọc thư mục đó."); return; }
-    let files = [];
-    try{ files = await listDirBackups(); }catch(e){ showSyncErr("Không đọc được thư mục."); return; }
-    const box = $("folderList"); box.innerHTML = ""; box.hidden = false;
-    if(!files.length){ box.innerHTML = '<p class="empty">Thư mục này chưa có file sao lưu nào.</p>'; return; }
-    files.forEach(f => {
-      const b = document.createElement("button"); b.className = "set-nav";
-      b.innerHTML = '<span class="nav-t"></span><span class="nav-v"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>';
-      b.querySelector(".nav-t").textContent = f.name;
-      b.querySelector(".nav-v").textContent = f.at ? fmtStamp(new Date(f.at).toISOString()) : "";
-      b.onclick = async () => {
-        try{
-          const file = await f.h.getFile(), text = await file.text();
-          offerImport(JSON.parse(text), "Bản " + f.name);
-        }catch(e){ showSyncErr("Không đọc được file này."); }
-      };
-      box.appendChild(b);
-    });
-  };
-  if($("snapNow")) $("snapNow").onclick = () => saveSnapshot(false);
+
   /* ---- settings navigation ---- */
   const SET_PAGES = ["setHome","setTheme","setScan","setBudget","setTags","setTagOne","setSync","setStore"];
   let setPage = "setHome";
@@ -3815,7 +3802,6 @@ header{margin-top:6px}
     const h = el.querySelector("h2"); if(h) h.focus({ preventScroll:true });
     if(id === "setHome") renderSetHome();
     if(id === "setStore"){ renderStorage(); measureCache(); }
-    if(id === "setSync"){ renderFolder(); renderSnaps(); }
     if(id === "setTags") renderTagList();
   }
   function renderSetHome(){
@@ -3945,11 +3931,6 @@ header{margin-top:6px}
     const payload = { app:"ngay50k", format:1, exportedAt:new Date().toISOString(), data:state };
     const name = "ngay50k-saoluu-" + fileStamp() + ".json";
     const text = JSON.stringify(payload);
-    saveSnapshot(true);
-    if(CAN_DIR && dirHandle && (await dirOk(true))){
-      try{ await writeToDir(name, text); doneExport("✓ Đã lưu vào thư mục " + dirHandle.name + ": " + name); return; }
-      catch(e){ showSyncErr("Chưa ghi được vào thư mục, app sẽ hỏi chỗ lưu như cũ."); }
-    }
     const coarse = window.matchMedia && matchMedia("(pointer:coarse)").matches;
     if(coarse && navigator.canShare && typeof File === "function"){
       try{
