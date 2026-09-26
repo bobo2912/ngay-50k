@@ -1,6 +1,15 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v28, ngày 26/09/2026
+**Phiên bản hiện tại:** v29, ngày 26/09/2026
+
+---
+
+## Có gì mới trong v29 (so với v28)
+
+- **Đọc được đúng thông báo của MB và Vietcombank.** Các ngân hàng viết cả giao dịch trên một dòng dài, ngăn bằng dấu `|` (ví dụ `MB MASTERCARD: SD THE [529360....7791]|Ngày GD: [2026-09-25 20:53:35]|Số tiền GD: -276,319 VND|...`). App giờ tách theo từng ô như vậy nên lấy đúng số thẻ, số tiền, ngày giờ và nơi chi.
+- **Không còn nhầm số dư thành khoản chi.** Các ô *Hạn mức còn lại*, *SD*, *Số dư*, *Khả dụng* bị bỏ qua hẳn, nên không còn xuất hiện những khoản kiểu 96.111.453đ.
+- **Ghép được dòng bị ngắt khi đọc ảnh.** Ảnh chụp trung tâm thông báo hay xuống dòng giữa chừng (`Số tiền GD: -` rồi mới tới `276,319 VND`), app tự nối lại trước khi đọc.
+- **Bỏ qua thông báo không phải giao dịch:** quảng cáo, tin thử nghiệm, thông báo Apple Pay… không còn lọt vào danh sách.
 
 ---
 
@@ -272,6 +281,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v29** | Đọc đúng thông báo MB và Vietcombank kiểu một dòng ngăn bằng dấu gạch đứng, bỏ qua số dư và hạn mức còn lại |
 | **v28** | Nhận diện ảnh chỉ lấy khoản của thẻ đã lưu, thêm nút chọn tất cả và bỏ chọn tất cả |
 | **v27** | Sao lưu về bản đơn giản, thẻ dùng 6 số đầu và 4 số cuối, dải chọn nhiều thẻ, đọc chữ từ ảnh, chỉnh thời gian tắt camera |
 | **v26** | Menu Thẻ tín dụng, dán từ thông báo để nhập, bản lưu trong máy và thư mục lưu |

@@ -1265,7 +1265,7 @@ header{margin-top:6px}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v28</p>
+      <p class="sync" id="appVersion">Phiên bản v29</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. Giới hạn khoảng 5 MB được tính chung cho các mini app cùng tài khoản GitHub.</p>
 
       <h4 class="sub">Xoá dữ liệu</h4>
@@ -3483,7 +3483,8 @@ header{margin-top:6px}
   }
   function parseNotif(text){
     const out = [];
-    const lines = String(text || "").replace(/ /g, " ").split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 1);
+    const BAL_LBL = /(^|[\s|(\[])(sd|s\.d|số dư|so du|balance|available|hạn mức|han muc|khả dụng|kha dung|dư nợ|du no)(\b|[\s:.])/i;
+    const CREDIT = /(ghi có|ghi co|nhận tiền|nhan tien|nhận được|hoàn tiền|hoan tien|refund|credited|tiền vào|tien vao)/i;
     const amtsOf = L => {
       const hits = []; let m;
       const re1 = /([+\-]?\s?[\d][\d.,]{2,})\s*(?:vnd|vnđ|đ|d)\b/gi;
@@ -3494,66 +3495,141 @@ header{margin-top:6px}
       }
       return hits;
     };
-    const hasAmt = lines.map(L => amtsOf(L).length > 0);
-    lines.forEach((L, i) => {
-      const low = L.toLowerCase();
-      if(/(ghi có|ghi co|nhận tiền|nhan tien|nhận được|hoàn tiền|hoan tien|refund|credited)/.test(low)) return;
-      const hits = amtsOf(L);
-      if(!hits.length) return;
-      /* a notification often wraps: pull in neighbouring lines that carry no amount of their own */
-      let ctx = L;
-      if(i > 0 && !hasAmt[i-1]) ctx = lines[i-1] + " " + ctx;
-      const isCardHead = L2 => /(\*{2,}|x{3,}|X{3,}|•{2,})\s?\d{4}|\b\d{6}[^\d]{1,8}\d{4}\b/.test(L2);
-      if(i + 1 < lines.length && !hasAmt[i+1] && !isCardHead(lines[i+1])) ctx = ctx + " " + lines[i+1];
-      hits.forEach(h => {
-        const before = L.slice(Math.max(0, h.at - 16), h.at).toLowerCase();
-        if(/(sd|s\.d|số dư|so du|balance|available|hạn mức|han muc|khả dụng|kha dung)[:\s]*$/.test(before)) return;
-        if(/\+\s?$/.test(before) || /^\s?\+/.test(h.raw)) return;
-        const amt = vnAmount(h.raw);
-        if(amt < 1000) return;
-        let day = todayKey();
-        const dm = ctx.match(/(\d{1,2})[\/\-](\d{1,2})(?:[\/\-](\d{2,4}))?/);
-        if(dm){
-          let y = dm[3] ? parseInt(dm[3], 10) : new Date().getFullYear();
-          if(y < 100) y += 2000;
-          const d = new Date(y, parseInt(dm[2], 10) - 1, parseInt(dm[1], 10));
-          if(!isNaN(d) && d.getDate() === parseInt(dm[1], 10) && d <= new Date()) day = keyOf(d);
-        }
-        let where = "";
-        const wm = ctx.match(/(?:\bt[aạ]i\b|\bat\b|\bND\b|\bNDung\b|\bn[oộ]i dung\b|\bmerchant\b)[:\s]+([^.;|]{2,60})/i);
-        if(wm) where = wm[1];
-        if(!where){
-          const caps = ctx.match(/\b[A-Z][A-Z0-9&'._-]{2,}(?:\s+[A-Z0-9&'._-]{2,}){0,4}\b/g);
-          if(caps){
-            const best = caps.filter(x => !/^(VND|VNĐ|GD|TK|SD|ATM|POS|OTP|THE|CARD|VIB|MB|BIDV)$/.test(x)).sort((a,b) => b.length - a.length)[0];
-            if(best) where = best;
-          }
-        }
-        if(!where) where = L;
-        where = where.replace(/\s+/g, " ")
-          .replace(/\b(ng[aà]y|date|luc|lúc)\b/gi, " ")
-          .replace(/\d{1,2}[\/\-]\d{1,2}(?:[\/\-]\d{2,4})?/g, " ")
-          .replace(/\d{1,2}:\d{2}(?::\d{2})?/g, " ")
-          .replace(/\b(vnd|vnđ)\b/gi, " ")
-          .replace(/[\d.,]{4,}/g, " ")
-          .replace(/\s+/g, " ").replace(/^[\s,;.:*\-]+/, "").replace(/[\s,;.:*\-]+$/, "")
-          .slice(0, 60).trim();
-        if(where.length < 2) where = "Chi bằng thẻ";
-        let last4 = "", first6 = "";
-        const pair = ctx.match(/\b(\d{6})[^\d\n]{1,8}(\d{4})\b/);
-        if(pair){ first6 = pair[1]; last4 = pair[2]; }
-        if(!last4){
-          const lm = ctx.match(/(?:\*{2,}|x{3,}|X{3,}|•{2,})\s?(\d{4})\b/) || ctx.match(/(?:thẻ|the|card|tk)\D{0,6}(\d{4})\b/i);
-          if(lm) last4 = lm[1];
-        }
-        let hm = 12, mi = 0;
-        const tm = ctx.match(/\b(\d{1,2}):(\d{2})\b/);
-        if(tm && Number(tm[1]) < 24){ hm = Number(tm[1]); mi = Number(tm[2]); }
-        out.push({ amt, where, day, last4, first6, hm, mi, raw:L, pick:true });
+    /* a card number: 6 first + 4 last, or only the 4 last */
+    const cardOf = s => {
+      let m = s.match(/(\d{6})\s*[^\d\s]{0,10}\s*(\d{4})(?!\d)/);
+      if(m) return { first6:m[1], last4:m[2] };
+      m = s.match(/(?:\*{2,}|x{3,}|X{3,}|•{2,}|\.{3,})\s?(\d{4})(?!\d)/);
+      if(m) return { first6:"", last4:m[1] };
+      m = s.match(/(?:thẻ|the|card)\D{0,6}(\d{4})(?!\d)/i);
+      if(m) return { first6:"", last4:m[1] };
+      return null;
+    };
+    /* a whole field that only carries a balance or a remaining limit */
+    const isBalSeg = s => {
+      const head = s.split(/[:：]/)[0];
+      return BAL_LBL.test(head) && !cardOf(s);
+    };
+    const okDay = d => {
+      if(isNaN(d)) return false;
+      const now = new Date(); const max = new Date(now.getTime() + 86400000);
+      const min = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
+      return d <= max && d >= min;
+    };
+    const dayOf = s => {
+      let m = s.match(/(20\d{2})-(\d{1,2})-(\d{1,2})/);
+      if(m){ const d = new Date(+m[1], +m[2]-1, +m[3]); if(okDay(d)) return keyOf(d); }
+      const re = /(?:^|[^\d])(\d{1,2})[\/\-](\d{1,2})(?:[\/\-](\d{2,4}))?/g;
+      while((m = re.exec(s))){
+        const dd = +m[1], mm = +m[2];
+        if(dd < 1 || dd > 31 || mm < 1 || mm > 12) continue;
+        let y = m[3] ? +m[3] : new Date().getFullYear();
+        if(y < 100) y += 2000;
+        const d = new Date(y, mm-1, dd);
+        if(okDay(d) && d.getDate() === dd) return keyOf(d);
+      }
+      return "";
+    };
+    const timeOf = s => {
+      const m = s.match(/\b(\d{1,2}):(\d{2})(?::\d{2})?\b/);
+      if(m && +m[1] < 24 && +m[2] < 60) return { hm:+m[1], mi:+m[2] };
+      return null;
+    };
+    const cleanWhere = (w, fallback) => {
+      let x = String(w || "").replace(/\s+/g, " ")
+        .replace(/\b(ng[aà]y|date|luc|lúc)\b/gi, " ")
+        .replace(/\d{1,2}[\/\-]\d{1,2}(?:[\/\-]\d{2,4})?/g, " ")
+        .replace(/20\d{2}-\d{1,2}-\d{1,2}/g, " ")
+        .replace(/\d{1,2}:\d{2}(?::\d{2})?/g, " ")
+        .replace(/\b(vnd|vnđ)\b/gi, " ")
+        .replace(/[\d.,]{4,}/g, " ")
+        .replace(/\s+/g, " ").replace(/^[\s,;.:*\-\[\]]+/, "").replace(/[\s,;.:*\-\[\]]+$/, "")
+        .replace(/\s+(t[aạ]i|at|cho|for)$/i, "")
+        .slice(0, 60).trim();
+      if(x.length < 2 && fallback) x = cleanWhere(fallback, "");
+      return x.length < 2 ? "Chi bằng thẻ" : x;
+    };
+    const whereOf = s => {
+      let m = s.match(/(?:\bt[aạ]i\b|\bmerchant\b)[:\s]+(.{2,60})/i);
+      if(!m) m = s.match(/(?:\bn[oộ]i dung(?: giao d[iị]ch)?\b|\bNDung\b|\bND\b)[:\s]+(.{2,70})/i);
+      if(m) return m[1];
+      const caps = s.match(/\b[A-Z][A-Z0-9&'._-]{2,}(?:\s+[A-Z0-9&'._-]{2,}){0,4}\b/g);
+      if(caps){
+        const best = caps.filter(x => !/^(VND|VNĐ|GD|TK|SD|ATM|POS|OTP|THE|CARD|MASTERCARD|VISA|NAPAS|AM|PM)$/i.test(x))
+          .sort((a,b) => b.length - a.length)[0];
+        if(best) return best;
+      }
+      return "";
+    };
+    /* thông báo ngân hàng hay viết cả giao dịch trên một dòng, ngăn bằng dấu | */
+    const isStart = l =>
+      /^(thông báo|thong bao|biến động|bien dong)/i.test(l) ||
+      /(yesterday|hôm qua|hom qua)\s*,?\s*\d{1,2}:\d{2}/i.test(l) ||
+      /\d{1,2}:\d{2}\s?(am|pm)\s*$/i.test(l);
+    const raw = String(text || "").replace(/ /g, " ").split(/\r?\n/)
+      .map(l => l.replace(/\s+/g, " ").trim()).filter(l => l.length > 1);
+    const groups = []; let g = null;
+    raw.forEach(l => { if(!g || isStart(l)){ g = []; groups.push(g); } g.push(l); });
+    const blocks = [];
+    groups.forEach(lines => {
+      const txt = lines.join(" ");
+      if(txt.indexOf("|") >= 0){ blocks.push(txt.split("|")); return; }
+      const segs = [];
+      lines.forEach(l => {
+        const lastHas = segs.length ? amtsOf(segs[segs.length-1]).length > 0 : false;
+        const has = amtsOf(l).length > 0;
+        if(!segs.length) segs.push(l);
+        else if(!lastHas || !has) segs[segs.length-1] += " " + l;
+        else segs.push(l);
       });
+      blocks.push(segs);
+    });
+    blocks.forEach(segs => {
+      let card = { first6:"", last4:"" }, cur = null;
+      const flush = () => {
+        if(cur && cur.amt >= 1000){
+          cur.where = cleanWhere(cur.where, cur.raw);
+          if(cur.hm == null){ cur.hm = 12; cur.mi = 0; }
+          if(!cur.day) cur.day = todayKey();
+          out.push(cur);
+        }
+        cur = null;
+      };
+      const rec = () => cur || (cur = { amt:0, where:"", day:"", hm:null, mi:0, first6:card.first6, last4:card.last4, raw:"", pick:true });
+      segs.forEach(seg => {
+        const s = seg.trim(); if(s.length < 2) return;
+        const c = cardOf(s);
+        if(c){
+          if(cur && cur.amt) flush();
+          card = c;
+          if(cur){ cur.first6 = c.first6; cur.last4 = c.last4; }
+        }
+        if(!isBalSeg(s) && !CREDIT.test(s)){
+          amtsOf(s).forEach(h => {
+            const before = s.slice(Math.max(0, h.at - 18), h.at);
+            if(BAL_LBL.test(before) && /[:\s]$/.test(before)) return;
+            if(/\+\s?$/.test(before) || /^\s?\+/.test(h.raw)) return;
+            const amt = vnAmount(h.raw);
+            if(amt < 1000) return;
+            const r = rec();
+            if(r.amt){
+              const keep = { day:r.day, hm:r.hm, mi:r.mi };
+              flush();
+              const n = rec(); n.amt = amt; n.day = keep.day; n.hm = keep.hm; n.mi = keep.mi;
+            } else r.amt = amt;
+          });
+        }
+        const d = dayOf(s), t = timeOf(s);
+        if(d){ const r = rec(); r.day = d; if(t){ r.hm = t.hm; r.mi = t.mi; } }
+        else if(t){ const r = rec(); if(r.hm == null){ r.hm = t.hm; r.mi = t.mi; } }
+        if(!isBalSeg(s)){ const w = whereOf(s); if(w){ const r = rec(); if(!r.where) r.where = w; } }
+        const r2 = rec(); r2.raw = (r2.raw ? r2.raw + " " : "") + s;
+      });
+      flush();
     });
     return out;
   }
+
   /* ---- đọc chữ trong ảnh ---- */
   var ocrLoad = null;
   function ocrCfg(){ return window.__OCR || {}; }
