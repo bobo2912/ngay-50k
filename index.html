@@ -829,6 +829,50 @@ main{padding-bottom:calc(86px + env(safe-area-inset-bottom,0px))}
 .form-sheet .form-head{box-shadow:0 1px 0 var(--line)}
 main{padding-bottom:calc(74px + env(safe-area-inset-bottom,0px))}
 
+
+/* ================= v31: tab Thẻ gọn ================= */
+.cardmonth .mspace{flex:1}
+.month .cards-btn, .cards-btn{width:auto; height:36px; font-size:.84rem; font-weight:600}
+.cards-btn{display:inline-flex; align-items:center; gap:6px; height:36px; padding:0 12px 0 10px;
+  border:1px solid var(--line); background:var(--flat); border-radius:999px; font-size:.84rem; font-weight:600; color:var(--ink)}
+.cards-btn svg{width:17px; height:17px; flex:none; fill:none; stroke:var(--muted); stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round}
+.chero{padding:15px 17px 14px}
+.chero-lb{margin:0; font-size:.86rem; font-weight:600; color:var(--muted)}
+.chero-big{margin:2px 0 0; font-size:1.85rem; font-weight:800; letter-spacing:-.03em; line-height:1.15;
+  display:flex; align-items:center; gap:9px; flex-wrap:wrap}
+.chero-trend{font-size:.76rem; font-weight:700; border-radius:999px; padding:3px 9px; letter-spacing:0; white-space:nowrap}
+.chero-trend.up{background:var(--over-soft,rgba(192,50,42,.10)); color:var(--over)}
+.chero-trend.dn{background:var(--ok-soft); color:var(--ok)}
+.chero-sub{margin:5px 0 0; font-size:.8rem; color:var(--muted); line-height:1.5}
+.cchart{background:var(--flat); border:1px solid var(--line); border-radius:16px; padding:12px 13px 10px; margin-top:12px}
+.cchart[hidden]{display:none}
+.cchart .cseg{display:flex; width:100%; background:var(--line); border-radius:12px}
+.cchart .cseg button{flex:1; font-size:.8rem; padding:6px 0}
+.card-actions button{font-size:.86rem; padding-left:6px; padding-right:6px; white-space:nowrap}
+.cbars{display:flex; align-items:flex-end; gap:2px; height:96px; margin-top:12px}
+.cbars button{flex:1; min-width:0; padding:0; border:0; background:transparent; height:100%; display:flex; align-items:flex-end; border-radius:4px}
+.cbars button i{display:block; width:100%; min-height:2px; border-radius:3px 3px 0 0; background:var(--note-soft)}
+.cbars button[data-on="1"] i{background:linear-gradient(180deg, var(--tint-a), var(--tint-b))}
+.cbars button:focus-visible{outline:2px solid var(--note); outline-offset:1px}
+.cbars-ax{display:flex; justify-content:space-between; font-size:.68rem; color:var(--muted); margin-top:6px}
+.cbars-tip{margin:8px 0 0; font-size:.78rem; color:var(--muted); min-height:1.1em}
+.tx-card{flex:none; font-size:.68rem; font-weight:700; color:var(--note); background:var(--note-soft);
+  border-radius:999px; padding:3px 8px; white-space:nowrap; max-width:92px; overflow:hidden; text-overflow:ellipsis}
+.tx-card.none{color:var(--muted); background:var(--line)}
+.flashrow{animation:flashrow 1.4s ease}
+@keyframes flashrow{0%,60%{background:var(--note-soft)} 100%{background:transparent}}
+.card-nav{display:flex; align-items:center; gap:11px; width:100%; text-align:left;
+  background:var(--flat); border:1px solid var(--line); border-radius:14px; padding:11px 13px; margin-top:8px}
+.card-nav:first-child{margin-top:0}
+.card-nav .ic{flex:none; width:34px; height:34px; border-radius:10px; background:var(--note-soft); display:grid; place-items:center}
+.card-nav .ic svg{width:18px; height:18px; fill:none; stroke:var(--note); stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round}
+.card-nav.warn .ic{background:var(--line)}
+.card-nav.warn .ic svg{stroke:var(--muted)}
+.card-nav .t{flex:1; min-width:0}
+.card-nav .t b{display:block; font-size:.93rem; font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.card-nav .t small{display:block; font-size:.78rem; color:var(--muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.card-nav .ch{flex:none; width:16px; height:16px; fill:none; stroke:var(--line); stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round}
+
 /* ================= v25: top safe area ================= */
 :root{--safe-top:max(env(safe-area-inset-top,0px), 18px); padding-top:var(--safe-top)}
 /* an opaque strip, cut from the very same background, so nothing scrolls into the status bar */
@@ -1092,35 +1136,43 @@ header{margin-top:6px}
 
   <!-- ================= TAB: THẺ TÍN DỤNG ================= -->
   <div id="tab-cards" role="tabpanel" hidden>
-    <div class="month">
+    <div class="month cardmonth">
       <button id="prevCardMonth" aria-label="Tháng trước">‹</button>
       <strong id="cardMonthLabel"></strong>
       <button id="nextCardMonth" aria-label="Tháng sau">›</button>
+      <span class="mspace"></span>
+      <button class="cards-btn" id="openCardsBtn" aria-haspopup="dialog">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2.5"/><path d="M2 10h20"/></svg>
+        <span id="openCardsLabel">Thẻ</span>
+      </button>
     </div>
 
     <div class="cardstrip" id="cardFilter"></div>
 
-    <div class="ledger" id="cardTotalBox">
-      <div class="ledger-row"><span id="cardSumLabel">Chi bằng thẻ tháng này</span><b class="num" id="cardMonthSum">0đ</b></div>
-      <p class="ledger-note">Khoản chi thẻ không tính vào hạn mức mỗi ngày.</p>
-      <div id="cardPerCard"></div>
+    <div class="ledger chero" id="cardTotalBox">
+      <p class="chero-lb" id="cardSumLabel">Chi bằng thẻ tháng này</p>
+      <p class="chero-big"><span class="num" id="cardMonthSum">0đ</span><span class="chero-trend" id="cardTrend" hidden></span></p>
+      <p class="chero-sub" id="cardSumSub"></p>
     </div>
 
-    <div class="set-row" style="margin-top:14px">
-      <button class="ghost grow" id="pasteCardBtn">Dán hoặc chọn ảnh</button>
+    <section class="cchart" id="cardChartBox" hidden>
+      <div class="cseg" id="cardChartSeg" role="group" aria-label="Xem biểu đồ theo">
+        <button type="button" data-cg="day" aria-pressed="true">Theo ngày</button><button type="button" data-cg="month" aria-pressed="false">12 tháng</button>
+      </div>
+      <div class="cbars" id="cardBars"></div>
+      <div class="cbars-ax" id="cardBarsAx"></div>
+      <p class="cbars-tip" id="cardBarsTip"></p>
+    </section>
+
+    <div class="set-row card-actions" style="margin-top:14px">
+      <button class="primary grow" id="pasteCardBtn" style="margin:0">Dán hoặc chọn ảnh</button>
       <button class="ghost grow" id="addCardTxBtn">Ghi tay</button>
     </div>
     <p class="inline-ok" id="cardMsg" hidden></p>
 
     <section>
-      <h2>Khoản chi thẻ trong tháng</h2>
+      <h2 id="cardListTitle">Khoản chi trong tháng</h2>
       <div id="cardList"></div>
-    </section>
-
-    <section>
-      <h2 id="cardsTitle">Thẻ của bạn</h2>
-      <div id="cardBank"></div>
-      <button class="ghost" id="addCardBtn" style="width:100%; margin-top:10px">＋ Thêm thẻ</button>
     </section>
   </div>
 </main>
@@ -1265,7 +1317,7 @@ header{margin-top:6px}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v30</p>
+      <p class="sync" id="appVersion">Phiên bản v31</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. Giới hạn khoảng 5 MB được tính chung cho các mini app cùng tài khoản GitHub.</p>
 
       <h4 class="sub">Xoá dữ liệu</h4>
@@ -1357,6 +1409,16 @@ header{margin-top:6px}
     <button class="ghost" id="pasteCancel">Huỷ</button>
     <button class="primary" id="pasteImport" style="margin:0" disabled>Nhập khoản đã chọn</button>
   </div>
+</div>
+
+<div class="sheet-back top" id="cardsBack" hidden></div>
+<div class="sheet top" id="cardsSheet" role="dialog" aria-modal="true" aria-labelledby="cardsSheetTitle" hidden>
+  <div class="grab" aria-hidden="true"></div>
+  <div class="sheet-head"><h2 id="cardsSheetTitle">Quản lý thẻ</h2><button class="x" id="closeCardsSheet" aria-label="Đóng">✕</button></div>
+  <p class="set-now" style="margin:0 2px 10px">Điền đúng 6 số đầu và 4 số cuối để app tự gán khoản chi vào đúng thẻ.</p>
+  <div id="cardBank"></div>
+  <button class="ghost" id="addCardBtn" style="width:100%; margin-top:10px">＋ Thêm thẻ</button>
+  <p class="hint" style="margin:10px 2px 0">Số thẻ chỉ nằm trên máy này, không gửi đi đâu.</p>
 </div>
 
 <div class="sheet-back top" id="cardEditBack" hidden></div>
@@ -3243,7 +3305,7 @@ header{margin-top:6px}
   idleReset();
 
   /* ================= THẺ TÍN DỤNG ================= */
-  var cardMonth = null, cxEditing = null, cxCard = null, cdEditing = null, pasteCard = null, pasteItems = [], pasteShowOther = false, cardFilterId = null;
+  var cardMonth = null, cxEditing = null, cxCard = null, cdEditing = null, pasteCard = null, pasteItems = [], pasteShowOther = false, cardFilterId = null, cardChartMode = "day";
   function monthKeyOf(d){ return d.getFullYear() + "-" + pad(d.getMonth()+1); }
   function cardOf(id){ return (state.cards||[]).find(c => c.id === id) || null; }
   function cardMask(c){
@@ -3281,7 +3343,33 @@ header{margin-top:6px}
     const shown = cardFilterId ? rows.filter(r => r.it.cardId === cardFilterId) : rows;
     const total = shown.reduce((a, r) => a + (Number(r.it.amt) || 0), 0);
     $("cardMonthSum").textContent = fmt(total);
-    $("cardSumLabel").textContent = cardFilterId ? (cardOf(cardFilterId).name + " tháng này") : "Chi bằng thẻ tháng này";
+    $("cardSumLabel").textContent = cardFilterId === "__none" ? "Khoản chưa gán thẻ"
+      : cardFilterId ? cardLabel(cardOf(cardFilterId)) : "Chi bằng thẻ tháng này";
+    $("cardListTitle").textContent = cardFilterId ? "Khoản chi của thẻ này" : "Khoản chi trong tháng";
+
+    /* so với tháng trước */
+    const prevM = new Date(cardMonth); prevM.setMonth(prevM.getMonth() - 1);
+    const prevTotal = cardMonthTotal(prevM, cardFilterId);
+    const tr = $("cardTrend");
+    if(prevTotal > 0 && total > 0){
+      const pct = Math.round((total - prevTotal) / prevTotal * 100);
+      tr.hidden = false;
+      tr.className = "chero-trend " + (pct > 0 ? "up" : "dn");
+      tr.textContent = (pct > 0 ? "↑" : pct < 0 ? "↓" : "") + Math.abs(pct) + "%";
+      tr.setAttribute("aria-label", (pct > 0 ? "tăng " : "giảm ") + Math.abs(pct) + "% so với tháng trước");
+    } else tr.hidden = true;
+
+    /* dòng phụ: số khoản, trung bình mỗi ngày */
+    const dim = new Date(cardMonth.getFullYear(), cardMonth.getMonth() + 1, 0).getDate();
+    const sameMonth = cardMonth.getFullYear() === now.getFullYear() && cardMonth.getMonth() === now.getMonth();
+    const days = sameMonth ? now.getDate() : dim;
+    const bits = [];
+    if(shown.length){
+      bits.push(shown.length + " khoản");
+      bits.push(fmt(Math.round(total / Math.max(1, days))) + " mỗi ngày");
+      bits.push("không tính vào hạn mức ngày");
+    } else bits.push("Chưa có khoản chi thẻ nào trong tháng này");
+    $("cardSumSub").textContent = bits.join(" · ");
 
     const byCard = {};
     rows.forEach(r => { const k = r.it.cardId || "__none"; byCard[k] = (byCard[k] || 0) + (Number(r.it.amt) || 0); });
@@ -3299,19 +3387,14 @@ header{margin-top:6px}
         strip.appendChild(b);
       };
       mk1(null, "Tất cả thẻ", fmt(rows.reduce((a, r) => a + (Number(r.it.amt) || 0), 0)));
-      cardsAll.forEach(c => mk1(c.id, c.name, fmt(byCard[c.id] || 0)));
+      cardsAll.forEach(c => { if(byCard[c.id] || cardFilterId === c.id) mk1(c.id, c.name, fmt(byCard[c.id] || 0)); });
       if(byCard.__none) mk1("__none", "Chưa gán thẻ", fmt(byCard.__none));
     }
 
-    const per = $("cardPerCard"); per.innerHTML = "";
-    per.hidden = !!cardFilterId || cardsAll.length < 2;
-    if(!per.hidden) Object.keys(byCard).sort((a, b) => byCard[b] - byCard[a]).forEach(k => {
-      const c = cardOf(k), row = document.createElement("div"); row.className = "ledger-row";
-      const sp = document.createElement("span"); sp.textContent = c ? cardLabel(c) : "Chưa gán thẻ";
-      const b = document.createElement("b"); b.className = "num"; b.textContent = fmt(byCard[k]);
-      row.append(sp, b); per.appendChild(row);
-    });
+    $("openCardsLabel").textContent = cardsAll.length ? "Thẻ · " + cardsAll.length : "Thêm thẻ";
+    renderCardChart();
 
+    const showBadge = !cardFilterId && (cardsAll.length > 1 || rows.some(r => !r.it.cardId));
     const box = $("cardList"); box.innerHTML = "";
     if(!shown.length){
       box.innerHTML = '<p class="empty">' + (cardFilterId ? "Thẻ này chưa có khoản chi nào trong tháng." : "Chưa có khoản chi thẻ nào trong tháng này. Bấm Dán từ thông báo hoặc Chọn ảnh để nhập nhanh.") + '</p>';
@@ -3321,35 +3404,112 @@ header{margin-top:6px}
         if(r.day !== curDayKey){
           curDayKey = r.day;
           const head = document.createElement("div"); head.className = "day-head";
+          head.dataset.day = r.day;
           const d = new Date(r.day + "T00:00:00");
-          const dayTotal = (state.cardTx[r.day] || []).filter(x => !cardFilterId || x.cardId === cardFilterId).reduce((a, x) => a + (Number(x.amt) || 0), 0);
+          const dayTotal = (state.cardTx[r.day] || []).filter(cardPass).reduce((a, x) => a + (Number(x.amt) || 0), 0);
           head.innerHTML = "<span></span><span class='num'></span>";
           head.children[0].textContent = WD[d.getDay()] + ", " + d.getDate() + "/" + (d.getMonth()+1);
           head.children[1].textContent = fmt(dayTotal);
           box.appendChild(head);
           ul = document.createElement("ul"); box.appendChild(ul);
         }
-        ul.appendChild(cardRow(r.it, r.day));
+        ul.appendChild(cardRow(r.it, r.day, showBadge));
       });
     }
 
-    const bank = $("cardBank"); bank.innerHTML = "";
+    renderCardBank();
+    if($("navCards")) $("navCards").textContent = (state.cards || []).length + " thẻ";
+  }
+
+  /* ---- danh sách thẻ trong bảng Quản lý thẻ ---- */
+  function renderCardBank(){
+    const bank = $("cardBank"); if(!bank) return;
+    bank.innerHTML = "";
     const cards = state.cards || [];
-    $("cardsTitle").textContent = "Thẻ của bạn (" + cards.length + ")";
-    if(!cards.length) bank.innerHTML = '<p class="empty">Chưa có thẻ nào. Thêm thẻ để biết khoản nào thuộc thẻ nào.</p>';
+    if(!cards.length){ bank.innerHTML = '<p class="empty">Chưa có thẻ nào. Thêm thẻ để app biết khoản nào thuộc thẻ nào.</p>'; return; }
+    const rows = cardTxOfMonth(monthKeyOf(cardMonth || new Date()));
     cards.forEach(c => {
-      const spent = rows.filter(r => r.it.cardId === c.id).reduce((a, r) => a + (Number(r.it.amt) || 0), 0);
-      const b = document.createElement("button"); b.className = "set-nav";
-      b.innerHTML = '<span class="nav-t"></span><span class="nav-v"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>';
-      b.querySelector(".nav-t").textContent = cardLabel(c);
-      const n = rows.filter(r => r.it.cardId === c.id).length;
-      b.querySelector(".nav-v").textContent = n ? fmt(spent) : "chưa có khoản";
+      const mine = rows.filter(r => r.it.cardId === c.id);
+      const b = document.createElement("button"); b.type = "button"; b.className = "card-nav" + (cardMask(c) ? "" : " warn");
+      b.innerHTML = '<span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2.5"/><path d="M2 10h20"/></svg></span>' +
+        '<span class="t"><b></b><small></small></span>' +
+        '<svg class="ch" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>';
+      b.querySelector("b").textContent = c.name;
+      b.querySelector("small").textContent = (cardMask(c) || "chưa điền số thẻ") + " · " +
+        (mine.length ? mine.length + " khoản tháng này" : "chưa có khoản");
       b.onclick = () => openCardEdit(c.id);
       bank.appendChild(b);
     });
-    if($("navCards")) $("navCards").textContent = cards.length + " thẻ";
   }
-  function cardRow(it, day){
+
+  /* ---- biểu đồ chi tiêu thẻ ---- */
+  function cardPass(x){ return !cardFilterId ? true : (cardFilterId === "__none" ? !x.cardId : x.cardId === cardFilterId); }
+  function cardMonthTotal(d, filt){
+    const mk = monthKeyOf(d); let t = 0;
+    for(const k in state.cardTx){
+      if(k.indexOf(mk) !== 0) continue;
+      (state.cardTx[k] || []).forEach(x => {
+        const ok = !filt ? true : (filt === "__none" ? !x.cardId : x.cardId === filt);
+        if(ok) t += Number(x.amt) || 0;
+      });
+    }
+    return t;
+  }
+  function renderCardChart(){
+    const box = $("cardChartBox"); if(!box) return;
+    const bars = $("cardBars"), ax = $("cardBarsAx"), tip = $("cardBarsTip");
+    bars.innerHTML = ""; ax.innerHTML = ""; tip.textContent = "";
+    const series = [];
+    if(cardChartMode === "day"){
+      const y = cardMonth.getFullYear(), m = cardMonth.getMonth();
+      const dim = new Date(y, m + 1, 0).getDate();
+      for(let i = 1; i <= dim; i++){
+        const key = y + "-" + pad(m + 1) + "-" + pad(i);
+        let v = 0;
+        (state.cardTx[key] || []).forEach(x => { if(cardPass(x)) v += Number(x.amt) || 0; });
+        series.push({ v, key, label: i + "/" + (m + 1), go: () => scrollToCardDay(key) });
+      }
+    } else {
+      for(let i = 11; i >= 0; i--){
+        const d = new Date(cardMonth.getFullYear(), cardMonth.getMonth() - i, 1);
+        series.push({ v: cardMonthTotal(d, cardFilterId), key: monthKeyOf(d),
+          label: (d.getMonth() + 1) + "/" + String(d.getFullYear()).slice(2),
+          go: () => { cardMonth = d; renderCards(); } });
+      }
+    }
+    const max = series.reduce((a, x) => Math.max(a, x.v), 0);
+    if(!max){ box.hidden = true; return; }
+    box.hidden = false;
+    let top = series[0];
+    series.forEach(x => { if(x.v > top.v) top = x; });
+    series.forEach(x => {
+      const b = document.createElement("button"); b.type = "button";
+      b.setAttribute("aria-label", x.label + ": " + fmt(x.v));
+      if(x === top) b.dataset.on = "1";
+      const i = document.createElement("i");
+      i.style.height = (x.v ? Math.max(4, Math.round(x.v / max * 100)) : 0) + "%";
+      b.appendChild(i);
+      b.onclick = () => { if(x.v || cardChartMode === "month") x.go(); };
+      bars.appendChild(b);
+    });
+    const pick = [0, Math.floor(series.length/3), Math.floor(series.length*2/3), series.length-1];
+    pick.forEach(i => { const sp = document.createElement("span"); sp.textContent = series[i].label; ax.appendChild(sp); });
+    if(cardChartMode === "day"){
+      tip.textContent = "Chi nhiều nhất ngày " + top.label + " · " + fmt(top.v) + ". Chạm cột để xem lại ngày đó.";
+    } else {
+      const prevM = new Date(cardMonth); prevM.setMonth(prevM.getMonth() - 1);
+      const pv = cardMonthTotal(prevM, cardFilterId);
+      tip.textContent = (pv ? "Tháng trước chi " + fmt(pv) + ". " : "") + "Cao nhất là tháng " + top.label + " · " + fmt(top.v) + ".";
+    }
+  }
+  function scrollToCardDay(key){
+    const el = $("cardList") && $("cardList").querySelector('[data-day="' + key + '"]');
+    if(!el) return;
+    el.scrollIntoView({ behavior:"smooth", block:"center" });
+    el.classList.add("flashrow");
+    setTimeout(() => el.classList.remove("flashrow"), 1400);
+  }
+  function cardRow(it, day, showCard){
     const li = document.createElement("li"); li.className = "item tap"; li.tabIndex = 0; li.setAttribute("role","button");
     li.setAttribute("aria-label", "Sửa khoản thẻ " + (it.where || "") + " " + fmt(it.amt));
     li.innerHTML = '<span class="cat" aria-hidden="true"></span><div class="desc"><div></div><div></div></div><span class="amt num"></span><button class="del" aria-label="Xoá khoản này">✕</button>';
@@ -3358,8 +3518,14 @@ header{margin-top:6px}
     const t = new Date(it.t || 0);
     const bits = [];
     if(it.t) bits.push(pad(t.getHours()) + ":" + pad(t.getMinutes()));
-    bits.push(cardShort(cardOf(it.cardId)));
     li.querySelector(".desc div:last-child").textContent = bits.join(" · ");
+    if(showCard){
+      const c = cardOf(it.cardId);
+      const tagEl = document.createElement("span"); tagEl.className = "tx-card" + (c ? "" : " none");
+      tagEl.textContent = c ? (c.last4 ? "••" + c.last4 : c.name.slice(0, 10)) : "chưa gán";
+      if(c) tagEl.title = cardLabel(c);
+      li.insertBefore(tagEl, li.querySelector(".amt"));
+    }
     li.querySelector(".amt").textContent = fmt(it.amt);
     li.addEventListener("click", e => { if(e.target.closest(".del")) return; openCardTx(it.id, day); });
     li.addEventListener("keydown", e => { if(e.target === li && (e.key === "Enter" || e.key === " ")){ e.preventDefault(); openCardTx(it.id, day); } });
@@ -3873,6 +4039,15 @@ header{margin-top:6px}
   $("nextCardMonth").onclick = () => { cardMonth.setMonth(cardMonth.getMonth()+1); renderCards(); };
   $("addCardTxBtn").onclick = () => openCardTx(null, todayKey());
   $("addCardBtn").onclick = () => openCardEdit(null);
+  $("openCardsBtn").onclick = () => { renderCardBank(); showSheet("cardsSheet", "cardsBack"); };
+  $("closeCardsSheet").onclick = () => hideSheet("cardsSheet", "cardsBack");
+  $("cardsBack").onclick = () => hideSheet("cardsSheet", "cardsBack");
+  $("cardChartSeg").onclick = e => {
+    const b = e.target.closest("button[data-cg]"); if(!b) return;
+    cardChartMode = b.dataset.cg;
+    [...$("cardChartSeg").children].forEach(x => x.setAttribute("aria-pressed", x === b ? "true" : "false"));
+    renderCardChart();
+  };
   $("pasteCardBtn").onclick = openPaste;
 
   /* ---------- backup, restore & merge ---------- */
