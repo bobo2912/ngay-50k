@@ -1,6 +1,21 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v30, ngày 26/09/2026
+**Phiên bản hiện tại:** v31, ngày 27/09/2026
+
+---
+
+## Có gì mới trong v31 (so với v30)
+
+Tab **Thẻ** được sắp xếp lại cho gọn và dễ theo dõi hơn.
+
+- **Ô tổng chỉ còn một con số.** Bỏ khối liệt kê từng thẻ nằm ngay dưới ô tổng — muốn xem thẻ nào thì chạm chip thẻ đó, cả trang sẽ đổi theo: ô tổng, biểu đồ và danh sách.
+- **So với tháng trước** ngay cạnh số tiền: ↓ xanh là chi ít hơn, ↑ đỏ là chi nhiều hơn. Dòng dưới gộp số khoản, mức chi trung bình mỗi ngày và nhắc rằng chi thẻ không tính vào hạn mức ngày.
+- **Danh sách thẻ không còn nằm ngoài trang.** Chuyển vào nút **Thẻ · N** ở cuối hàng chọn tháng, bấm mở bảng **Quản lý thẻ**. Mỗi thẻ hiện số thẻ đã che và số khoản trong tháng; thẻ chưa điền số được ghi rõ *chưa điền số thẻ* để biết vì sao app chưa tự gán được.
+- **Thêm biểu đồ xu hướng** ngay dưới ô tổng, đổi giữa hai cách xem:
+  - *Theo ngày* — các ngày trong tháng, cột cao nhất tô đậm. Chạm một cột để nhảy xuống đúng ngày đó trong danh sách.
+  - *12 tháng* — xu hướng dài hạn. Chạm một cột để mở tháng đó.
+- **Mỗi khoản chi có nhãn thẻ nhỏ** khi đang xem tất cả thẻ, nên biết ngay khoản nào của thẻ nào. Khi đã lọc một thẻ thì nhãn ẩn đi vì thừa.
+- **Dải chọn thẻ chỉ hiện thẻ có phát sinh** trong tháng đang xem, đỡ rối khi có nhiều thẻ.
 
 ---
 
@@ -11,15 +26,6 @@
 - **Chịu được lỗi đọc chữ thường gặp:** dấu `|` bị đọc thành `I`, `J` hay `]`; chữ *Hạn mức còn lại* bị đọc sai dấu. App vẫn tách đúng ô và vẫn bỏ qua số dư.
 - **Tên nơi chi không còn dính sang thông báo kế tiếp** khi thông báo bị cắt bằng dấu ba chấm.
 - **Gợi ý cách chính xác nhất** ngay trong bảng nhập: dùng tính năng chép chữ sẵn có của iPhone (chạm giữ vào ảnh, chọn *Sao chép văn bản*) rồi bấm *Dán từ bộ nhớ tạm*.
-
----
-
-## Có gì mới trong v29 (so với v28)
-
-- **Đọc được đúng thông báo của các ngân hàng trong nước.** Nhiều ngân hàng viết cả giao dịch trên một dòng dài, ngăn bằng dấu `|` (dạng `TÊN THẺ: SD THE [số thẻ]|Ngày GD: [...]|Số tiền GD: -...|...`). App giờ tách theo từng ô như vậy nên lấy đúng số thẻ, số tiền, ngày giờ và nơi chi.
-- **Không còn nhầm số dư thành khoản chi.** Các ô *Hạn mức còn lại*, *SD*, *Số dư*, *Khả dụng* bị bỏ qua hẳn, nên không còn xuất hiện những khoản chi bằng đúng số dư hay hạn mức.
-- **Ghép được dòng bị ngắt khi đọc ảnh.** Ảnh chụp trung tâm thông báo hay xuống dòng giữa chừng (`Số tiền GD: -` xuống dòng rồi mới tới số tiền), app tự nối lại trước khi đọc.
-- **Bỏ qua thông báo không phải giao dịch:** quảng cáo, tin thử nghiệm, thông báo Apple Pay… không còn lọt vào danh sách.
 
 ---
 
@@ -57,9 +63,11 @@
 - Lọc theo loại, trạng thái (chưa xong, tất toán), ngày khởi tạo hoặc ngày đến hạn.
 
 ### Tab Thẻ
-- Quản lý thẻ tín dụng: tên thẻ, 6 số đầu, 4 số cuối. Nhiều thẻ hiện thành dải chọn ngang, chạm để lọc.
-- Khoản chi thẻ không tính vào hạn mức mỗi ngày.
-- Xem theo tháng, chia theo từng thẻ, danh sách theo ngày, sửa và xoá.
+- Quản lý thẻ trong bảng riêng (nút **Thẻ · N** ở hàng chọn tháng): tên thẻ, 6 số đầu, 4 số cuối.
+- Dải chọn thẻ ngang, chạm để xem riêng từng thẻ; khoản chi thẻ không tính vào hạn mức mỗi ngày.
+- Ô tổng theo tháng kèm mức tăng giảm so với tháng trước, số khoản và trung bình mỗi ngày.
+- Biểu đồ *Theo ngày* và *12 tháng*, chạm cột để nhảy tới ngày hoặc tháng đó.
+- Danh sách theo ngày kèm nhãn thẻ, sửa và xoá.
 - Dán thông báo ngân hàng hoặc chọn ảnh chụp màn hình để nhập nhanh, tick chọn khoản đúng.
 
 ### Tab Người nhận
@@ -94,7 +102,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v31** | Tab Thẻ gọn lại: bỏ khối trùng lặp, gom quản lý thẻ vào một bảng, thêm biểu đồ xu hướng |
 | **v30** | Tự làm rõ ảnh trước khi đọc chữ nên bắt đủ các thông báo trong một ảnh |
-| **v29** | Đọc đúng thông báo ngân hàng kiểu một dòng ngăn bằng dấu gạch đứng, bỏ qua số dư và hạn mức còn lại |
 
 *File này chỉ giữ ghi chú của hai bản gần nhất.*
