@@ -1,6 +1,14 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v24, ngày 24/09/2026
+**Phiên bản hiện tại:** v25, ngày 26/09/2026
+
+---
+
+## Có gì mới trong v25 (so với v24)
+
+- **Phần trên màn hình không còn dính sát mép trên.** App luôn chừa một khoảng ở trên, kể cả khi mở bằng Safari, nên nút bánh răng và ngày tháng không nằm trong vùng thanh trạng thái, dễ bấm hơn.
+- **Hết cảnh nội dung trôi mờ mờ dưới thanh trạng thái:** phần trên cùng giờ là một dải nền liền màu, nội dung cuộn tới đó là khuất hẳn.
+- **Thanh "Cài đặt" thành nền đặc,** không còn trong mờ để lộ các dòng bên dưới, và luôn dừng ngay dưới dải nền khi cuộn.
 
 ---
 
@@ -226,6 +234,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v25** | Chừa khoảng an toàn phía trên, dải nền che thanh trạng thái, thanh Cài đặt nền đặc |
 | **v24** | Bảng nhập tiền nền đặc không hở, chỉ đóng bằng nút ✕, gọn lề dưới |
 | **v23** | Bỏ dòng hướng dẫn thừa, gọn khoảng trắng, sửa mép trên bảng nhập và lề ô số tiền |
 | **v22** | Chạm cột biểu đồ 7 ngày để xem lại ngày đó, thêm chi tiêu trung bình mỗi ngày |

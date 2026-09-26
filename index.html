@@ -828,6 +828,25 @@ main{padding-bottom:calc(86px + env(safe-area-inset-bottom,0px))}
 .form-sheet > .grab, .form-sheet .form-head{background:var(--sheet-bg); -webkit-backdrop-filter:none; backdrop-filter:none}
 .form-sheet .form-head{box-shadow:0 1px 0 var(--line)}
 main{padding-bottom:calc(74px + env(safe-area-inset-bottom,0px))}
+
+/* ================= v25: top safe area ================= */
+:root{--safe-top:max(env(safe-area-inset-top,0px), 18px); padding-top:var(--safe-top)}
+/* an opaque strip, cut from the very same background, so nothing scrolls into the status bar */
+body::after{content:""; position:fixed; inset:0; z-index:75; pointer-events:none;
+  background:
+    radial-gradient(70% 45% at 8% 0%, var(--blob1) 0%, transparent 70%),
+    radial-gradient(60% 40% at 100% 18%, var(--blob2) 0%, transparent 70%),
+    radial-gradient(60% 40% at 0% 68%, var(--blob4) 0%, transparent 70%),
+    radial-gradient(75% 40% at 70% 100%, var(--blob3) 0%, transparent 70%),
+    var(--bg);
+  -webkit-clip-path:inset(0 0 calc(100% - var(--safe-top)) 0);
+  clip-path:inset(0 0 calc(100% - var(--safe-top)) 0)}
+header{margin-top:6px}
+.settings{padding-top:var(--safe-top)}
+.settings-head{top:0}
+.cam-top{padding-top:calc(12px + var(--safe-top))}
+/* the Cài đặt bar is solid, so rows no longer show through it */
+.settings-head{background:var(--sheet-bg); -webkit-backdrop-filter:none; backdrop-filter:none; border:0; box-shadow:0 1px 0 var(--line); border-radius:0}
 </style>
 </head>
 <body>
@@ -1172,7 +1191,7 @@ main{padding-bottom:calc(74px + env(safe-area-inset-bottom,0px))}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v24</p>
+      <p class="sync" id="appVersion">Phiên bản v25</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. Giới hạn khoảng 5 MB được tính chung cho các mini app cùng tài khoản GitHub.</p>
 
       <h4 class="sub">Xoá dữ liệu</h4>
