@@ -30,9 +30,9 @@ Phải mở qua một máy chủ web, không mở thẳng bằng `file://`, vì 
 
 **Thu chi** — Tổng thu, tổng chi và số còn lại theo tháng. Biểu đồ so sánh theo ngày, tuần, tháng. Thống kê chi theo tag.
 
-**Khoản vay** — Theo dõi khoản mình đi vay và mình cho vay, ghi từng lần trả, cảnh báo quá hạn.
-
 **Thẻ** — Quản lý chi tiêu thẻ tín dụng, không tính vào hạn mức mỗi ngày. Nhập nhanh bằng cách dán thông báo ngân hàng hoặc chọn ảnh chụp màn hình: app đọc chữ trong ảnh, tách ra từng giao dịch, tự gán vào đúng thẻ theo 6 số đầu và 4 số cuối, rồi để bạn tick chọn khoản đúng trước khi ghi. Biểu đồ theo ngày và theo 12 tháng.
+
+**Khoản vay** — Theo dõi khoản mình đi vay và mình cho vay, ghi từng lần trả, cảnh báo quá hạn.
 
 **Người nhận** — Lưu người hay chuyển tiền để lần sau điền sẵn.
 

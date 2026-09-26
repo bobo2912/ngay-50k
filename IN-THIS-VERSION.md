@@ -1,6 +1,13 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v32, ngày 27/09/2026
+**Phiên bản hiện tại:** v33, ngày 27/09/2026
+
+---
+
+## Có gì mới trong v33 (so với v32)
+
+- **Hai nút nhập chuyển vào hàng chân của ô tổng**, ngăn với phần số tiền bằng một nét mảnh: **Từ ảnh** và **Ghi tay**. Không còn chiếm hàng riêng giữa trang, và vì gắn liền ô "tháng này" nên rõ là thêm khoản cho tháng đang xem.
+- **Thanh menu dưới đổi thứ tự:** Giao dịch · Thu chi · **Thẻ** · Khoản vay · Người nhận. Tab Thẻ chuyển lên trước Khoản vay cho gần tay hơn.
 
 ---
 
@@ -11,21 +18,6 @@ Gọt tiếp tab Thẻ cho bớt chữ thừa.
 - **Ô tổng chỉ còn đúng thứ cần biết:** nhãn tháng, số khoản nằm cùng dòng bên phải, rồi tới số tiền và mức tăng giảm. Bỏ dòng trung bình mỗi ngày và câu nhắc về hạn mức.
 - **Hai nút nhập thu nhỏ thành nút tròn có icon** — *Từ ảnh* và *Ghi tay* — nằm ngay cạnh tiêu đề danh sách thay vì hai khối lớn chiếm nguyên một hàng.
 - **Bỏ icon 💳 ở đầu mỗi khoản chi.** Tab này toàn giao dịch thẻ nên icon giống nhau ở mọi dòng chỉ làm rối; tên nơi chi giờ bắt đầu ngay từ lề.
-
----
-
-## Có gì mới trong v31 (so với v30)
-
-Tab **Thẻ** được sắp xếp lại cho gọn và dễ theo dõi hơn.
-
-- **Ô tổng chỉ còn một con số.** Bỏ khối liệt kê từng thẻ nằm ngay dưới ô tổng — muốn xem thẻ nào thì chạm chip thẻ đó, cả trang sẽ đổi theo: ô tổng, biểu đồ và danh sách.
-- **So với tháng trước** ngay cạnh số tiền: ↓ xanh là chi ít hơn, ↑ đỏ là chi nhiều hơn. Dòng dưới gộp số khoản, mức chi trung bình mỗi ngày và nhắc rằng chi thẻ không tính vào hạn mức ngày.
-- **Danh sách thẻ không còn nằm ngoài trang.** Chuyển vào nút **Thẻ · N** ở cuối hàng chọn tháng, bấm mở bảng **Quản lý thẻ**. Mỗi thẻ hiện số thẻ đã che và số khoản trong tháng; thẻ chưa điền số được ghi rõ *chưa điền số thẻ* để biết vì sao app chưa tự gán được.
-- **Thêm biểu đồ xu hướng** ngay dưới ô tổng, đổi giữa hai cách xem:
-  - *Theo ngày* — các ngày trong tháng, cột cao nhất tô đậm. Chạm một cột để nhảy xuống đúng ngày đó trong danh sách.
-  - *12 tháng* — xu hướng dài hạn. Chạm một cột để mở tháng đó.
-- **Mỗi khoản chi có nhãn thẻ nhỏ** khi đang xem tất cả thẻ, nên biết ngay khoản nào của thẻ nào. Khi đã lọc một thẻ thì nhãn ẩn đi vì thừa.
-- **Dải chọn thẻ chỉ hiện thẻ có phát sinh** trong tháng đang xem, đỡ rối khi có nhiều thẻ.
 
 ---
 
@@ -57,11 +49,6 @@ Tab **Thẻ** được sắp xếp lại cho gọn và dễ theo dõi hơn.
 - Biểu đồ so sánh thu chi theo ngày, tuần, tháng.
 - Thống kê chi theo tag và danh sách tất cả thu chi trong tháng.
 
-### Tab Khoản vay
-- Theo dõi khoản **mình đi vay** và **mình cho vay**, có tổng đang nợ và tổng người khác nợ mình.
-- Ghi từng lần trả, xem số còn lại, hạn trả, cảnh báo quá hạn.
-- Lọc theo loại, trạng thái (chưa xong, tất toán), ngày khởi tạo hoặc ngày đến hạn.
-
 ### Tab Thẻ
 - Quản lý thẻ trong bảng riêng (nút **Thẻ · N** ở hàng chọn tháng): tên thẻ, 6 số đầu, 4 số cuối.
 - Dải chọn thẻ ngang, chạm để xem riêng từng thẻ; khoản chi thẻ không tính vào hạn mức mỗi ngày.
@@ -69,6 +56,11 @@ Tab **Thẻ** được sắp xếp lại cho gọn và dễ theo dõi hơn.
 - Biểu đồ *Theo ngày* và *12 tháng*, chạm cột để nhảy tới ngày hoặc tháng đó.
 - Danh sách theo ngày kèm nhãn thẻ, sửa và xoá.
 - Dán thông báo ngân hàng hoặc chọn ảnh chụp màn hình để nhập nhanh, tick chọn khoản đúng.
+
+### Tab Khoản vay
+- Theo dõi khoản **mình đi vay** và **mình cho vay**, có tổng đang nợ và tổng người khác nợ mình.
+- Ghi từng lần trả, xem số còn lại, hạn trả, cảnh báo quá hạn.
+- Lọc theo loại, trạng thái (chưa xong, tất toán), ngày khởi tạo hoặc ngày đến hạn.
 
 ### Tab Người nhận
 - Lưu người hay chuyển tiền: tên gợi nhớ, số tài khoản, ngân hàng, tên tài khoản, nội dung mặc định, tag thường dùng.
@@ -102,7 +94,7 @@ Tab **Thẻ** được sắp xếp lại cho gọn và dễ theo dõi hơn.
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v33** | Nút nhập gắn vào ô tổng, tab Thẻ chuyển lên trước Khoản vay |
 | **v32** | Gọt thêm tab Thẻ: ô tổng ngắn gọn, nút nhập thu nhỏ, bỏ icon lặp ở mỗi khoản |
-| **v31** | Tab Thẻ gọn lại: bỏ khối trùng lặp, gom quản lý thẻ vào một bảng, thêm biểu đồ xu hướng |
 
 *File này chỉ giữ ghi chú của hai bản gần nhất.*
