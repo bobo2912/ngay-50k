@@ -1,6 +1,26 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v36, ngày 27/09/2026
+**Phiên bản hiện tại:** v37, ngày 27/09/2026
+
+---
+
+## Có gì mới trong v37 (so với v36)
+
+**App không còn tự xoá dữ liệu cũ.** Từ v1 tới giờ, mỗi lần lưu app đều âm thầm xoá mọi khoản cũ hơn 400 ngày — nghĩa là khoảng một năm nữa, lịch sử những ngày đầu sẽ biến mất, và file sao lưu xuất sau đó cũng không còn dữ liệu cũ. Tính lại thì lo hão: một khoản chi chỉ chiếm chừng 120 byte, ghi 10 khoản mỗi ngày trong 5 năm mới hết 2 MB trên hạn mức 5–10 MB. Giờ dữ liệu được giữ nguyên, để còn so sánh năm nay với năm ngoái.
+
+**Ghi lại khoản hay lặp bằng một chạm.** Dưới các nút nhập có dải *Ghi lại khoản hay lặp*: app tự tìm những khoản cùng nội dung và cùng số tiền xuất hiện từ hai lần trong 60 ngày gần đây — cà phê 25k, gửi xe 5k — chạm là ghi cho hôm nay, không qua form. Khoản nào đã ghi hôm nay thì tự ẩn khỏi dải.
+
+**Nhắc khi bỏ ghi.** Nếu hôm qua không có khoản nào mà trước đó bạn vẫn ghi đều, app hiện một dòng *Hôm qua chưa ghi khoản nào · Ghi bù*, chạm là mở form sẵn ngày hôm qua. Bấm một lần rồi thì thôi, không nhắc lại.
+
+**Tìm kiếm xuyên tháng.** Ô tìm trong Tổng quan, tìm cùng lúc trong khoản chi, khoản thu và chi thẻ của mọi tháng. Gõ được tên nơi chi, tên nhóm hoặc số tiền. Kết quả ghi rõ ngày, nhóm, thẻ và tổng số tiền đã chi.
+
+**Xuất CSV.** Trong Sao lưu và đồng bộ, nút *Xuất CSV để mở bằng Excel*. File dùng dấu chấm phẩy và có BOM nên Excel tiếng Việt mở ra là đúng cột, đúng dấu. Cột: ngày, loại, số tiền, nhóm, nội dung, thẻ, định kỳ.
+
+**Khoản định kỳ.** Trang mới trong Cài đặt: khai tên, số tiền, ngày trong tháng và nhóm. App tự ghi vào đúng ngày mỗi tháng, lùi tối đa ba tháng nếu bạn cài muộn, và không ghi trùng. Khoản định kỳ **không tính vào hạn mức mỗi ngày** — vì tiền nhà dồn vào một ngày thì hạn mức 50k hôm đó thành vô nghĩa — nhưng vẫn vào tổng chi của tháng. Ngày nào có khoản định kỳ thì dòng tổng ghi riêng *định kỳ …*.
+
+**Kỳ sao kê thẻ.** Chọn một thẻ đã khai ngày sao kê, app hiện dải *Kỳ sao kê 30/8 – 29/9 · 2.400.000đ · còn 2 ngày* — đúng số tiền kỳ sao kê này sẽ tính, thay vì gom theo tháng dương lịch. Còn dưới ba ngày thì viền chuyển cam.
+
+**Nhắc sao lưu rõ hơn:** nói luôn có bao nhiêu khoản đang chỉ nằm trên máy này, và viền chuyển đỏ khi quá 21 ngày hoặc chưa sao lưu lần nào.
 
 ---
 
@@ -16,17 +36,6 @@ Dọn bớt chữ hướng dẫn trên màn hình. Chữ luôn hiện giảm kho
 
 ---
 
-## Có gì mới trong v35 (so với v34)
-
-- **Chọn cách tính còn lại thực tế.** Ngay dưới con số có ba lựa chọn: *Cả hai*, *Chi thường*, *Chi thẻ*. Ô chi bị loại khỏi phép tính sẽ mờ đi để thấy ngay đang tính những gì.
-- **Thống kê theo tag ăn theo lựa chọn đó**, và đổi tiêu đề cho khớp: *Chi theo tag*, *Chi thường theo tag* hoặc *Chi thẻ theo tag*.
-- **Bốn ô tổng bằng nhau.** Trước đây ô khoản vay cao hơn ba ô kia vì có thêm dòng chú thích, làm cả lưới xô lệch. Câu chú thích chuyển xuống thành một dòng dưới lưới.
-- **Bỏ phần đặt trần cho từng nhóm.**
-- **Nút thêm khoản thu** không còn là khối xanh to giữa trang, mà thành nút tròn **＋ Khoản thu** ở cuối hàng chọn tháng, giống nút **Thẻ · N** bên tab Thẻ.
-- **Người nhận giờ là một trang con thật của Cài đặt**, cùng thanh *Cài đặt · Xong*, cùng kiểu nút *‹ Cài đặt* và tiêu đề lớn như Quản lý tag hay Quét mã QR. Bấm **Chuyển** vẫn đóng Cài đặt và mở sẵn form chuyển tiền như trước.
-
----
-
 ## Tất cả tính năng của app
 
 ### Tab Tổng quan
@@ -35,6 +44,7 @@ Dọn bớt chữ hướng dẫn trên màn hình. Chữ luôn hiện giảm kho
 - Thêm khoản thu theo nguồn: Lương, Thưởng, Bán hàng, Được cho, Khác. Chạm vào khoản thu để sửa số tiền, ghi chú, ngày nhận, nguồn thu.
 - Biểu đồ so sánh thu chi theo ngày, tuần, tháng.
 - Thống kê chi theo tag, ăn theo lựa chọn ở trên, và danh sách tất cả thu chi trong tháng.
+- **Tìm kiếm xuyên tháng** trên cả khoản chi, khoản thu và chi thẻ.
 
 ### Tab Giao dịch
 - **Thẻ Hôm nay còn được tiêu:** số tiền còn lại, thanh tiến độ, chuyển đỏ khi vượt hạn mức.
@@ -54,7 +64,8 @@ Dọn bớt chữ hướng dẫn trên màn hình. Chữ luôn hiện giảm kho
 - **Đoạn chuyển tiền cho MB Bank:** sao chép và mở MB Bank bằng một lần chạm.
 - **Xem theo ngày:** lùi, tiến hoặc chọn ngày bất kỳ. Chạm khoản chi để sửa số tiền, ghi chú, ngày và tag. Xoá bằng hai lần chạm.
 - **Biểu đồ 7 ngày gần nhất** so với hạn mức, có chi tiêu trung bình mỗi ngày. Chạm vào cột để xem lại giao dịch ngày đó.
-- **Nhắc sao lưu** khi quá 7 ngày chưa sao lưu.
+- **Nhắc sao lưu** khi quá 7 ngày, kèm số khoản đang chỉ nằm trên máy này.
+- **Ghi lại khoản hay lặp** bằng một chạm, và nhắc khi hôm qua bỏ ghi.
 
 ### Tab Thẻ
 - Quản lý thẻ trong bảng riêng (nút **Thẻ · N** ở hàng chọn tháng): tên thẻ, 6 số đầu, 4 số cuối, ngày sao kê.
@@ -64,6 +75,7 @@ Dọn bớt chữ hướng dẫn trên màn hình. Chữ luôn hiện giảm kho
 - Biểu đồ *Theo ngày* và *12 tháng*, chạm cột để nhảy tới ngày hoặc tháng đó.
 - Danh sách theo ngày kèm nhãn thẻ, sửa và xoá.
 - Dán thông báo ngân hàng hoặc chọn ảnh chụp màn hình để nhập nhanh, tick chọn khoản đúng.
+- **Kỳ sao kê:** thẻ có khai ngày sao kê thì hiện số tiền của kỳ đang mở và số ngày còn lại.
 
 ### Tab Khoản vay
 - Theo dõi khoản **mình đi vay** và **mình cho vay**, có tổng đang nợ và tổng người khác nợ mình.
@@ -79,9 +91,10 @@ Dọn bớt chữ hướng dẫn trên màn hình. Chữ luôn hiện giảm kho
 - **Quét mã QR:** Camera iPhone hoặc Quét trực tiếp, kèm thời gian tự tắt camera.
 - **Hạn mức chi một ngày.**
 - **Người nhận:** danh sách người hay chuyển tiền.
+- **Khoản định kỳ:** khai một lần, app tự ghi mỗi tháng, không tính vào hạn mức ngày.
 - **Quản lý tag:** danh sách tag, chi tiết từng tag, đổi tên và icon, ẩn hoặc hiện, xoá tag tự tạo.
 - **Sao lưu và đồng bộ:**
-  - Xuất file sao lưu.
+  - Xuất file sao lưu, hoặc xuất CSV để mở bằng Excel.
   - Nhập từ file, chọn **Gộp** hoặc **Thay toàn bộ**, có xem trước thay đổi và **Hoàn tác**.
   - Đồng bộ giữa các máy qua file.
 - **Dung lượng:** kèm số phiên bản app.
@@ -96,7 +109,7 @@ Dọn bớt chữ hướng dẫn trên màn hình. Chữ luôn hiện giảm kho
 - Tự báo khi có bản mới, bấm **Tải lại** để cập nhật.
 - Chữ giải thích nằm sau nút **ⓘ** cạnh tiêu đề, chạm mới hiện.
 - Giao diện Liquid Glass, sáng và tối theo cài đặt của máy. Thanh tab nổi ở đáy màn hình.
-- Tự dọn khoản chi và khoản thu cũ hơn 400 ngày.
+- Dữ liệu được giữ vô thời hạn, app không tự xoá khoản cũ.
 
 ---
 
@@ -104,7 +117,7 @@ Dọn bớt chữ hướng dẫn trên màn hình. Chữ luôn hiện giảm kho
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v37** | Bỏ tự xoá dữ liệu cũ, ghi lại một chạm, nhắc bỏ ghi, tìm kiếm, xuất CSV, khoản định kỳ, kỳ sao kê thẻ |
 | **v36** | Dọn bớt chữ hướng dẫn trên màn, phần giải thích chuyển vào nút ⓘ |
-| **v35** | Chọn cách tính còn lại thực tế, bỏ đặt trần, cân lại lưới ô tổng, Người nhận vào hẳn Cài đặt |
 
 *File này chỉ giữ ghi chú của hai bản gần nhất.*

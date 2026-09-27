@@ -48,9 +48,9 @@ Tất cả nằm trong `localStorage` của trình duyệt, dưới một khoá 
 
 Hệ quả cần biết:
 
-- Xoá app khỏi màn hình chính, hoặc xoá dữ liệu trang web trong cài đặt trình duyệt, là **mất sạch**. Nhớ xuất file sao lưu.
+- Xoá app khỏi màn hình chính, hoặc xoá dữ liệu trang web trong cài đặt trình duyệt, là **mất sạch**. Nhớ xuất file sao lưu. Ngoài file JSON còn xuất được CSV để mở bằng Excel.
 - Dữ liệu không tự đồng bộ giữa iPhone và máy tính. Muốn chuyển thì **Cài đặt → Sao lưu và đồng bộ → Xuất file**, mang file sang máy kia rồi **Nhập từ file**. Khi nhập có hai lựa chọn **Gộp** hoặc **Thay toàn bộ**, đều xem trước được thay đổi và hoàn tác được.
-- App tự dọn khoản chi và khoản thu cũ hơn 400 ngày.
+- Dữ liệu được giữ vô thời hạn; app không tự xoá khoản cũ.
 - File sao lưu là JSON có chứa số tài khoản và tên người nhận. **Đừng bao giờ tải file đó lên GitHub** — kho này công khai.
 
 ---
