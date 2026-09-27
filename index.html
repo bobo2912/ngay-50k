@@ -941,6 +941,17 @@ p.info[hidden]{display:none}
 .stmt .d{flex:none; font-size:.72rem; font-weight:600}
 .stmt.soon{border-color:#F0A33C}
 .stmt.soon .d{color:#B45309}
+
+.cards-btn.icon-only{padding:0; width:36px; justify-content:center}
+.cards-btn.icon-only svg{width:18px; height:18px; stroke:var(--note); stroke-width:2}
+.ledger-head{position:sticky; top:var(--safe-top); z-index:20; margin:0 -16px; padding:10px 16px 8px;
+  background:var(--sheet-bg); box-shadow:0 1px 0 var(--line)}
+.ledger-head h2{margin:0}
+.ledger-head .searchbar{margin:8px 0 0}
+#anSheet .chart-sec, #anSheet section{margin-top:18px}
+#anSheet .chart-sec:first-of-type{margin-top:10px}
+#anSheet .chart-head h2{font-size:.95rem; white-space:nowrap}
+#anSheet .cseg button{padding:5px 9px}
 .searchbar{display:flex; align-items:center; gap:8px; margin:8px 0 4px; padding:0 12px;
   border:1px solid var(--line); background:var(--field); border-radius:13px}
 .searchbar svg{width:16px; height:16px; flex:none; fill:none; stroke:var(--muted); stroke-width:2; stroke-linecap:round}
@@ -1091,6 +1102,9 @@ header{margin-top:6px}
       <strong id="monthLabel"></strong>
       <button id="nextMonth" aria-label="Tháng sau">›</button>
       <span class="mspace"></span>
+      <button class="cards-btn icon-only" id="openAnalytics" aria-haspopup="dialog" aria-label="Phân tích tháng">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V11M10 20V4M16 20v-6M22 20H2"/></svg>
+      </button>
       <button class="cards-btn" id="addIncomeBtn">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Khoản thu
       </button>
@@ -1138,32 +1152,14 @@ header{margin-top:6px}
     </section>
     <p class="inline-ok" id="incomeMsg" hidden></p>
 
-    <section class="chart-sec">
-      <div class="chart-head">
-        <h2>So sánh thu chi</h2>
-        <div class="cseg" id="chartSeg" role="group" aria-label="Xem biểu đồ theo">
-          <button data-g="day" aria-pressed="false">Ngày</button><button data-g="week" aria-pressed="false">Tuần</button><button data-g="month" aria-pressed="true">Tháng</button>
-        </div>
-      </div>
-      <div class="chart-legend"><span class="lg in">Thu</span><span class="lg out">Chi</span></div>
-      <div class="chart-wrap">
-        <svg class="chart-axis" id="chartAxis" aria-hidden="true"></svg>
-        <div class="chart-scroll hscroll" id="chartScroll"><svg id="chartSvg" role="img"></svg></div>
-      </div>
-      <p class="chart-tip" id="chartTip"></p>
-    </section>
-
     <section>
-      <h2 id="catTitle">Chi theo tag</h2>
-      <div class="cats" id="catBreakdown"></div>
-    </section>
-
-    <section>
+      <div class="ledger-head">
       <h2 id="ledgerTitle">Tất cả thu chi trong tháng</h2>
       <div class="searchbar">
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
         <input id="searchBox" class="inp" type="search" inputmode="search" autocomplete="off" placeholder="Tìm trong tất cả các tháng">
         <button type="button" class="sx" id="searchClear" hidden aria-label="Xoá tìm kiếm">✕</button>
+      </div>
       </div>
       <div id="ledgerList"></div>
     </section>
@@ -1441,7 +1437,7 @@ header{margin-top:6px}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v37</p>
+      <p class="sync" id="appVersion">Phiên bản v38</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. Giới hạn khoảng 5 MB được tính chung cho các mini app cùng tài khoản GitHub.</p>
 
       <h4 class="sub">Xoá dữ liệu</h4>
@@ -1536,6 +1532,32 @@ header{margin-top:6px}
     <button class="ghost" id="pasteCancel">Huỷ</button>
     <button class="primary" id="pasteImport" style="margin:0" disabled>Nhập khoản đã chọn</button>
   </div>
+</div>
+
+<div class="sheet-back top" id="anBack" hidden></div>
+<div class="sheet top" id="anSheet" role="dialog" aria-modal="true" aria-labelledby="anTitle" hidden>
+  <div class="grab" aria-hidden="true"></div>
+  <div class="sheet-head"><h2 id="anTitle">Phân tích tháng</h2><button class="x" id="closeAn" aria-label="Đóng">✕</button></div>
+  <section class="chart-sec">
+      <div class="chart-head">
+        <h2>So sánh thu chi</h2>
+        <div class="cseg" id="chartSeg" role="group" aria-label="Xem biểu đồ theo">
+          <button data-g="day" aria-pressed="false">Ngày</button><button data-g="week" aria-pressed="false">Tuần</button><button data-g="month" aria-pressed="true">Tháng</button>
+        </div>
+      </div>
+      <div class="chart-legend"><span class="lg in">Thu</span><span class="lg out">Chi</span></div>
+      <div class="chart-wrap">
+        <svg class="chart-axis" id="chartAxis" aria-hidden="true"></svg>
+        <div class="chart-scroll hscroll" id="chartScroll"><svg id="chartSvg" role="img"></svg></div>
+      </div>
+      <p class="chart-tip" id="chartTip"></p>
+    </section>
+
+    <section>
+      <h2 id="catTitle">Chi theo tag</h2>
+      <div class="cats" id="catBreakdown"></div>
+    </section>
+
 </div>
 
 <div class="sheet-back top" id="rcBack" hidden></div>
@@ -4552,6 +4574,13 @@ header{margin-top:6px}
     t.hidden = !open;
     b.setAttribute("aria-expanded", open ? "true" : "false");
   });
+  $("openAnalytics").onclick = () => {
+    showSheet("anSheet", "anBack");
+    requestAnimationFrame(() => renderChart());
+  };
+  const closeAn = () => hideSheet("anSheet", "anBack");
+  $("closeAn").onclick = closeAn;
+  $("anBack").onclick = closeAn;
   $("searchBox").addEventListener("input", () => {
     searchQ = $("searchBox").value;
     $("searchClear").hidden = !searchQ;
