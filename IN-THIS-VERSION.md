@@ -1,6 +1,18 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v35, ngày 27/09/2026
+**Phiên bản hiện tại:** v36, ngày 27/09/2026
+
+---
+
+## Có gì mới trong v36 (so với v35)
+
+Dọn bớt chữ hướng dẫn trên màn hình. Chữ luôn hiện giảm khoảng một nửa, phần còn lại không mất mà nằm sau một nút **ⓘ** nhỏ ngay cạnh tiêu đề — chạm là mở ra, chạm lần nữa là cất đi.
+
+- **Bảng Nhập từ thông báo** bỏ hai đoạn hướng dẫn dài ở đầu và cuối, gom vào ⓘ. Giờ mở bảng ra là thấy ngay ô dán và hai nút.
+- **Bảng Quản lý thẻ** bỏ hai câu về số thẻ, gom vào ⓘ. Bảng Thêm thẻ cũng bỏ câu giải thích, chỉ còn các ô và ví dụ sẵn trong ô.
+- **Tổng quan** bỏ dòng chú thích về khoản vay dưới bốn ô, chuyển vào ⓘ cạnh nhãn ô tổng.
+- **Trong Cài đặt** rút ngắn các câu ở Quét mã QR, Người nhận, Quản lý tag và chi tiết tag; bỏ hẳn câu thừa ở danh sách tag.
+- **Câu báo lỗi và trạng thái rỗng** ngắn lại, chỉ giữ phần cho biết nên làm gì tiếp.
 
 ---
 
@@ -12,29 +24,6 @@
 - **Bỏ phần đặt trần cho từng nhóm.**
 - **Nút thêm khoản thu** không còn là khối xanh to giữa trang, mà thành nút tròn **＋ Khoản thu** ở cuối hàng chọn tháng, giống nút **Thẻ · N** bên tab Thẻ.
 - **Người nhận giờ là một trang con thật của Cài đặt**, cùng thanh *Cài đặt · Xong*, cùng kiểu nút *‹ Cài đặt* và tiêu đề lớn như Quản lý tag hay Quét mã QR. Bấm **Chuyển** vẫn đóng Cài đặt và mở sẵn form chuyển tiền như trước.
-
----
-
-## Có gì mới trong v34 (so với v33)
-
-Bản lớn: app không còn chỉ đếm tiền mỗi ngày mà cho thấy cả bức tranh tháng.
-
-**Tab Tổng quan** thay cho tab Thu chi, và nằm đầu thanh menu.
-- Con số lớn nhất là **còn lại thực tế** = thu vào − chi thường − chi thẻ, kèm mức tăng giảm so với tháng trước.
-- Bốn ô: thu vào, chi thường, chi thẻ, khoản vay. Ô khoản vay ghi rõ **không tính vào số trên** — tiền vay được không phải thu nhập, tiền trả nợ không phải chi tiêu. Chạm vào để mở tab Khoản vay.
-- Biểu đồ thu chi và thống kê theo nhóm vẫn ở dưới như cũ.
-
-**Ngân sách theo nhóm.** Đặt trần mỗi tháng cho vài nhóm hay vượt, nhóm nào để trống thì app không theo dõi. Thanh tiến độ ba màu: trong trần xanh, từ 85% chuyển cam kèm *còn bao nhiêu cho mấy ngày cuối tháng*, vượt thì đỏ và ghi rõ vượt bao nhiêu. Trần dùng lại cho các tháng sau.
-
-**Khoản chi thẻ gắn được nhóm**, nên ngân sách tính cả tiền quẹt thẻ — nếu không, trần *Mua sắm* sẽ bỏ sót đúng những lần mua sắm lớn nhất. App tự đoán nhóm theo nơi chi đã từng gặp, bạn chỉ cần sửa khi đoán sai.
-
-**Thẻ có thêm ngày sao kê** (không bắt buộc). Bảng Quản lý thẻ hiện *sao kê ngày 15*, và nhắc *còn 3 ngày* khi sắp tới.
-
-**Tab Giao dịch thêm hai thông tin** ngay trong thẻ hạn mức: dòng *Thẻ tháng này …* ở chân thẻ, chạm là sang tab Thẻ — trước đây chi thẻ hoàn toàn vô hình ở màn hình chính; và dòng trạng thái cho biết **cả tuần** còn dư hay đã vượt bao nhiêu, vì chi tiêu thật không đều mỗi ngày.
-
-**Thanh menu còn bốn tab:** Tổng quan · Giao dịch · Thẻ · Khoản vay. **Người nhận** chuyển vào Cài đặt vì đó là dữ liệu tham chiếu, không phải nơi ghé mỗi ngày. Bốn tab nên mỗi nút rộng hơn hẳn, chữ hết chen chúc.
-
-App vẫn mở lên ở tab **Giao dịch** để ghi khoản chi không mất thêm một chạm nào.
 
 ---
 
@@ -105,6 +94,7 @@ App vẫn mở lên ở tab **Giao dịch** để ghi khoản chi không mất t
 - Vuốt từ trái sang phải để từ trang con quay về trang trước trong cùng menu.
 - Dữ liệu **chỉ lưu trên máy**, không gửi lên máy chủ nào. App không tải gì từ trang web khác.
 - Tự báo khi có bản mới, bấm **Tải lại** để cập nhật.
+- Chữ giải thích nằm sau nút **ⓘ** cạnh tiêu đề, chạm mới hiện.
 - Giao diện Liquid Glass, sáng và tối theo cài đặt của máy. Thanh tab nổi ở đáy màn hình.
 - Tự dọn khoản chi và khoản thu cũ hơn 400 ngày.
 
@@ -114,7 +104,7 @@ App vẫn mở lên ở tab **Giao dịch** để ghi khoản chi không mất t
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v36** | Dọn bớt chữ hướng dẫn trên màn, phần giải thích chuyển vào nút ⓘ |
 | **v35** | Chọn cách tính còn lại thực tế, bỏ đặt trần, cân lại lưới ô tổng, Người nhận vào hẳn Cài đặt |
-| **v34** | Tab Tổng quan, ngân sách theo nhóm, tag cho khoản chi thẻ, ngày sao kê, thanh menu 4 tab |
 
 *File này chỉ giữ ghi chú của hai bản gần nhất.*

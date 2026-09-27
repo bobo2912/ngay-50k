@@ -891,7 +891,15 @@ main{padding-bottom:calc(74px + env(safe-area-inset-bottom,0px))}
 .kpi.inc b{color:var(--ok)} .kpi.card b{color:var(--note)}
 .kpi4 > *{min-height:64px; display:flex; flex-direction:column; justify-content:center}
 .kpi.dim{opacity:.45}
-.kpi-note{margin:8px 2px 0; font-size:.72rem; color:var(--muted); line-height:1.5}
+.lb-r{display:flex; align-items:center; gap:7px; flex:none}
+.ib{flex:none; width:19px; height:19px; padding:0; border-radius:50%; border:1px solid var(--line);
+  background:transparent; color:var(--muted); font-size:.66rem; font-weight:800; line-height:1; font-style:italic;
+  display:inline-flex; align-items:center; justify-content:center}
+.ib[aria-expanded="true"]{background:var(--note-soft); border-color:transparent; color:var(--note)}
+.sheet-head .ib{margin-left:auto}
+.sheet-head .ib + .x{margin-left:10px}
+p.info{margin:10px 0 0; padding:9px 11px; border-radius:11px; background:var(--note-soft); color:var(--muted)}
+p.info[hidden]{display:none}
 .chero-foot.seg3{gap:0}
 .chero-foot.seg3 button{font-size:.8rem; padding:11px 2px}
 .chero-foot.seg3 button[aria-pressed="true"]{color:var(--note); background:var(--note-soft)}
@@ -1046,9 +1054,10 @@ header{margin-top:6px}
       </button>
     </div>
     <div class="ledger chero">
-      <p class="chero-lb"><span id="netLabel">Còn lại thực tế tháng này</span><span class="chero-trend" id="netTrend" hidden></span></p>
+      <p class="chero-lb"><span id="netLabel">Còn lại thực tế tháng này</span><span class="lb-r"><span class="chero-trend" id="netTrend" hidden></span><button class="ib" type="button" data-info="infoNet" aria-expanded="false" aria-label="Giải thích">i</button></span></p>
       <p class="chero-big"><span class="num" id="sumNet">0đ</span></p>
       <p class="ov-sub" id="netSub"></p>
+      <p class="set-now info" id="infoNet" hidden>Ba nút dưới chọn phép tính gồm chi thường, chi thẻ hay cả hai. Khoản vay luôn để ngoài: tiền vay được không phải thu nhập, tiền trả nợ không phải chi tiêu.</p>
       <div class="chero-foot seg3" id="netSeg" role="group" aria-label="Tính còn lại thực tế gồm">
         <button type="button" data-nf="all" aria-pressed="true">Cả hai</button>
         <button type="button" data-nf="cash" aria-pressed="false">Chi thường</button>
@@ -1062,7 +1071,6 @@ header{margin-top:6px}
       <div class="kpi card" id="kpiCard"><small>Chi thẻ</small><b class="num" id="sumCard">0đ</b></div>
       <button class="kpi" id="kpiLoan"><small>Khoản vay</small><b class="num" id="sumLoan">0đ</b></button>
     </div>
-    <p class="kpi-note">Khoản vay không tính vào còn lại thực tế: tiền vay được không phải thu nhập, tiền trả nợ không phải chi tiêu.</p>
 
     <section id="incomeForm" hidden>
       <div class="form">
@@ -1248,7 +1256,7 @@ header{margin-top:6px}
       </div>
       <p class="set-now" id="scanHint" style="margin-top:10px"></p>
       <h4 class="sub">Tự tắt camera</h4>
-      <p class="set-now">Chỉ dùng cho cách Quét trực tiếp. Mở khung quét mà không quét gì trong khoảng này thì app tự tắt camera, để iPhone tự khoá màn hình được.</p>
+      <p class="set-now">Chỉ dùng cho Quét trực tiếp. Mở khung quét mà không quét gì trong khoảng này thì camera tự tắt.</p>
       <div class="seg seg4" id="camOffSeg" role="group" aria-label="Thời gian tự tắt camera" style="margin-top:10px">
         <button data-off="30">30 giây</button>
         <button data-off="45">45 giây</button>
@@ -1272,7 +1280,7 @@ header{margin-top:6px}
 
     <div class="set-page" id="setPeople" hidden>
       <div class="set-head"><button class="set-back" data-back>‹ Cài đặt</button><h2 tabindex="-1">Người nhận</h2></div>
-    <p class="set-now" style="margin:0 2px 10px">Lưu những người bạn hay chuyển tiền. Bấm Chuyển để điền sẵn thông tin, chỉ cần nhập số tiền.</p>
+    <p class="set-now" style="margin:0 2px 10px">Bấm Chuyển để mở form đã điền sẵn, chỉ cần nhập số tiền.</p>
     <button class="ghost" id="addContactBtn" style="width:100%">＋ Thêm người nhận</button>
 
     <section id="contactForm" hidden>
@@ -1296,7 +1304,6 @@ header{margin-top:6px}
 
     <div class="set-page" id="setTags" hidden>
       <div class="set-head"><button class="set-back" data-back>‹ Cài đặt</button><h2 tabindex="-1">Quản lý tag</h2></div>
-      <p class="set-now" style="margin:0 2px 10px">Chạm vào một tag để xem chi tiết, đổi tên, đổi icon hoặc ẩn đi.</p>
       <div class="set-list" id="tagList"></div>
       <button class="ghost" id="newTagSet" style="width:100%; margin-top:14px">＋ Tạo tag mới</button>
       <div class="set-group" id="newTagSetBox" hidden>
@@ -1319,10 +1326,10 @@ header{margin-top:6px}
           <input id="tagOneEmoji" class="inp" maxlength="8" autocomplete="off" placeholder="hoặc gõ một emoji bất kỳ" style="margin-top:8px"></div>
           <button class="primary" id="tagOneSave">Lưu thay đổi</button>
         </div>
-        <p class="set-now" id="tagOneFixed" hidden>Tag có sẵn nên không đổi được tên và icon. Bạn có thể ẩn nó đi, hoặc tạo tag riêng của mình.</p>
+        <p class="set-now" id="tagOneFixed" hidden>Tag có sẵn không đổi được tên và icon, nhưng ẩn đi được.</p>
         <h4 class="sub">Hiển thị</h4>
         <button class="ghost" id="tagOneToggle" style="width:100%"></button>
-        <p class="set-now" style="margin-top:8px">Ẩn tag chỉ bỏ nó khỏi danh sách chọn. Các khoản chi cũ vẫn giữ nguyên tag này.</p>
+        <p class="set-now" style="margin-top:8px">Ẩn tag chỉ bỏ khỏi danh sách chọn, khoản cũ vẫn giữ nguyên.</p>
         <div id="tagOneDelBox" hidden>
           <h4 class="sub">Xoá</h4>
           <button class="ghost danger" id="tagOneDel" style="width:100%">Xoá tag này</button>
@@ -1372,7 +1379,7 @@ header{margin-top:6px}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v35</p>
+      <p class="sync" id="appVersion">Phiên bản v36</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. Giới hạn khoảng 5 MB được tính chung cho các mini app cùng tài khoản GitHub.</p>
 
       <h4 class="sub">Xoá dữ liệu</h4>
@@ -1443,14 +1450,13 @@ header{margin-top:6px}
 <div class="sheet-back top" id="pasteBack" hidden></div>
 <div class="sheet top" id="pasteSheet" role="dialog" aria-modal="true" aria-labelledby="pasteTitle" hidden>
   <div class="grab" aria-hidden="true"></div>
-  <div class="sheet-head"><h2 id="pasteTitle">Nhập từ thông báo</h2><button class="x" id="closePaste" aria-label="Đóng">✕</button></div>
-  <p class="set-now" style="margin:0 2px 8px">Sao chép thông báo hoặc tin nhắn ngân hàng rồi dán vào đây, hoặc chọn ảnh chụp màn hình để app đọc chữ trong ảnh. Nhiều giao dịch một lúc cũng được.</p>
+  <div class="sheet-head"><h2 id="pasteTitle">Nhập từ thông báo</h2><button class="ib" type="button" data-info="infoPaste" aria-expanded="false" aria-label="Giải thích">i</button><button class="x" id="closePaste" aria-label="Đóng">✕</button></div>
+  <p class="set-now info" id="infoPaste" hidden>Dán thông báo ngân hàng, hoặc chọn ảnh chụp màn hình để app đọc chữ trong ảnh. Nhiều giao dịch một lúc cũng được. Ảnh mờ thì iPhone đọc chuẩn hơn: mở ảnh trong Ảnh, chạm giữ vào chữ, chọn Sao chép văn bản rồi quay lại bấm Dán từ bộ nhớ tạm.</p>
   <textarea id="pasteText" class="inp" rows="5" placeholder="vd: The tin dung ****1234 da thanh toan 1.250.000 VND tai LOTTE MART ngay 25/09/2026" style="min-height:104px; line-height:1.45"></textarea>
   <div class="set-row">
     <button class="ghost grow" id="pasteFromClip">Dán từ bộ nhớ tạm</button>
     <label class="ghost grow file-btn">Chọn ảnh<input type="file" accept="image/*" id="ocrFile"></label>
   </div>
-  <p class="hint" style="margin:6px 2px 0">Chữ trong ảnh mờ thì iPhone đọc chuẩn hơn: mở ảnh trong <b>Ảnh</b>, chạm giữ vào chữ rồi chọn <b>Sao chép văn bản</b>, sau đó bấm <b>Dán từ bộ nhớ tạm</b>.</p>
   <button class="primary" id="parseBtn" style="margin-top:10px">Tìm khoản chi</button>
   <p class="set-now" id="ocrState" hidden></p>
   <p class="sync-err" id="pasteErr" hidden></p>
@@ -1473,11 +1479,10 @@ header{margin-top:6px}
 <div class="sheet-back top" id="cardsBack" hidden></div>
 <div class="sheet top" id="cardsSheet" role="dialog" aria-modal="true" aria-labelledby="cardsSheetTitle" hidden>
   <div class="grab" aria-hidden="true"></div>
-  <div class="sheet-head"><h2 id="cardsSheetTitle">Quản lý thẻ</h2><button class="x" id="closeCardsSheet" aria-label="Đóng">✕</button></div>
-  <p class="set-now" style="margin:0 2px 10px">Điền đúng 6 số đầu và 4 số cuối để app tự gán khoản chi vào đúng thẻ.</p>
+  <div class="sheet-head"><h2 id="cardsSheetTitle">Quản lý thẻ</h2><button class="ib" type="button" data-info="infoCards" aria-expanded="false" aria-label="Giải thích">i</button><button class="x" id="closeCardsSheet" aria-label="Đóng">✕</button></div>
+  <p class="set-now info" id="infoCards" hidden>Thông báo ngân hàng thường chỉ hiện 6 số đầu và 4 số cuối. Điền đúng hai phần này để app tự gán khoản chi vào đúng thẻ. Số thẻ chỉ nằm trên máy này, không gửi đi đâu.</p>
   <div id="cardBank"></div>
   <button class="ghost" id="addCardBtn" style="width:100%; margin-top:10px">＋ Thêm thẻ</button>
-  <p class="hint" style="margin:10px 2px 0">Số thẻ chỉ nằm trên máy này, không gửi đi đâu.</p>
 </div>
 
 <div class="sheet-back top" id="cardEditBack" hidden></div>
@@ -1489,7 +1494,6 @@ header{margin-top:6px}
     <div class="field" style="flex:1; min-width:0"><label for="cdFirst6"><span>6 số đầu</span></label><input id="cdFirst6" class="inp num" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="970436"></div>
     <div class="field" style="flex:1; min-width:0"><label for="cdLast4"><span>4 số cuối</span></label><input id="cdLast4" class="inp num" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="1234"></div>
   </div>
-  <p class="hint">Thông báo ngân hàng thường chỉ hiện 6 số đầu và 4 số cuối. Điền đúng hai phần này để app tự gán khoản chi vào đúng thẻ.</p>
   <div class="field"><label for="cdStmt"><span>Ngày sao kê hằng tháng <span class="opt">(không bắt buộc)</span></span></label><input id="cdStmt" class="inp num" inputmode="numeric" maxlength="2" autocomplete="off" placeholder="vd: 15"></div>
   <p class="inline-ok" id="cdMsg" hidden></p>
   <div class="sheet-foot">
@@ -1580,7 +1584,7 @@ header{margin-top:6px}
             <p class="inline-ok" id="mbMsg" hidden></p>
             <a class="mb-btn" id="mbBtn" href="mbbank://">Sao chép và mở <span class="tag">MB Bank</span></a>
           </div>
-          <p class="subtle">Trong MB Bank, dán đoạn này vào ô trợ lý để tạo lệnh chuyển. Nhớ kiểm tra tên người nhận MB Bank hiển thị trước khi xác nhận.</p>
+          <p class="subtle">Dán vào ô trợ lý trong MB Bank. Kiểm tra tên người nhận trước khi xác nhận.</p>
           <button class="link-btn" id="doneBtn">Xong</button>
         </div>
       </div>
@@ -3531,7 +3535,7 @@ header{margin-top:6px}
     const showBadge = !cardFilterId && (cardsAll.length > 1 || rows.some(r => !r.it.cardId));
     const box = $("cardList"); box.innerHTML = "";
     if(!shown.length){
-      box.innerHTML = '<p class="empty">' + (cardFilterId ? "Thẻ này chưa có khoản chi nào trong tháng." : "Chưa có khoản chi thẻ nào trong tháng này. Bấm Dán từ thông báo hoặc Chọn ảnh để nhập nhanh.") + '</p>';
+      box.innerHTML = '<p class="empty">' + (cardFilterId ? "Thẻ này chưa có khoản chi nào trong tháng." : "Chưa có khoản chi thẻ nào trong tháng này.") + '</p>';
     } else {
       let curDayKey = null, ul = null;
       shown.forEach(r => {
@@ -3560,7 +3564,7 @@ header{margin-top:6px}
     const bank = $("cardBank"); if(!bank) return;
     bank.innerHTML = "";
     const cards = state.cards || [];
-    if(!cards.length){ bank.innerHTML = '<p class="empty">Chưa có thẻ nào. Thêm thẻ để app biết khoản nào thuộc thẻ nào.</p>'; return; }
+    if(!cards.length){ bank.innerHTML = '<p class="empty">Chưa có thẻ nào.</p>'; return; }
     const rows = cardTxOfMonth(monthKeyOf(cardMonth || new Date()));
     cards.forEach(c => {
       const mine = rows.filter(r => r.it.cardId === c.id);
@@ -3681,7 +3685,7 @@ header{margin-top:6px}
     const box = $("cxCardChips"); box.innerHTML = "";
     const list = (state.cards || []).slice();
     if(!list.length){
-      const p = document.createElement("p"); p.className = "hint"; p.textContent = "Chưa có thẻ nào. Bạn vẫn lưu được, gán thẻ sau cũng không sao.";
+      const p = document.createElement("p"); p.className = "hint"; p.textContent = "Chưa có thẻ nào, gán sau cũng được.";
       box.appendChild(p); return;
     }
     list.forEach(c => {
@@ -4062,7 +4066,7 @@ header{margin-top:6px}
     try{
       const text = await ocrImage(f, pr => { st.textContent = "Đang đọc ảnh… " + Math.round(pr * 100) + "%"; }, msg => { st.textContent = msg; });
       st.hidden = true;
-      if(!text.trim()){ $("pasteErr").textContent = "Không đọc được chữ nào trong ảnh. Thử ảnh rõ hơn, hoặc chụp gần phần có số tiền."; $("pasteErr").hidden = false; return; }
+      if(!text.trim()){ $("pasteErr").textContent = "Không đọc được chữ trong ảnh. Thử chụp gần phần có số tiền."; $("pasteErr").hidden = false; return; }
       $("pasteText").value = text.trim();
       $("parseBtn").click();
     }catch(err){
@@ -4101,7 +4105,7 @@ header{margin-top:6px}
     });
     if(!list.length){
       const p = document.createElement("p"); p.className = "hint"; p.style.margin = "8px 2px";
-      p.textContent = "Không có khoản nào khớp với thẻ đã lưu. Kiểm tra lại 6 số đầu và 4 số cuối của thẻ trong phần Quản lý thẻ, hoặc mở danh sách bên dưới để chọn tay.";
+      p.textContent = "Không khoản nào khớp thẻ đã lưu. Mở danh sách dưới để chọn tay.";
       box.appendChild(p);
     }
     const other = pasteFiltering() ? pasteItems.filter(p => !p.cardId).length : 0;
@@ -4128,7 +4132,7 @@ header{margin-top:6px}
     pasteCard = id;
     const box = $("pasteCardChips"); box.innerHTML = "";
     const list = (state.cards || []);
-    if(!list.length){ const p = document.createElement("p"); p.className = "hint"; p.textContent = "Chưa có thẻ nào, khoản nhập vào sẽ để trống thẻ."; box.appendChild(p); return; }
+    if(!list.length){ const p = document.createElement("p"); p.className = "hint"; p.textContent = "Chưa có thẻ nào, khoản sẽ để trống thẻ."; box.appendChild(p); return; }
     list.forEach(c => {
       const b = document.createElement("button"); b.type = "button"; b.className = "chip";
       b.textContent = cardLabel(c); b.setAttribute("aria-pressed", c.id === id ? "true" : "false");
@@ -4150,7 +4154,7 @@ header{margin-top:6px}
       if(t){ $("pasteText").value = t; $("parseBtn").click(); }
       else $("pasteErr").textContent = "Bộ nhớ tạm đang trống.", $("pasteErr").hidden = false;
     }catch(e){
-      $("pasteErr").textContent = "Máy không cho đọc bộ nhớ tạm. Bạn chạm vào ô trên rồi chọn Dán.";
+      $("pasteErr").textContent = "Máy không cho đọc bộ nhớ tạm. Chạm vào ô trên rồi chọn Dán.";
       $("pasteErr").hidden = false; $("pasteText").focus();
     }
   };
@@ -4170,7 +4174,7 @@ header{margin-top:6px}
     pasteShowOther = false;
     if(!found.length){
       $("pasteFound").hidden = true;
-      $("pasteErr").textContent = "Không tìm thấy số tiền nào trong đoạn vừa dán. Thử dán cả dòng có số tiền và chữ VND.";
+      $("pasteErr").textContent = "Không thấy số tiền nào. Thử dán cả dòng có chữ VND.";
       $("pasteErr").hidden = false; updatePasteBtn(); return;
     }
     const mine = pasteFiltering() ? found.filter(p => p.cardId).length : found.length;
@@ -4202,6 +4206,13 @@ header{margin-top:6px}
   $("openCardsBtn").onclick = () => { renderCardBank(); showSheet("cardsSheet", "cardsBack"); };
   $("heroCard").onclick = () => showTab("cards");
   $("kpiLoan").onclick = () => showTab("loans");
+  document.addEventListener("click", e => {
+    const b = e.target.closest(".ib[data-info]"); if(!b) return;
+    const t = $(b.dataset.info); if(!t) return;
+    const open = t.hidden;
+    t.hidden = !open;
+    b.setAttribute("aria-expanded", open ? "true" : "false");
+  });
   $("netSeg").onclick = e => {
     const b = e.target.closest("button[data-nf]"); if(!b) return;
     netFilter = b.dataset.nf;

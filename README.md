@@ -36,6 +36,8 @@ Phải mở qua một máy chủ web, không mở thẳng bằng `file://`, vì 
 
 **Người nhận** (trong Cài đặt) — Lưu người hay chuyển tiền để lần sau điền sẵn.
 
+Chữ giải thích trên giao diện được giữ ở mức tối thiểu; phần dài hơn nằm sau nút **ⓘ** cạnh tiêu đề.
+
 **Cài đặt** — Giao diện sáng/tối/tự động, hạn mức mỗi ngày, quản lý tag, sao lưu và đồng bộ, dung lượng đang dùng.
 
 ---
