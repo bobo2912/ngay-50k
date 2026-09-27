@@ -1,6 +1,14 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v38, ngày 27/09/2026
+**Phiên bản hiện tại:** v39, ngày 28/09/2026
+
+---
+
+## Có gì mới trong v39 (so với v38)
+
+- **Tìm kiếm không còn nhảy.** Chạm vào ô tìm là app vào chế độ tìm: ẩn hết phần trên — ngày tháng, ô tổng, bốn ô số — đẩy ô tìm lên sát đỉnh màn hình rồi mới nạp kết quả bên dưới. Vì không còn gì ở phía trên nên gõ bao nhiêu chữ, kết quả còn một dòng hay không còn dòng nào, ô tìm vẫn đứng nguyên một chỗ. Bản trước chỉ làm thanh dính khi cuộn qua, nên lúc bàn phím bật lên và trang co lại thì nó vẫn trôi.
+- **Xoá chữ hoặc chuyển tab là thoát chế độ tìm**, mọi thứ hiện lại như cũ.
+- **Đổi tab thì xoá nội dung tìm.** Trước đây quay lại tab Tổng quan vẫn thấy từ khoá cũ và kết quả cũ. Lựa chọn *Cả hai / Chi thường / Chi thẻ* cũng trở về mặc định.
 
 ---
 
@@ -8,26 +16,6 @@
 
 - **Thanh tìm kiếm dính lại trên đầu.** Trước đây mỗi lần gõ là danh sách đổi, trang co lại và ô tìm trôi đi mất. Giờ tiêu đề và ô tìm dính ở đỉnh màn hình khi cuộn, nền đặc nên chữ bên dưới không lẫn vào.
 - **Biểu đồ so sánh thu chi và Chi theo tag chuyển vào bảng Phân tích tháng**, mở bằng nút biểu đồ nhỏ cạnh nút Khoản thu. Tab Tổng quan ngắn lại đáng kể, chỉ còn ô tổng, bốn ô số và danh sách thu chi.
-
----
-
-## Có gì mới trong v37 (so với v36)
-
-**App không còn tự xoá dữ liệu cũ.** Từ v1 tới giờ, mỗi lần lưu app đều âm thầm xoá mọi khoản cũ hơn 400 ngày — nghĩa là khoảng một năm nữa, lịch sử những ngày đầu sẽ biến mất, và file sao lưu xuất sau đó cũng không còn dữ liệu cũ. Tính lại thì lo hão: một khoản chi chỉ chiếm chừng 120 byte, ghi 10 khoản mỗi ngày trong 5 năm mới hết 2 MB trên hạn mức 5–10 MB. Giờ dữ liệu được giữ nguyên, để còn so sánh năm nay với năm ngoái.
-
-**Ghi lại khoản hay lặp bằng một chạm.** Dưới các nút nhập có dải *Ghi lại khoản hay lặp*: app tự tìm những khoản cùng nội dung và cùng số tiền xuất hiện từ hai lần trong 60 ngày gần đây — cà phê 25k, gửi xe 5k — chạm là ghi cho hôm nay, không qua form. Khoản nào đã ghi hôm nay thì tự ẩn khỏi dải.
-
-**Nhắc khi bỏ ghi.** Nếu hôm qua không có khoản nào mà trước đó bạn vẫn ghi đều, app hiện một dòng *Hôm qua chưa ghi khoản nào · Ghi bù*, chạm là mở form sẵn ngày hôm qua. Bấm một lần rồi thì thôi, không nhắc lại.
-
-**Tìm kiếm xuyên tháng.** Ô tìm trong Tổng quan, tìm cùng lúc trong khoản chi, khoản thu và chi thẻ của mọi tháng. Gõ được tên nơi chi, tên nhóm hoặc số tiền. Kết quả ghi rõ ngày, nhóm, thẻ và tổng số tiền đã chi.
-
-**Xuất CSV.** Trong Sao lưu và đồng bộ, nút *Xuất CSV để mở bằng Excel*. File dùng dấu chấm phẩy và có BOM nên Excel tiếng Việt mở ra là đúng cột, đúng dấu. Cột: ngày, loại, số tiền, nhóm, nội dung, thẻ, định kỳ.
-
-**Khoản định kỳ.** Trang mới trong Cài đặt: khai tên, số tiền, ngày trong tháng và nhóm. App tự ghi vào đúng ngày mỗi tháng, lùi tối đa ba tháng nếu bạn cài muộn, và không ghi trùng. Khoản định kỳ **không tính vào hạn mức mỗi ngày** — vì tiền nhà dồn vào một ngày thì hạn mức 50k hôm đó thành vô nghĩa — nhưng vẫn vào tổng chi của tháng. Ngày nào có khoản định kỳ thì dòng tổng ghi riêng *định kỳ …*.
-
-**Kỳ sao kê thẻ.** Chọn một thẻ đã khai ngày sao kê, app hiện dải *Kỳ sao kê 30/8 – 29/9 · 2.400.000đ · còn 2 ngày* — đúng số tiền kỳ sao kê này sẽ tính, thay vì gom theo tháng dương lịch. Còn dưới ba ngày thì viền chuyển cam.
-
-**Nhắc sao lưu rõ hơn:** nói luôn có bao nhiêu khoản đang chỉ nằm trên máy này, và viền chuyển đỏ khi quá 21 ngày hoặc chưa sao lưu lần nào.
 
 ---
 
@@ -39,7 +27,7 @@
 - Thêm khoản thu theo nguồn: Lương, Thưởng, Bán hàng, Được cho, Khác. Chạm vào khoản thu để sửa số tiền, ghi chú, ngày nhận, nguồn thu.
 - **Phân tích tháng** (nút biểu đồ cạnh nút Khoản thu): biểu đồ so sánh thu chi theo ngày, tuần, tháng.
 - Thống kê chi theo tag nằm trong Phân tích tháng, ăn theo lựa chọn ở trên.
-- Danh sách tất cả thu chi trong tháng, tiêu đề và ô tìm dính trên đầu khi cuộn.
+- Danh sách tất cả thu chi trong tháng. Chạm vào ô tìm là ô tìm lên sát đỉnh màn hình và đứng yên ở đó.
 - **Tìm kiếm xuyên tháng** trên cả khoản chi, khoản thu và chi thẻ.
 
 ### Tab Giao dịch
@@ -113,7 +101,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v39** | Tìm kiếm đứng yên: chạm vào ô tìm là đẩy lên đỉnh màn hình, đổi tab thì xoá từ khoá |
 | **v38** | Thanh tìm kiếm dính trên đầu, gom biểu đồ và thống kê tag vào bảng Phân tích tháng |
-| **v37** | Bỏ tự xoá dữ liệu cũ, ghi lại một chạm, nhắc bỏ ghi, tìm kiếm, xuất CSV, khoản định kỳ, kỳ sao kê thẻ |
 
 *File này chỉ giữ ghi chú của hai bản gần nhất.*

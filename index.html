@@ -947,6 +947,14 @@ p.info[hidden]{display:none}
 .ledger-head{position:sticky; top:var(--safe-top); z-index:20; margin:0 -16px; padding:10px 16px 8px;
   background:var(--sheet-bg); box-shadow:0 1px 0 var(--line)}
 .ledger-head h2{margin:0}
+body.searching header{display:none}
+#tab-money.searching > .month,
+#tab-money.searching > .ledger,
+#tab-money.searching > .kpi4,
+#tab-money.searching > #incomeForm,
+#tab-money.searching > .inline-ok{display:none}
+#tab-money.searching > section{margin-top:0}
+#tab-money.searching .ledger-head{padding-top:0}
 .ledger-head .searchbar{margin:8px 0 0}
 #anSheet .chart-sec, #anSheet section{margin-top:18px}
 #anSheet .chart-sec:first-of-type{margin-top:10px}
@@ -1437,7 +1445,7 @@ header{margin-top:6px}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v38</p>
+      <p class="sync" id="appVersion">Phiên bản v39</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. Giới hạn khoảng 5 MB được tính chung cho các mini app cùng tài khoản GitHub.</p>
 
       <h4 class="sub">Xoá dữ liệu</h4>
@@ -3070,6 +3078,8 @@ header{margin-top:6px}
     } else if(name === "money"){
       viewMonth = new Date(); viewMonth.setDate(1);
       closeIncome(); $("incomeMsg").hidden = true;
+      clearSearch(); netFilter = "all";
+      [...$("netSeg").children].forEach(x => x.setAttribute("aria-pressed", x.dataset.nf === "all" ? "true" : "false"));
       renderMoney();
     } else if(name === "loans"){
       detailLoanId = null; editingLoanId = null; payOpen = false; editRecId = null;
@@ -3087,7 +3097,7 @@ header{margin-top:6px}
     }
   }
   function showTab(name){
-    if(name !== currentTab) resetTab(name);
+    if(name !== currentTab){ clearSearch(); resetTab(name); }
     currentTab = name;
     document.querySelectorAll(".tabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.tab===name ? "true":"false"));
     ["today","money","loans","cards"].forEach(n => $("tab-"+n).hidden = n !== name);
@@ -4581,12 +4591,30 @@ header{margin-top:6px}
   const closeAn = () => hideSheet("anSheet", "anBack");
   $("closeAn").onclick = closeAn;
   $("anBack").onclick = closeAn;
+  function setSearchMode(on){
+    const t = $("tab-money");
+    if(!t || document.body.classList.contains("searching") === on) return;
+    t.classList.toggle("searching", on);
+    document.body.classList.toggle("searching", on);
+    if(on) window.scrollTo(0, 0);
+  }
+  function clearSearch(){
+    searchQ = "";
+    if($("tab-money")) $("tab-money").classList.remove("searching");
+    document.body.classList.remove("searching");
+    if($("searchBox")) $("searchBox").value = "";
+    if($("searchClear")) $("searchClear").hidden = true;
+    setSearchMode(false);
+  }
+  $("searchBox").addEventListener("focus", () => setSearchMode(true));
+  $("searchBox").addEventListener("blur", () => { if(!$("searchBox").value.trim()) setSearchMode(false); });
   $("searchBox").addEventListener("input", () => {
     searchQ = $("searchBox").value;
     $("searchClear").hidden = !searchQ;
+    setSearchMode(true);
     renderMoney();
   });
-  $("searchClear").onclick = () => { $("searchBox").value = ""; searchQ = ""; $("searchClear").hidden = true; renderMoney(); };
+  $("searchClear").onclick = () => { clearSearch(); renderMoney(); $("searchBox").blur(); };
   $("netSeg").onclick = e => {
     const b = e.target.closest("button[data-nf]"); if(!b) return;
     netFilter = b.dataset.nf;
