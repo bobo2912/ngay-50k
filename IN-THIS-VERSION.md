@@ -1,6 +1,13 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v37, ngày 27/09/2026
+**Phiên bản hiện tại:** v38, ngày 27/09/2026
+
+---
+
+## Có gì mới trong v38 (so với v37)
+
+- **Thanh tìm kiếm dính lại trên đầu.** Trước đây mỗi lần gõ là danh sách đổi, trang co lại và ô tìm trôi đi mất. Giờ tiêu đề và ô tìm dính ở đỉnh màn hình khi cuộn, nền đặc nên chữ bên dưới không lẫn vào.
+- **Biểu đồ so sánh thu chi và Chi theo tag chuyển vào bảng Phân tích tháng**, mở bằng nút biểu đồ nhỏ cạnh nút Khoản thu. Tab Tổng quan ngắn lại đáng kể, chỉ còn ô tổng, bốn ô số và danh sách thu chi.
 
 ---
 
@@ -24,26 +31,15 @@
 
 ---
 
-## Có gì mới trong v36 (so với v35)
-
-Dọn bớt chữ hướng dẫn trên màn hình. Chữ luôn hiện giảm khoảng một nửa, phần còn lại không mất mà nằm sau một nút **ⓘ** nhỏ ngay cạnh tiêu đề — chạm là mở ra, chạm lần nữa là cất đi.
-
-- **Bảng Nhập từ thông báo** bỏ hai đoạn hướng dẫn dài ở đầu và cuối, gom vào ⓘ. Giờ mở bảng ra là thấy ngay ô dán và hai nút.
-- **Bảng Quản lý thẻ** bỏ hai câu về số thẻ, gom vào ⓘ. Bảng Thêm thẻ cũng bỏ câu giải thích, chỉ còn các ô và ví dụ sẵn trong ô.
-- **Tổng quan** bỏ dòng chú thích về khoản vay dưới bốn ô, chuyển vào ⓘ cạnh nhãn ô tổng.
-- **Trong Cài đặt** rút ngắn các câu ở Quét mã QR, Người nhận, Quản lý tag và chi tiết tag; bỏ hẳn câu thừa ở danh sách tag.
-- **Câu báo lỗi và trạng thái rỗng** ngắn lại, chỉ giữ phần cho biết nên làm gì tiếp.
-
----
-
 ## Tất cả tính năng của app
 
 ### Tab Tổng quan
 - **Còn lại thực tế** theo tháng, chọn được gồm chi thường, chi thẻ hay cả hai, kèm mức tăng giảm so với tháng trước.
 - Bốn ô tổng: thu vào, chi thường, chi thẻ, khoản vay. Khoản vay để riêng, không tính vào còn lại thực tế.
 - Thêm khoản thu theo nguồn: Lương, Thưởng, Bán hàng, Được cho, Khác. Chạm vào khoản thu để sửa số tiền, ghi chú, ngày nhận, nguồn thu.
-- Biểu đồ so sánh thu chi theo ngày, tuần, tháng.
-- Thống kê chi theo tag, ăn theo lựa chọn ở trên, và danh sách tất cả thu chi trong tháng.
+- **Phân tích tháng** (nút biểu đồ cạnh nút Khoản thu): biểu đồ so sánh thu chi theo ngày, tuần, tháng.
+- Thống kê chi theo tag nằm trong Phân tích tháng, ăn theo lựa chọn ở trên.
+- Danh sách tất cả thu chi trong tháng, tiêu đề và ô tìm dính trên đầu khi cuộn.
 - **Tìm kiếm xuyên tháng** trên cả khoản chi, khoản thu và chi thẻ.
 
 ### Tab Giao dịch
@@ -117,7 +113,7 @@ Dọn bớt chữ hướng dẫn trên màn hình. Chữ luôn hiện giảm kho
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v38** | Thanh tìm kiếm dính trên đầu, gom biểu đồ và thống kê tag vào bảng Phân tích tháng |
 | **v37** | Bỏ tự xoá dữ liệu cũ, ghi lại một chạm, nhắc bỏ ghi, tìm kiếm, xuất CSV, khoản định kỳ, kỳ sao kê thẻ |
-| **v36** | Dọn bớt chữ hướng dẫn trên màn, phần giải thích chuyển vào nút ⓘ |
 
 *File này chỉ giữ ghi chú của hai bản gần nhất.*
