@@ -1,6 +1,16 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v40, ngày 28/09/2026
+**Phiên bản hiện tại:** v41, ngày 28/09/2026
+
+---
+
+## Có gì mới trong v41 (so với v40)
+
+Sửa lỗi bày ra ở v40: dòng *N lần vay thêm* ghép vào cột phải của thẻ khoản vay làm cột đó dài ra, đẩy số tiền tràn khỏi mép phải và bóp cột tên xuống hai ba dòng.
+
+- **Bỏ đuôi *N lần vay thêm* khỏi danh sách.** Thông tin này vẫn nằm trong chi tiết khoản vay, nơi có chỗ hiển thị tử tế.
+- **Tên dài tự cắt bằng dấu ba chấm** thay vì xuống dòng, nên mọi thẻ khoản vay cao bằng nhau.
+- **Số tiền không bao giờ tràn mép** dù lớn tới hàng tỉ.
 
 ---
 
@@ -13,14 +23,6 @@
 - **Lịch sử gộp cả hai chiều** theo thứ tự thời gian: lần vay thêm hiện dấu cộng màu đỏ kèm nhãn *vay thêm*, lần trả hiện như cũ. Khoản ban đầu cũng nằm trong lịch sử với nhãn *ban đầu*, sửa được ngày và số tiền nhưng không xoá được — xoá nó thì khoản vay không còn ý nghĩa.
 - Sửa số tiền có kiểm tra hai chiều: không cho tổng gốc tụt xuống dưới số đã trả, và không cho số đã trả vượt tổng gốc.
 - **Tổng quan** tính cả các lần vay thêm vào ô Khoản vay của tháng đó.
-
----
-
-## Có gì mới trong v39 (so với v38)
-
-- **Tìm kiếm không còn nhảy.** Chạm vào ô tìm là app vào chế độ tìm: ẩn hết phần trên — ngày tháng, ô tổng, bốn ô số — đẩy ô tìm lên sát đỉnh màn hình rồi mới nạp kết quả bên dưới. Vì không còn gì ở phía trên nên gõ bao nhiêu chữ, kết quả còn một dòng hay không còn dòng nào, ô tìm vẫn đứng nguyên một chỗ. Bản trước chỉ làm thanh dính khi cuộn qua, nên lúc bàn phím bật lên và trang co lại thì nó vẫn trôi.
-- **Xoá chữ hoặc chuyển tab là thoát chế độ tìm**, mọi thứ hiện lại như cũ.
-- **Đổi tab thì xoá nội dung tìm.** Trước đây quay lại tab Tổng quan vẫn thấy từ khoá cũ và kết quả cũ. Lựa chọn *Cả hai / Chi thường / Chi thẻ* cũng trở về mặc định.
 
 ---
 
@@ -107,7 +109,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v41** | Sửa tràn chữ ở thẻ khoản vay, tên dài cắt bằng ba chấm |
 | **v40** | Một khoản vay ghi được nhiều lần vay thêm, lịch sử gộp cả vay thêm lẫn trả nợ |
-| **v39** | Tìm kiếm đứng yên: chạm vào ô tìm là đẩy lên đỉnh màn hình, đổi tab thì xoá từ khoá |
 
 *File này chỉ giữ ghi chú của hai bản gần nhất.*
