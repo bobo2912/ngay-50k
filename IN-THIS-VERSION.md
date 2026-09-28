@@ -1,6 +1,14 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v41, ngày 28/09/2026
+**Phiên bản hiện tại:** v42, ngày 28/09/2026
+
+---
+
+## Có gì mới trong v42 (so với v41)
+
+- **Tab Khoản vay tách thành hai mục riêng:** *Mình đi vay* và *Mình cho vay*, mỗi mục có tiêu đề và tổng còn lại của riêng nó, khớp với hai con số ở ô trên cùng.
+- **Bỏ phần lọc theo loại** trong bảng Lọc, vì hai mục đã làm đúng việc đó. Bảng Lọc giờ chỉ còn *Trạng thái* và *Lọc theo ngày*.
+- **Mỗi thẻ bỏ chữ *Mình vay* / *Mình cho vay*** vì tiêu đề mục đã nói rồi, chỉ còn lại ngày. Riêng mục *Đã tất toán* gộp cả hai loại nên vẫn giữ nhãn.
 
 ---
 
@@ -11,18 +19,6 @@ Sửa lỗi bày ra ở v40: dòng *N lần vay thêm* ghép vào cột phải c
 - **Bỏ đuôi *N lần vay thêm* khỏi danh sách.** Thông tin này vẫn nằm trong chi tiết khoản vay, nơi có chỗ hiển thị tử tế.
 - **Tên dài tự cắt bằng dấu ba chấm** thay vì xuống dòng, nên mọi thẻ khoản vay cao bằng nhau.
 - **Số tiền không bao giờ tràn mép** dù lớn tới hàng tỉ.
-
----
-
-## Có gì mới trong v40 (so với v39)
-
-**Một khoản vay giờ ghi được nhiều lần vay thêm.** Trước đây số tiền vay cố định từ lúc tạo; vay thêm của cùng một người phải mở khoản mới, nhìn rời rạc.
-
-- Trong chi tiết khoản vay có nút **Ghi vay thêm** (hoặc *Ghi cho vay thêm*). Nhập số tiền, ngày và ghi chú, nút lưu cho biết trước tổng sẽ thành bao nhiêu.
-- Ô tổng đổi thành **Tổng đã vay**, kèm dòng *Trong đó: 10.000.000đ ban đầu, 2.000.000đ qua 1 lần vay thêm*. Số còn lại, thanh tiến độ và tổng nợ ở trang chính đều tính theo tổng mới.
-- **Lịch sử gộp cả hai chiều** theo thứ tự thời gian: lần vay thêm hiện dấu cộng màu đỏ kèm nhãn *vay thêm*, lần trả hiện như cũ. Khoản ban đầu cũng nằm trong lịch sử với nhãn *ban đầu*, sửa được ngày và số tiền nhưng không xoá được — xoá nó thì khoản vay không còn ý nghĩa.
-- Sửa số tiền có kiểm tra hai chiều: không cho tổng gốc tụt xuống dưới số đã trả, và không cho số đã trả vượt tổng gốc.
-- **Tổng quan** tính cả các lần vay thêm vào ô Khoản vay của tháng đó.
 
 ---
 
@@ -72,7 +68,8 @@ Sửa lỗi bày ra ở v40: dòng *N lần vay thêm* ghép vào cột phải c
 - Theo dõi khoản **mình đi vay** và **mình cho vay**, có tổng đang nợ và tổng người khác nợ mình.
 - Ghi nhiều lần vay thêm và nhiều lần trả trong cùng một khoản, lịch sử gộp theo thời gian.
 - Xem số còn lại, hạn trả, cảnh báo quá hạn.
-- Lọc theo loại, trạng thái (chưa xong, tất toán), ngày khởi tạo hoặc ngày đến hạn.
+- Hai mục riêng: Mình đi vay và Mình cho vay, mỗi mục có tổng còn lại.
+- Lọc theo trạng thái (chưa xong, tất toán), ngày khởi tạo hoặc ngày đến hạn.
 
 ### Người nhận (trong Cài đặt)
 - Lưu người hay chuyển tiền: tên gợi nhớ, số tài khoản, ngân hàng, tên tài khoản, nội dung mặc định, tag thường dùng.
@@ -109,7 +106,7 @@ Sửa lỗi bày ra ở v40: dòng *N lần vay thêm* ghép vào cột phải c
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v42** | Tách Khoản vay thành hai mục đi vay và cho vay, bỏ lọc theo loại |
 | **v41** | Sửa tràn chữ ở thẻ khoản vay, tên dài cắt bằng ba chấm |
-| **v40** | Một khoản vay ghi được nhiều lần vay thêm, lịch sử gộp cả vay thêm lẫn trả nợ |
 
 *File này chỉ giữ ghi chú của hai bản gần nhất.*
