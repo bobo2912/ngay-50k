@@ -1,6 +1,17 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v43, ngày 28/09/2026
+**Phiên bản hiện tại:** v44, ngày 28/09/2026
+
+---
+
+## Có gì mới trong v44 (so với v43)
+
+**Sửa triệt để chuyện vuốt back kéo theo cả trang.** Bản v43 mới chặn được một nửa: app đợi ngón tay đi ngang hơn 16px mới nhận ra đây là cú vuốt back, mà Safari thì chốt hướng cuộn ngay ở lần ngón tay nhúc nhích đầu tiên — lúc app kịp chặn thì trang đã bắt đầu nảy rồi.
+
+- App giờ **quyết ngay ở lần di chuyển đầu tiên**, chỉ cần ngang hơn dọc một chút là khoá luôn trục dọc.
+- **Tắt hiệu ứng nảy của trang** ở cấp trình duyệt, nên không còn cảnh cả màn hình bị kéo tụt xuống.
+- Nếu vuốt được một đoạn rồi đổi ý kéo dọc, app **thả cú vuốt ra** và trả màn hình về chỗ cũ thay vì treo lơ lửng.
+- Cuộn dọc bình thường không đổi.
 
 ---
 
@@ -9,14 +20,6 @@
 - **Khoản vay chia thành ba tab con:** *Đi vay*, *Cho vay*, *Tất toán*, mỗi tab kèm số khoản. Không phải cuộn xuống mới thấy phần cho vay nữa. Tiêu đề dưới tab đổi theo: *Còn phải trả …*, *Còn phải thu …*, hoặc *Đã tất toán (N)*.
 - **Vuốt quay lại không còn kéo theo cuộn dọc.** Khi app đã nhận ra đây là cú vuốt ngang, nó khoá luôn trục dọc nên trang đứng yên, chỉ có màn hình trượt sang. Trước đây vuốt hơi chéo một chút là vừa trượt vừa cuộn.
 - **Nút Lọc không còn dính vào nút Thêm khoản vay.**
-
----
-
-## Có gì mới trong v42 (so với v41)
-
-- **Tab Khoản vay tách thành hai mục riêng:** *Mình đi vay* và *Mình cho vay*, mỗi mục có tiêu đề và tổng còn lại của riêng nó, khớp với hai con số ở ô trên cùng.
-- **Bỏ phần lọc theo loại** trong bảng Lọc, vì hai mục đã làm đúng việc đó. Bảng Lọc giờ chỉ còn *Trạng thái* và *Lọc theo ngày*.
-- **Mỗi thẻ bỏ chữ *Mình vay* / *Mình cho vay*** vì tiêu đề mục đã nói rồi, chỉ còn lại ngày. Riêng mục *Đã tất toán* gộp cả hai loại nên vẫn giữ nhãn.
 
 ---
 
@@ -104,7 +107,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v44** | Vuốt back không còn kéo theo trang, tắt hiệu ứng nảy |
 | **v43** | Khoản vay chia ba tab con, vuốt back khoá trục dọc |
-| **v42** | Tách Khoản vay thành hai mục đi vay và cho vay, bỏ lọc theo loại |
 
 *File này chỉ giữ ghi chú của hai bản gần nhất.*

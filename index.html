@@ -626,6 +626,7 @@ header .date{font-size:1.65rem; font-weight:800; letter-spacing:-.02em; color:va
 
 /* no zoom: block double-tap zoom and focus auto-zoom */
 html{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:100%}
+html, body{overscroll-behavior-y:none; overscroll-behavior-x:none}
 :where(input, select, textarea){font-size:16px}
 
 /* smooth view transitions */
@@ -1456,7 +1457,7 @@ header{margin-top:6px}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v43</p>
+      <p class="sync" id="appVersion">Phiên bản v44</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. Giới hạn khoảng 5 MB được tính chung cho các mini app cùng tài khoản GitHub.</p>
 
       <h4 class="sub">Xoá dữ liệu</h4>
@@ -3770,25 +3771,31 @@ header{margin-top:6px}
     const t = e.touches[0];
     sw = { x:t.clientX, y:t.clientY, t:Date.now(), active:false, fn:null, panel:null, dx:0 };
   }, { passive:true });
+  function dropSwipe(){
+    if(sw && sw.view){ sw.view.style.transition = ""; sw.view.style.transform = ""; sw.view.style.opacity = ""; resetViewStyle(sw.view); }
+    if(sw && sw.panel){ sw.panel.style.transition = ""; sw.panel.style.transform = ""; }
+    sw = null;
+  }
   document.addEventListener("touchmove", e => {
     if(!sw) return;
     const t = e.touches[0], dx = t.clientX - sw.x, dy = t.clientY - sw.y;
     if(!sw.active){
-      if(Math.abs(dy) > 14 && Math.abs(dy) > Math.abs(dx)){ sw = null; return; }
-      if(dx > 16 && dx > Math.abs(dy) * 1.6){
-        sw.fn = backTarget(); if(!sw.fn){ sw = null; return; }
-        sw.active = true;
-        sw.panel = settingsOpenNow() && sw.fn === closeSettings ? $("settings") : null;
-        sw.view = sw.panel ? null : backViewEl();
-        if(sw.panel) sw.panel.style.transition = "none";
-        if(sw.view){ sw.view.style.transition = "none"; sw.view.style.willChange = "transform, opacity"; }
-      } else return;
+      /* Safari chốt hướng cuộn ngay ở lần di chuyển đầu tiên, nên phải quyết ở đúng lúc đó */
+      if(Math.abs(dx) < 3 && Math.abs(dy) < 3) return;
+      if(!(dx > 0 && Math.abs(dx) > Math.abs(dy) * 1.2) || !e.cancelable){ sw = null; return; }
+      sw.fn = backTarget(); if(!sw.fn){ sw = null; return; }
+      sw.active = true;
+      sw.panel = settingsOpenNow() && sw.fn === closeSettings ? $("settings") : null;
+      sw.view = sw.panel ? null : backViewEl();
+      if(sw.panel) sw.panel.style.transition = "none";
+      if(sw.view){ sw.view.style.transition = "none"; sw.view.style.willChange = "transform, opacity"; }
     }
+    if(e.cancelable) e.preventDefault();
+    /* hoá ra là vuốt dọc thì thả ra, trả màn hình về chỗ cũ */
+    if(Math.abs(dy) > 70 && Math.abs(dy) > Math.abs(dx) * 1.5){ dropSwipe(); return; }
     sw.dx = Math.max(0, dx);
-    const p = Math.min(sw.dx / SW_GO, 1);
     if(sw.panel) sw.panel.style.transform = "translateX(" + sw.dx + "px)";
     if(sw.view){ sw.view.style.transform = "translateX(" + (sw.dx * 0.9) + "px)"; sw.view.style.opacity = String(1 - Math.min(sw.dx / 320, 0.6)); }
-    if(sw.active && e.cancelable) e.preventDefault();
   }, { passive:false });
   function endSwipe(){
     if(!sw || !sw.active){ sw = null; return; }
