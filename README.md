@@ -32,7 +32,7 @@ Phải mở qua một máy chủ web, không mở thẳng bằng `file://`, vì 
 
 **Giao dịch** — Thẻ *Hôm nay còn được tiêu* với thanh tiến độ, chuyển đỏ khi vượt hạn mức. Quét mã VietQR bằng camera hoặc chọn ảnh mã QR, app tự điền số tài khoản, ngân hàng, số tiền và nội dung. Ghi tay, trả tiền mặt, nhập nhanh 5k–30k, nút 000. Gắn tag cho từng khoản, ghi bù ngày trước, sửa và xoá. Biểu đồ 7 ngày gần nhất kèm mức chi trung bình.
 
-**Khoản vay** — Theo dõi khoản mình đi vay và mình cho vay, ghi từng lần trả, cảnh báo quá hạn.
+**Khoản vay** — Theo dõi khoản mình đi vay và mình cho vay. Một khoản ghi được nhiều lần vay thêm và nhiều lần trả, lịch sử gộp theo thời gian. Cảnh báo quá hạn.
 
 **Người nhận** (trong Cài đặt) — Lưu người hay chuyển tiền để lần sau điền sẵn.
 
