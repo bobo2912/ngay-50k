@@ -968,12 +968,10 @@ body.searching header{display:none}
   color:var(--muted); background:var(--line); border-radius:999px; padding:2px 7px}
 .pay-form.draw .primary{background:linear-gradient(180deg,#F0A33C,#B45309); box-shadow:0 6px 16px rgba(180,83,9,.24)}
 
-.loan-sec{margin-top:18px}
-.loan-sec[hidden]{display:none}
-.sec-head{display:flex; align-items:baseline; justify-content:space-between; gap:10px; margin-bottom:2px}
-.sec-head h3{margin:0; font-size:.95rem; font-weight:700}
-.sec-head b{font-size:.92rem; font-weight:700}
-.sec-head b.out{color:var(--over)} .sec-head b.in{color:var(--ok)}
+
+.loan-seg{display:flex; width:100%; margin-top:18px}
+.loan-seg button{flex:1; min-width:0; font-size:.84rem; padding:8px 4px; white-space:nowrap}
+#tab-loans .list-head{margin-top:14px}
 .searchbar{display:flex; align-items:center; gap:8px; margin:8px 0 4px; padding:0 12px;
   border:1px solid var(--line); background:var(--field); border-radius:13px}
 .searchbar svg{width:16px; height:16px; flex:none; fill:none; stroke:var(--muted); stroke-width:2; stroke-linecap:round}
@@ -1197,6 +1195,11 @@ header{margin-top:6px}
       </div>
       <button class="primary" id="addLoanBtn">+ Thêm khoản vay</button>
       <p class="inline-ok" id="loanMsg" hidden></p>
+      <div class="seg seg3 loan-seg" id="loanSeg" role="group" aria-label="Xem nhóm khoản vay">
+        <button type="button" data-lv="borrow" aria-pressed="true">Đi vay</button>
+        <button type="button" data-lv="lend" aria-pressed="false">Cho vay</button>
+        <button type="button" data-lv="done" aria-pressed="false">Tất toán</button>
+      </div>
       <div class="list-head">
         <h2 id="activeTitle">Đang theo dõi</h2>
         <button class="filter-btn" id="filterBtn">
@@ -1205,20 +1208,7 @@ header{margin-top:6px}
         </button>
       </div>
       <div class="active-filters" id="activeFilters" hidden></div>
-
-      <section class="loan-sec" id="secBorrow">
-        <div class="sec-head"><h3>Mình đi vay</h3><b class="num out" id="secBorrowSum">0đ</b></div>
-        <div id="loanListBorrow"></div>
-      </section>
-
-      <section class="loan-sec" id="secLend">
-        <div class="sec-head"><h3>Mình cho vay</h3><b class="num in" id="secLendSum">0đ</b></div>
-        <div id="loanListLend"></div>
-      </section>
-      <details id="doneLoansBox" hidden>
-        <summary id="doneLoansTitle">Đã tất toán</summary>
-        <div id="doneLoanList"></div>
-      </details>
+      <div id="loanList"></div>
     </div>
 
     <section id="loanForm" hidden style="margin-top:0">
@@ -1466,7 +1456,7 @@ header{margin-top:6px}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v42</p>
+      <p class="sync" id="appVersion">Phiên bản v43</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. Giới hạn khoảng 5 MB được tính chung cho các mini app cùng tài khoản GitHub.</p>
 
       <h4 class="sub">Xoá dữ liệu</h4>
@@ -2765,7 +2755,7 @@ header{margin-top:6px}
   }
 
   /* ---------- loans ---------- */
-  let loanType = "borrow", editingLoanId = null, detailLoanId = null, payOpen = false, drawOpen = false, editRecId = null;
+  let loanType = "borrow", loanView = "borrow", editingLoanId = null, detailLoanId = null, payOpen = false, drawOpen = false, editRecId = null;
   const payOnly = l => (l.payments||[]).reduce((a,p)=>a+(Number(p.amt)||0),0);
   const paidOf = l => payOnly(l) + (Number(l.prepaid)||0);
   const drawOnly = l => (l.draws||[]).reduce((a,d)=>a+(Number(d.amt)||0),0);
@@ -3126,24 +3116,29 @@ header{margin-top:6px}
       af.appendChild(c);
     }
     const active = shown.filter(l => leftOf(l) > 0).sort((a,b)=> (a.due||"9999").localeCompare(b.due||"9999") || b.t-a.t);
-    const done = shown.filter(l => leftOf(l) <= 0);
-    $("activeTitle").textContent = n ? "Kết quả lọc (" + shown.length + ")" : "Đang theo dõi";
-
-    const fill = (kind, boxId, sumId, secId, empty) => {
-      const list = active.filter(l => l.type === kind);
-      const box = $(boxId); box.innerHTML = "";
-      $(sumId).textContent = fmt(list.reduce((a, l) => a + leftOf(l), 0));
-      $(secId).hidden = !list.length && !!n;
-      if(!list.length) box.innerHTML = '<p class="empty">' + (n ? "Không có khoản nào khớp bộ lọc." : empty) + '</p>';
-      list.forEach(l => box.appendChild(loanCard(l)));
+    const done = shown.filter(l => leftOf(l) <= 0).sort((a,b)=> b.t - a.t);
+    const groups = {
+      borrow: active.filter(l => l.type === "borrow"),
+      lend:   active.filter(l => l.type === "lend"),
+      done:   done
     };
-    fill("borrow", "loanListBorrow", "secBorrowSum", "secBorrow", "Chưa có khoản đi vay nào.");
-    fill("lend", "loanListLend", "secLendSum", "secLend", "Chưa có khoản cho vay nào.");
-    $("doneLoansBox").hidden = !done.length;
-    if(n && done.length) $("doneLoansBox").open = true;
-    $("doneLoansTitle").textContent = "Đã tất toán (" + done.length + ")";
-    const dl2 = $("doneLoanList"); dl2.innerHTML = "";
-    done.forEach(l => dl2.appendChild(loanCard(l, true)));
+    const LBL = { borrow:"Đi vay", lend:"Cho vay", done:"Tất toán" };
+    [...$("loanSeg").children].forEach(b => {
+      const k = b.dataset.lv;
+      b.textContent = LBL[k] + (groups[k].length ? " (" + groups[k].length + ")" : "");
+      b.setAttribute("aria-pressed", k === loanView ? "true" : "false");
+    });
+    const list = groups[loanView] || [];
+    $("activeTitle").textContent = loanView === "done"
+      ? "Đã tất toán (" + list.length + ")"
+      : (loanView === "borrow" ? "Còn phải trả " : "Còn phải thu ") + fmt(list.reduce((a, l) => a + leftOf(l), 0));
+    const box = $("loanList"); box.innerHTML = "";
+    if(!list.length){
+      box.innerHTML = '<p class="empty">' + (n ? "Không có khoản nào khớp bộ lọc."
+        : loanView === "borrow" ? "Chưa có khoản đi vay nào."
+        : loanView === "lend" ? "Chưa có khoản cho vay nào." : "Chưa có khoản nào tất toán.") + '</p>';
+    }
+    list.forEach(l => box.appendChild(loanCard(l, loanView === "done")));
     if(detailLoanId) renderLoanDetail();
     if(detailLoanId && !getLoan(detailLoanId)){ detailLoanId = null; if($("loanForm").hidden) showLoanView("main"); }
   }
@@ -3163,7 +3158,7 @@ header{margin-top:6px}
       [...$("netSeg").children].forEach(x => x.setAttribute("aria-pressed", x.dataset.nf === "all" ? "true" : "false"));
       renderMoney();
     } else if(name === "loans"){
-      detailLoanId = null; editingLoanId = null; payOpen = false; drawOpen = false; editRecId = null;
+      detailLoanId = null; editingLoanId = null; payOpen = false; drawOpen = false; editRecId = null; loanView = "borrow";
       if(!$("filterSheet").hidden) closeSheet();
       $("loanMsg").hidden = true;
       renderLoans(); showLoanView("main");
@@ -3295,6 +3290,7 @@ header{margin-top:6px}
   $("filterBtn").onclick = openSheet;
   $("closeSheet").onclick = closeSheet;
   $("sheetBack").onclick = closeSheet;
+  [...$("loanSeg").children].forEach(b => b.onclick = () => { loanView = b.dataset.lv; renderLoans(); window.scrollTo({ top:0, behavior:"smooth" }); });
   [["fStatus","status"]].forEach(([id,key]) => [...$(id).children].forEach(b => b.onclick = () => { draft[key] = b.dataset.v; renderSheet(); }));
   [...$("fField").children].forEach(b => b.onclick = () => { if(draft.field !== b.dataset.v){ draft.field = b.dataset.v; draft.from = ""; draft.to = ""; } renderSheet(); });
   $("fFrom").addEventListener("change", e => { draft.from = e.target.value; renderSheet(); });
@@ -3792,7 +3788,8 @@ header{margin-top:6px}
     const p = Math.min(sw.dx / SW_GO, 1);
     if(sw.panel) sw.panel.style.transform = "translateX(" + sw.dx + "px)";
     if(sw.view){ sw.view.style.transform = "translateX(" + (sw.dx * 0.9) + "px)"; sw.view.style.opacity = String(1 - Math.min(sw.dx / 320, 0.6)); }
-  }, { passive:true });
+    if(sw.active && e.cancelable) e.preventDefault();
+  }, { passive:false });
   function endSwipe(){
     if(!sw || !sw.active){ sw = null; return; }
     const v = sw.dx / Math.max(1, Date.now() - sw.t);
