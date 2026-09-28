@@ -1,6 +1,18 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v39, ngày 28/09/2026
+**Phiên bản hiện tại:** v40, ngày 28/09/2026
+
+---
+
+## Có gì mới trong v40 (so với v39)
+
+**Một khoản vay giờ ghi được nhiều lần vay thêm.** Trước đây số tiền vay cố định từ lúc tạo; vay thêm của cùng một người phải mở khoản mới, nhìn rời rạc.
+
+- Trong chi tiết khoản vay có nút **Ghi vay thêm** (hoặc *Ghi cho vay thêm*). Nhập số tiền, ngày và ghi chú, nút lưu cho biết trước tổng sẽ thành bao nhiêu.
+- Ô tổng đổi thành **Tổng đã vay**, kèm dòng *Trong đó: 10.000.000đ ban đầu, 2.000.000đ qua 1 lần vay thêm*. Số còn lại, thanh tiến độ và tổng nợ ở trang chính đều tính theo tổng mới.
+- **Lịch sử gộp cả hai chiều** theo thứ tự thời gian: lần vay thêm hiện dấu cộng màu đỏ kèm nhãn *vay thêm*, lần trả hiện như cũ. Khoản ban đầu cũng nằm trong lịch sử với nhãn *ban đầu*, sửa được ngày và số tiền nhưng không xoá được — xoá nó thì khoản vay không còn ý nghĩa.
+- Sửa số tiền có kiểm tra hai chiều: không cho tổng gốc tụt xuống dưới số đã trả, và không cho số đã trả vượt tổng gốc.
+- **Tổng quan** tính cả các lần vay thêm vào ô Khoản vay của tháng đó.
 
 ---
 
@@ -9,13 +21,6 @@
 - **Tìm kiếm không còn nhảy.** Chạm vào ô tìm là app vào chế độ tìm: ẩn hết phần trên — ngày tháng, ô tổng, bốn ô số — đẩy ô tìm lên sát đỉnh màn hình rồi mới nạp kết quả bên dưới. Vì không còn gì ở phía trên nên gõ bao nhiêu chữ, kết quả còn một dòng hay không còn dòng nào, ô tìm vẫn đứng nguyên một chỗ. Bản trước chỉ làm thanh dính khi cuộn qua, nên lúc bàn phím bật lên và trang co lại thì nó vẫn trôi.
 - **Xoá chữ hoặc chuyển tab là thoát chế độ tìm**, mọi thứ hiện lại như cũ.
 - **Đổi tab thì xoá nội dung tìm.** Trước đây quay lại tab Tổng quan vẫn thấy từ khoá cũ và kết quả cũ. Lựa chọn *Cả hai / Chi thường / Chi thẻ* cũng trở về mặc định.
-
----
-
-## Có gì mới trong v38 (so với v37)
-
-- **Thanh tìm kiếm dính lại trên đầu.** Trước đây mỗi lần gõ là danh sách đổi, trang co lại và ô tìm trôi đi mất. Giờ tiêu đề và ô tìm dính ở đỉnh màn hình khi cuộn, nền đặc nên chữ bên dưới không lẫn vào.
-- **Biểu đồ so sánh thu chi và Chi theo tag chuyển vào bảng Phân tích tháng**, mở bằng nút biểu đồ nhỏ cạnh nút Khoản thu. Tab Tổng quan ngắn lại đáng kể, chỉ còn ô tổng, bốn ô số và danh sách thu chi.
 
 ---
 
@@ -63,7 +68,8 @@
 
 ### Tab Khoản vay
 - Theo dõi khoản **mình đi vay** và **mình cho vay**, có tổng đang nợ và tổng người khác nợ mình.
-- Ghi từng lần trả, xem số còn lại, hạn trả, cảnh báo quá hạn.
+- Ghi nhiều lần vay thêm và nhiều lần trả trong cùng một khoản, lịch sử gộp theo thời gian.
+- Xem số còn lại, hạn trả, cảnh báo quá hạn.
 - Lọc theo loại, trạng thái (chưa xong, tất toán), ngày khởi tạo hoặc ngày đến hạn.
 
 ### Người nhận (trong Cài đặt)
@@ -101,7 +107,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v40** | Một khoản vay ghi được nhiều lần vay thêm, lịch sử gộp cả vay thêm lẫn trả nợ |
 | **v39** | Tìm kiếm đứng yên: chạm vào ô tìm là đẩy lên đỉnh màn hình, đổi tab thì xoá từ khoá |
-| **v38** | Thanh tìm kiếm dính trên đầu, gom biểu đồ và thống kê tag vào bảng Phân tích tháng |
 
 *File này chỉ giữ ghi chú của hai bản gần nhất.*
