@@ -967,6 +967,13 @@ body.searching header{display:none}
 .rtag{font-size:.64rem; font-weight:700; letter-spacing:.02em; text-transform:lowercase;
   color:var(--muted); background:var(--line); border-radius:999px; padding:2px 7px}
 .pay-form.draw .primary{background:linear-gradient(180deg,#F0A33C,#B45309); box-shadow:0 6px 16px rgba(180,83,9,.24)}
+
+.loan-sec{margin-top:18px}
+.loan-sec[hidden]{display:none}
+.sec-head{display:flex; align-items:baseline; justify-content:space-between; gap:10px; margin-bottom:2px}
+.sec-head h3{margin:0; font-size:.95rem; font-weight:700}
+.sec-head b{font-size:.92rem; font-weight:700}
+.sec-head b.out{color:var(--over)} .sec-head b.in{color:var(--ok)}
 .searchbar{display:flex; align-items:center; gap:8px; margin:8px 0 4px; padding:0 12px;
   border:1px solid var(--line); background:var(--field); border-radius:13px}
 .searchbar svg{width:16px; height:16px; flex:none; fill:none; stroke:var(--muted); stroke-width:2; stroke-linecap:round}
@@ -1190,16 +1197,23 @@ header{margin-top:6px}
       </div>
       <button class="primary" id="addLoanBtn">+ Thêm khoản vay</button>
       <p class="inline-ok" id="loanMsg" hidden></p>
-      <section>
-        <div class="list-head">
-          <h2 id="activeTitle">Đang theo dõi</h2>
-          <button class="filter-btn" id="filterBtn">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
-            <span id="filterBtnText">Lọc</span>
-          </button>
-        </div>
-        <div class="active-filters" id="activeFilters" hidden></div>
-        <div id="loanList"></div>
+      <div class="list-head">
+        <h2 id="activeTitle">Đang theo dõi</h2>
+        <button class="filter-btn" id="filterBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
+          <span id="filterBtnText">Lọc</span>
+        </button>
+      </div>
+      <div class="active-filters" id="activeFilters" hidden></div>
+
+      <section class="loan-sec" id="secBorrow">
+        <div class="sec-head"><h3>Mình đi vay</h3><b class="num out" id="secBorrowSum">0đ</b></div>
+        <div id="loanListBorrow"></div>
+      </section>
+
+      <section class="loan-sec" id="secLend">
+        <div class="sec-head"><h3>Mình cho vay</h3><b class="num in" id="secLendSum">0đ</b></div>
+        <div id="loanListLend"></div>
       </section>
       <details id="doneLoansBox" hidden>
         <summary id="doneLoansTitle">Đã tất toán</summary>
@@ -1452,7 +1466,7 @@ header{margin-top:6px}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v41</p>
+      <p class="sync" id="appVersion">Phiên bản v42</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. Giới hạn khoảng 5 MB được tính chung cho các mini app cùng tài khoản GitHub.</p>
 
       <h4 class="sub">Xoá dữ liệu</h4>
@@ -1770,11 +1784,6 @@ header{margin-top:6px}
 <div class="sheet" id="filterSheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" hidden>
   <div class="grab" aria-hidden="true"></div>
   <div class="sheet-head"><h2 id="sheetTitle">Lọc khoản vay</h2><button class="x" id="closeSheet" aria-label="Đóng">✕</button></div>
-
-  <h3>Loại khoản vay</h3>
-  <div class="seg seg3" id="fType">
-    <button data-v="all">Tất cả</button><button data-v="borrow">Mình vay</button><button data-v="lend">Cho vay</button>
-  </div>
 
   <h3>Trạng thái</h3>
   <div class="seg seg3" id="fStatus">
@@ -2828,7 +2837,7 @@ header{margin-top:6px}
   }
   function el(tag, cls, text){ const e = document.createElement(tag); if(cls) e.className = cls; if(text!=null) e.textContent = text; return e; }
 
-  function loanCard(l){
+  function loanCard(l, showType){
     const left = leftOf(l), paid = paidOf(l), done = left <= 0;
     const card = el("div","loan"); card.setAttribute("role","button"); card.tabIndex = 0;
     card.innerHTML = `
@@ -2840,8 +2849,11 @@ header{margin-top:6px}
       <div class="more"><span class="due"></span><span>Xem chi tiết ›</span></div>`;
     card.querySelector(".loan-top b").textContent = l.who;
     const sm = card.querySelector(".loan-top small");
-    sm.appendChild(el("span", l.type==="borrow"?"tag-borrow":"tag-lend", l.type==="borrow" ? "Mình vay" : "Mình cho vay"));
-    sm.appendChild(document.createTextNode(" · " + fmtDate(l.date)));
+    if(showType){
+      sm.appendChild(el("span", l.type==="borrow"?"tag-borrow":"tag-lend", l.type==="borrow" ? "Mình vay" : "Mình cho vay"));
+      sm.appendChild(document.createTextNode(" · "));
+    }
+    sm.appendChild(document.createTextNode(fmtDate(l.date)));
     card.querySelector(".loan-amt b").textContent = done ? "Đã xong" : "Còn " + fmt(left);
     card.querySelector(".loan-amt small").textContent = "Đã " + verb(l) + " " + fmt(paid) + " / " + fmt(totalOf(l));
     card.querySelector(".progress i").style.width = Math.min(100, paid/Math.max(1,totalOf(l))*100) + "%";
@@ -3021,12 +3033,11 @@ header{margin-top:6px}
   }
 
   /* ----- loan filter ----- */
-  const EMPTY_FILTER = { type:"all", status:"all", field:"date", from:"", to:"" };
+  const EMPTY_FILTER = { status:"all", field:"date", from:"", to:"" };
   let loanFilter = Object.assign({}, EMPTY_FILTER), draft = null;
   const hasDate = f => !!(f.from || f.to) || f.field === "due";
-  const filterCount = f => (f.type!=="all") + (f.status!=="all") + hasDate(f);
+  const filterCount = f => (f.status!=="all") + hasDate(f);
   function matchLoan(l, f){
-    if(f.type !== "all" && l.type !== f.type) return false;
     const done = leftOf(l) <= 0;
     if(f.status === "open" && done) return false;
     if(f.status === "done" && !done) return false;
@@ -3058,7 +3069,7 @@ header{margin-top:6px}
   }
   function segSet(id, v){ [...$(id).children].forEach(b => b.setAttribute("aria-pressed", b.dataset.v === v ? "true" : "false")); }
   function renderSheet(){
-    segSet("fType", draft.type); segSet("fStatus", draft.status); segSet("fField", draft.field);
+    segSet("fStatus", draft.status); segSet("fField", draft.field);
     $("fFrom").value = draft.from; $("fTo").value = draft.to;
     const pr = $("fPresets"); pr.innerHTML = "";
     presetsFor(draft.field).forEach(p => {
@@ -3090,7 +3101,6 @@ header{margin-top:6px}
   }
   function describeFilter(f){
     const out = [];
-    if(f.type !== "all") out.push(f.type === "borrow" ? "Mình vay" : "Mình cho vay");
     if(f.status !== "all") out.push(f.status === "open" ? "Chưa xong" : "Tất toán");
     if(f.field === "due" && !f.from && !f.to) out.push("Có hạn trả");
     if(f.from || f.to){
@@ -3118,14 +3128,22 @@ header{margin-top:6px}
     const active = shown.filter(l => leftOf(l) > 0).sort((a,b)=> (a.due||"9999").localeCompare(b.due||"9999") || b.t-a.t);
     const done = shown.filter(l => leftOf(l) <= 0);
     $("activeTitle").textContent = n ? "Kết quả lọc (" + shown.length + ")" : "Đang theo dõi";
-    const box = $("loanList"); box.innerHTML = "";
-    if(!active.length && !(n && done.length)) box.innerHTML = n ? '<p class="empty">Không có khoản vay nào khớp bộ lọc.</p>' : '<p class="empty">Không có khoản vay nào đang theo dõi.</p>';
-    active.forEach(l => box.appendChild(loanCard(l)));
+
+    const fill = (kind, boxId, sumId, secId, empty) => {
+      const list = active.filter(l => l.type === kind);
+      const box = $(boxId); box.innerHTML = "";
+      $(sumId).textContent = fmt(list.reduce((a, l) => a + leftOf(l), 0));
+      $(secId).hidden = !list.length && !!n;
+      if(!list.length) box.innerHTML = '<p class="empty">' + (n ? "Không có khoản nào khớp bộ lọc." : empty) + '</p>';
+      list.forEach(l => box.appendChild(loanCard(l)));
+    };
+    fill("borrow", "loanListBorrow", "secBorrowSum", "secBorrow", "Chưa có khoản đi vay nào.");
+    fill("lend", "loanListLend", "secLendSum", "secLend", "Chưa có khoản cho vay nào.");
     $("doneLoansBox").hidden = !done.length;
     if(n && done.length) $("doneLoansBox").open = true;
     $("doneLoansTitle").textContent = "Đã tất toán (" + done.length + ")";
     const dl2 = $("doneLoanList"); dl2.innerHTML = "";
-    done.forEach(l => dl2.appendChild(loanCard(l)));
+    done.forEach(l => dl2.appendChild(loanCard(l, true)));
     if(detailLoanId) renderLoanDetail();
     if(detailLoanId && !getLoan(detailLoanId)){ detailLoanId = null; if($("loanForm").hidden) showLoanView("main"); }
   }
@@ -3277,7 +3295,7 @@ header{margin-top:6px}
   $("filterBtn").onclick = openSheet;
   $("closeSheet").onclick = closeSheet;
   $("sheetBack").onclick = closeSheet;
-  [["fType","type"],["fStatus","status"]].forEach(([id,key]) => [...$(id).children].forEach(b => b.onclick = () => { draft[key] = b.dataset.v; renderSheet(); }));
+  [["fStatus","status"]].forEach(([id,key]) => [...$(id).children].forEach(b => b.onclick = () => { draft[key] = b.dataset.v; renderSheet(); }));
   [...$("fField").children].forEach(b => b.onclick = () => { if(draft.field !== b.dataset.v){ draft.field = b.dataset.v; draft.from = ""; draft.to = ""; } renderSheet(); });
   $("fFrom").addEventListener("change", e => { draft.from = e.target.value; renderSheet(); });
   $("fTo").addEventListener("change", e => { draft.to = e.target.value; renderSheet(); });
