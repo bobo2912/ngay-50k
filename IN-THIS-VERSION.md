@@ -1,6 +1,14 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v42, ngày 28/09/2026
+**Phiên bản hiện tại:** v43, ngày 28/09/2026
+
+---
+
+## Có gì mới trong v43 (so với v42)
+
+- **Khoản vay chia thành ba tab con:** *Đi vay*, *Cho vay*, *Tất toán*, mỗi tab kèm số khoản. Không phải cuộn xuống mới thấy phần cho vay nữa. Tiêu đề dưới tab đổi theo: *Còn phải trả …*, *Còn phải thu …*, hoặc *Đã tất toán (N)*.
+- **Vuốt quay lại không còn kéo theo cuộn dọc.** Khi app đã nhận ra đây là cú vuốt ngang, nó khoá luôn trục dọc nên trang đứng yên, chỉ có màn hình trượt sang. Trước đây vuốt hơi chéo một chút là vừa trượt vừa cuộn.
+- **Nút Lọc không còn dính vào nút Thêm khoản vay.**
 
 ---
 
@@ -9,16 +17,6 @@
 - **Tab Khoản vay tách thành hai mục riêng:** *Mình đi vay* và *Mình cho vay*, mỗi mục có tiêu đề và tổng còn lại của riêng nó, khớp với hai con số ở ô trên cùng.
 - **Bỏ phần lọc theo loại** trong bảng Lọc, vì hai mục đã làm đúng việc đó. Bảng Lọc giờ chỉ còn *Trạng thái* và *Lọc theo ngày*.
 - **Mỗi thẻ bỏ chữ *Mình vay* / *Mình cho vay*** vì tiêu đề mục đã nói rồi, chỉ còn lại ngày. Riêng mục *Đã tất toán* gộp cả hai loại nên vẫn giữ nhãn.
-
----
-
-## Có gì mới trong v41 (so với v40)
-
-Sửa lỗi bày ra ở v40: dòng *N lần vay thêm* ghép vào cột phải của thẻ khoản vay làm cột đó dài ra, đẩy số tiền tràn khỏi mép phải và bóp cột tên xuống hai ba dòng.
-
-- **Bỏ đuôi *N lần vay thêm* khỏi danh sách.** Thông tin này vẫn nằm trong chi tiết khoản vay, nơi có chỗ hiển thị tử tế.
-- **Tên dài tự cắt bằng dấu ba chấm** thay vì xuống dòng, nên mọi thẻ khoản vay cao bằng nhau.
-- **Số tiền không bao giờ tràn mép** dù lớn tới hàng tỉ.
 
 ---
 
@@ -68,7 +66,7 @@ Sửa lỗi bày ra ở v40: dòng *N lần vay thêm* ghép vào cột phải c
 - Theo dõi khoản **mình đi vay** và **mình cho vay**, có tổng đang nợ và tổng người khác nợ mình.
 - Ghi nhiều lần vay thêm và nhiều lần trả trong cùng một khoản, lịch sử gộp theo thời gian.
 - Xem số còn lại, hạn trả, cảnh báo quá hạn.
-- Hai mục riêng: Mình đi vay và Mình cho vay, mỗi mục có tổng còn lại.
+- Ba tab con: Đi vay, Cho vay, Tất toán; hai tab đầu hiện tổng còn phải trả hoặc còn phải thu.
 - Lọc theo trạng thái (chưa xong, tất toán), ngày khởi tạo hoặc ngày đến hạn.
 
 ### Người nhận (trong Cài đặt)
@@ -106,7 +104,7 @@ Sửa lỗi bày ra ở v40: dòng *N lần vay thêm* ghép vào cột phải c
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v43** | Khoản vay chia ba tab con, vuốt back khoá trục dọc |
 | **v42** | Tách Khoản vay thành hai mục đi vay và cho vay, bỏ lọc theo loại |
-| **v41** | Sửa tràn chữ ở thẻ khoản vay, tên dài cắt bằng ba chấm |
 
 *File này chỉ giữ ghi chú của hai bản gần nhất.*
