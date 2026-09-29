@@ -1,6 +1,13 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v44, ngày 28/09/2026
+**Phiên bản hiện tại:** v45, ngày 29/09/2026
+
+---
+
+## Có gì mới trong v45 (so với v44)
+
+- **Chạm vào một nhóm trong *Chi theo tag* để xem các khoản của nhóm đó.** Bảng mở ra liệt kê theo ngày, mỗi ngày có tổng riêng, mỗi khoản ghi giờ, nhãn *Chi* hay *Thẻ*, tên thẻ nếu quẹt thẻ và chữ *định kỳ* nếu là khoản định kỳ.
+- Bảng này **đi theo lựa chọn ở ô tổng**: đang xem *Chi thường* thì chỉ liệt kê chi thường, đang xem *Chi thẻ* thì chỉ liệt kê chi thẻ.
 
 ---
 
@@ -15,14 +22,6 @@
 
 ---
 
-## Có gì mới trong v43 (so với v42)
-
-- **Khoản vay chia thành ba tab con:** *Đi vay*, *Cho vay*, *Tất toán*, mỗi tab kèm số khoản. Không phải cuộn xuống mới thấy phần cho vay nữa. Tiêu đề dưới tab đổi theo: *Còn phải trả …*, *Còn phải thu …*, hoặc *Đã tất toán (N)*.
-- **Vuốt quay lại không còn kéo theo cuộn dọc.** Khi app đã nhận ra đây là cú vuốt ngang, nó khoá luôn trục dọc nên trang đứng yên, chỉ có màn hình trượt sang. Trước đây vuốt hơi chéo một chút là vừa trượt vừa cuộn.
-- **Nút Lọc không còn dính vào nút Thêm khoản vay.**
-
----
-
 ## Tất cả tính năng của app
 
 ### Tab Tổng quan
@@ -30,7 +29,7 @@
 - Bốn ô tổng: thu vào, chi thường, chi thẻ, khoản vay. Khoản vay để riêng, không tính vào còn lại thực tế.
 - Thêm khoản thu theo nguồn: Lương, Thưởng, Bán hàng, Được cho, Khác. Chạm vào khoản thu để sửa số tiền, ghi chú, ngày nhận, nguồn thu.
 - **Phân tích tháng** (nút biểu đồ cạnh nút Khoản thu): biểu đồ so sánh thu chi theo ngày, tuần, tháng.
-- Thống kê chi theo tag nằm trong Phân tích tháng, ăn theo lựa chọn ở trên.
+- Thống kê chi theo tag nằm trong Phân tích tháng, ăn theo lựa chọn ở trên. Chạm một nhóm để xem các khoản của nhóm đó theo ngày.
 - Danh sách tất cả thu chi trong tháng. Chạm vào ô tìm là ô tìm lên sát đỉnh màn hình và đứng yên ở đó.
 - **Tìm kiếm xuyên tháng** trên cả khoản chi, khoản thu và chi thẻ.
 
@@ -107,7 +106,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v45** | Chạm vào nhóm trong Chi theo tag để xem các khoản theo ngày |
 | **v44** | Vuốt back không còn kéo theo trang, tắt hiệu ứng nảy |
-| **v43** | Khoản vay chia ba tab con, vuốt back khoá trục dọc |
 
 *File này chỉ giữ ghi chú của hai bản gần nhất.*

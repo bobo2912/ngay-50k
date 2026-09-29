@@ -234,6 +234,10 @@ ul{list-style:none; margin:0; padding:0}
 .ledger-total{border-top:1.5px solid var(--line); margin-top:8px; padding-top:10px}
 .ledger-total b{font-size:1.3rem; letter-spacing:-.01em}
 .cats{margin-top:6px}
+#catSheet{z-index:92}
+#catBack{z-index:91}
+.cat-row{width:100%; text-align:left; border:0; background:transparent; border-radius:10px}
+.cat-row:active{background:var(--note-soft)}
 .cat-row{display:grid; grid-template-columns:minmax(5.5em,9em) 1fr auto; gap:10px; align-items:center; padding:5px 0; font-size:.92rem}
 .cat-bar{height:8px; border-radius:4px; background:var(--line); overflow:hidden}
 .cat-bar i{display:block; height:100%; background:var(--note)}
@@ -1457,7 +1461,7 @@ header{margin-top:6px}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v44</p>
+      <p class="sync" id="appVersion">Phiên bản v45</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. Giới hạn khoảng 5 MB được tính chung cho các mini app cùng tài khoản GitHub.</p>
 
       <h4 class="sub">Xoá dữ liệu</h4>
@@ -1578,6 +1582,14 @@ header{margin-top:6px}
       <div class="cats" id="catBreakdown"></div>
     </section>
 
+</div>
+
+<div class="sheet-back top" id="catBack" hidden></div>
+<div class="sheet top" id="catSheet" role="dialog" aria-modal="true" aria-labelledby="catSheetTitle" hidden>
+  <div class="grab" aria-hidden="true"></div>
+  <div class="sheet-head"><h2 id="catSheetTitle">Nhóm</h2><button class="x" id="closeCat" aria-label="Đóng">✕</button></div>
+  <p class="ov-sub" id="catSheetSum" style="margin:0 2px 6px"></p>
+  <div id="catList"></div>
 </div>
 
 <div class="sheet-back top" id="rcBack" hidden></div>
@@ -2474,11 +2486,13 @@ header{margin-top:6px}
     const cb = $("catBreakdown"); cb.innerHTML = "";
     if(!catTotal){ cb.innerHTML = '<p class="empty">Chưa có khoản chi nào trong tháng này.</p>'; }
     Object.keys(byCat).map(tagOf).sort((a,b)=>byCat[b.id]-byCat[a.id]).forEach(c => {
-      const row = document.createElement("div"); row.className = "cat-row";
+      const row = document.createElement("button"); row.type = "button"; row.className = "cat-row";
       row.innerHTML = '<span></span><div class="cat-bar"><i></i></div><span class="num"></span>';
       row.children[0].textContent = c.icon + " " + c.label;
       row.querySelector("i").style.width = (byCat[c.id]/catTotal*100) + "%";
       row.children[2].textContent = fmt(byCat[c.id]);
+      row.setAttribute("aria-label", "Xem các khoản " + c.label);
+      row.onclick = () => openCatDetail(c.id);
       cb.appendChild(row);
     });
 
@@ -2600,6 +2614,58 @@ header{margin-top:6px}
     renderAll(); renderRecur(); renderSetHome(); closeRecur();
     if(made) flash("scanMsg", "✓ Đã ghi " + made + " khoản định kỳ");
   };
+
+  /* ---------- chi tiết một nhóm trong tháng ---------- */
+  function openCatDetail(tagId){
+    const y = viewMonth.getFullYear(), m = viewMonth.getMonth();
+    const prefix = y + "-" + pad(m+1) + "-";
+    const rows = [];
+    if(netFilter !== "card") for(const k in state.days){
+      if(k.indexOf(prefix) !== 0) continue;
+      (state.days[k]||[]).forEach(it => { if((it.cat||"") === tagId) rows.push({ day:k, t:it.t||0, kind:"out", it }); });
+    }
+    if(netFilter !== "cash") for(const k in state.cardTx){
+      if(k.indexOf(prefix) !== 0) continue;
+      (state.cardTx[k]||[]).forEach(it => { if((it.cat||"") === tagId) rows.push({ day:k, t:it.t||0, kind:"card", it }); });
+    }
+    rows.sort((a,b) => a.day < b.day ? 1 : a.day > b.day ? -1 : b.t - a.t);
+    const tg = tagOf(tagId), total = rows.reduce((a,r) => a + (Number(r.it.amt)||0), 0);
+    $("catSheetTitle").textContent = tg.icon + " " + tg.label;
+    $("catSheetSum").textContent = "Tháng " + (m+1) + "/" + y + " · " + rows.length + " khoản · " + fmt(total) +
+      (netFilter === "cash" ? " · chỉ chi thường" : netFilter === "card" ? " · chỉ chi thẻ" : "");
+    const box = $("catList"); box.innerHTML = "";
+    if(!rows.length){ box.innerHTML = '<p class="empty">Chưa có khoản nào.</p>'; showSheet("catSheet", "catBack"); return; }
+    let curDay = null, ul = null;
+    rows.forEach(r => {
+      if(r.day !== curDay){
+        curDay = r.day;
+        const d = new Date(r.day + "T00:00:00");
+        const dayTotal = rows.filter(x => x.day === r.day).reduce((a,x) => a + (Number(x.it.amt)||0), 0);
+        const head = document.createElement("div"); head.className = "day-head";
+        head.innerHTML = "<span></span><span class='num'></span>";
+        head.children[0].textContent = WD[d.getDay()] + ", " + d.getDate() + "/" + (d.getMonth()+1);
+        head.children[1].textContent = fmt(dayTotal);
+        box.appendChild(head);
+        ul = document.createElement("ul"); box.appendChild(ul);
+      }
+      const li = document.createElement("li"); li.className = "item";
+      li.innerHTML = '<div class="desc"><div></div><div></div></div><span class="src"></span><span class="amt num"></span>';
+      li.querySelector(".desc div:first-child").textContent =
+        r.kind === "card" ? (r.it.where || "Chi bằng thẻ") : (r.it.note || tg.label);
+      const tt = new Date(r.it.t || 0), bits = [];
+      if(r.it.t) bits.push(pad(tt.getHours()) + ":" + pad(tt.getMinutes()));
+      if(r.kind === "card"){ const cd = cardOf(r.it.cardId); if(cd) bits.push(cd.name); }
+      if(r.it.fx) bits.push("định kỳ");
+      li.querySelector(".desc div:last-child").textContent = bits.join(" · ");
+      const src = li.querySelector(".src");
+      src.textContent = r.kind === "card" ? "Thẻ" : "Chi";
+      if(r.kind === "card") src.classList.add("c");
+      li.querySelector(".amt").textContent = "−" + fmt(r.it.amt);
+      ul.appendChild(li);
+    });
+    showSheet("catSheet", "catBack");
+  }
+  const closeCat = () => hideSheet("catSheet", "catBack");
 
   /* ---------- tìm kiếm xuyên tháng ---------- */
   function searchHits(q){
@@ -4675,6 +4741,8 @@ header{margin-top:6px}
   };
   const closeAn = () => hideSheet("anSheet", "anBack");
   $("closeAn").onclick = closeAn;
+  $("closeCat").onclick = closeCat;
+  $("catBack").onclick = closeCat;
   $("anBack").onclick = closeAn;
   function setSearchMode(on){
     const t = $("tab-money");
