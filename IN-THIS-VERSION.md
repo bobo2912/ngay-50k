@@ -1,6 +1,25 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v45, ngày 29/09/2026
+**Phiên bản hiện tại:** v46, ngày 29/09/2026
+
+---
+
+## Có gì mới trong v46 (so với v45)
+
+**Sửa được khoản ngay tại chỗ vừa tìm thấy.** Trước đây tìm ra một khoản rồi muốn đổi số tiền thì phải nhớ ngày, sang tab Giao dịch, lùi về ngày đó rồi tìm lại trong danh sách.
+
+- **Chạm vào một dòng trong kết quả tìm kiếm** là mở luôn form sửa của khoản đó.
+- **Chạm vào một dòng trong bảng chi tiết nhóm** cũng vậy.
+- Khoản chi thẻ mở form sửa của thẻ, khoản thu mở form khoản thu, khoản chi thường mở form chi — đúng loại của nó.
+- Sửa xong lưu hay huỷ thì **bảng chi tiết nhóm mở lại và cập nhật luôn** số mới, không phải mở lại từ đầu.
+
+**Khoản định kỳ ghi được vào thẻ.** Tiền nhà, tiền mạng, tiền học trả bằng thẻ tín dụng thì trước đây vẫn bị ghi thành chi thường.
+
+- Khai khoản định kỳ giờ có thêm trường **Ghi vào**: chọn *Chi thường* hoặc chọn một thẻ trong danh sách.
+- Chọn thẻ thì mỗi tháng app tự ghi khoản đó vào đúng thẻ, có gắn nhóm, lên đúng kỳ sao kê và biểu đồ của thẻ.
+- Danh sách khoản định kỳ ghi rõ khoản nào vào thẻ nào.
+
+**Sửa lỗi form sửa bị nằm dưới bảng đang mở.** Mở form sửa từ một bảng đã mở sẵn thì form hiện ra phía sau bảng đó, coi như bấm không được. Giờ mỗi bảng mở thêm tự nằm trên bảng trước.
 
 ---
 
@@ -8,17 +27,6 @@
 
 - **Chạm vào một nhóm trong *Chi theo tag* để xem các khoản của nhóm đó.** Bảng mở ra liệt kê theo ngày, mỗi ngày có tổng riêng, mỗi khoản ghi giờ, nhãn *Chi* hay *Thẻ*, tên thẻ nếu quẹt thẻ và chữ *định kỳ* nếu là khoản định kỳ.
 - Bảng này **đi theo lựa chọn ở ô tổng**: đang xem *Chi thường* thì chỉ liệt kê chi thường, đang xem *Chi thẻ* thì chỉ liệt kê chi thẻ.
-
----
-
-## Có gì mới trong v44 (so với v43)
-
-**Sửa triệt để chuyện vuốt back kéo theo cả trang.** Bản v43 mới chặn được một nửa: app đợi ngón tay đi ngang hơn 16px mới nhận ra đây là cú vuốt back, mà Safari thì chốt hướng cuộn ngay ở lần ngón tay nhúc nhích đầu tiên — lúc app kịp chặn thì trang đã bắt đầu nảy rồi.
-
-- App giờ **quyết ngay ở lần di chuyển đầu tiên**, chỉ cần ngang hơn dọc một chút là khoá luôn trục dọc.
-- **Tắt hiệu ứng nảy của trang** ở cấp trình duyệt, nên không còn cảnh cả màn hình bị kéo tụt xuống.
-- Nếu vuốt được một đoạn rồi đổi ý kéo dọc, app **thả cú vuốt ra** và trả màn hình về chỗ cũ thay vì treo lơ lửng.
-- Cuộn dọc bình thường không đổi.
 
 ---
 
@@ -32,6 +40,7 @@
 - Thống kê chi theo tag nằm trong Phân tích tháng, ăn theo lựa chọn ở trên. Chạm một nhóm để xem các khoản của nhóm đó theo ngày.
 - Danh sách tất cả thu chi trong tháng. Chạm vào ô tìm là ô tìm lên sát đỉnh màn hình và đứng yên ở đó.
 - **Tìm kiếm xuyên tháng** trên cả khoản chi, khoản thu và chi thẻ.
+- **Sửa ngay tại chỗ:** chạm một dòng trong kết quả tìm kiếm hay trong bảng chi tiết nhóm là mở luôn form sửa của khoản đó, không phải đi tìm lại theo ngày.
 
 ### Tab Giao dịch
 - **Thẻ Hôm nay còn được tiêu:** số tiền còn lại, thanh tiến độ, chuyển đỏ khi vượt hạn mức.
@@ -80,7 +89,7 @@
 - **Quét mã QR:** Camera iPhone hoặc Quét trực tiếp, kèm thời gian tự tắt camera.
 - **Hạn mức chi một ngày.**
 - **Người nhận:** danh sách người hay chuyển tiền.
-- **Khoản định kỳ:** khai một lần, app tự ghi mỗi tháng, không tính vào hạn mức ngày.
+- **Khoản định kỳ:** khai một lần, app tự ghi mỗi tháng, không tính vào hạn mức ngày. Chọn ghi vào chi thường hoặc vào một thẻ tín dụng.
 - **Quản lý tag:** danh sách tag, chi tiết từng tag, đổi tên và icon, ẩn hoặc hiện, xoá tag tự tạo.
 - **Sao lưu và đồng bộ:**
   - Xuất file sao lưu, hoặc xuất CSV để mở bằng Excel.
@@ -106,7 +115,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v46** | Sửa được khoản ngay từ kết quả tìm kiếm và bảng chi tiết nhóm, khoản định kỳ ghi được vào thẻ |
 | **v45** | Chạm vào nhóm trong Chi theo tag để xem các khoản theo ngày |
-| **v44** | Vuốt back không còn kéo theo trang, tắt hiệu ứng nảy |
 
 *File này chỉ giữ ghi chú của hai bản gần nhất.*
