@@ -234,8 +234,6 @@ ul{list-style:none; margin:0; padding:0}
 .ledger-total{border-top:1.5px solid var(--line); margin-top:8px; padding-top:10px}
 .ledger-total b{font-size:1.3rem; letter-spacing:-.01em}
 .cats{margin-top:6px}
-#catSheet{z-index:92}
-#catBack{z-index:91}
 .cat-row{width:100%; text-align:left; border:0; background:transparent; border-radius:10px}
 .cat-row:active{background:var(--note-soft)}
 .cat-row{display:grid; grid-template-columns:minmax(5.5em,9em) 1fr auto; gap:10px; align-items:center; padding:5px 0; font-size:.92rem}
@@ -1461,7 +1459,7 @@ header{margin-top:6px}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v45</p>
+      <p class="sync" id="appVersion">Phiên bản v46</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. Giới hạn khoảng 5 MB được tính chung cho các mini app cùng tài khoản GitHub.</p>
 
       <h4 class="sub">Xoá dữ liệu</h4>
@@ -1602,6 +1600,7 @@ header{margin-top:6px}
     <button type="button" class="k000 num" id="rcAmt000" aria-label="Thêm 000">000</button></div></div>
   <div class="field"><label for="rcDay"><span>Ngày trong tháng</span></label><input id="rcDay" class="inp num" inputmode="numeric" maxlength="2" autocomplete="off" placeholder="vd: 5"></div>
   <div class="field"><label><span>Nhóm</span></label><div class="chips" id="rcTagChips" style="margin-top:0"></div></div>
+  <div class="field"><label><span>Ghi vào</span></label><div class="chips" id="rcDestChips" style="margin-top:0"></div></div>
   <p class="inline-ok" id="rcMsg" hidden></p>
   <div class="sheet-foot">
     <button class="ghost danger" id="rcDel" hidden>Xoá</button>
@@ -2519,7 +2518,7 @@ header{margin-top:6px}
     });
   }
   /* ---------- khoản định kỳ ---------- */
-  var rcEditing = null, rcTag = "nha";
+  var rcEditing = null, rcTag = "nha", rcDest = "";
   const rcAmtVal = () => parseInt(digits($("rcAmt").value), 10) || 0;
   function recurList(){ return state.recur || (state.recur = []); }
   function monthsBack(n){
@@ -2539,13 +2538,22 @@ header{margin-top:6px}
         const key = m.getFullYear() + "-" + pad(m.getMonth()+1) + "-" + pad(dd);
         if(key > tk) return;
         if(r.from && key < r.from) return;
-        const has = (state.days[key] || []).some(x => x.rc === r.id);
-        if(has) return;
+        const card = r.card && cardOf(r.card) ? r.card : "";
+        const bucket = card ? state.cardTx : state.days;
+        if((bucket[key] || []).some(x => x.rc === r.id)) return;
         const d = new Date(key + "T09:00:00");
-        (state.days[key] = state.days[key] || []).push({
-          id:uid(), amt:Number(r.amt)||0, note:r.name || "Khoản định kỳ", cat:r.cat || "nha",
-          fx:1, rc:r.id, t:isNaN(d) ? Date.now() : d.getTime()
-        });
+        const t = isNaN(d) ? Date.now() : d.getTime();
+        if(card){
+          (state.cardTx[key] = state.cardTx[key] || []).push({
+            id:uid(), amt:Number(r.amt)||0, where:r.name || "Khoản định kỳ", cardId:card,
+            cat:r.cat || "nha", rc:r.id, t
+          });
+        } else {
+          (state.days[key] = state.days[key] || []).push({
+            id:uid(), amt:Number(r.amt)||0, note:r.name || "Khoản định kỳ", cat:r.cat || "nha",
+            fx:1, rc:r.id, t
+          });
+        }
         made++;
       });
     });
@@ -2564,12 +2572,25 @@ header{margin-top:6px}
       b.querySelector(".ic").textContent = tagOf(r.cat).icon;
       b.querySelector(".ic").style.fontSize = "1.05rem";
       b.querySelector("b").textContent = r.name || "Khoản định kỳ";
-      b.querySelector("small").textContent = fmt(r.amt) + " · ngày " + r.day + " hằng tháng";
+      const cd = r.card ? cardOf(r.card) : null;
+      b.querySelector("small").textContent = fmt(r.amt) + " · ngày " + r.day + " hằng tháng · " +
+        (cd ? cd.name : "chi thường");
       b.onclick = () => openRecur(r.id);
       box.appendChild(b);
     });
   }
   function selectRcTag(id){ rcTag = id || "nha"; renderTagChips($("rcTagChips"), rcTag, t => selectRcTag(t)); }
+  function selectRcDest(id){
+    rcDest = id || "";
+    const box = $("rcDestChips"); box.innerHTML = "";
+    const mk = (v, label) => {
+      const b = document.createElement("button"); b.type = "button"; b.className = "chip";
+      b.textContent = label; b.setAttribute("aria-pressed", v === rcDest ? "true" : "false");
+      b.onclick = () => selectRcDest(v); box.appendChild(b);
+    };
+    mk("", "Chi thường");
+    (state.cards || []).forEach(c => mk(c.id, cardShort(c)));
+  }
   function openRecur(id){
     const r = id ? recurList().find(x => x.id === id) : null;
     rcEditing = r ? r.id : null;
@@ -2578,6 +2599,7 @@ header{margin-top:6px}
     $("rcAmt").value = r && r.amt ? r.amt.toLocaleString("vi-VN") : "";
     $("rcDay").value = r && r.day ? String(r.day) : "";
     selectRcTag(r ? r.cat : "nha");
+    selectRcDest(r ? (r.card || "") : "");
     $("rcDel").hidden = !r; delete $("rcDel").dataset.armed; $("rcDel").textContent = "Xoá";
     $("rcMsg").hidden = true;
     rcCheck();
@@ -2607,16 +2629,30 @@ header{margin-top:6px}
     const day = Math.min(31, Math.max(1, parseInt(digits($("rcDay").value), 10) || 1));
     if(!name || !amt) return;
     const r = rcEditing ? recurList().find(x => x.id === rcEditing) : null;
-    if(r){ r.name = name; r.amt = amt; r.day = day; r.cat = rcTag; }
-    else recurList().push({ id:uid(), name, amt, day, cat:rcTag, from: todayKey().slice(0, 8) + "01" });
+    const dest = rcDest && cardOf(rcDest) ? rcDest : "";
+    if(r){ r.name = name; r.amt = amt; r.day = day; r.cat = rcTag; r.card = dest; }
+    else recurList().push({ id:uid(), name, amt, day, cat:rcTag, card:dest, from: todayKey().slice(0, 8) + "01" });
     persist();
     const made = runRecur();
     renderAll(); renderRecur(); renderSetHome(); closeRecur();
     if(made) flash("scanMsg", "✓ Đã ghi " + made + " khoản định kỳ");
   };
 
+  /* mở đúng form sửa cho một dòng trong kết quả tìm kiếm hoặc chi tiết nhóm */
+  function makeEditable(li, r){
+    li.classList.add("tap"); li.tabIndex = 0; li.setAttribute("role", "button");
+    const go = () => {
+      if(catOpenTag) hideSheet("catSheet", "catBack");   /* form sửa phải nằm trên cùng */
+      if(r.kind === "card") openCardTx(r.it.id, r.day);
+      else openEdit(r.it.id, r.day, r.kind === "in" ? "in" : "out");
+    };
+    li.addEventListener("click", go);
+    li.addEventListener("keydown", e => { if(e.target === li && (e.key === "Enter" || e.key === " ")){ e.preventDefault(); go(); } });
+  }
+
   /* ---------- chi tiết một nhóm trong tháng ---------- */
-  function openCatDetail(tagId){
+  function openCatDetail(tagId, keep){
+    catOpenTag = tagId;
     const y = viewMonth.getFullYear(), m = viewMonth.getMonth();
     const prefix = y + "-" + pad(m+1) + "-";
     const rows = [];
@@ -2634,7 +2670,7 @@ header{margin-top:6px}
     $("catSheetSum").textContent = "Tháng " + (m+1) + "/" + y + " · " + rows.length + " khoản · " + fmt(total) +
       (netFilter === "cash" ? " · chỉ chi thường" : netFilter === "card" ? " · chỉ chi thẻ" : "");
     const box = $("catList"); box.innerHTML = "";
-    if(!rows.length){ box.innerHTML = '<p class="empty">Chưa có khoản nào.</p>'; showSheet("catSheet", "catBack"); return; }
+    if(!rows.length){ box.innerHTML = '<p class="empty">Chưa có khoản nào.</p>'; if(!keep) showSheet("catSheet", "catBack"); return; }
     let curDay = null, ul = null;
     rows.forEach(r => {
       if(r.day !== curDay){
@@ -2661,11 +2697,12 @@ header{margin-top:6px}
       src.textContent = r.kind === "card" ? "Thẻ" : "Chi";
       if(r.kind === "card") src.classList.add("c");
       li.querySelector(".amt").textContent = "−" + fmt(r.it.amt);
+      makeEditable(li, r);
       ul.appendChild(li);
     });
-    showSheet("catSheet", "catBack");
+    if(!keep) showSheet("catSheet", "catBack");
   }
-  const closeCat = () => hideSheet("catSheet", "catBack");
+  function closeCat(){ catOpenTag = null; hideSheet("catSheet", "catBack"); }
 
   /* ---------- tìm kiếm xuyên tháng ---------- */
   function searchHits(q){
@@ -2718,6 +2755,7 @@ header{margin-top:6px}
       const amt = li.querySelector(".amt");
       amt.textContent = (h.kind === "in" ? "+" : "−") + fmt(h.it.amt);
       if(h.kind === "in") amt.classList.add("plus");
+      makeEditable(li, h);
       ul.appendChild(li);
     });
     box.appendChild(ul);
@@ -3535,7 +3573,10 @@ header{margin-top:6px}
   /* ---------- generic sheet open/close ---------- */
   const openSheets = [];
   function showSheet(id, backId){
+    const lv = openSheets.length;
     $(backId).hidden = false; $(id).hidden = false; document.body.style.overflow = "hidden";
+    $(backId).style.zIndex = String(82 + lv * 2);
+    $(id).style.zIndex = String(83 + lv * 2);
     openSheets.push(id);
     requestAnimationFrame(() => { $(backId).classList.add("show"); $(id).classList.add("show"); });
   }
@@ -3543,7 +3584,12 @@ header{margin-top:6px}
     $(backId).classList.remove("show"); $(id).classList.remove("show"); $(id).style.transform = "";
     const i = openSheets.lastIndexOf(id); if(i >= 0) openSheets.splice(i, 1);
     if(!openSheets.length && !settingsOpenNow()) document.body.style.overflow = "";
-    setTimeout(() => { if(!$(id).classList.contains("show")){ $(backId).hidden = true; $(id).hidden = true; } }, 250);
+    setTimeout(() => {
+      if(!$(id).classList.contains("show")){
+        $(backId).hidden = true; $(id).hidden = true;
+        $(id).style.zIndex = ""; $(backId).style.zIndex = "";
+      }
+    }, 250);
   }
   function settingsOpenNow(){ const el = $("settings"); return el && !el.hidden && el.classList.contains("show"); }
 
@@ -3662,7 +3708,10 @@ header{margin-top:6px}
     $("saveEdit").disabled = !eAmtVal();
     showSheet("editSheet", "editBack");
   }
-  function closeEdit(){ editing = null; hideSheet("editSheet", "editBack"); }
+  function closeEdit(){
+    editing = null; hideSheet("editSheet", "editBack");
+    if(catOpenTag) setTimeout(() => { if(catOpenTag) openCatDetail(catOpenTag); }, 180);
+  }
   $("eAmt").addEventListener("input", () => { const v = eAmtVal(); $("eAmt").value = v ? v.toLocaleString("vi-VN") : ""; $("saveEdit").disabled = !v; });
   $("eAmt000").addEventListener("pointerdown", e => e.preventDefault());
   $("eAmt000").onclick = () => { const v = eAmtVal(); if(!v || v * 1000 > 999999999999){ $("eAmt").focus(); return; } $("eAmt").value = (v*1000).toLocaleString("vi-VN"); $("saveEdit").disabled = false; };
@@ -3934,7 +3983,7 @@ header{margin-top:6px}
   idleReset();
 
   /* ================= THẺ TÍN DỤNG ================= */
-  var cardMonth = null, cxEditing = null, cxCard = null, cdEditing = null, pasteCard = null, pasteItems = [], pasteShowOther = false, cardFilterId = null, cardChartMode = "day", cxTag = "", netFilter = "all", searchQ = "";
+  var cardMonth = null, cxEditing = null, cxCard = null, cdEditing = null, pasteCard = null, pasteItems = [], pasteShowOther = false, cardFilterId = null, cardChartMode = "day", cxTag = "", netFilter = "all", searchQ = "", catOpenTag = null;
   function monthKeyOf(d){ return d.getFullYear() + "-" + pad(d.getMonth()+1); }
   function cardOf(id){ return (state.cards||[]).find(c => c.id === id) || null; }
   function stmtText(d){
@@ -4260,7 +4309,10 @@ header{margin-top:6px}
     $("cxSave").disabled = !cxAmtVal();
     showSheet("cardSheet", "cardBack");
   }
-  function closeCardTx(){ cxEditing = null; hideSheet("cardSheet", "cardBack"); }
+  function closeCardTx(){
+    cxEditing = null; hideSheet("cardSheet", "cardBack");
+    if(catOpenTag) setTimeout(() => { if(catOpenTag) openCatDetail(catOpenTag); }, 180);
+  }
   $("cxAmt").addEventListener("input", () => { const v = cxAmtVal(); $("cxAmt").value = v ? v.toLocaleString("vi-VN") : ""; $("cxSave").disabled = !v; });
   $("cxAmt000").addEventListener("pointerdown", e => e.preventDefault());
   $("cxAmt000").onclick = () => { const v = cxAmtVal(); if(!v || v * 1000 > 999999999999){ $("cxAmt").focus(); return; } $("cxAmt").value = (v*1000).toLocaleString("vi-VN"); $("cxSave").disabled = false; };
