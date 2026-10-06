@@ -1,6 +1,22 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v57, ngày 06/10/2026
+**Phiên bản hiện tại:** v58, ngày 06/10/2026
+
+---
+
+## Có gì mới trong v58 (so với v57)
+
+**Tab Tài khoản chỉ lo chi tiêu trên tài khoản.**
+
+- Bỏ hai dòng *Số dư ví* và *Thẻ tháng này* khỏi thẻ *Hôm nay còn được tiêu*. Số dư vẫn xem ở tab Ví, chi thẻ ở tab Thẻ.
+
+**Lịch chi tiêu tháng** ở cuối tab Tài khoản.
+
+- Mỗi ô là một ngày, ghi số đã chi (vd 43k, 1,2tr). Màu càng đậm là chi càng nhiều so với ngày chi nhiều nhất trong tháng; có thang màu Ít → Nhiều bên dưới.
+- ★ đánh dấu ngày chi nhiều nhất, gạch đỏ dưới ô là ngày vượt hạn mức, viền đậm là hôm nay.
+- Dòng tóm tắt: tổng đã chi, số ngày có chi, ngày chi nhiều nhất và bao nhiêu, số ngày vượt hạn mức.
+- Khoản định kỳ (tiền nhà, tiền mạng…) không tô vào lịch để một khoản lớn không làm mọi ngày khác nhạt đi; tổng của chúng ghi riêng ở dòng tóm tắt.
+- Chạm một ngày để xem danh sách khoản chi ngày đó. Lùi, tiến để xem tháng khác.
 
 ---
 
@@ -10,16 +26,6 @@
 - **Thanh chọn tháng ở Tổng quan (và Thẻ) thoáng hơn:** hai mũi tên cách xa chữ tháng, nút biểu đồ không còn dính vào nút Khoản thu. Màn hình hẹp (iPhone SE, mini) thì nút ghi gọn là "Thu" để không tràn.
 - **Pastel gọn và dịu hơn:** nền kem ấm, thẻ trắng, một màu nhấn hồng đất. Thẻ đầu trang của mọi tab cùng một tông hồng nhạt, bốn ô số liệu ở Tổng quan để trắng, không còn mỗi chỗ một màu.
 - **Thêm khoản vay đúng loại:** đang ở tab con Cho vay mà bấm "+ Thêm khoản vay" thì form chọn sẵn **Mình cho vay**; ở Đi vay thì chọn sẵn Mình đi vay. Lưu xong app ở lại đúng tab con của khoản vừa thêm.
-
----
-
-## Có gì mới trong v56 (so với v55)
-
-**Thanh đầu của Cài đặt cũng liền một dải tới mép màn hình.** Trước đây vùng giờ và pin trong Cài đặt là nền riêng, thanh "Cài đặt · Xong" là một khối tách rời bên dưới.
-
-- Thanh giờ phủ lên tận vùng giờ và pin, giống thanh đầu trang chính.
-- Chưa cuộn thì trong suốt, cuộn xuống thì có nền mờ và đường kẻ mảnh.
-- Áp dụng cho mọi trang con trong Cài đặt và mọi giao diện.
 
 ---
 
@@ -59,6 +65,7 @@
   - Báo trước nếu khoản chi làm vượt hạn mức.
 - **Đoạn chuyển tiền cho MB Bank:** sao chép và mở MB Bank bằng một lần chạm.
 - **Xem theo ngày:** lùi, tiến hoặc chọn ngày bất kỳ. Chạm khoản chi để sửa số tiền, ghi chú, ngày và tag. Xoá bằng hai lần chạm.
+- **Lịch chi tiêu tháng:** mỗi ngày ghi số đã chi, tô màu đậm nhạt theo mức chi, ★ ngày chi nhiều nhất; chạm để xem ngày đó.
 - **Biểu đồ 7 ngày gần nhất** so với hạn mức, có chi tiêu trung bình mỗi ngày. Chạm vào cột để xem lại giao dịch ngày đó.
 - **Nhắc sao lưu** khi quá 7 ngày, kèm số khoản đang chỉ nằm trên máy này.
 - **Ghi lại khoản hay lặp** bằng một chạm, và nhắc khi hôm qua bỏ ghi.
@@ -118,7 +125,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v58** | Lịch chi tiêu tháng ở tab Tài khoản, bỏ số dư ví và thẻ khỏi tab này |
 | **v57** | Đổi tên tab Tài khoản, thanh tháng thoáng hơn, Pastel gọn hơn, thêm khoản vay đúng loại |
-| **v56** | Thanh đầu Cài đặt liền một dải tới mép màn hình |
 
 *File này chỉ giữ ghi chú của hai bản gần nhất.*
