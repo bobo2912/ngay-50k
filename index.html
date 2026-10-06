@@ -1455,11 +1455,13 @@ header{margin-top:6px}
 <section class="set-group" aria-labelledby="gStore">
       <div class="meter" aria-hidden="true"><span id="storBar"></span></div>
       <p class="meter-cap" id="storPct"></p>
+      <p class="sync" id="idbWhy" hidden></p>
+      <div class="set-row" id="idbRetryRow" hidden><button class="ghost grow" id="idbRetry">Thử mở lại IndexedDB</button></div>
       <dl class="stor">
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v47</p>
+      <p class="sync" id="appVersion">Phiên bản v48</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Xoá dữ liệu</h4>
@@ -1821,30 +1823,47 @@ header{margin-top:6px}
    Máy nào không mở được IndexedDB (hoặc treo quá 4 giây) thì app lưu kiểu cũ vào localStorage, lần sau mở lại sẽ thử chuyển tiếp. */
 window.N50K = (function(){
   var DB_NAME = "ngay50k", STORE = "kv", MAIN = "ngay50k:v1", KEYS = [MAIN, "ngay50k:beforeImport"];
-  var mem = {}, sizes = {}, db = null, mode = "ls", chan = null, dirty = {}, writing = null;
-  var api = { onError: null, onRemote: null };
+  var mem = {}, sizes = {}, gen = {}, db = null, mode = "ls", chan = null, dirty = {}, writing = null;
+  var why = "", trying = null, lastTry = 0;
+  var api = { onError: null, onRemote: null, onMode: null };
   function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
   function lsSet(k, v){ try{ localStorage.setItem(k, v); return true; }catch(e){ return false; } }
   function lsDel(k){ try{ localStorage.removeItem(k); }catch(e){} }
   function updatedOf(raw){ try{ return Number(JSON.parse(raw).updated) || 0; }catch(e){ return -1; } }
-  function open(){
+  function reason(e){
+    if(!e) return "lỗi không rõ";
+    if(e.message === "no indexedDB") return "trình duyệt không cho dùng IndexedDB (thường do Chế độ phong toả, duyệt riêng tư hoặc mở trong trình duyệt của Zalo/Facebook)";
+    if(e.message === "timeout") return "IndexedDB không phản hồi";
+    if(e.message === "verify failed") return "ghi thử vào IndexedDB nhưng đọc lại không khớp";
+    var m = ((e.name || "") + ": " + (e.message || "")).replace(/^: /, "");
+    if(/server lost|Connection to Indexed Database/i.test(m)) return "iPhone mất kết nối IndexedDB (lỗi của iOS, thường hết khi khởi động lại máy). " + m;
+    return m || String(e);
+  }
+  /* mở cơ sở dữ liệu; quá hạn thì báo lỗi nhưng vẫn chờ tiếp, mở được muộn thì gọi onLate */
+  function open(ms, onLate){
     return new Promise(function(res, rej){
-      if(!window.indexedDB) return rej(new Error("no indexedDB"));
-      var done = false, timer = setTimeout(function(){ if(!done){ done = true; rej(new Error("timeout")); } }, 4000);
+      if(!window.indexedDB || typeof indexedDB.open !== "function") return rej(new Error("no indexedDB"));
+      var done = false, kick = null;
+      var timer = setTimeout(function(){ if(!done){ done = true; rej(new Error("timeout")); } }, ms);
+      function stop(){ clearTimeout(timer); if(kick){ clearInterval(kick); kick = null; } }
       try{
-        var r = indexedDB.open(DB_NAME, 1);
+        /* phiên bản 2: nếu vì lý do nào đó cơ sở dữ liệu đã có mà thiếu bảng thì lần nâng cấp này tạo lại bảng */
+        var r = indexedDB.open(DB_NAME, 2);
         r.onupgradeneeded = function(){ if(!r.result.objectStoreNames.contains(STORE)) r.result.createObjectStore(STORE); };
         r.onsuccess = function(){
-          clearTimeout(timer);
-          if(done){ try{ r.result.close(); }catch(e){} return; }
-          done = true;
+          stop();
           var d = r.result;
           d.onversionchange = function(){ try{ d.close(); }catch(e){} if(db === d) db = null; };
           d.onclose = function(){ if(db === d) db = null; };
-          res(d);
+          if(!done){ done = true; res(d); }
+          else if(onLate) onLate(d);
+          else { try{ d.close(); }catch(e){} }
         };
-        r.onerror = function(){ clearTimeout(timer); if(!done){ done = true; rej(r.error); } };
-      }catch(e){ clearTimeout(timer); done = true; rej(e); }
+        r.onerror = function(){ stop(); if(!done){ done = true; rej(r.error || new Error("open failed")); } };
+        r.onblocked = function(){ why = "IndexedDB đang bị một cửa sổ khác của app giữ"; };
+        /* Safari có lỗi lần mở đầu tiên bị treo; gọi databases() liên tục giúp nó chạy tiếp (WebKit bug 226547) */
+        if(typeof indexedDB.databases === "function") kick = setInterval(function(){ try{ indexedDB.databases().catch(function(){}); }catch(e){} }, 100);
+      }catch(e){ stop(); done = true; rej(e); }
     });
   }
   function run(rw, fn){
@@ -1859,13 +1878,17 @@ window.N50K = (function(){
   function idbPutMany(keys){ return run(true, function(st){ keys.forEach(function(k){ if(mem[k] == null) st.delete(k); else st.put(mem[k], k); }); }); }
   /* iOS đôi khi làm rớt kết nối IndexedDB khi app nằm nền lâu: mở lại một lần rồi thử ghi lại. */
   function writeKeys(keys){
-    var go = function(){ return (db ? Promise.resolve(db) : open().then(function(d){ db = d; return d; })).then(function(){ return idbPutMany(keys); }); };
+    var go = function(){ return (db ? Promise.resolve(db) : open(4000).then(function(d){ db = d; return d; })).then(function(){ return idbPutMany(keys); }); };
     return go().catch(function(){ db = null; return go(); });
   }
-  function fallback(keys){
+  function setMode(m, e){
+    var was = mode; mode = m; why = m === "idb" ? "" : reason(e);
+    if(was !== m && api.onMode) try{ api.onMode(m); }catch(x){}
+  }
+  function fallback(keys, e){
     var ok = true;
     keys.forEach(function(k){ if(mem[k] == null) lsDel(k); else if(!lsSet(k, mem[k])) ok = false; });
-    mode = "ls";
+    setMode("ls", e);
     if(!ok && api.onError) api.onError("Máy hết chỗ lưu dữ liệu. Hãy xuất file sao lưu ngay.");
   }
   function flush(){
@@ -1873,10 +1896,10 @@ window.N50K = (function(){
     var keys = Object.keys(dirty);
     if(!keys.length) return Promise.resolve();
     dirty = {};
-    if(mode !== "idb"){ fallback(keys); return Promise.resolve(); }
+    if(mode !== "idb"){ fallback(keys, new Error(why || "timeout")); return Promise.resolve(); }
     writing = writeKeys(keys).then(function(){
       if(chan){ var msg = {}; keys.forEach(function(k){ msg[k] = mem[k]; }); try{ chan.postMessage(msg); }catch(e){} }
-    }, function(){ fallback(keys); }).then(function(){
+    }, function(e){ fallback(keys, e); }).then(function(){
       writing = null;
       if(Object.keys(dirty).length) return flush();
     });
@@ -1884,13 +1907,18 @@ window.N50K = (function(){
   }
   api.get = function(k){ return k in mem ? mem[k] : null; };
   api.set = function(k, v){
-    mem[k] = v; sizes[k] = null; dirty[k] = 1;
-    if(mode !== "idb"){ var ok = lsSet(k, v); dirty = {}; if(!ok && api.onError) api.onError("Máy hết chỗ lưu dữ liệu. Hãy xuất file sao lưu ngay."); return; }
-    flush();
+    mem[k] = v; sizes[k] = null; gen[k] = (gen[k] || 0) + 1;
+    if(mode !== "idb"){ if(!lsSet(k, v) && api.onError) api.onError("Máy hết chỗ lưu dữ liệu. Hãy xuất file sao lưu ngay."); return; }
+    dirty[k] = 1; flush();
   };
-  api.del = function(k){ delete mem[k]; delete sizes[k]; if(mode !== "idb"){ lsDel(k); return; } dirty[k] = 1; lsDel(k); flush(); };
+  api.del = function(k){
+    delete mem[k]; delete sizes[k]; gen[k] = (gen[k] || 0) + 1; lsDel(k);
+    if(mode !== "idb") return;
+    dirty[k] = 1; flush();
+  };
   api.flush = flush;
   api.mode = function(){ return mode; };
+  api.why = function(){ return why; };
   /* số byte thật của dữ liệu đang giữ (chữ tiếng Việt có dấu chiếm hơn 1 byte) */
   api.bytes = function(){
     var n = 0;
@@ -1907,24 +1935,51 @@ window.N50K = (function(){
       };
     }catch(e){ chan = null; }
   }
+  /* chép dữ liệu từ localStorage sang IndexedDB, lấy bản mới hơn, đọc lại để kiểm rồi mới xoá bản cũ.
+     Chạy được cả khi app đang mở (lần mở IndexedDB đầu bị chậm): khoản nào vừa được lưu trong lúc chuyển thì giữ bản trong bộ nhớ. */
   async function migrate(){
+    var changed = [];
     for(var i = 0; i < KEYS.length; i++){
-      var k = KEYS[i], inDb = await idbGet(k), inLs = lsGet(k), val = inDb;
+      var k = KEYS[i], g0 = gen[k] || 0, inDb = await idbGet(k), inLs = lsGet(k), val = inDb;
       if(inLs != null){
-        /* bản trong localStorage mới hơn khi: chưa chuyển lần nào, hoặc lần trước phải lưu tạm vào localStorage */
         if(inDb == null || (k === MAIN && updatedOf(inLs) > updatedOf(inDb))){ await idbPut(k, inLs); val = inLs; }
         if(await idbGet(k) === val) lsDel(k);
         else throw new Error("verify failed");
       }
-      if(val != null) mem[k] = val;
+      if((gen[k] || 0) === g0){
+        if(val != null && mem[k] !== val){ mem[k] = val; sizes[k] = null; changed.push(k); }
+      } else dirty[k] = 1;
     }
+    return changed;
   }
-  api.ready = open().then(function(d){ db = d; mode = "idb"; return migrate(); }).catch(function(){
-    mode = "ls"; mem = {};
-    KEYS.forEach(function(k){ var v = lsGet(k); if(v != null) mem[k] = v; });
+  function adopt(d){
+    db = d;
+    return migrate().then(function(changed){
+      setMode("idb");
+      KEYS.forEach(function(k){ if(lsGet(k) != null && k in mem){ dirty[k] = 1; } });
+      flush();
+      changed.forEach(function(k){ if(api.onRemote) try{ api.onRemote(k); }catch(e){} });
+    });
+  }
+  /* đang lưu kiểu cũ: thử mở IndexedDB lại (khi bấm Thử lại, hoặc tự động mỗi lần quay lại app) */
+  api.retry = function(){
+    if(mode === "idb") return Promise.resolve(true);
+    if(trying) return trying;
+    lastTry = Date.now();
+    trying = open(10000).then(adopt).then(function(){ return true; }, function(e){ setMode("ls", e); return false; })
+      .then(function(ok){ trying = null; if(api.onMode) try{ api.onMode(mode); }catch(x){} return ok; });
+    return trying;
+  };
+  function lateOpen(d){ if(mode !== "idb" && !trying){ trying = adopt(d).catch(function(e){ setMode("ls", e); }).then(function(){ trying = null; }); } else { try{ d.close(); }catch(e){} } }
+  function loadLs(){ KEYS.forEach(function(k){ var v = lsGet(k); if(v != null) mem[k] = v; }); }
+  api.ready = open(4000, lateOpen).then(function(d){ db = d; mode = "idb"; return migrate(); }).catch(function(e){
+    db = null; mode = "ls"; why = reason(e); mem = {}; loadLs();
   }).then(function(){
     listen();
-    document.addEventListener("visibilitychange", function(){ if(document.hidden) flush(); });
+    document.addEventListener("visibilitychange", function(){
+      if(document.hidden) flush();
+      else if(mode !== "idb" && Date.now() - lastTry > 30000) api.retry();
+    });
     window.addEventListener("pagehide", function(){ flush(); });
   });
   return api;
@@ -5043,8 +5098,11 @@ function startNgay50k(){
       if(persisted) text += " Máy đã cho phép giữ dữ liệu lâu dài.";
     } else {
       pct = lsAll / LS_LIMIT * 100;
-      text = "Đã dùng " + (pct < 1 ? "dưới 1" : Math.round(pct)) + "% chỗ lưu dữ liệu (khoảng 5 MB). Máy này chưa mở được IndexedDB nên vẫn lưu kiểu cũ.";
+      text = "Đã dùng " + (pct < 1 ? "dưới 1" : Math.round(pct)) + "% chỗ lưu dữ liệu (khoảng 5 MB). Máy này chưa mở được IndexedDB nên vẫn lưu kiểu cũ, dữ liệu vẫn an toàn.";
     }
+    const ls = N50K.mode() !== "idb";
+    $("idbWhy").hidden = !ls; $("idbRetryRow").hidden = !ls;
+    if(ls) $("idbWhy").textContent = "Lý do: " + (N50K.why() || "chưa rõ") + ".";
     if(pct >= 80) text += " Sắp đầy, hãy xuất file sao lưu.";
     $("storBar").style.width = Math.min(Math.max(pct, 0), 100) + "%";
     $("storBar").parentNode.classList.toggle("warn", pct >= 80);
@@ -5443,6 +5501,14 @@ function startNgay50k(){
   /* app mở ở hai cửa sổ cùng lúc: cửa sổ kia lưu thì cửa sổ này cập nhật theo */
   N50K.onRemote = k => { if(k === LS_KEY){ loadLocal(); renderAll(); } };
   N50K.onError = msg => showSyncErr(msg);
+  N50K.onMode = () => { renderStorage(); if(settingsOpen) measureCache(); };
+  $("idbRetry").onclick = async () => {
+    const b = $("idbRetry"); b.disabled = true; b.textContent = "Đang thử…";
+    const ok = await N50K.retry();
+    b.disabled = false; b.textContent = "Thử mở lại IndexedDB";
+    renderStorage(); measureCache();
+    if(ok) $("storPct").textContent = "✓ Đã chuyển sang IndexedDB. " + $("storPct").textContent;
+  };
   const rcMade = runRecur();
   renderAll();
   if(rcMade) flash("scanMsg", "✓ Đã ghi " + rcMade + " khoản định kỳ của kỳ này");
