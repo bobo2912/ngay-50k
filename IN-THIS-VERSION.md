@@ -1,6 +1,18 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v58, ngày 06/10/2026
+**Phiên bản hiện tại:** v59, ngày 06/10/2026
+
+---
+
+## Có gì mới trong v59 (so với v58)
+
+**Sao lưu nhanh bằng Phím tắt iPhone.** Không phải chọn chỗ lưu mỗi lần.
+
+- Trong **Cài đặt → Sao lưu và đồng bộ** có nút **Sao lưu nhanh bằng Phím tắt**. Bấm một lần: app chép bản sao lưu vào bảng tạm rồi mở phím tắt của bạn; phím tắt tự lưu file `ngay50k-yyyy-MM-dd.json` vào thư mục iCloud Drive đã chọn, rồi xoá bảng tạm.
+- Cách cài phím tắt (6 tác vụ, làm một lần) nằm sau nút **ⓘ** cạnh tiêu đề.
+- Đặt được tên phím tắt riêng; app nhớ tên này.
+- Tick **Nút Sao lưu trong lời nhắc dùng cách này** thì khi app nhắc "đã lâu chưa sao lưu", bấm **Sao lưu** là chạy luôn phím tắt.
+- Không mở được phím tắt (chưa tạo, sai tên) thì app báo rõ.
 
 ---
 
@@ -17,15 +29,6 @@
 - Dòng tóm tắt: tổng đã chi, số ngày có chi, ngày chi nhiều nhất và bao nhiêu, số ngày vượt hạn mức.
 - Khoản định kỳ (tiền nhà, tiền mạng…) không tô vào lịch để một khoản lớn không làm mọi ngày khác nhạt đi; tổng của chúng ghi riêng ở dòng tóm tắt.
 - Chạm một ngày để xem danh sách khoản chi ngày đó. Lùi, tiến để xem tháng khác.
-
----
-
-## Có gì mới trong v57 (so với v56)
-
-- **Tab Giao dịch đổi tên thành Tài khoản**, vì đây là chi tiêu trên tài khoản.
-- **Thanh chọn tháng ở Tổng quan (và Thẻ) thoáng hơn:** hai mũi tên cách xa chữ tháng, nút biểu đồ không còn dính vào nút Khoản thu. Màn hình hẹp (iPhone SE, mini) thì nút ghi gọn là "Thu" để không tràn.
-- **Pastel gọn và dịu hơn:** nền kem ấm, thẻ trắng, một màu nhấn hồng đất. Thẻ đầu trang của mọi tab cùng một tông hồng nhạt, bốn ô số liệu ở Tổng quan để trắng, không còn mỗi chỗ một màu.
-- **Thêm khoản vay đúng loại:** đang ở tab con Cho vay mà bấm "+ Thêm khoản vay" thì form chọn sẵn **Mình cho vay**; ở Đi vay thì chọn sẵn Mình đi vay. Lưu xong app ở lại đúng tab con của khoản vừa thêm.
 
 ---
 
@@ -101,6 +104,7 @@
 - **Quản lý tag:** danh sách tag, chi tiết từng tag, đổi tên và icon, ẩn hoặc hiện, xoá tag tự tạo.
 - **Sao lưu và đồng bộ:**
   - Xuất file sao lưu, hoặc xuất CSV để mở bằng Excel.
+  - **Sao lưu nhanh bằng Phím tắt** iPhone: một chạm, tự lưu vào iCloud Drive theo ngày.
   - Nhập từ file, chọn **Gộp** hoặc **Thay toàn bộ**, có xem trước thay đổi và **Hoàn tác**.
   - Đồng bộ giữa các máy qua file.
 - **Dung lượng:** kèm số phiên bản app.
@@ -125,7 +129,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v59** | Sao lưu nhanh bằng Phím tắt iPhone |
 | **v58** | Lịch chi tiêu tháng ở tab Tài khoản, bỏ số dư ví và thẻ khỏi tab này |
-| **v57** | Đổi tên tab Tài khoản, thanh tháng thoáng hơn, Pastel gọn hơn, thêm khoản vay đúng loại |
 
 *File này chỉ giữ ghi chú của hai bản gần nhất.*
