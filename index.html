@@ -837,6 +837,19 @@ main{padding-bottom:calc(74px + env(safe-area-inset-bottom,0px))}
 
 /* ================= v31: tab Thẻ gọn ================= */
 .cardmonth .mspace{flex:1}
+.cardmonth{gap:5px}
+.cardmonth > strong{margin:0 6px; white-space:nowrap}
+.cardmonth #addIncomeBtn{padding:0 11px 0 9px; gap:5px}
+.cardmonth .cards-btn{white-space:nowrap; flex:none}
+.cardmonth .mspace{min-width:4px}
+#openAnalytics{margin-right:3px}
+/* màn hình hẹp (iPhone SE, mini): thu gọn chữ để không tràn */
+@media (max-width:380px){
+  .cardmonth > strong{margin:0 4px; font-size:.98rem}
+  #addIncomeBtn{padding:0 10px 0 8px}
+  #addIncomeBtn .inc-l{font-size:0}
+  #addIncomeBtn .inc-l::after{content:"Thu"; font-size:.84rem}
+}
 .month .cards-btn, .cards-btn{width:auto; height:36px; font-size:.84rem; font-weight:600}
 .cards-btn{display:inline-flex; align-items:center; gap:6px; height:36px; padding:0 12px 0 10px;
   border:1px solid var(--line); background:var(--flat); border-radius:999px; font-size:.84rem; font-weight:600; color:var(--ink)}
@@ -1074,27 +1087,24 @@ html{scroll-padding-top:var(--head-h, 100px)}
 #cardPerCard[hidden]{display:none}
 
 /* ================= PASTEL ================= */
-/* luôn sáng, màu nhạt dịu; mỗi tab một màu nền cho thẻ đầu trang */
+/* luôn sáng, dịu và gọn: nền kem ấm, thẻ trắng, một màu nhấn hồng đất, mọi thẻ đầu trang cùng một tông */
 :root[data-theme="pastel"]{
-  --bg:#FFF6F1; --surface:#FFFFFF; --ink:#3B2D3A; --muted:#857683; --line:#F1E1E6;
-  --note:#C65A82; --note-soft:#FBE2EC; --over:#D2574A; --over-soft:rgba(210,87,74,.10); --ok:#2F8A6A; --ok-soft:#DCF3E9; --mb:#1E3A8A;
-  --glass:rgba(255,255,255,.72); --glass-strong:rgba(255,250,247,.93); --glass-border:rgba(255,255,255,.9); --glass-hi:#FFFFFF;
-  --shadow:0 8px 22px rgba(198,90,130,.10); --shadow-s:0 2px 10px rgba(198,90,130,.08);
-  --field-strong:#FFFFFF; --field:#FFFFFF; --field-focus:#FFFFFF; --flat:#FFFFFF; --sheet-bg:#FFFAF7;
-  --tint-a:#F4A3C0; --tint-b:#D9668E; --tint-shadow:rgba(217,102,142,.28);
-  --blob1:rgba(170,232,210,.55); --blob2:rgba(206,192,255,.50); --blob3:rgba(255,198,178,.55); --blob4:rgba(255,234,160,.45);
-  --p-mint:#E2F6EE; --p-lilac:#EEE9FF; --p-peach:#FFEBE2; --p-butter:#FFF4D6; --p-sky:#E3F0FF; --p-rose:#FFE6EF;
+  --bg:#FAF6F2; --surface:#FFFFFF; --ink:#3A3236; --muted:#8A7F84; --line:#EFE6E2;
+  --note:#B8607E; --note-soft:#F7E6EC; --over:#C8574B; --over-soft:rgba(200,87,75,.09); --ok:#3F8A6E; --ok-soft:#E3F2EC; --mb:#1E3A8A;
+  --glass:rgba(255,255,255,.80); --glass-strong:rgba(250,246,242,.95); --glass-border:rgba(255,255,255,.95); --glass-hi:#FFFFFF;
+  --shadow:0 6px 18px rgba(120,80,90,.07); --shadow-s:0 2px 8px rgba(120,80,90,.06);
+  --field-strong:#FFFFFF; --field:#FFFFFF; --field-focus:#FFFFFF; --flat:#FFFFFF; --sheet-bg:#FFFCFA;
+  --tint-a:#E9A2B8; --tint-b:#C46F8C; --tint-shadow:rgba(196,111,140,.24);
+  --blob1:rgba(247,214,224,.45); --blob2:rgba(232,224,246,.35); --blob3:rgba(250,228,214,.40); --blob4:rgba(226,240,232,.30);
+  --p-hero:#F8ECEF; --p-hero-line:#F1DCE3;
 }
-:root[data-theme="pastel"] #tab-wallet .balbox{background:var(--p-mint); border-color:#CDEEDF}
-:root[data-theme="pastel"] #tab-today .note{background:var(--p-rose); border-color:#F9D3E1}
-:root[data-theme="pastel"] #tab-money .chero{background:var(--p-butter); border-color:#F7E6B5}
-:root[data-theme="pastel"] #tab-cards .chero{background:var(--p-lilac); border-color:#DCD3FB}
-:root[data-theme="pastel"] #tab-loans #loansMain > .ledger{background:var(--p-peach); border-color:#F8D6C8}
-:root[data-theme="pastel"] .kpi.inc{background:var(--p-mint); border-color:#CDEEDF}
-:root[data-theme="pastel"] #kpiCash{background:var(--p-peach); border-color:#F8D6C8}
-:root[data-theme="pastel"] #kpiCard{background:var(--p-lilac); border-color:#DCD3FB}
-:root[data-theme="pastel"] #kpiLoan{background:var(--p-sky); border-color:#CFE2FA}
-:root[data-theme="pastel"] .chero-foot{border-top-color:rgba(59,45,58,.08)}
+:root[data-theme="pastel"] #tab-wallet .balbox,
+:root[data-theme="pastel"] #tab-today .note,
+:root[data-theme="pastel"] #tab-money .chero,
+:root[data-theme="pastel"] #tab-cards .chero,
+:root[data-theme="pastel"] #tab-loans #loansMain > .ledger{background:var(--p-hero); border-color:var(--p-hero-line)}
+:root[data-theme="pastel"] .kpi{background:#FFFFFF; border-color:var(--line)}
+:root[data-theme="pastel"] .chero-foot{border-top-color:rgba(58,50,54,.08)}
 :root[data-theme="pastel"] .tabs button[aria-selected="true"]{background:var(--note-soft); color:var(--note)}
 </style>
 </head>
@@ -1113,7 +1123,7 @@ html{scroll-padding-top:var(--head-h, 100px)}
   <nav class="tabs" role="tablist" aria-label="Menu">
     <button role="tab" data-tab="wallet" aria-selected="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h15a3 3 0 0 1 3 3v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M3 7l12-4v4"/><circle cx="16.5" cy="13.5" r="1.2"/></svg><span>Ví</span></button>
     <button role="tab" data-tab="money" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9h-9z"/><path d="M14 3.3A9 9 0 0 1 20.7 10H14z"/></svg><span>Tổng quan</span></button>
-    <button role="tab" data-tab="today" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 10h18"/></svg><span>Giao dịch</span></button>
+    <button role="tab" data-tab="today" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 10h18"/></svg><span>Tài khoản</span></button>
     <button role="tab" data-tab="cards" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="8" width="14" height="11" rx="2"/><path d="M2 12h14"/><path d="M7 5h13a2 2 0 0 1 2 2v8"/></svg><span>Thẻ</span></button>
     <button role="tab" data-tab="loans" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 3l4 4-4 4"/><path d="M3 7h18"/><path d="M7 21l-4-4 4-4"/><path d="M21 17H3"/></svg><span>Khoản vay</span></button>
   </nav>
@@ -1223,7 +1233,7 @@ html{scroll-padding-top:var(--head-h, 100px)}
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V11M10 20V4M16 20v-6M22 20H2"/></svg>
       </button>
       <button class="cards-btn" id="addIncomeBtn">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Khoản thu
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span class="inc-l">Khoản thu</span>
       </button>
     </div>
     <div class="ledger chero">
@@ -1406,7 +1416,7 @@ html{scroll-padding-top:var(--head-h, 100px)}
     <div class="set-page" id="setTheme" hidden>
       <div class="set-head"><button class="set-back" data-back>‹ Cài đặt</button><h2 tabindex="-1">Giao diện</h2></div>
 <section class="set-group" aria-labelledby="gTheme">
-      <p class="set-now">Tự động sẽ sáng hay tối theo cài đặt của iPhone. Pastel luôn sáng, màu nhạt dịu, mỗi tab một màu.</p>
+      <p class="set-now">Tự động sẽ sáng hay tối theo cài đặt của iPhone. Pastel luôn sáng, nền kem, màu nhấn hồng đất.</p>
       <div class="seg seg4" id="themeSeg" role="group" aria-label="Chọn giao diện" style="margin-top:12px">
         <button data-theme-opt="auto" aria-pressed="true">Tự động</button>
         <button data-theme-opt="light" aria-pressed="false">Sáng</button>
@@ -1558,7 +1568,7 @@ html{scroll-padding-top:var(--head-h, 100px)}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v56</p>
+      <p class="sync" id="appVersion">Phiên bản v57</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Xoá dữ liệu</h4>
@@ -3255,7 +3265,7 @@ function startNgay50k(){
     if(l) hint.textContent = "Tổng đã " + verb(l) + ", gồm " + (l.payments||[]).length + " lần ghi trong lịch sử. Sửa số này sẽ cập nhật dòng \"nhập tay\" trong lịch sử.";
     $("lDate").value = l ? (l.date || todayKey()) : todayKey();
     $("lDue").value = l ? (l.due || "") : ""; $("lNote").value = l ? (l.note || "") : "";
-    setLoanType(l ? l.type : "borrow"); refreshLoanForm();
+    setLoanType(l ? l.type : (loanView === "lend" ? "lend" : "borrow")); refreshLoanForm();
     showLoanView("form");
   }
   function closeLoanForm(){ const back = editingLoanId ? "detail" : "main"; editingLoanId = null; renderLoans(); showLoanView(detailLoanId && back==="detail" ? "detail" : "main"); }
@@ -3279,6 +3289,8 @@ function startNgay50k(){
       persist(true); editingLoanId = null; renderLoans(); showLoanView("detail"); flash("detailMsg", "✓ Đã lưu thay đổi");
     } else {
       state.loans.push(Object.assign({ id:uid(), payments:[], prepaid:paid, t:Date.now() }, data));
+      loanView = data.type;   /* về đúng tab con của khoản vừa thêm */
+      [...$("loanSeg").children].forEach(b => b.setAttribute("aria-pressed", b.dataset.lv === loanView ? "true" : "false"));
       persist(true); renderAll(); showLoanView("main"); flash("loanMsg", "✓ Đã lưu khoản vay");
     }
   }
@@ -4440,7 +4452,7 @@ function startNgay50k(){
     if(fixed) root.setAttribute("data-theme", t); else root.removeAttribute("data-theme");
     document.querySelectorAll('meta[name="theme-color"]').forEach(m => {
       if(!m.dataset.media) m.dataset.media = m.getAttribute("media") || "";
-      if(fixed){ m.removeAttribute("media"); m.setAttribute("content", t === "dark" ? "#0B1026" : t === "pastel" ? "#FFF6F1" : "#EEF3FF"); }
+      if(fixed){ m.removeAttribute("media"); m.setAttribute("content", t === "dark" ? "#0B1026" : t === "pastel" ? "#FAF6F2" : "#EEF3FF"); }
       else { m.setAttribute("media", m.dataset.media); m.setAttribute("content", /dark/.test(m.dataset.media) ? "#0B1026" : "#EEF3FF"); }
     });
     document.querySelectorAll("#themeSeg button").forEach(b => b.setAttribute("aria-pressed", b.dataset.themeOpt === (t || "auto") ? "true" : "false"));

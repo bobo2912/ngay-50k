@@ -1,6 +1,15 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v56, ngày 06/10/2026
+**Phiên bản hiện tại:** v57, ngày 06/10/2026
+
+---
+
+## Có gì mới trong v57 (so với v56)
+
+- **Tab Giao dịch đổi tên thành Tài khoản**, vì đây là chi tiêu trên tài khoản.
+- **Thanh chọn tháng ở Tổng quan (và Thẻ) thoáng hơn:** hai mũi tên cách xa chữ tháng, nút biểu đồ không còn dính vào nút Khoản thu. Màn hình hẹp (iPhone SE, mini) thì nút ghi gọn là "Thu" để không tràn.
+- **Pastel gọn và dịu hơn:** nền kem ấm, thẻ trắng, một màu nhấn hồng đất. Thẻ đầu trang của mọi tab cùng một tông hồng nhạt, bốn ô số liệu ở Tổng quan để trắng, không còn mỗi chỗ một màu.
+- **Thêm khoản vay đúng loại:** đang ở tab con Cho vay mà bấm "+ Thêm khoản vay" thì form chọn sẵn **Mình cho vay**; ở Đi vay thì chọn sẵn Mình đi vay. Lưu xong app ở lại đúng tab con của khoản vừa thêm.
 
 ---
 
@@ -11,16 +20,6 @@
 - Thanh giờ phủ lên tận vùng giờ và pin, giống thanh đầu trang chính.
 - Chưa cuộn thì trong suốt, cuộn xuống thì có nền mờ và đường kẻ mảnh.
 - Áp dụng cho mọi trang con trong Cài đặt và mọi giao diện.
-
----
-
-## Có gì mới trong v55 (so với v54)
-
-**Thanh đầu trang liền một dải tới mép màn hình.** Ở v54, khi cuộn thì vùng giờ và pin vẫn là nền riêng, còn thanh ngày là một khối trắng tách rời, nhìn như có khe hở.
-
-- Giờ khi cuộn, nền mờ của thanh phủ lên tận vùng giờ và pin, thành một dải duy nhất.
-- Lúc chưa cuộn, mọi thứ nằm đúng chỗ như cũ.
-- App tự đo lại chiều cao thanh khi xoay máy, để thanh "Tất cả thu chi" luôn dính sát ngay bên dưới.
 
 ---
 
@@ -43,7 +42,7 @@
 - **Tìm kiếm xuyên tháng** trên cả khoản chi, khoản thu và chi thẻ.
 - **Sửa ngay tại chỗ:** chạm một dòng trong kết quả tìm kiếm hay trong bảng chi tiết nhóm là mở luôn form sửa của khoản đó, không phải đi tìm lại theo ngày.
 
-### Tab Giao dịch
+### Tab Tài khoản
 - **Thẻ Hôm nay còn được tiêu:** số tiền còn lại, thanh tiến độ, chuyển đỏ khi vượt hạn mức.
 - **Quét QR bằng camera:** mặc định mở camera iPhone để chụp mã (không cần cấp quyền), hoặc quét trực tiếp trong app tự nhận mã (chọn trong Cài đặt).
 - **Chọn ảnh mã QR:** đọc mã QR từ ảnh chụp sẵn trong máy.
@@ -119,7 +118,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v57** | Đổi tên tab Tài khoản, thanh tháng thoáng hơn, Pastel gọn hơn, thêm khoản vay đúng loại |
 | **v56** | Thanh đầu Cài đặt liền một dải tới mép màn hình |
-| **v55** | Thanh đầu trang liền một dải tới mép màn hình |
 
 *File này chỉ giữ ghi chú của hai bản gần nhất.*
