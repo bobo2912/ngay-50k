@@ -1,6 +1,20 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v46, ngày 29/09/2026
+**Phiên bản hiện tại:** v47, ngày 06/10/2026
+
+---
+
+## Có gì mới trong v47 (so với v46)
+
+**Dữ liệu chuyển sang IndexedDB, bỏ giới hạn khoảng 5 MB.** Trước đây toàn bộ khoản chi nằm trong `localStorage`, chỉ được khoảng 5 MB và tính chung cho mọi mini app cùng tài khoản GitHub (Chia cơm, các app sau này).
+
+- Dữ liệu giờ lưu trong **IndexedDB**, chỗ lưu rộng hơn rất nhiều (thường hàng trăm MB trở lên, tuỳ máy). Đã thử lưu 40.000 khoản, khoảng 10 MB, mở lại vẫn đủ.
+- **Tự chuyển dữ liệu cũ** ở lần mở đầu tiên: chép sang IndexedDB, đọc lại để chắc chắn khớp rồi mới xoá bản trong `localStorage`. Không phải làm gì.
+- Xoá bản cũ trong `localStorage` cũng **trả lại chỗ cho các mini app khác** vẫn dùng `localStorage`.
+- Các cài đặt nhỏ (giao diện, kiểu quét QR, lần sao lưu gần nhất) vẫn để trong `localStorage` như cũ.
+- **Trang Dung lượng** hiện phần trăm theo chỗ lưu thật mà máy cho phép, kèm dòng báo khi máy đã cho phép giữ dữ liệu lâu dài.
+- Máy nào không mở được IndexedDB thì app tự lưu kiểu cũ, không mất dữ liệu; lần sau mở được sẽ tự chuyển tiếp, lấy bản mới hơn.
+- Mở app ở hai cửa sổ cùng lúc thì cửa sổ này lưu, cửa sổ kia tự cập nhật theo.
 
 ---
 
@@ -22,11 +36,6 @@
 **Sửa lỗi form sửa bị nằm dưới bảng đang mở.** Mở form sửa từ một bảng đã mở sẵn thì form hiện ra phía sau bảng đó, coi như bấm không được. Giờ mỗi bảng mở thêm tự nằm trên bảng trước.
 
 ---
-
-## Có gì mới trong v45 (so với v44)
-
-- **Chạm vào một nhóm trong *Chi theo tag* để xem các khoản của nhóm đó.** Bảng mở ra liệt kê theo ngày, mỗi ngày có tổng riêng, mỗi khoản ghi giờ, nhãn *Chi* hay *Thẻ*, tên thẻ nếu quẹt thẻ và chữ *định kỳ* nếu là khoản định kỳ.
-- Bảng này **đi theo lựa chọn ở ô tổng**: đang xem *Chi thường* thì chỉ liệt kê chi thường, đang xem *Chi thẻ* thì chỉ liệt kê chi thẻ.
 
 ---
 
@@ -103,7 +112,8 @@
 ### Nền tảng
 - Cài lên màn hình chính như app, chạy **offline hoàn toàn**.
 - Vuốt từ trái sang phải để từ trang con quay về trang trước trong cùng menu.
-- Dữ liệu **chỉ lưu trên máy**, không gửi lên máy chủ nào. App không tải gì từ trang web khác.
+- Dữ liệu **chỉ lưu trên máy** (IndexedDB), không gửi lên máy chủ nào. App không tải gì từ trang web khác.
+- Không còn giới hạn khoảng 5 MB dùng chung với các mini app khác.
 - Tự báo khi có bản mới, bấm **Tải lại** để cập nhật.
 - Chữ giải thích nằm sau nút **ⓘ** cạnh tiêu đề, chạm mới hiện.
 - Giao diện Liquid Glass, sáng và tối theo cài đặt của máy. Thanh tab nổi ở đáy màn hình.
@@ -115,7 +125,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v47** | Dữ liệu chuyển sang IndexedDB, bỏ giới hạn khoảng 5 MB |
 | **v46** | Sửa được khoản ngay từ kết quả tìm kiếm và bảng chi tiết nhóm, khoản định kỳ ghi được vào thẻ |
-| **v45** | Chạm vào nhóm trong Chi theo tag để xem các khoản theo ngày |
 
 *File này chỉ giữ ghi chú của hai bản gần nhất.*
