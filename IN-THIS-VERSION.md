@@ -1,6 +1,12 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v74, ngày 06/10/2026
+**Phiên bản hiện tại:** v75, ngày 06/10/2026
+
+---
+
+## Có gì mới trong v75 (so với v74)
+
+- **Làm mờ phần dưới thanh menu:** từ ngay trên thanh menu xuống tới đáy màn hình, nội dung cuộn phía sau được làm mờ, mép trên chuyển mềm. Chữ không còn lộ rõ dưới thanh menu. Khi đang gõ (thanh menu ẩn) thì lớp mờ cũng ẩn.
 
 ---
 
@@ -12,17 +18,6 @@
 - Báo khi đã dùng **80%**, **95%** và khi **hết**; mỗi mức chỉ báo một lần.
 - **Thông báo đẩy** trên iPhone (bấm Bật thông báo đẩy; cần app đã thêm vào Màn hình chính), kèm lời nhắc ngay trong Trò chuyện. Chạm thông báo để mở app.
 - Nạp thêm: nhập lại số dư mới, bộ đếm của nền tảng đó bắt đầu lại.
-
----
-
-## Có gì mới trong v73 (so với v72)
-
-**Cài đặt → Trợ lý AI → Chi phí đã dùng:** xem đã tốn bao nhiêu tiền gọi AI, chia theo Claude, ChatGPT, Gemini.
-
-- Mỗi loại hiện số lần gọi, số token vào và ra, mô hình đã dùng, số tiền bằng đồng và bằng USD; có dòng Tổng.
-- Xem theo **Tháng này** hoặc **Từ trước tới nay**.
-- Tự sửa được **tỉ giá USD** (mặc định 26.000đ).
-- Số tiền là ước tính theo bảng giá niêm yết của nhà cung cấp (tháng 10/2026), chỉ đếm các lần gọi từ máy này kể từ bản v73. Nút **Đặt lại bộ đếm** (chạm hai lần).
 
 ---
 
@@ -129,6 +124,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v75** | Làm mờ nội dung phía dưới thanh menu |
 | **v74** | Ngân sách AI bằng USD, thông báo khi sắp hết |
 | **v73** | Xem chi phí AI đã dùng theo từng nhà cung cấp |
 | **v72** | Sửa lỗi chạm ô chat không hiện bàn phím |
