@@ -1136,7 +1136,14 @@ html{scroll-padding-top:var(--head-h, 100px)}
 .chat-chip b{color:var(--ink); font-weight:700}
 .chat-chip .ch{margin-left:auto; color:var(--muted)}
 .chat-chip[hidden]{display:none}
-.chat-log{display:flex; flex-direction:column; gap:10px; min-height:40vh}
+.chat-log{display:flex; flex-direction:column; gap:10px}
+/* khung nhập luôn nằm sát ngay trên thanh tab (hoặc ngay trên bàn phím khi đang gõ) */
+#tab-chat{padding-bottom:var(--chat-pad, 120px)}
+.chat-dock{position:fixed; z-index:39; left:50%; transform:translateX(-50%); width:min(calc(100% - 28px), 430px);
+  bottom:var(--dock-b, calc(86px + env(safe-area-inset-bottom,0px)))}
+.chat-dock .chat-sugg{padding:0 0 6px}
+.chat-dock .chat-bar{margin-top:0; box-shadow:var(--shadow-s); background:var(--glass-strong); -webkit-backdrop-filter:blur(18px); backdrop-filter:blur(18px)}
+body.kb .tabs{display:none}
 .msg{max-width:86%; padding:10px 13px; border-radius:18px; font-size:.95rem; line-height:1.45; white-space:pre-wrap; word-wrap:break-word}
 .msg.me{align-self:flex-end; background:var(--note); color:#fff; border-bottom-right-radius:6px}
 .msg.bot{align-self:flex-start; background:var(--flat); border:1px solid var(--line); color:var(--ink); border-bottom-left-radius:6px}
@@ -1221,17 +1228,18 @@ html{scroll-padding-top:var(--head-h, 100px)}
   <div id="tab-chat" role="tabpanel">
     <button type="button" class="chat-chip" id="chatToWallet"><span>Số dư ví</span><b class="num" id="chatBal">–</b><span class="ch" aria-hidden="true">›</span></button>
     <div class="chat-log" id="chatLog" aria-live="polite"></div>
-    <div class="chat-sugg" id="chatSugg"></div>
-    <form class="chat-bar" id="chatForm" autocomplete="off">
-      <textarea id="chatIn" rows="1" placeholder="Kể mình nghe hôm nay bạn tiêu gì…" aria-label="Tin nhắn"></textarea>
-      <button type="submit" id="chatSend" aria-label="Gửi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
-    </form>
-    <p class="chat-hint">Bấm 🎤 trên bàn phím để nói thay vì gõ. Mình hỏi lại trước khi ghi.</p>
+    <div class="chat-dock" id="chatDock">
+      <div class="chat-sugg" id="chatSugg"></div>
+      <form class="chat-bar" id="chatForm" autocomplete="off">
+        <textarea id="chatIn" rows="1" placeholder="Hôm nay bạn tiêu gì? (🎤 để nói)" aria-label="Tin nhắn"></textarea>
+        <button type="submit" id="chatSend" aria-label="Gửi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+      </form>
+    </div>
   </div>
 
   <!-- ================= TAB: VÍ ================= -->
   <div id="tab-wallet" role="tabpanel" hidden>
-    <button type="button" class="chat-chip" id="walletToChat" hidden><span>💬 Trò chuyện để ghi nhanh</span><span class="ch" aria-hidden="true">›</span></button>
+    <button type="button" class="chat-chip" id="walletToChat" hidden><span id="walletToChatT">💬 Trò chuyện để ghi nhanh</span><span class="ch" aria-hidden="true">›</span></button>
     <div class="ledger chero balbox" id="balBox">
       <p class="chero-lb"><span>Số dư hiện tại</span><span class="lb-r"><span class="chero-n" id="balWhen"></span><button class="ib" type="button" data-info="infoBal" aria-expanded="false" aria-label="Giải thích">i</button></span></p>
       <p class="chero-big"><span class="num" id="balNow">Chưa có</span></p>
@@ -1702,7 +1710,7 @@ html{scroll-padding-top:var(--head-h, 100px)}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v64</p>
+      <p class="sync" id="appVersion">Phiên bản v65</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Xoá dữ liệu</h4>
@@ -3793,7 +3801,7 @@ function startNgay50k(){
     document.querySelectorAll(".tabs button").forEach(b => b.setAttribute("aria-selected", (b.id === "tabFirst" ? "first" : b.dataset.tab) === slot ? "true":"false"));
     ["chat","wallet","today","money","loans","cards"].forEach(n => $("tab-"+n).hidden = n !== name);
     window.scrollTo(0,0);
-    if(name === "chat"){ renderChat(); chatScrollEnd(false); }
+    if(name === "chat"){ renderChat(); placeDock(); chatScrollEnd(false); }
   }
   function renderAll(){ renderToday(); renderCal(); renderMoney(); renderLoans(); renderPeople(); renderCards(); renderBalance(); }
 
@@ -4117,7 +4125,9 @@ function startNgay50k(){
       ? '<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-4.9A8 8 0 1 1 21 12z"/><path d="M8.5 11h.01M12 11h.01M15.5 11h.01"/>'
       : '<path d="M3 7h15a3 3 0 0 1 3 3v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M3 7l12-4v4"/><circle cx="16.5" cy="13.5" r="1.2"/>';
     $("chatToWallet").hidden = h !== "chat";
-    $("walletToChat").hidden = h !== "wallet";
+    $("walletToChat").hidden = false;
+    $("walletToChatT").textContent = h === "chat" ? "‹ Quay lại trò chuyện" : "💬 Trò chuyện để ghi nhanh";
+    $("walletToChat").querySelector(".ch").hidden = h === "chat";
     [...$("homeSeg").children].forEach(x => x.setAttribute("aria-pressed", x.dataset.home === h ? "true" : "false"));
   }
   function chatLoad(){
@@ -4412,12 +4422,30 @@ function startNgay50k(){
   $("chatForm").addEventListener("submit", e => { e.preventDefault(); const ta = $("chatIn"); const v = ta.value; ta.value = ""; chatGrow(); chatSend(v); });
   $("chatIn").addEventListener("input", chatGrow);
   $("chatIn").addEventListener("keydown", e => { if(e.key === "Enter" && !e.shiftKey && !e.isComposing){ e.preventDefault(); $("chatForm").requestSubmit ? $("chatForm").requestSubmit() : $("chatSend").click(); } });
+  function placeDock(){
+    const dock = $("chatDock"), tabs = document.querySelector(".tabs"); if(!dock) return;
+    const vv = window.visualViewport, kb = document.body.classList.contains("kb") && vv;
+    let b;
+    if(kb){ b = Math.max(0, window.innerHeight - (vv.height + vv.offsetTop)) + 8; }
+    else if(tabs && getComputedStyle(tabs).display !== "none" && tabs.getBoundingClientRect().height){ b = Math.max(0, window.innerHeight - tabs.getBoundingClientRect().top) + 8; }
+    else b = 16;
+    document.documentElement.style.setProperty("--dock-b", b + "px");
+    document.documentElement.style.setProperty("--dock-h", dock.offsetHeight + "px");
+    /* chừa đủ chỗ cuối danh sách để tin cuối nằm ngay trên khung nhập: phần khung nhập chiếm từ đáy màn hình, trừ lề dưới sẵn có của trang */
+    const mainPad = parseFloat(getComputedStyle(document.querySelector("main")).paddingBottom) || 0;
+    document.documentElement.style.setProperty("--chat-pad", Math.max(0, b + dock.offsetHeight + 10 - mainPad) + "px");
+  }
+  $("chatIn").addEventListener("focus", () => { document.body.classList.add("kb"); placeDock(); setTimeout(() => { placeDock(); chatScrollEnd(true); }, 350); });
+  $("chatIn").addEventListener("blur", () => { document.body.classList.remove("kb"); setTimeout(placeDock, 60); });
+  if(window.visualViewport){ visualViewport.addEventListener("resize", placeDock); visualViewport.addEventListener("scroll", placeDock); }
+  window.addEventListener("resize", placeDock);
+  if(window.ResizeObserver) new ResizeObserver(placeDock).observe($("chatDock"));
   $("chatToWallet").onclick = () => showTab("wallet");
   $("walletToChat").onclick = () => showTab("chat");
   [...$("homeSeg").children].forEach(b => b.onclick = () => { lsSet(HOME_KEY, b.dataset.home); applyHome(); renderSetHome(); });
   /* bấm ô đầu tiên khi đang ở màn hình kia thì về màn hình mở đầu */
   N50K.onRemoteChat = null;
-  chatLoad(); applyHome(); renderChat(); chatGrow();
+  chatLoad(); applyHome(); renderChat(); chatGrow(); placeDock(); setTimeout(placeDock, 300);
   if(homeTab() === "wallet"){ currentTab = "wallet"; $("tab-chat").hidden = true; $("tab-wallet").hidden = false; }
   else { chatScrollEnd(false); setTimeout(() => chatScrollEnd(false), 350); }
 
@@ -5000,6 +5028,7 @@ function startNgay50k(){
     if(!$("contactForm").hidden) return () => $("cancelContact").click();
     if(!$("loanForm").hidden) return () => $("cancelLoan").click();
     if(!$("loanDetail").hidden){ const b = $("loanDetail").querySelector(".back"); if(b) return () => b.click(); }
+    if(currentTab === "wallet" && homeTab() === "chat") return () => showTab("chat");
     /* no swiping between menus: only sub-page -> its parent inside the same menu */
     return null;
   }

@@ -1,6 +1,13 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v64, ngày 06/10/2026
+**Phiên bản hiện tại:** v65, ngày 06/10/2026
+
+---
+
+## Có gì mới trong v65 (so với v64)
+
+- **Khung nhập chat luôn nằm sát ngay trên thanh menu**, dù mới mở hay đoạn chat đã dài; tin nhắn cuối luôn nằm ngay trên khung nhập. Khi đang gõ, thanh menu tạm ẩn và khung nhập bám ngay trên bàn phím.
+- **Từ Ví quay lại trò chuyện được:** nút "‹ Quay lại trò chuyện" ở đầu màn Ví, vuốt từ trái sang phải, hoặc chạm ô Trò chuyện trên thanh menu.
 
 ---
 
@@ -16,16 +23,6 @@
 - Trả lời kiểu người bạn: còn được tiêu bao nhiêu hôm nay, ai còn nợ bao nhiêu, số dư ví sau khoản vừa ghi.
 - Hỏi được: *hôm nay tiêu bao nhiêu, tháng này ăn uống hết bao nhiêu, ai còn nợ mình, chú Dũng còn nợ bao nhiêu, số dư còn bao nhiêu, thẻ tháng này bao nhiêu, tháng này ngày nào tiêu nhiều nhất*.
 - Lịch sử trò chuyện lưu trên máy (không nằm trong file sao lưu), xoá cùng khi Xoá toàn bộ dữ liệu.
-
----
-
-## Có gì mới trong v63 (so với v62)
-
-**Sao lưu nhanh chỉ còn một cách: qua bảng chia sẻ.** Bỏ cách "Mở Phím tắt" (chép qua bảng tạm, phải chuyển sang app Phím tắt và bị hỏi Allow Paste) vì đã thừa.
-
-- Bấm **Sao lưu nhanh bằng Phím tắt** → bảng chia sẻ hiện file `ngay50k-yyyy-MM-dd.json` → chạm phím tắt → lưu vào iCloud Drive, vẫn ở trong app.
-- Bỏ nút gạt chọn cách chạy và ô tên phím tắt. Hướng dẫn ⓘ chỉ còn các bước cho cách này.
-- Tick "Nút Sao lưu trong lời nhắc dùng cách này" thì bấm Sao lưu ở lời nhắc là mở luôn bảng chia sẻ.
 
 ---
 
@@ -131,7 +128,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v65** | Khung nhập chat sát thanh menu, quay lại trò chuyện từ Ví |
 | **v64** | Trò chuyện: ghi chi tiêu bằng lời, bộ hiểu câu tiếng Việt chạy trên máy |
-| **v63** | Sao lưu nhanh chỉ còn cách qua bảng chia sẻ |
 
 *File này chỉ giữ ghi chú của hai bản gần nhất.*
