@@ -1,6 +1,22 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v75, ngày 06/10/2026
+**Phiên bản hiện tại:** v76, ngày 06/10/2026
+
+---
+
+## Có gì mới trong v76 (so với v75)
+
+**Gửi ảnh thông báo trừ tiền trong Trò chuyện, app tự đọc bằng bộ đọc chữ trên máy.**
+
+- Bấm nút ảnh cạnh ô chat, chọn một hay nhiều ảnh chụp thông báo ngân hàng (tối đa 4 ảnh). App tách từng giao dịch thành thẻ xác nhận, bấm Ghi mới lưu.
+- Ảnh **luôn đọc trên máy**, không gửi cho Trợ lý AI, không tốn token, kể cả khi đã bật AI.
+- Trong lúc đọc, bong bóng chờ hiện tiến trình (đang làm rõ chữ, đang đọc ảnh …%).
+- Lần đầu đọc ảnh cần mạng để tải bộ đọc chữ (một lần), sau đó dùng lại.
+- Bộ tách thông báo đọc tốt hơn (dùng chung cho Dán thông báo ở tab Thẻ):
+  - Kiểu Vietcombank "SD TK … -120,000VND lúc …": lấy đúng số trừ, không lấy số dư.
+  - Lấy đúng nội dung chuyển khoản (ND, Ref) làm ghi chú, không dính sang thông báo kế tiếp.
+  - Không nhầm hạn mức còn lại / available limit thành một khoản chi.
+  - Đọc được nơi chi kiểu "at CIRCLE K", "tại GRAB lúc …".
 
 ---
 
@@ -10,21 +26,11 @@
 
 ---
 
-## Có gì mới trong v74 (so với v73)
-
-**Ngân sách AI bằng USD, báo khi sắp hết** (Cài đặt → Trợ lý AI → Ngân sách đã nạp).
-
-- Nhập số dư đang còn (USD) cho từng nền tảng: Claude, ChatGPT, Gemini. App trừ dần theo chi phí ước tính, hiện đã dùng, còn lại, phần trăm và thanh tiến độ.
-- Báo khi đã dùng **80%**, **95%** và khi **hết**; mỗi mức chỉ báo một lần.
-- **Thông báo đẩy** trên iPhone (bấm Bật thông báo đẩy; cần app đã thêm vào Màn hình chính), kèm lời nhắc ngay trong Trò chuyện. Chạm thông báo để mở app.
-- Nạp thêm: nhập lại số dư mới, bộ đếm của nền tảng đó bắt đầu lại.
-
----
-
 ## Tất cả tính năng của app
 
 ### Tab Trò chuyện (mở mặc định)
 - Kể chi tiêu, vay mượn, khoản thu bằng lời; app tách thành các thẻ xác nhận, bấm Ghi mới lưu, có Hoàn tác.
+- Gửi ảnh thông báo trừ tiền: đọc bằng bộ đọc chữ trên máy, không tốn token AI.
 - Hỏi nhanh: hôm nay tiêu bao nhiêu, ai còn nợ mình, số dư còn bao nhiêu…
 - Chọn Trò chuyện hay Ví làm màn hình mở đầu trong Cài đặt.
 - **Trợ lý AI** (tuỳ chọn): dùng khoá API Claude, ChatGPT hoặc Gemini để hiểu câu chính xác hơn; khoá chỉ lưu trên máy. Xem chi phí đã dùng theo từng nhà cung cấp trong Cài đặt.
@@ -124,6 +130,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v76** | Gửi ảnh thông báo trong chat, đọc trên máy không tốn token |
 | **v75** | Làm mờ nội dung phía dưới thanh menu |
 | **v74** | Ngân sách AI bằng USD, thông báo khi sắp hết |
 | **v73** | Xem chi phí AI đã dùng theo từng nhà cung cấp |
