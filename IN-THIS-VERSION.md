@@ -1,37 +1,47 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v48, ngày 06/10/2026
+**Phiên bản hiện tại:** v50, ngày 06/10/2026
 
 ---
 
-## Có gì mới trong v48 (so với v47)
+## Có gì mới trong v50 (so với v49)
 
-**Sửa lỗi iPhone báo "chưa mở được IndexedDB".** Ở v47, nếu iPhone mở IndexedDB chậm hơn 4 giây hoặc báo lỗi một lần, app lưu kiểu cũ cho tới lần mở sau.
+**Tab Ví riêng, đứng đầu và mở mặc định.** Mở app là thấy ngay ví còn bao nhiêu tiền.
 
-- **Mở chậm thì vẫn chờ tiếp:** app mở ngay bằng dữ liệu cũ, IndexedDB mở xong lúc nào thì tự chuyển sang lúc đó, kể cả khoản vừa ghi trong lúc chờ.
-- **Tránh lỗi treo của Safari** ở lần mở IndexedDB đầu tiên.
-- **Tự thử lại** mỗi lần quay lại app (tối đa 30 giây một lần).
-- **Trang Dung lượng ghi rõ lý do** không mở được, kèm nút **Thử mở lại IndexedDB**.
-- Cơ sở dữ liệu bị thiếu bảng thì app tự tạo lại.
-- Trong mọi trường hợp dữ liệu vẫn được lưu, không mất khoản nào.
+- Thẻ **Số dư hiện tại** chuyển từ Tổng quan sang tab **Ví**, kèm hai nút **Đối chiếu số dư** và **Trả thẻ**.
+- **Biến động từ lần đối chiếu:** mọi khoản làm đổi số dư, mới nhất ở trên, mỗi dòng ghi số tiền và **số dư còn lại sau khoản đó**. Quẹt thẻ cũng hiện, ghi rõ là nợ thẻ, chưa trừ ví. Chạm một dòng chi hoặc thu để sửa ngay.
+- **Đối chiếu và trả thẻ:** lịch sử các lần đối chiếu (kèm số lệch) và các lần trả thẻ nằm luôn trên tab, xoá được nếu ghi nhầm.
+- Dòng **Số dư ví** ở tab Giao dịch giờ dẫn về tab Ví.
+- Thanh tab có 5 mục: Ví, Tổng quan, Giao dịch, Thẻ, Khoản vay.
 
 ---
 
-## Có gì mới trong v47 (so với v46)
+## Có gì mới trong v49 (so với v48)
 
-**Dữ liệu chuyển sang IndexedDB, bỏ giới hạn khoảng 5 MB.** Trước đây toàn bộ khoản chi nằm trong `localStorage`, chỉ được khoảng 5 MB và tính chung cho mọi mini app cùng tài khoản GitHub (Chia cơm, các app sau này).
+**Biết ví đang còn bao nhiêu tiền, không chỉ thu chi theo tháng.** Ghi giao dịch vẫn y như cũ, không thêm bước nào.
 
-- Dữ liệu giờ lưu trong **IndexedDB**, chỗ lưu rộng hơn rất nhiều (thường hàng trăm MB trở lên, tuỳ máy). Đã thử lưu 40.000 khoản, khoảng 10 MB, mở lại vẫn đủ.
-- **Tự chuyển dữ liệu cũ** ở lần mở đầu tiên: chép sang IndexedDB, đọc lại để chắc chắn khớp rồi mới xoá bản trong `localStorage`. Không phải làm gì.
-- Xoá bản cũ trong `localStorage` cũng **trả lại chỗ cho các mini app khác** vẫn dùng `localStorage`.
-- Các cài đặt nhỏ (giao diện, kiểu quét QR, lần sao lưu gần nhất) vẫn để trong `localStorage` như cũ.
-- **Trang Dung lượng** hiện phần trăm theo chỗ lưu thật mà máy cho phép, kèm dòng báo khi máy đã cho phép giữ dữ liệu lâu dài.
-- Máy nào không mở được IndexedDB thì app tự lưu kiểu cũ, không mất dữ liệu; lần sau mở được sẽ tự chuyển tiếp, lấy bản mới hơn.
-- Mở app ở hai cửa sổ cùng lúc thì cửa sổ này lưu, cửa sổ kia tự cập nhật theo.
+- **Số dư hiện tại** nằm đầu tab Tổng quan, và một dòng **Số dư ví** trong thẻ *Hôm nay còn được tiêu* ở tab Giao dịch.
+- Lần đầu bấm **Nhập số dư hiện tại**, gõ số đang thấy trong app ngân hàng. Từ đó app tự tính tiếp:
+  - khoản thu cộng vào, chi thường trừ ra;
+  - đi vay và được trả nợ cộng vào, cho vay và trả nợ trừ ra;
+  - **quẹt thẻ chưa trừ số dư**, chỉ cộng vào nợ thẻ.
+- **Trả thẻ** (nút mới ở tab Thẻ): tiền trả thẻ trừ vào số dư và trừ nợ thẻ, không tính là chi tiêu. Số tiền điền sẵn bằng số đang nợ.
+- Có nợ thẻ thì thấy luôn **sau khi trả thẻ còn bao nhiêu**.
+- **Đối chiếu số dư:** gõ số thật, app báo lệch bao nhiêu so với sổ rồi lấy số thật làm mốc mới. Khoản quên ghi trước lúc đối chiếu, ghi bù sau đó, không làm đổi số dư nữa vì số thật đã có nó.
+- **Lịch sử** các lần đối chiếu (kèm số lệch) và các lần trả thẻ, xoá được nếu ghi nhầm.
+- Số dư, lần đối chiếu và lần trả thẻ đi theo file sao lưu và gộp được giữa các máy.
+
+**Sửa lỗi Gộp file làm mất khoản định kỳ.** Trước đây gộp file sao lưu từ máy khác thì danh sách khoản định kỳ bị xoá trắng. Giờ được gộp như các khoản khác.
 
 ---
 
 ## Tất cả tính năng của app
+
+### Tab Ví (mở mặc định)
+- **Số dư hiện tại** của ví, nợ thẻ và số còn lại sau khi trả thẻ.
+- Nút **Đối chiếu số dư** và **Trả thẻ**.
+- **Biến động từ lần đối chiếu**, mỗi dòng kèm số dư còn lại; chạm để sửa.
+- Lịch sử đối chiếu và trả thẻ.
 
 ### Tab Tổng quan
 - **Còn lại thực tế** theo tháng, chọn được gồm chi thường, chi thẻ hay cả hai, kèm mức tăng giảm so với tháng trước.
@@ -72,6 +82,7 @@
 - Biểu đồ *Theo ngày* và *12 tháng*, chạm cột để nhảy tới ngày hoặc tháng đó.
 - Danh sách theo ngày kèm nhãn thẻ, sửa và xoá.
 - Dán thông báo ngân hàng hoặc chọn ảnh chụp màn hình để nhập nhanh, tick chọn khoản đúng.
+- **Trả thẻ:** ghi lần thanh toán thẻ, trừ vào số dư ví và nợ thẻ, không tính là chi tiêu.
 - **Kỳ sao kê:** thẻ có khai ngày sao kê thì hiện số tiền của kỳ đang mở và số ngày còn lại.
 
 ### Tab Khoản vay
@@ -117,7 +128,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
-| **v48** | Sửa lỗi iPhone chưa mở được IndexedDB: tự chờ, tự thử lại, ghi rõ lý do |
-| **v47** | Dữ liệu chuyển sang IndexedDB, bỏ giới hạn khoảng 5 MB |
+| **v50** | Tab Ví riêng, đứng đầu, mở mặc định; biến động số dư từng khoản |
+| **v49** | Số dư ví: đối chiếu, trả thẻ, nợ thẻ; sửa lỗi gộp làm mất khoản định kỳ |
 
 *File này chỉ giữ ghi chú của hai bản gần nhất.*
