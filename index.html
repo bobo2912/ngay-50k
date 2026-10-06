@@ -1116,6 +1116,10 @@ header{margin-top:6px}
       </div>
     </div>
 
+    <section id="soonSec" hidden>
+      <h2>Sắp tới, chưa trừ vào số dư</h2>
+      <ul class="flow" id="soonList"></ul>
+    </section>
     <section id="flowSec" hidden>
       <h2>Biến động từ lần đối chiếu</h2>
       <ul class="flow" id="flowList"></ul>
@@ -1538,7 +1542,7 @@ header{margin-top:6px}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v52</p>
+      <p class="sync" id="appVersion">Phiên bản v53</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Xoá dữ liệu</h4>
@@ -2272,7 +2276,7 @@ function startNgay50k(){
   function balCalc(anchor){
     anchor = anchor || balAnchor();
     if(!anchor) return null;
-    const T = anchor.t || 0, af = x => x > T;
+    const T = anchor.t || 0, N = Date.now(), af = x => x > T && x <= N;   /* khoản có ngày tương lai chưa trừ, tới ngày mới tính */
     let bal = Number(anchor.amt) || 0, debt = Number(anchor.card) || 0;
     for(const k in state.income) (state.income[k]||[]).forEach(it => { if(af(recTime(k, it.t))) bal += Number(it.amt)||0; });
     for(const k in state.days) (state.days[k]||[]).forEach(it => { if(af(recTime(k, it.t))) bal -= Number(it.amt)||0; });
@@ -3940,7 +3944,8 @@ function startNgay50k(){
   function stampText(t){
     const d = new Date(t), days = Math.floor((new Date(todayKey() + "T00:00:00") - new Date(keyOf(d) + "T00:00:00")) / 86400000);
     const hm = pad(d.getHours()) + ":" + pad(d.getMinutes());
-    if(days <= 0) return "hôm nay " + hm;
+    if(days < 0) return "ngày " + d.getDate() + "/" + (d.getMonth()+1) + (d.getFullYear() !== new Date().getFullYear() ? "/" + d.getFullYear() : "");
+    if(days === 0) return "hôm nay " + hm;
     if(days === 1) return "hôm qua " + hm;
     return d.getDate() + "/" + (d.getMonth()+1) + (d.getFullYear() !== new Date().getFullYear() ? "/" + d.getFullYear() : "") + " " + hm;
   }
@@ -3953,7 +3958,7 @@ function startNgay50k(){
       sub.textContent = "Nhập số dư đang có trong tài khoản, app sẽ tự tính tiếp theo từng khoản bạn ghi.";
       $("balWhen").textContent = ""; $("balOpenLabel").textContent = "Nhập số dư hiện tại";
       $("heroBal").hidden = true; $("heroBal").classList.remove("mid");
-      $("walletPay").hidden = true; $("flowSec").hidden = true;
+      $("walletPay").hidden = true; $("flowSec").hidden = true; $("soonSec").hidden = true;
       renderBalHist();
       return;
     }
@@ -3997,31 +4002,42 @@ function startNgay50k(){
       (l.payments || []).forEach(pm => add(recTime(pm.date, pm.t), (b ? -1 : 1) * (Number(pm.amt)||0), "🤝", b ? "Trả nợ " + who : who + " trả nợ", "Khoản vay", go));
     });
     out.sort((a, b) => a.t - b.t);
+    const N = Date.now(), past = out.filter(x => x.t <= N), soon = out.filter(x => x.t > N);
     let run = Number(anchor.amt) || 0;
-    out.forEach(x => { if(!x.card) run += x.amt; x.after = run; });
-    return out.reverse();
+    past.forEach(x => { if(!x.card) run += x.amt; x.after = run; });
+    soon.forEach(x => { if(!x.card) run += x.amt; x.after = run; });   /* số dư dự kiến sau mỗi khoản sắp tới */
+    past.reverse();
+    past.soon = soon;
+    return past;
+  }
+  function flowRow(x, soon){
+    const li = document.createElement("li");
+    li.innerHTML = '<span class="fi" aria-hidden="true"></span><div class="fd"><div></div><div></div></div><div class="fa"><b class="num"></b><small class="num"></small></div>';
+    li.querySelector(".fi").textContent = x.icon;
+    li.querySelector(".fd div:first-child").textContent = x.label;
+    li.querySelector(".fd div:last-child").textContent = (untimed(x.t) || soon ? stampText(x.t).replace(/ 00:00$/, "") : stampText(x.t)) + " · " + x.kind;
+    const b = li.querySelector(".fa b");
+    if(x.card){ b.textContent = fmt(x.amt); b.className = "num mute"; li.querySelector(".fa small").textContent = "nợ thẻ"; }
+    else {
+      b.textContent = (x.amt > 0 ? "+" : "−") + fmt(Math.abs(x.amt)); if(x.amt > 0) b.classList.add("in");
+      li.querySelector(".fa small").textContent = (soon ? "dự kiến còn " : "còn ") + (x.after < 0 ? "−" : "") + fmt(Math.abs(x.after));
+    }
+    if(x.open){ li.classList.add("tap"); li.tabIndex = 0; li.setAttribute("role", "button"); li.onclick = x.open;
+      li.onkeydown = e => { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); x.open(); } }; }
+    return li;
+  }
+  function renderSoon(list){
+    const ul = $("soonList"); ul.innerHTML = "";
+    $("soonSec").hidden = !list.length;
+    list.slice(0, 20).forEach(x => ul.appendChild(flowRow(x, true)));
   }
   function renderFlows(r){
     const list = balFlows(r.anchor), ul = $("flowList"), lim = flowLimit || 30;
+    renderSoon(list.soon || []);
     ul.innerHTML = "";
     $("flowSec").hidden = false;
     if(!list.length){ ul.innerHTML = '<p class="empty">Chưa có khoản nào kể từ lần đối chiếu.</p>'; $("flowMore").hidden = true; return; }
-    list.slice(0, lim).forEach(x => {
-      const li = document.createElement("li");
-      li.innerHTML = '<span class="fi" aria-hidden="true"></span><div class="fd"><div></div><div></div></div><div class="fa"><b class="num"></b><small class="num"></small></div>';
-      li.querySelector(".fi").textContent = x.icon;
-      li.querySelector(".fd div:first-child").textContent = x.label;
-      li.querySelector(".fd div:last-child").textContent = (untimed(x.t) ? stampText(x.t).replace(/ 00:00$/, "") : stampText(x.t)) + " · " + x.kind;
-      const b = li.querySelector(".fa b");
-      if(x.card){ b.textContent = fmt(x.amt); b.className = "num mute"; li.querySelector(".fa small").textContent = "nợ thẻ"; }
-      else {
-        b.textContent = (x.amt > 0 ? "+" : "−") + fmt(Math.abs(x.amt)); if(x.amt > 0) b.classList.add("in");
-        li.querySelector(".fa small").textContent = "còn " + (x.after < 0 ? "−" : "") + fmt(Math.abs(x.after));
-      }
-      if(x.open){ li.classList.add("tap"); li.tabIndex = 0; li.setAttribute("role", "button"); li.onclick = x.open;
-        li.onkeydown = e => { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); x.open(); } }; }
-      ul.appendChild(li);
-    });
+    list.slice(0, lim).forEach(x => ul.appendChild(flowRow(x, false)));
     $("flowMore").hidden = list.length <= lim;
   }
   const balVal = id => { const d = digits($(id).value); return d === "" ? null : parseInt(d, 10); };
@@ -4112,9 +4128,9 @@ function startNgay50k(){
   function payDebtOf(cardId){
     const r = balCalc(); if(!r) return 0;
     if(!cardId) return r.debt;
-    const T = r.anchor.t || 0; let d = 0;
-    for(const k in state.cardTx) (state.cardTx[k]||[]).forEach(it => { if(it.cardId === cardId && recTime(k, it.t) > T) d += Number(it.amt)||0; });
-    (state.cardPay || []).forEach(p => { if(p.cardId === cardId && recTime(p.date, p.t) > T) d -= Number(p.amt)||0; });
+    const T = r.anchor.t || 0, N = Date.now(); let d = 0;
+    for(const k in state.cardTx) (state.cardTx[k]||[]).forEach(it => { if(it.cardId === cardId && recTime(k, it.t) > T && recTime(k, it.t) <= N) d += Number(it.amt)||0; });
+    (state.cardPay || []).forEach(p => { if(p.cardId === cardId && recTime(p.date, p.t) > T && recTime(p.date, p.t) <= N) d -= Number(p.amt)||0; });
     return Math.max(0, Math.min(d, r.debt));
   }
   function payCheck(){ const v = balVal("payAmt"); $("paySave").disabled = !v; $("paySave").textContent = v ? "Lưu trả thẻ " + fmt(v) : "Lưu"; }
