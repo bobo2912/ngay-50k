@@ -1,6 +1,16 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v62, ngày 06/10/2026
+**Phiên bản hiện tại:** v63, ngày 06/10/2026
+
+---
+
+## Có gì mới trong v63 (so với v62)
+
+**Sao lưu nhanh chỉ còn một cách: qua bảng chia sẻ.** Bỏ cách "Mở Phím tắt" (chép qua bảng tạm, phải chuyển sang app Phím tắt và bị hỏi Allow Paste) vì đã thừa.
+
+- Bấm **Sao lưu nhanh bằng Phím tắt** → bảng chia sẻ hiện file `ngay50k-yyyy-MM-dd.json` → chạm phím tắt → lưu vào iCloud Drive, vẫn ở trong app.
+- Bỏ nút gạt chọn cách chạy và ô tên phím tắt. Hướng dẫn ⓘ chỉ còn các bước cho cách này.
+- Tick "Nút Sao lưu trong lời nhắc dùng cách này" thì bấm Sao lưu ở lời nhắc là mở luôn bảng chia sẻ.
 
 ---
 
@@ -9,16 +19,6 @@
 - **Hết báo lỗi nhầm "Chưa mở được Phím tắt".** Lần đầu iPhone hỏi "Mở trong Phím tắt?" nên app chuyển chậm; trước đây app chỉ chờ 1,5 giây rồi báo lỗi dù phím tắt vẫn chạy. Giờ app chờ lâu hơn, và hễ đã sang Phím tắt là xoá cảnh báo, tính là đã sao lưu.
 - **Hướng dẫn ⓘ chỉ đúng chỗ phím tắt trong bảng chia sẻ:** nằm ở *Xem thêm* (View More), ghim bằng *Sửa tác vụ… → +* vào Mục ưa thích.
 - Ghi rõ cách *Mở Phím tắt* cần một phím tắt riêng nhận từ bảng tạm.
-
----
-
-## Có gì mới trong v61 (so với v60)
-
-**Sao lưu bằng Phím tắt mà không rời app, không hỏi "Allow Paste".**
-
-- Thêm cách chạy **Bảng chia sẻ** (mặc định): bấm nút, bảng chia sẻ hiện lên với file `ngay50k-yyyy-MM-dd.json`, chạm vào phím tắt. Phím tắt chạy ngay trong app, lưu vào iCloud Drive, xong vẫn ở app. Không dùng bảng tạm nên iPhone không hỏi dán.
-- Cách cũ **Mở Phím tắt** vẫn còn, chọn được bằng nút gạt. Hướng dẫn ⓘ đổi theo cách đang chọn, kèm cách tắt câu hỏi "Allow Paste" trong Cài đặt iPhone.
-- Huỷ bảng chia sẻ thì không báo lỗi và không tính là đã sao lưu.
 
 ---
 
@@ -94,7 +94,7 @@
 - **Quản lý tag:** danh sách tag, chi tiết từng tag, đổi tên và icon, ẩn hoặc hiện, xoá tag tự tạo.
 - **Sao lưu và đồng bộ:**
   - Xuất file sao lưu, hoặc xuất CSV để mở bằng Excel.
-  - **Sao lưu nhanh bằng Phím tắt** iPhone: qua bảng chia sẻ (ở lại app) hoặc mở app Phím tắt; tự lưu vào iCloud Drive theo ngày.
+  - **Sao lưu nhanh bằng Phím tắt** iPhone qua bảng chia sẻ: một chạm, ở lại app, tự lưu vào iCloud Drive theo ngày.
   - Nhập từ file, chọn **Gộp** hoặc **Thay toàn bộ**, có xem trước thay đổi và **Hoàn tác**.
   - Đồng bộ giữa các máy qua file.
 - **Dung lượng:** kèm số phiên bản app.
@@ -119,7 +119,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v63** | Sao lưu nhanh chỉ còn cách qua bảng chia sẻ |
 | **v62** | Sửa báo lỗi nhầm khi mở Phím tắt, hướng dẫn ghim phím tắt |
-| **v61** | Sao lưu bằng Phím tắt qua bảng chia sẻ, không rời app |
 
 *File này chỉ giữ ghi chú của hai bản gần nhất.*
