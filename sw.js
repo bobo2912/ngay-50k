@@ -1,6 +1,6 @@
 /* Ngày 50k – bộ nhớ đệm để app mở được khi không có mạng.
    Mỗi lần sửa app, hãy tăng số phiên bản dưới đây (v1 -> v2 ...) để máy nhận bản mới. */
-const VERSION = "ngay50k-v73";
+const VERSION = "ngay50k-v74";
 
 const ASSETS = [
   "./",
@@ -69,6 +69,17 @@ self.addEventListener("fetch", event => {
         return res;
       }).catch(() => hit);
       return hit || net;
+    })
+  );
+});
+
+/* Bấm vào thông báo (ngân sách AI sắp hết): mở lại app */
+self.addEventListener("notificationclick", event => {
+  event.notification.close();
+  event.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then(list => {
+      const c = list.find(w => "focus" in w);
+      return c ? c.focus() : self.clients.openWindow("./");
     })
   );
 });
