@@ -1,6 +1,20 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v65, ngày 06/10/2026
+**Phiên bản hiện tại:** v66, ngày 06/10/2026
+
+---
+
+## Có gì mới trong v66 (so với v65)
+
+**Trợ lý AI cho Trò chuyện: dùng khoá API của Claude, ChatGPT hoặc Gemini.**
+
+- **Cài đặt → Trợ lý AI:** chọn nhà cung cấp, dán khoá API, (tuỳ chọn) đổi mô hình, bấm **Thử kết nối**. Mặc định: Claude Sonnet 5.5, ChatGPT gpt-5-mini, Gemini gemini-flash-latest.
+- Khoá **chỉ lưu trên máy này**: không nằm trong mã trên GitHub, không vào file sao lưu. Có nút Xoá khoá.
+- Bật AI thì mỗi câu chat được AI hiểu (kèm ngữ cảnh: hôm nay là ngày nào, tên thẻ, khoản vay đang có, nhóm chi, nội dung quen dùng, vài câu vừa nói) rồi vẫn hiện **thẻ xác nhận** như cũ, bấm Ghi mới lưu.
+- AI chỉ lo hiểu câu; số liệu trả lời (đã chi, còn nợ, số dư) do app tự tính trên máy nên không bị AI đọc sai.
+- App kiểm tra lại mọi thứ AI trả về: bỏ khoản lạ, số tiền âm; sửa nhóm, ngày, thẻ, khoản vay không khớp.
+- Mất mạng, khoá sai, hết tiền API hoặc AI trả lời quá 25 giây thì tự dùng bộ hiểu câu trên máy và ghi rõ lý do.
+- Đầu màn chat có nhãn **✦ AI · Claude** (hoặc ChatGPT/Gemini) khi AI đang bật.
 
 ---
 
@@ -11,27 +25,13 @@
 
 ---
 
-## Có gì mới trong v64 (so với v63)
-
-**Trò chuyện: ghi chi tiêu bằng cách kể như nhắn tin.** Đợt 1 của "người bạn AI", chạy hoàn toàn trên máy, không cần mạng.
-
-- Tab **Trò chuyện** thay ô Ví ở đầu thanh tab và là màn hình mở đầu. Số dư ví hiện ngay đầu màn chat, chạm để mở Ví. Đổi lại Ví làm màn hình mở đầu trong **Cài đặt → Màn hình mở đầu**.
-- Kể tự nhiên, nhiều khoản trong một câu: *"sáng nay bánh mì 20k với cà phê 25k, quẹt thẻ VIB mua giày 1tr2"*. Bấm 🎤 trên bàn phím để nói thay vì gõ.
-- Hiểu được: chi tài khoản, tiền mặt, quẹt thẻ (đoán đúng thẻ theo tên), khoản thu (lương, thưởng, được cho…), cho vay, đi vay, vay thêm, trả nợ, được trả nợ (gắn đúng khoản vay theo tên người), trả thẻ, số dư thật ("tài khoản còn 5 triệu 8").
-- Đọc được số tiền kiểu 45k, 45 nghìn, 1tr2, 1 triệu 250, 2 củ, 2 trăm, 120.000đ; ngày giờ kiểu hôm qua, tối qua, trưa nay, thứ 7, ngày 2/10, 8h; tự đoán nhóm (ăn, uống, đi lại, xăng, mua sắm…), ưu tiên nhóm bạn từng gắn cho cùng nội dung.
-- **Luôn hỏi lại trước khi ghi:** mỗi khoản là một thẻ sửa được (loại, số tiền, nội dung, nhóm, thẻ, khoản vay, ngày), bấm **Ghi** từng khoản hoặc **Ghi tất cả**. Đã ghi vẫn **Hoàn tác** được.
-- Trả lời kiểu người bạn: còn được tiêu bao nhiêu hôm nay, ai còn nợ bao nhiêu, số dư ví sau khoản vừa ghi.
-- Hỏi được: *hôm nay tiêu bao nhiêu, tháng này ăn uống hết bao nhiêu, ai còn nợ mình, chú Dũng còn nợ bao nhiêu, số dư còn bao nhiêu, thẻ tháng này bao nhiêu, tháng này ngày nào tiêu nhiều nhất*.
-- Lịch sử trò chuyện lưu trên máy (không nằm trong file sao lưu), xoá cùng khi Xoá toàn bộ dữ liệu.
-
----
-
 ## Tất cả tính năng của app
 
 ### Tab Trò chuyện (mở mặc định)
 - Kể chi tiêu, vay mượn, khoản thu bằng lời; app tách thành các thẻ xác nhận, bấm Ghi mới lưu, có Hoàn tác.
 - Hỏi nhanh: hôm nay tiêu bao nhiêu, ai còn nợ mình, số dư còn bao nhiêu…
 - Chọn Trò chuyện hay Ví làm màn hình mở đầu trong Cài đặt.
+- **Trợ lý AI** (tuỳ chọn): dùng khoá API Claude, ChatGPT hoặc Gemini để hiểu câu chính xác hơn; khoá chỉ lưu trên máy.
 
 ### Tab Ví
 - **Số dư hiện tại** của ví, nợ thẻ và số còn lại sau khi trả thẻ.
@@ -128,7 +128,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v66** | Trợ lý AI: khoá API Claude / ChatGPT / Gemini lưu trên máy |
 | **v65** | Khung nhập chat sát thanh menu, quay lại trò chuyện từ Ví |
-| **v64** | Trò chuyện: ghi chi tiêu bằng lời, bộ hiểu câu tiếng Việt chạy trên máy |
 
 *File này chỉ giữ ghi chú của hai bản gần nhất.*

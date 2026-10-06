@@ -26,7 +26,7 @@ Phải mở qua một máy chủ web, không mở thẳng bằng `file://`, vì 
 
 ## Làm được gì
 
-**Trò chuyện** (tab đầu, mở mặc định) — Kể chi tiêu bằng lời như nhắn tin. `parse-vi.js` (chạy trên máy, không gửi dữ liệu đi) tách câu thành các khoản, mỗi khoản là một thẻ xác nhận sửa được; bấm Ghi mới lưu, có Hoàn tác. Trả lời câu hỏi nhanh từ dữ liệu trên máy. Đổi màn hình mở đầu sang Ví trong Cài đặt.
+**Trò chuyện** (tab đầu, mở mặc định) — Kể chi tiêu bằng lời như nhắn tin. `parse-vi.js` (chạy trên máy, không gửi dữ liệu đi) tách câu thành các khoản, mỗi khoản là một thẻ xác nhận sửa được; bấm Ghi mới lưu, có Hoàn tác. Trả lời câu hỏi nhanh từ dữ liệu trên máy. Đổi màn hình mở đầu sang Ví trong Cài đặt. Tuỳ chọn **Trợ lý AI**: người dùng dán khoá API (Claude, ChatGPT, Gemini) trong Cài đặt, khoá lưu ở `localStorage["ngay50k:ai"]` trên máy, không bao giờ nằm trong kho này; app gọi thẳng API từ trình duyệt, AI chỉ trả JSON các khoản/câu hỏi, app kiểm tra lại rồi hiện thẻ xác nhận; lỗi thì quay về `parse-vi.js`.
 
 **Ví** — Số dư hiện tại: số bạn nhập ở lần đối chiếu gần nhất, cộng trừ tiếp mọi khoản ghi sau lúc đó (quẹt thẻ chỉ cộng vào nợ thẻ, tới khi ghi Trả thẻ). Danh sách biến động kèm số dư sau từng khoản, lịch sử đối chiếu và trả thẻ.
 
@@ -58,6 +58,7 @@ Hệ quả cần biết:
 - Dữ liệu không tự đồng bộ giữa iPhone và máy tính. Muốn chuyển thì **Cài đặt → Sao lưu và đồng bộ → Xuất file**, mang file sang máy kia rồi **Nhập từ file**. Khi nhập có hai lựa chọn **Gộp** hoặc **Thay toàn bộ**, đều xem trước được thay đổi và hoàn tác được.
 - Sao lưu nhanh: `navigator.share` một file `ngay50k-yyyy-MM-dd.json`; người dùng chạm vào phím tắt của mình (bật Hiện trong Bảng chia sẻ, nhận Tệp, Lưu tệp vào iCloud Drive) ngay trong bảng chia sẻ, không rời app. Phím tắt không đọc được dữ liệu của app web, nên lượt nào cũng phải bắt đầu từ nút trong app.
 - Dữ liệu được giữ vô thời hạn; app không tự xoá khoản cũ.
+- Khoá API của Trợ lý AI chỉ nằm trên máy người dùng, không có trong kho này và không vào file sao lưu. **Đừng bao giờ dán khoá vào mã nguồn.**
 - File sao lưu là JSON có chứa số tài khoản và tên người nhận. **Đừng bao giờ tải file đó lên GitHub** — kho này công khai.
 
 ---
