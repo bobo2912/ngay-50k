@@ -1766,7 +1766,7 @@ body.kb #tab-chat .chat-sugg{display:none}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v71</p>
+      <p class="sync" id="appVersion">Phiên bản v72</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Xoá dữ liệu</h4>
@@ -4755,8 +4755,24 @@ function startNgay50k(){
     document.body.classList.add("kb"); fitTyping(); chatScrollEnd(false);
     setTimeout(() => { if(document.activeElement !== $("chatIn")){ document.body.classList.remove("kb"); dockLast = { b:-1, h:-1 }; placeDock(); } }, 700);
   }
-  $("chatIn").addEventListener("touchstart", preType, { passive:true });
-  $("chatIn").addEventListener("mousedown", preType);
+  /* Chạm ô chat: đợi nhấc ngón tay rồi mới đặt sẵn ô nhập và tự focus.
+     (Dời ô nhập ngay lúc chạm làm cú chạm trượt khỏi ô, bàn phím không hiện.) */
+  let tapAt = null;
+  $("chatIn").addEventListener("touchstart", e => {
+    const t = e.touches[0];
+    tapAt = document.activeElement === $("chatIn") || !t ? null : { x:t.clientX, y:t.clientY };
+  }, { passive:true });
+  $("chatIn").addEventListener("touchmove", e => {
+    const t = e.touches[0]; if(tapAt && t && Math.hypot(t.clientX - tapAt.x, t.clientY - tapAt.y) > 10) tapAt = null;
+  }, { passive:true });
+  $("chatIn").addEventListener("touchend", e => {
+    if(!tapAt || document.activeElement === $("chatIn")) return;
+    tapAt = null;
+    e.preventDefault();                                   /* tự focus, không để iPhone trượt trang */
+    preType();
+    void $("chatDock").offsetHeight;                      /* áp bố cục mới trước khi focus */
+    try{ $("chatIn").focus({ preventScroll:true }); }catch(_){ $("chatIn").focus(); }
+  }, { passive:false });
   function placeDock(){
     if(document.body.classList.contains("kb") && (document.activeElement === $("chatIn") || Date.now() < preUntil)){ fitTyping(); return; }
     const dock = $("chatDock"), tabs = document.querySelector(".tabs"); if(!dock) return;

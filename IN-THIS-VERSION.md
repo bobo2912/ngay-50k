@@ -1,6 +1,13 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v71, ngày 06/10/2026
+**Phiên bản hiện tại:** v72, ngày 06/10/2026
+
+---
+
+## Có gì mới trong v72 (so với v71)
+
+- **Sửa lỗi bản v71: chạm vào ô chat không hiện bàn phím.** Ô nhập bị dời lên ngay lúc ngón tay vừa chạm, nên cú chạm rơi ra ngoài ô. Giờ app đợi nhấc tay mới dời ô nhập và tự bật bàn phím; đầu trang và Số dư ví vẫn đứng yên.
+- Vuốt cuộn ngang qua ô chat không làm bật bàn phím.
 
 ---
 
@@ -12,14 +19,6 @@
 - App nhớ chiều cao bàn phím của máy: lần chạm đầu tiên dùng số ước lượng, từ lần sau khớp đúng.
 - Ô nhập không còn bị thanh menu che: luôn nằm ngay trên thanh menu, có khe nhỏ.
 - Ô Số dư ví cách đầu trang một khoảng nhỏ, tin nhắn cuộn qua khe này được che đi.
-
----
-
-## Có gì mới trong v70 (so với v69)
-
-- **Sửa lỗi Trợ lý AI với Claude** ("tool_choice … not supported for this model"). Claude đời mới không cho ép trả kết quả qua công cụ; app chuyển sang yêu cầu JSON có cấu trúc (`output_config.format`). Mô hình nào chưa hỗ trợ thì app tự gửi lại kiểu thường và đọc JSON trong câu trả lời.
-- **Màn Trò chuyện: thanh đầu trang và ô Số dư ví luôn dính ở trên**, khi cuộn lẫn khi đang gõ.
-- Hàng gợi ý phía trên ô nhập có nền mờ dần, tin nhắn cuộn bên dưới không còn lẫn vào.
 
 ---
 
@@ -126,6 +125,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v72** | Sửa lỗi chạm ô chat không hiện bàn phím |
 | **v71** | Chạm ô chat chỉ đẩy ô nhập lên, ô nhập không bị menu che |
 | **v70** | Sửa lỗi AI Claude, đầu trang và số dư dính trong chat |
 | **v69** | Mở bàn phím trong chat không mất phần trên |
