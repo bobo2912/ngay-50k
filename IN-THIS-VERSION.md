@@ -1,6 +1,13 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v66, ngày 06/10/2026
+**Phiên bản hiện tại:** v67, ngày 06/10/2026
+
+---
+
+## Có gì mới trong v67 (so với v66)
+
+- **Hết giật khi cuộn màn Trò chuyện.** Trước đây mỗi lần cuộn, app đặt lại vị trí khung nhập và kéo màn hình về cuối nếu đang ở gần cuối, giành thao tác cuộn của bạn. Giờ app chỉ làm việc đó khi khung nhập thật sự đổi chỗ (bật/tắt bàn phím).
+- **Mỗi lần mở app là một cuộc trò chuyện mới** cho gọn. App nằm nền quá 30 phút rồi quay lại cũng bắt đầu mới. Các khoản đã ghi vẫn còn nguyên trong dữ liệu.
 
 ---
 
@@ -15,13 +22,6 @@
 - App kiểm tra lại mọi thứ AI trả về: bỏ khoản lạ, số tiền âm; sửa nhóm, ngày, thẻ, khoản vay không khớp.
 - Mất mạng, khoá sai, hết tiền API hoặc AI trả lời quá 25 giây thì tự dùng bộ hiểu câu trên máy và ghi rõ lý do.
 - Đầu màn chat có nhãn **✦ AI · Claude** (hoặc ChatGPT/Gemini) khi AI đang bật.
-
----
-
-## Có gì mới trong v65 (so với v64)
-
-- **Khung nhập chat luôn nằm sát ngay trên thanh menu**, dù mới mở hay đoạn chat đã dài; tin nhắn cuối luôn nằm ngay trên khung nhập. Khi đang gõ, thanh menu tạm ẩn và khung nhập bám ngay trên bàn phím.
-- **Từ Ví quay lại trò chuyện được:** nút "‹ Quay lại trò chuyện" ở đầu màn Ví, vuốt từ trái sang phải, hoặc chạm ô Trò chuyện trên thanh menu.
 
 ---
 
@@ -128,7 +128,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v67** | Hết giật khi cuộn chat, mở app là trò chuyện mới |
 | **v66** | Trợ lý AI: khoá API Claude / ChatGPT / Gemini lưu trên máy |
-| **v65** | Khung nhập chat sát thanh menu, quay lại trò chuyện từ Ví |
 
 *File này chỉ giữ ghi chú của hai bản gần nhất.*
