@@ -1181,6 +1181,13 @@ body.kb .tabs{display:none}
 .chat-bar button:disabled{opacity:.35}
 .chat-bar button svg{width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round}
 .chat-hint{text-align:center; font-size:.72rem; color:var(--muted); margin:8px 0 0}
+.ai-badge{font-size:.7rem; font-weight:700; color:var(--note); background:var(--note-soft); border-radius:999px; padding:2px 8px; margin-left:auto}
+.ai-badge[hidden]{display:none}
+.ai-badge + .ch{margin-left:6px}
+.typing{display:inline-flex; gap:4px; padding:2px 0}
+.typing i{width:7px; height:7px; border-radius:50%; background:var(--muted); opacity:.4; animation:tp 1s infinite}
+.typing i:nth-child(2){animation-delay:.15s} .typing i:nth-child(3){animation-delay:.3s}
+@keyframes tp{0%,60%,100%{opacity:.25; transform:none} 30%{opacity:.9; transform:translateY(-3px)}}
 /* ================= PASTEL ================= */
 /* luôn sáng, dịu và gọn: nền kem ấm, thẻ trắng, một màu nhấn hồng đất, mọi thẻ đầu trang cùng một tông */
 :root[data-theme="pastel"]{
@@ -1226,7 +1233,7 @@ body.kb .tabs{display:none}
   <!-- ================= TAB: HÔM NAY ================= -->
   <!-- ================= TAB: TRÒ CHUYỆN ================= -->
   <div id="tab-chat" role="tabpanel">
-    <button type="button" class="chat-chip" id="chatToWallet"><span>Số dư ví</span><b class="num" id="chatBal">–</b><span class="ch" aria-hidden="true">›</span></button>
+    <button type="button" class="chat-chip" id="chatToWallet"><span>Số dư ví</span><b class="num" id="chatBal">–</b><span class="ai-badge" id="chatAI" hidden></span><span class="ch" aria-hidden="true">›</span></button>
     <div class="chat-log" id="chatLog" aria-live="polite"></div>
     <div class="chat-dock" id="chatDock">
       <div class="chat-sugg" id="chatSugg"></div>
@@ -1515,6 +1522,7 @@ body.kb .tabs{display:none}
     <div class="set-page" id="setHome">
       <div class="set-list">
         <button class="set-nav" data-go="setStart"><span class="nav-t">Màn hình mở đầu</span><span class="nav-v" id="navStart"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+        <button class="set-nav" data-go="setAI"><span class="nav-t">Trợ lý AI</span><span class="nav-v" id="navAI"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
         <button class="set-nav" data-go="setTheme"><span class="nav-t">Giao diện</span><span class="nav-v" id="navTheme"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
         <button class="set-nav" data-go="setScan"><span class="nav-t">Quét mã QR</span><span class="nav-v" id="navScan"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
         <button class="set-nav" data-go="setBudget"><span class="nav-t">Hạn mức chi một ngày</span><span class="nav-v" id="navBudget"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
@@ -1535,6 +1543,33 @@ body.kb .tabs{display:none}
         <button data-home="chat" aria-pressed="true">Trò chuyện</button>
         <button data-home="wallet" aria-pressed="false">Ví</button>
       </div>
+    </section>
+    </div>
+
+    <div class="set-page" id="setAI" hidden>
+      <div class="set-head"><button class="set-back" data-back>‹ Cài đặt</button><h2 tabindex="-1">Trợ lý AI</h2></div>
+<section class="set-group">
+      <p class="set-now">Dùng AI để hiểu câu bạn kể trong Trò chuyện chính xác hơn. Mỗi câu chat tốn một khoản phí nhỏ trả cho nhà cung cấp, tính vào tài khoản API của bạn.</p>
+      <div class="seg seg3" id="aiProv" role="group" aria-label="Nhà cung cấp" style="margin-top:12px">
+        <button data-p="claude" aria-pressed="true">Claude</button>
+        <button data-p="openai" aria-pressed="false">ChatGPT</button>
+        <button data-p="gemini" aria-pressed="false">Gemini</button>
+      </div>
+      <div class="field" style="margin-top:14px">
+        <label for="aiKey"><span>Khoá API</span></label>
+        <div class="amt-row"><input id="aiKey" class="inp" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" style="flex:1"><button type="button" class="k000" id="aiShow">Hiện</button></div>
+        <p class="set-now" id="aiWhere" style="margin-top:6px"></p>
+      </div>
+      <div class="field">
+        <label for="aiModel"><span>Mô hình <span class="opt">(để trống dùng mặc định)</span></span></label>
+        <input id="aiModel" class="inp" list="aiModels" autocomplete="off" autocapitalize="off" spellcheck="false">
+        <datalist id="aiModels"></datalist>
+      </div>
+      <label class="sc-use"><input type="checkbox" id="aiOn"> Dùng AI khi trò chuyện</label>
+      <div class="set-row" style="margin-top:12px"><button class="ghost grow" id="aiTest">Thử kết nối</button><button class="ghost danger" id="aiDel" hidden>Xoá khoá</button></div>
+      <p class="inline-ok" id="aiMsg" hidden></p>
+      <h4 class="sub">An toàn</h4>
+      <p class="set-now">Khoá chỉ lưu trên máy này: không nằm trong mã nguồn trên GitHub, không nằm trong file sao lưu, không gửi đi đâu ngoài nhà cung cấp bạn chọn. Câu bạn gõ cùng danh sách tên thẻ, tên người vay và nhóm chi được gửi cho nhà cung cấp để AI hiểu ngữ cảnh. Số liệu trả lời (đã chi, còn nợ, số dư) do app tự tính trên máy. Mất mạng hay AI lỗi thì app dùng bộ hiểu câu trên máy. Nên đặt hạn mức chi tiêu cho khoá trong trang của nhà cung cấp.</p>
     </section>
     </div>
 
@@ -1710,7 +1745,7 @@ body.kb .tabs{display:none}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v65</p>
+      <p class="sync" id="appVersion">Phiên bản v66</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Xoá dữ liệu</h4>
@@ -4365,7 +4400,7 @@ function startNgay50k(){
       const box = document.createElement("div"); box.className = "prop";
       const intro = document.createElement("div"); intro.className = "msg bot";
       const pend = m.status.filter(s => s === "pending").length;
-      intro.innerHTML = m.items.length > 1 ? "Mình hiểu là có <b>" + m.items.length + " khoản</b>, bạn xem lại rồi bấm Ghi nhé:" : "Mình hiểu vậy, đúng không?";
+      intro.innerHTML = (m.intro ? esc(m.intro) + "\n" : "") + (m.items.length > 1 ? "Mình hiểu là có <b>" + m.items.length + " khoản</b>, bạn xem lại rồi bấm Ghi nhé:" : (m.intro ? "Bạn xem lại rồi bấm Ghi nhé:" : "Mình hiểu vậy, đúng không?"));
       box.appendChild(intro);
       m.items.forEach((_, i) => box.appendChild(cardEl(m, i)));
       if(pend > 1){
@@ -4396,6 +4431,7 @@ function startNgay50k(){
       log.appendChild(msgEl(m));
     });
     const r = balCalc(); $("chatBal").textContent = r ? sMoney(r.bal) : "chưa có";
+    aiBadge();
     const sg = $("chatSugg"); sg.innerHTML = "";
     ["Hôm nay tiêu bao nhiêu?", "Ai còn nợ mình?", "Số dư còn bao nhiêu?", "Tháng này ăn uống bao nhiêu?"].forEach(t => {
       const b = document.createElement("button"); b.type = "button"; b.textContent = t; b.onclick = () => chatSend(t); sg.appendChild(b);
@@ -4403,27 +4439,247 @@ function startNgay50k(){
     if(keepScroll) window.scrollTo(0, y);
   }
   function chatScrollEnd(smooth){ if(currentTab !== "chat") return; requestAnimationFrame(() => window.scrollTo({ top:document.documentElement.scrollHeight, behavior:smooth ? "smooth" : "auto" })); }
-  function chatSend(text){
-    text = String(text || "").trim(); if(!text) return;
+  /* =================== TRỢ LÝ AI ===================
+     Khoá API chỉ lưu trên máy này (localStorage "ngay50k:ai"), không nằm trong code, không nằm trong file sao lưu.
+     AI chỉ có nhiệm vụ HIỂU câu: trả về các khoản và câu hỏi dạng JSON. Số liệu trả lời luôn do app tự tính từ dữ liệu trên máy.
+     Lỗi, hết hạn chờ hoặc mất mạng thì dùng bộ hiểu câu trên máy (parse-vi.js). */
+  var AI_KEY = "ngay50k:ai";
+  const AI_PROVIDERS = {
+    claude: { name:"Claude", model:"claude-sonnet-5-5", models:["claude-sonnet-5-5","claude-haiku-4-5-20251001","claude-opus-5-5"], keyHint:"sk-ant-…", where:"console.anthropic.com → API Keys" },
+    openai: { name:"ChatGPT", model:"gpt-5-mini", models:["gpt-5-mini","gpt-5"], keyHint:"sk-…", where:"platform.openai.com → API keys" },
+    gemini: { name:"Gemini", model:"gemini-flash-latest", models:["gemini-flash-latest","gemini-pro-latest"], keyHint:"AIza…", where:"aistudio.google.com → Get API key" }
+  };
+  function aiCfg(){ let c = null; try{ c = JSON.parse(lsGet(AI_KEY) || "null"); }catch(e){} c = c || {}; if(!AI_PROVIDERS[c.provider]) c.provider = "claude"; if(c.on === undefined) c.on = true; return c; }
+  function aiSet(c){ lsSet(AI_KEY, JSON.stringify(c)); aiBadge(); }
+  function aiBadge(){ const b = $("chatAI"); if(!b) return; const c = aiCfg(); b.hidden = !aiReady(); b.textContent = "✦ AI · " + AI_PROVIDERS[c.provider].name; }
+  function aiReady(){ const c = aiCfg(); return !!(c.on && c.key && String(c.key).trim()); }
+  function aiModel(c){ return (c.model && String(c.model).trim()) || AI_PROVIDERS[c.provider].model; }
+
+  const AI_SCHEMA = {
+    type:"object",
+    properties:{
+      reply:{ type:"string", description:"Câu đáp ngắn, thân thiện, tiếng Việt, như một người bạn. Không lặp lại danh sách khoản." },
+      items:{ type:"array", items:{ type:"object", properties:{
+        kind:{ type:"string", enum:["out","card","in","lend","borrow","repay","collect","cardpay","bal"] },
+        amt:{ type:"integer", description:"Số tiền VND, số nguyên dương" },
+        note:{ type:"string" }, cat:{ type:"string" },
+        date:{ type:"string", description:"yyyy-mm-dd" }, time:{ type:"string", description:"HH:MM hoặc rỗng" },
+        cardId:{ type:"string" }, loanId:{ type:"string" }, who:{ type:"string" }
+      }, required:["kind","amt"] } },
+      query:{ type:"object", properties:{
+        q:{ type:"string", enum:["spent","left","balance","loans","card","topday"] },
+        period:{ type:"string", enum:["today","yesterday","week","lastweek","month","lastmonth"] },
+        tag:{ type:"string" }, who:{ type:"string" }
+      } }
+    },
+    required:["reply","items"]
+  };
+  function aiSystem(){
+    const now = new Date(), WDV = ["Chủ nhật","Thứ hai","Thứ ba","Thứ tư","Thứ năm","Thứ sáu","Thứ bảy"];
+    const ctx = {
+      hom_nay: keyOf(now), thu: WDV[now.getDay()], gio: pad(now.getHours()) + ":" + pad(now.getMinutes()),
+      han_muc_ngay: state.budget,
+      nhom_chi: allTags().map(t => ({ id:t.id, ten:t.label })),
+      nguon_thu: INC.map(t => ({ id:t.id, ten:t.label })),
+      the_tin_dung: (state.cards || []).map(c => ({ id:c.id, ten:c.name })),
+      khoan_vay: state.loans.map(l => ({ id:l.id, loai:l.type === "lend" ? "minh_cho_vay" : "minh_di_vay", nguoi:l.who, con_lai:leftOf(l) })),
+      noi_dung_quen: (() => { const out = {}; Object.keys(state.days).sort().slice(-60).forEach(k => (state.days[k] || []).forEach(it => { if(it.note && it.cat) out[it.note] = it.cat; })); return Object.entries(out).slice(-40).map(([n, c]) => n + " → " + c); })()
+    };
+    return [
+      "Bạn là bộ phận hiểu câu của app ghi chi tiêu cá nhân tiếng Việt \"Ngày 50k\". Người dùng kể bằng lời tự nhiên (có thể gõ không dấu, viết tắt, đọc bằng giọng nói). Nhiệm vụ: chuyển thành các khoản cần ghi và/hoặc một câu hỏi. Trả lời đúng dạng JSON theo schema, không thêm chữ nào ngoài JSON.",
+      "",
+      "Loại khoản (kind):",
+      "- out: chi tiêu từ tài khoản ngân hàng hoặc tiền mặt (chuyển khoản, quét QR, trả tiền mặt, mua gì đó không nói thẻ). Đây là mặc định cho chi tiêu.",
+      "- card: chi bằng thẻ tín dụng (quẹt thẻ, cà thẻ, bằng thẻ, thẻ VIB…). cardId lấy từ the_tin_dung nếu khớp tên; chỉ có 1 thẻ thì dùng thẻ đó.",
+      "- in: khoản thu (lương, thưởng, bán hàng, được cho/tặng/lì xì, hoàn tiền, tiền về). cat là id trong nguon_thu.",
+      "- lend: mình cho người khác vay/mượn (kể cả cho vay thêm). borrow: mình đi vay/mượn người khác (kể cả vay thêm).",
+      "- repay: mình trả nợ cho người mình đã vay. collect: người khác trả lại tiền mình đã cho vay.",
+      "- cardpay: trả nợ/thanh toán thẻ tín dụng (không phải chi tiêu).",
+      "- bal: người dùng nói số dư thật hiện có trong tài khoản/ví (\"tài khoản còn 5tr8\").",
+      "Với lend/borrow/repay/collect: nếu tên người khớp một khoản trong khoan_vay đúng chiều (lend/collect ↔ minh_cho_vay; borrow/repay ↔ minh_di_vay) thì đặt loanId; nếu không có thì để loanId rỗng và ghi who (tên người, giữ cách xưng hô như \"chú Dũng\").",
+      "",
+      "Số tiền: k/nghìn/ngàn = ×1.000; tr/triệu/củ/m = ×1.000.000; \"1tr2\" = 1.200.000; \"1 triệu 250\" = 1.250.000; \"2 trăm\" (tiền) = 200.000; \"rưỡi\" = thêm nửa đơn vị; số trần nhỏ hơn 1000 khi nói về tiền là nghìn (\"phở 45\" = 45.000). Số lượng (2 ly, 3 cái, 2 người) KHÔNG phải tiền. Nếu nhiều món có giá riêng thì tách thành nhiều khoản; \"2 ly cà phê 25k mỗi ly\" = 50.000.",
+      "Ngày: tính theo hom_nay và thu ở dưới (hôm qua, tối qua, thứ 7 tuần trước, ngày 5, 5/10…). Không nói thì là hôm nay. time: sáng ≈ 08:00, trưa ≈ 12:00, chiều ≈ 16:00, tối ≈ 20:00, nếu có nói; không có thì để rỗng.",
+      "note: nội dung ngắn gọn, viết hoa chữ đầu, bỏ số tiền, ngày và từ thừa (vd \"Ăn phở\", \"Grab về nhà\", \"Shopee mua giày\"). cat cho out/card: id trong nhom_chi; ưu tiên noi_dung_quen nếu nội dung giống; không chắc thì \"khac\".",
+      "Câu hỏi (không cần ghi gì) thì để items rỗng và điền query: spent (đã chi bao nhiêu, có thể kèm tag là id nhóm hoặc \"an+uong\"), left (hôm nay còn tiêu được bao nhiêu), balance (số dư), loans (ai nợ/mình nợ ai, who nếu hỏi một người), card (chi thẻ, nợ thẻ), topday (ngày tiêu nhiều nhất). period mặc định today, \"tháng này\" = month.",
+      "Câu chào hỏi, tâm sự, hoặc thiếu số tiền: items rỗng, reply hỏi lại ngắn gọn (vd hỏi số tiền). Không bịa số tiền.",
+      "reply: 1 câu ngắn, ấm áp, tự nhiên như bạn bè; không đọc lại số liệu tổng (app tự hiện).",
+      "",
+      "Ngữ cảnh hiện tại (JSON): " + JSON.stringify(ctx)
+    ].join("\n");
+  }
+  function aiHistory(){
+    const out = [];
+    (chat ? chat.msgs : []).slice(-8).forEach(m => {
+      if(m.role === "me") out.push({ role:"user", text:m.text });
+      else if(m.html && !m.thinking) out.push({ role:"assistant", text:m.html.replace(/<[^>]+>/g, "") });
+      else if(m.items) out.push({ role:"assistant", text:"(đã đề xuất: " + m.items.map(it => KIND_LABEL[it.kind] + " " + it.amt + (it.note ? " " + it.note : "")).join("; ") + ")" });
+    });
+    return out;
+  }
+  async function aiCall(text, cfgOverride){
+    const c = cfgOverride || aiCfg(), model = aiModel(c), key = String(c.key || "").trim();
+    const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), 25000);
+    const hist = aiHistory();
+    try{
+      let res, data, out;
+      if(c.provider === "claude"){
+        const msgs = [];
+        hist.forEach(h => { const role = h.role === "assistant" ? "assistant" : "user"; if(msgs.length && msgs[msgs.length-1].role === role) msgs[msgs.length-1].content += "\n" + h.text; else msgs.push({ role, content:h.text }); });
+        if(msgs.length && msgs[0].role !== "user") msgs.shift();
+        if(msgs.length && msgs[msgs.length-1].role === "user") msgs[msgs.length-1].content += "\n" + text; else msgs.push({ role:"user", content:text });
+        res = await fetch("https://api.anthropic.com/v1/messages", { method:"POST", signal:ctl.signal,
+          headers:{ "content-type":"application/json", "x-api-key":key, "anthropic-version":"2023-06-01", "anthropic-dangerous-direct-browser-access":"true" },
+          body:JSON.stringify({ model, max_tokens:1500, system:aiSystem(), messages:msgs,
+            tools:[{ name:"ghi_nhan", description:"Trả kết quả hiểu câu cho app", input_schema:AI_SCHEMA }], tool_choice:{ type:"tool", name:"ghi_nhan" } }) });
+        data = await res.json().catch(() => ({}));
+        if(!res.ok) throw new Error((data.error && data.error.message) || ("HTTP " + res.status));
+        const tu = (data.content || []).find(b => b.type === "tool_use");
+        out = tu ? tu.input : JSON.parse(((data.content || []).find(b => b.type === "text") || {}).text || "{}");
+      } else if(c.provider === "openai"){
+        const msgs = [{ role:"system", content:aiSystem() + "\nChỉ trả về một đối tượng JSON có các khoá reply, items, query." }]
+          .concat(hist.map(h => ({ role:h.role === "assistant" ? "assistant" : "user", content:h.text }))).concat([{ role:"user", content:text }]);
+        res = await fetch("https://api.openai.com/v1/chat/completions", { method:"POST", signal:ctl.signal,
+          headers:{ "content-type":"application/json", "authorization":"Bearer " + key },
+          body:JSON.stringify({ model, messages:msgs, response_format:{ type:"json_object" } }) });
+        data = await res.json().catch(() => ({}));
+        if(!res.ok) throw new Error((data.error && data.error.message) || ("HTTP " + res.status));
+        out = JSON.parse(((data.choices || [])[0] || {}).message.content || "{}");
+      } else {
+        const contents = hist.map(h => ({ role:h.role === "assistant" ? "model" : "user", parts:[{ text:h.text }] })).concat([{ role:"user", parts:[{ text }] }]);
+        res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/" + encodeURIComponent(model) + ":generateContent", { method:"POST", signal:ctl.signal,
+          headers:{ "content-type":"application/json", "x-goog-api-key":key },
+          body:JSON.stringify({ systemInstruction:{ parts:[{ text:aiSystem() + "\nChỉ trả về một đối tượng JSON có các khoá reply, items, query." }] }, contents, generationConfig:{ responseMimeType:"application/json" } }) });
+        data = await res.json().catch(() => ({}));
+        if(!res.ok) throw new Error((data.error && data.error.message) || ("HTTP " + res.status));
+        const parts = (((data.candidates || [])[0] || {}).content || {}).parts || [];
+        out = JSON.parse(parts.map(p => p.text || "").join("") || "{}");
+      }
+      return aiClean(out);
+    } finally { clearTimeout(to); }
+  }
+  /* không tin tuyệt đối vào AI: kiểm tra từng trường, sai thì sửa về giá trị an toàn hoặc bỏ */
+  function aiClean(o){
+    o = o && typeof o === "object" ? o : {};
+    const kinds = Object.keys(KIND_LABEL), tagIds = allTags().map(t => t.id), incIds = INC.map(t => t.id);
+    const items = (Array.isArray(o.items) ? o.items : []).map(x => {
+      if(!x || !kinds.includes(x.kind)) return null;
+      const amt = Math.round(typeof x.amt === "number" ? x.amt : Number(String(x.amt).replace(/[^\d.-]/g, "")));
+      if(!(amt > 0) || amt > 1e11) return null;
+      const it = { kind:x.kind, amt, note:String(x.note || "").trim().slice(0, 80), cat:"", cardId:null, loanId:null, who:String(x.who || "").trim().slice(0, 40), src:"tk" };
+      const now = new Date();
+      it.date = /^\d{4}-\d{2}-\d{2}$/.test(x.date || "") && !isNaN(new Date(x.date + "T12:00:00")) ? x.date : todayKey();
+      const tm = /^(\d{1,2}):(\d{2})$/.exec(x.time || "");
+      if(it.date === todayKey() && !tm) it.t = now.getTime();
+      else { const d = new Date(it.date + "T12:00:00"); if(tm) d.setHours(+tm[1], +tm[2], 0, 0); else d.setHours(now.getHours(), now.getMinutes(), 0, 0); it.t = d.getTime(); }
+      if(it.kind === "out" || it.kind === "card") it.cat = tagIds.includes(x.cat) ? x.cat : window.N50KParse.guessTag(it.note || "", chatCtx());
+      if(it.kind === "in") it.cat = incIds.includes(x.cat) ? x.cat : "khac";
+      if(it.kind === "card" || it.kind === "cardpay"){ const cards = state.cards || []; it.cardId = cards.some(c => c.id === x.cardId) ? x.cardId : (cards.length === 1 && it.kind === "card" ? cards[0].id : null); }
+      if(["lend","borrow","repay","collect"].includes(it.kind)){
+        const type = (it.kind === "lend" || it.kind === "collect") ? "lend" : "borrow", l = state.loans.find(z => z.id === x.loanId && z.type === type);
+        if(l){ it.loanId = l.id; it.who = l.who; }
+        else if(it.who){ const P = window.N50KParse, n = P.norm(it.who); const m = state.loans.find(z => z.type === type && (P.norm(z.who).includes(n) || n.includes(P.norm(z.who)))); if(m){ it.loanId = m.id; it.who = m.who; } }
+      }
+      return it;
+    }).filter(Boolean);
+    let query = null;
+    if(o.query && typeof o.query === "object" && ["spent","left","balance","loans","card","topday"].includes(o.query.q)){
+      query = { q:o.query.q, period:["today","yesterday","week","lastweek","month","lastmonth"].includes(o.query.period) ? o.query.period : (o.query.q === "card" || o.query.q === "topday" ? "month" : "today"),
+        tag:o.query.tag === "an+uong" || tagIds.includes(o.query.tag) ? o.query.tag : null, who:String(o.query.who || "").trim() };
+    }
+    return { reply:String(o.reply || "").trim().slice(0, 400), items, query };
+  }
+  function aiErrText(e){
+    const m = String(e && e.message || e || "");
+    if(e && e.name === "AbortError") return "AI trả lời quá lâu";
+    if(/401|invalid.*key|api key|x-api-key|authentication|permission|API_KEY_INVALID/i.test(m)) return "Khoá API không đúng hoặc đã bị thu hồi";
+    if(/model/i.test(m) && /not.?found|does not exist|invalid|unsupported|404/i.test(m)) return "Tên mô hình không dùng được";
+    if(/credit|billing|quota|insufficient|429|rate/i.test(m)) return "Hết hạn mức hoặc hết tiền trong tài khoản API";
+    if(/Failed to fetch|NetworkError|Load failed/i.test(m)) return "Không kết nối được";
+    return m.slice(0, 120) || "Lỗi không rõ";
+  }
+
+  /* ---------- gửi tin: có AI thì nhờ AI, không thì dùng bộ hiểu câu trên máy ---------- */
+  function localReply(text){
+    let res; try{ res = window.N50KParse.parse(text, chatCtx()); }catch(e){ res = { items:[], query:null, unknown:[text] }; }
+    const out = [];
+    if(res.query) out.push({ id:uid(), role:"bot", html:answer(res.query), t:Date.now() });
+    else if(res.items.length){
+      out.push({ id:uid(), role:"bot", items:res.items, status:res.items.map(() => "pending"), refs:res.items.map(() => null), t:Date.now() });
+      if(res.unknown.length) out.push({ id:uid(), role:"bot", html:"Phần \"" + esc(res.unknown.join(" ")) + "\" mình chưa thấy số tiền nên bỏ qua.", t:Date.now() });
+    }
+    else if(/^(chào|chao|hi|hello|alo|xin chào|hey)\b/i.test(text)) out.push({ id:uid(), role:"bot", html:"Chào bạn 😊 Hôm nay bạn tiêu gì rồi, kể mình nghe với.", t:Date.now() });
+    else if(/^(cảm ơn|cam on|thanks|thank|ok|oke|okay|được rồi)\b/i.test(text)) out.push({ id:uid(), role:"bot", html:"Có gì cứ nhắn mình nhé 💪", t:Date.now() });
+    else out.push({ id:uid(), role:"bot", html:HELP, t:Date.now() });
+    return out;
+  }
+  var aiBusy = false;
+  async function chatSend(text){
+    text = String(text || "").trim(); if(!text || aiBusy) return;
     if(!chat) chatLoad();
     chat.msgs.push({ id:uid(), role:"me", text, t:Date.now() });
-    let res; try{ res = window.N50KParse.parse(text, chatCtx()); }catch(e){ res = { items:[], query:null, unknown:[text] }; }
-    if(res.query) chat.msgs.push({ id:uid(), role:"bot", html:answer(res.query), t:Date.now() });
-    else if(res.items.length){
-      chat.msgs.push({ id:uid(), role:"bot", items:res.items, status:res.items.map(() => "pending"), refs:res.items.map(() => null), t:Date.now() });
-      if(res.unknown.length) chat.msgs.push({ id:uid(), role:"bot", html:"Phần \"" + esc(res.unknown.join(" ")) + "\" mình chưa thấy số tiền nên bỏ qua.", t:Date.now() });
+    if(!aiReady() || (navigator.onLine === false)){
+      chat.msgs.push(...localReply(text));
+      if(aiReady()) chat.msgs.push({ id:uid(), role:"bot", html:"<i>(Đang không có mạng, mình dùng bộ hiểu câu trên máy.)</i>", t:Date.now() });
+      chatSave(); renderChat(); chatScrollEnd(true); return;
     }
-    else if(/^(chào|chao|hi|hello|alo|xin chào|hey)\b/i.test(text)) chat.msgs.push({ id:uid(), role:"bot", html:"Chào bạn 😊 Hôm nay bạn tiêu gì rồi, kể mình nghe với.", t:Date.now() });
-    else if(/^(cảm ơn|cam on|thanks|thank|ok|oke|okay|được rồi)\b/i.test(text)) chat.msgs.push({ id:uid(), role:"bot", html:"Có gì cứ nhắn mình nhé 💪", t:Date.now() });
-    else chat.msgs.push({ id:uid(), role:"bot", html:HELP, t:Date.now() });
+    const wait = { id:uid(), role:"bot", html:'<span class="typing"><i></i><i></i><i></i></span>', thinking:true, t:Date.now() };
+    chat.msgs.push(wait); aiBusy = true; $("chatSend").disabled = true;
+    renderChat(); chatScrollEnd(true);
+    let msgs;
+    try{
+      const r = await aiCall(text);
+      msgs = [];
+      if(r.items.length) msgs.push({ id:uid(), role:"bot", items:r.items, intro:r.reply || "", status:r.items.map(() => "pending"), refs:r.items.map(() => null), t:Date.now(), ai:true });
+      if(r.query) msgs.push({ id:uid(), role:"bot", html:(r.reply && !r.items.length ? esc(r.reply) + "\n" : "") + answer(r.query), t:Date.now(), ai:true });
+      if(!r.items.length && !r.query) msgs.push({ id:uid(), role:"bot", html:esc(r.reply || "Mình chưa rõ ý bạn, kể lại giúp mình nhé?"), t:Date.now(), ai:true });
+    }catch(e){
+      msgs = localReply(text);
+      msgs.push({ id:uid(), role:"bot", html:"<i>(" + esc(aiErrText(e)) + ", mình dùng bộ hiểu câu trên máy. Kiểm tra ở Cài đặt → Trợ lý AI.)</i>", t:Date.now() });
+    }
+    aiBusy = false; chatGrow();
+    const i = chat.msgs.indexOf(wait); chat.msgs.splice(i < 0 ? chat.msgs.length : i, i < 0 ? 0 : 1, ...msgs);
     chatSave(); renderChat(); chatScrollEnd(true);
   }
+
+  /* ---------- Cài đặt → Trợ lý AI ---------- */
+  function renderAISet(){
+    const c = aiCfg(), P = AI_PROVIDERS[c.provider];
+    [...$("aiProv").children].forEach(b => b.setAttribute("aria-pressed", b.dataset.p === c.provider ? "true" : "false"));
+    $("aiKey").value = c.key || ""; $("aiKey").placeholder = P.keyHint;
+    $("aiModel").value = c.model || ""; $("aiModel").placeholder = P.model;
+    $("aiModels").innerHTML = P.models.map(m => '<option value="' + esc(m) + '">').join("");
+    $("aiWhere").textContent = "Lấy khoá ở: " + P.where;
+    $("aiOn").checked = !!c.on;
+    $("aiDel").hidden = !c.key;
+  }
+  function aiNav(){ const c = aiCfg(); return c.key ? AI_PROVIDERS[c.provider].name + (c.on ? " · bật" : " · tắt") : "chưa cài"; }
+  function aiSaveForm(){ const c = aiCfg(); c.key = $("aiKey").value.trim(); c.model = $("aiModel").value.trim(); c.on = $("aiOn").checked; aiSet(c); $("aiDel").hidden = !c.key; }
+  [...$("aiProv").children].forEach(b => b.onclick = () => { const c = aiCfg(); if(c.provider !== b.dataset.p){ c.provider = b.dataset.p; c.model = ""; c.key = (c.keys && c.keys[b.dataset.p]) || ""; } aiSet(c); renderAISet(); $("aiMsg").hidden = true; });
+  $("aiKey").addEventListener("change", () => { aiSaveForm(); const c = aiCfg(); c.keys = c.keys || {}; c.keys[c.provider] = c.key; aiSet(c); });
+  $("aiModel").addEventListener("change", aiSaveForm);
+  $("aiOn").addEventListener("change", aiSaveForm);
+  $("aiShow").onclick = () => { const k = $("aiKey"); k.type = k.type === "password" ? "text" : "password"; $("aiShow").textContent = k.type === "password" ? "Hiện" : "Ẩn"; };
+  $("aiDel").onclick = e => { if(!armed(e.currentTarget)) return; const c = aiCfg(); c.key = ""; if(c.keys) delete c.keys[c.provider]; aiSet(c); renderAISet(); flash("aiMsg", "✓ Đã xoá khoá khỏi máy này."); };
+  $("aiTest").onclick = async () => {
+    aiSaveForm();
+    const c = aiCfg(), b = $("aiTest"), msg = $("aiMsg");
+    if(!c.key){ msg.textContent = "Dán khoá API vào trước đã."; msg.className = "inline-ok warn"; msg.hidden = false; return; }
+    b.disabled = true; b.textContent = "Đang thử…"; msg.hidden = true;
+    try{
+      const r = await aiCall("trưa nay ăn phở 45k", c);
+      const it = r.items[0];
+      msg.className = "inline-ok"; msg.textContent = it ? "✓ Kết nối được với " + AI_PROVIDERS[c.provider].name + " (" + aiModel(c) + "). Thử câu \"trưa nay ăn phở 45k\" → " + KIND_LABEL[it.kind] + " " + fmt(it.amt) + (it.note ? " · " + it.note : "") + "." : "✓ Kết nối được, nhưng AI chưa trả về khoản nào. Thử đổi mô hình khác.";
+    }catch(e){ msg.className = "inline-ok warn"; msg.textContent = "Chưa được: " + aiErrText(e) + "."; }
+    msg.hidden = false; b.disabled = false; b.textContent = "Thử kết nối";
+  };
   function chatGrow(){ const ta = $("chatIn"); ta.style.height = "auto"; ta.style.height = Math.min(ta.scrollHeight, 140) + "px"; $("chatSend").disabled = !ta.value.trim(); }
   $("chatForm").addEventListener("submit", e => { e.preventDefault(); const ta = $("chatIn"); const v = ta.value; ta.value = ""; chatGrow(); chatSend(v); });
   $("chatIn").addEventListener("input", chatGrow);
   $("chatIn").addEventListener("keydown", e => { if(e.key === "Enter" && !e.shiftKey && !e.isComposing){ e.preventDefault(); $("chatForm").requestSubmit ? $("chatForm").requestSubmit() : $("chatSend").click(); } });
   function placeDock(){
     const dock = $("chatDock"), tabs = document.querySelector(".tabs"); if(!dock) return;
+    const atEnd = currentTab === "chat" && !$("tab-chat").hidden && window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 140;
     const vv = window.visualViewport, kb = document.body.classList.contains("kb") && vv;
     let b;
     if(kb){ b = Math.max(0, window.innerHeight - (vv.height + vv.offsetTop)) + 8; }
@@ -4434,6 +4690,7 @@ function startNgay50k(){
     /* chừa đủ chỗ cuối danh sách để tin cuối nằm ngay trên khung nhập: phần khung nhập chiếm từ đáy màn hình, trừ lề dưới sẵn có của trang */
     const mainPad = parseFloat(getComputedStyle(document.querySelector("main")).paddingBottom) || 0;
     document.documentElement.style.setProperty("--chat-pad", Math.max(0, b + dock.offsetHeight + 10 - mainPad) + "px");
+    if(atEnd) requestAnimationFrame(() => window.scrollTo(0, document.documentElement.scrollHeight));   /* đang ở cuối thì giữ ở cuối khi khung nhập đổi chỗ */
   }
   $("chatIn").addEventListener("focus", () => { document.body.classList.add("kb"); placeDock(); setTimeout(() => { placeDock(); chatScrollEnd(true); }, 350); });
   $("chatIn").addEventListener("blur", () => { document.body.classList.remove("kb"); setTimeout(placeDock, 60); });
@@ -4445,9 +4702,10 @@ function startNgay50k(){
   [...$("homeSeg").children].forEach(b => b.onclick = () => { lsSet(HOME_KEY, b.dataset.home); applyHome(); renderSetHome(); });
   /* bấm ô đầu tiên khi đang ở màn hình kia thì về màn hình mở đầu */
   N50K.onRemoteChat = null;
-  chatLoad(); applyHome(); renderChat(); chatGrow(); placeDock(); setTimeout(placeDock, 300);
+  chatLoad(); applyHome(); renderChat(); chatGrow();
   if(homeTab() === "wallet"){ currentTab = "wallet"; $("tab-chat").hidden = true; $("tab-wallet").hidden = false; }
   else { chatScrollEnd(false); setTimeout(() => chatScrollEnd(false), 350); }
+  placeDock(); setTimeout(placeDock, 300);
 
   /* ---------- lịch chi tiêu tháng (tab Tài khoản) ----------
      Mỗi ô là một ngày: số tiền chi hằng ngày trên tài khoản (không kể khoản định kỳ như tiền nhà, để một khoản lớn
@@ -6136,7 +6394,7 @@ function startNgay50k(){
   }
 
   /* ---- settings navigation ---- */
-  const SET_PAGES = ["setHome","setStart","setTheme","setScan","setBudget","setRecur","setPeople","setTags","setTagOne","setSync","setStore"];
+  const SET_PAGES = ["setHome","setStart","setAI","setTheme","setScan","setBudget","setRecur","setPeople","setTags","setTagOne","setSync","setStore"];
   let setPage = "setHome";
   function showSetPage(id, back){
     setPage = id;
@@ -6146,6 +6404,7 @@ function startNgay50k(){
     $("settings").scrollTop = 0;
     const h = el.querySelector("h2"); if(h) h.focus({ preventScroll:true });
     if(id === "setHome") renderSetHome();
+    if(id === "setAI") renderAISet();
     if(id === "setStore"){ renderStorage(); measureCache(); }
     if(id === "setTags") renderTagList();
     if(id === "setPeople"){ closeContactForm(); renderPeople(); }
@@ -6154,6 +6413,7 @@ function startNgay50k(){
   function renderSetHome(){
     $("navTheme").textContent = { auto:"Tự động", light:"Sáng", dark:"Tối", pastel:"Pastel" }[curTheme] || "Tự động";
     $("navStart").textContent = homeTab() === "chat" ? "Trò chuyện" : "Ví";
+    $("navAI").textContent = aiNav();
     $("navScan").textContent = scanMode === "live" ? "Quét trực tiếp" : "Camera iPhone";
     $("navBudget").textContent = fmt(state.budget) + "/ngày";
     $("navTags").textContent = allTags().length + " tag";
