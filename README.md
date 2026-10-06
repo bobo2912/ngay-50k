@@ -54,7 +54,7 @@ Hệ quả cần biết:
 
 - Xoá app khỏi màn hình chính, hoặc xoá dữ liệu trang web trong cài đặt trình duyệt, là **mất sạch**. Nhớ xuất file sao lưu. Ngoài file JSON còn xuất được CSV để mở bằng Excel.
 - Dữ liệu không tự đồng bộ giữa iPhone và máy tính. Muốn chuyển thì **Cài đặt → Sao lưu và đồng bộ → Xuất file**, mang file sang máy kia rồi **Nhập từ file**. Khi nhập có hai lựa chọn **Gộp** hoặc **Thay toàn bộ**, đều xem trước được thay đổi và hoàn tác được.
-- Sao lưu nhanh: app chép JSON vào bảng tạm rồi mở `shortcuts://run-shortcut?name=<tên>&input=clipboard`; phím tắt của người dùng lưu file vào iCloud Drive. Phím tắt không đọc được dữ liệu của app web, nên lượt nào cũng phải bắt đầu từ nút trong app.
+- Sao lưu nhanh có hai cách. Mặc định: `navigator.share` một file `ngay50k-yyyy-MM-dd.json`, người dùng chọn phím tắt (bật Hiện trong Bảng chia sẻ, đầu vào Tệp) ngay trong bảng chia sẻ, không rời app. Cách thứ hai: app chép JSON vào bảng tạm rồi mở `shortcuts://run-shortcut?name=<tên>&input=clipboard`; phím tắt của người dùng lưu file vào iCloud Drive. Phím tắt không đọc được dữ liệu của app web, nên lượt nào cũng phải bắt đầu từ nút trong app.
 - Dữ liệu được giữ vô thời hạn; app không tự xoá khoản cũ.
 - File sao lưu là JSON có chứa số tài khoản và tên người nhận. **Đừng bao giờ tải file đó lên GitHub** — kho này công khai.
 
