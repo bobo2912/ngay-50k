@@ -1,6 +1,17 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v72, ngày 06/10/2026
+**Phiên bản hiện tại:** v73, ngày 06/10/2026
+
+---
+
+## Có gì mới trong v73 (so với v72)
+
+**Cài đặt → Trợ lý AI → Chi phí đã dùng:** xem đã tốn bao nhiêu tiền gọi AI, chia theo Claude, ChatGPT, Gemini.
+
+- Mỗi loại hiện số lần gọi, số token vào và ra, mô hình đã dùng, số tiền bằng đồng và bằng USD; có dòng Tổng.
+- Xem theo **Tháng này** hoặc **Từ trước tới nay**.
+- Tự sửa được **tỉ giá USD** (mặc định 26.000đ).
+- Số tiền là ước tính theo bảng giá niêm yết của nhà cung cấp (tháng 10/2026), chỉ đếm các lần gọi từ máy này kể từ bản v73. Nút **Đặt lại bộ đếm** (chạm hai lần).
 
 ---
 
@@ -11,24 +22,13 @@
 
 ---
 
-## Có gì mới trong v71 (so với v70)
-
-**Chạm vào ô chat: chỉ ô nhập đi lên, đầu trang và Số dư ví đứng yên.**
-
-- Trước đây iPhone trượt cả trang lên để nhường chỗ cho bàn phím rồi app mới kéo đầu trang về, nên thấy cả màn hình giật lên rồi mới dính lại. Giờ ngay lúc chạm, app đặt sẵn ô nhập ở chỗ bàn phím sẽ hiện, iPhone không cần trượt trang nữa.
-- App nhớ chiều cao bàn phím của máy: lần chạm đầu tiên dùng số ước lượng, từ lần sau khớp đúng.
-- Ô nhập không còn bị thanh menu che: luôn nằm ngay trên thanh menu, có khe nhỏ.
-- Ô Số dư ví cách đầu trang một khoảng nhỏ, tin nhắn cuộn qua khe này được che đi.
-
----
-
 ## Tất cả tính năng của app
 
 ### Tab Trò chuyện (mở mặc định)
 - Kể chi tiêu, vay mượn, khoản thu bằng lời; app tách thành các thẻ xác nhận, bấm Ghi mới lưu, có Hoàn tác.
 - Hỏi nhanh: hôm nay tiêu bao nhiêu, ai còn nợ mình, số dư còn bao nhiêu…
 - Chọn Trò chuyện hay Ví làm màn hình mở đầu trong Cài đặt.
-- **Trợ lý AI** (tuỳ chọn): dùng khoá API Claude, ChatGPT hoặc Gemini để hiểu câu chính xác hơn; khoá chỉ lưu trên máy.
+- **Trợ lý AI** (tuỳ chọn): dùng khoá API Claude, ChatGPT hoặc Gemini để hiểu câu chính xác hơn; khoá chỉ lưu trên máy. Xem chi phí đã dùng theo từng nhà cung cấp trong Cài đặt.
 
 ### Tab Ví
 - **Số dư hiện tại** của ví, nợ thẻ và số còn lại sau khi trả thẻ.
@@ -125,6 +125,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v73** | Xem chi phí AI đã dùng theo từng nhà cung cấp |
 | **v72** | Sửa lỗi chạm ô chat không hiện bàn phím |
 | **v71** | Chạm ô chat chỉ đẩy ô nhập lên, ô nhập không bị menu che |
 | **v70** | Sửa lỗi AI Claude, đầu trang và số dư dính trong chat |
