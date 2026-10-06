@@ -1,6 +1,14 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v69, ngày 06/10/2026
+**Phiên bản hiện tại:** v70, ngày 06/10/2026
+
+---
+
+## Có gì mới trong v70 (so với v69)
+
+- **Sửa lỗi Trợ lý AI với Claude** ("tool_choice … not supported for this model"). Claude đời mới không cho ép trả kết quả qua công cụ; app chuyển sang yêu cầu JSON có cấu trúc (`output_config.format`). Mô hình nào chưa hỗ trợ thì app tự gửi lại kiểu thường và đọc JSON trong câu trả lời.
+- **Màn Trò chuyện: thanh đầu trang và ô Số dư ví luôn dính ở trên**, khi cuộn lẫn khi đang gõ.
+- Hàng gợi ý phía trên ô nhập có nền mờ dần, tin nhắn cuộn bên dưới không còn lẫn vào.
 
 ---
 
@@ -11,17 +19,6 @@
 - Giờ khi đang gõ, màn chat lấp đúng phần màn hình còn lại phía trên bàn phím: tin nhắn cuộn bên trong, tin mới nhất nằm ngay trên khung nhập, khung nhập nằm sát bàn phím, giống các app nhắn tin.
 - Đóng bàn phím là về bố cục thường, khung nhập lại nằm sát trên thanh menu.
 - Sửa thêm: trạng thái "tưởng đang gõ" bị kẹt giờ tự hết hẳn, khung nhập về đúng chỗ.
-
----
-
-## Có gì mới trong v68 (so với v67)
-
-**Sửa lỗi khung nhập chat bị đẩy lên đầu màn hình khi quay lại Trò chuyện.** Đang mở bàn phím mà chạm sang tab khác, iPhone đôi khi không báo ô nhập đã thôi được chọn, nên app tưởng bàn phím vẫn mở: khung nhập treo ở trên cao, có lúc thanh menu còn bị ẩn.
-
-- Rời màn chat là bỏ chọn ô nhập (đóng bàn phím).
-- Quay lại chat, mở lại app từ nền, chạm vào màn hình: app đo lại vị trí từ đầu.
-- App tự kiểm tra lại mỗi vài giây; trạng thái lệch tự hết mà không cần bấm gì.
-- Vị trí đo được mà bất thường thì dùng vị trí mặc định ngay trên thanh menu.
 
 ---
 
@@ -128,7 +125,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v70** | Sửa lỗi AI Claude, đầu trang và số dư dính trong chat |
 | **v69** | Mở bàn phím trong chat không mất phần trên |
-| **v68** | Sửa khung nhập chat bị đẩy lên đầu màn hình |
 
 *File này chỉ giữ ghi chú của hai bản gần nhất.*
