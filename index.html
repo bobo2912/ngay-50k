@@ -1597,11 +1597,12 @@ html{scroll-padding-top:var(--head-h, 100px)}
             <li>Xoá các tác vụ <b>Lấy bảng tạm</b>, <b>Đặt tên</b>, <b>Văn bản</b>, <b>Sao chép vào bảng tạm</b>. App đã đặt sẵn tên file theo ngày.</li>
             <li>Ở tác vụ <b>Lưu tệp</b>, chạm vào ô đang chọn, đổi thành <b>Đầu vào phím tắt</b> (Shortcut Input). Giữ <b>Hỏi nơi lưu</b> tắt, <b>Ghi đè</b> bật, thư mục iCloud Drive như cũ.</li>
             <li>Giữ <b>Hiện thông báo</b> nếu muốn.</li>
-            <li>Lần đầu bấm nút dưới đây, trong bảng chia sẻ kéo dàn ứng dụng sang phải, chọn <b>Sửa</b>, ghim phím tắt lên đầu cho lần sau chạm nhanh.</li>
+            <li>Bấm nút dưới đây. Trong bảng chia sẻ, phím tắt nằm ở danh sách tác vụ phía dưới: bấm <b>Xem thêm</b> (View More), kéo xuống, chạm vào phím tắt.</li>
+            <li>Ghim cho lần sau: cuối danh sách đó chọn <b>Sửa tác vụ…</b> (Edit Actions), bấm <b>+</b> cạnh phím tắt để thêm vào <b>Mục ưa thích</b>. Từ đó nó nằm ngay hàng dưới, cạnh <i>Lưu vào Tệp</i>.</li>
           </ol>
         </div>
         <div id="scHowOpen" hidden>
-          <b>Cài một lần trong app Phím tắt (cách Mở Phím tắt):</b>
+          <b>Cài một lần trong app Phím tắt (cách Mở Phím tắt):</b> cách này cần một phím tắt <b>khác</b>, nhận dữ liệu từ bảng tạm. Phím tắt đã sửa cho cách Bảng chia sẻ sẽ không chạy được ở đây.
           <ol class="sc-steps">
             <li>Tạo phím tắt, đặt tên đúng như ô bên dưới.</li>
             <li>Thêm <b>Lấy bảng tạm</b>, rồi <b>Đặt tên</b>: <code>ngay50k-</code> + <b>Ngày hiện tại</b> (định dạng <code>yyyy-MM-dd</code>) + <code>.json</code>.</li>
@@ -1654,7 +1655,7 @@ html{scroll-padding-top:var(--head-h, 100px)}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v61</p>
+      <p class="sync" id="appVersion">Phiên bản v62</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Xoá dữ liệu</h4>
@@ -6106,15 +6107,20 @@ function startNgay50k(){
       try{ await navigator.clipboard.writeText(text); ok = true; }catch(e){}
     }
     if(!ok){ showSyncErr("Chưa chép được bản sao lưu. Hãy dùng nút Xuất file sao lưu."); return false; }
-    let left = false;
-    const onHide = () => { if(document.hidden) left = true; };
+    /* iPhone có thể hỏi "Mở trong Phím tắt?" trước khi chuyển app, nên chờ lâu và không báo lỗi vội:
+       hễ app bị ẩn (đã sang Phím tắt) trong 30 giây là tính thành công, kể cả khi đã hiện câu báo trước đó */
+    let left = false, warnT = null;
+    const onHide = () => {
+      if(!document.hidden || left) return;
+      left = true; clearTimeout(warnT); $("syncErr").hidden = true;
+      doneExport("✓ Đã chuyển bản sao lưu sang Phím tắt “" + scName() + "”.");
+    };
     document.addEventListener("visibilitychange", onHide);
+    setTimeout(() => document.removeEventListener("visibilitychange", onHide), 30000);
     openURL("shortcuts://run-shortcut?name=" + encodeURIComponent(scName()) + "&input=clipboard");
-    setTimeout(() => {
-      document.removeEventListener("visibilitychange", onHide);
-      if(left){ doneExport("✓ Đã chuyển bản sao lưu sang Phím tắt “" + scName() + "”."); }
-      else showSyncErr("Chưa mở được Phím tắt. Kiểm tra đã tạo phím tắt tên “" + scName() + "” chưa (xem ⓘ). Bản sao lưu đang nằm trong bảng tạm.");
-    }, 1500);
+    warnT = setTimeout(() => {
+      if(!left) showSyncErr("Chưa thấy Phím tắt mở. Nếu iPhone đang hỏi, chọn Mở. Nếu không có gì hiện ra, kiểm tra tên phím tắt “" + scName() + "” (xem ⓘ).");
+    }, 6000);
     return true;
   }
   $("scName").value = lsGet(SC_KEY) || "";

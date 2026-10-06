@@ -1,6 +1,14 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v61, ngày 06/10/2026
+**Phiên bản hiện tại:** v62, ngày 06/10/2026
+
+---
+
+## Có gì mới trong v62 (so với v61)
+
+- **Hết báo lỗi nhầm "Chưa mở được Phím tắt".** Lần đầu iPhone hỏi "Mở trong Phím tắt?" nên app chuyển chậm; trước đây app chỉ chờ 1,5 giây rồi báo lỗi dù phím tắt vẫn chạy. Giờ app chờ lâu hơn, và hễ đã sang Phím tắt là xoá cảnh báo, tính là đã sao lưu.
+- **Hướng dẫn ⓘ chỉ đúng chỗ phím tắt trong bảng chia sẻ:** nằm ở *Xem thêm* (View More), ghim bằng *Sửa tác vụ… → +* vào Mục ưa thích.
+- Ghi rõ cách *Mở Phím tắt* cần một phím tắt riêng nhận từ bảng tạm.
 
 ---
 
@@ -11,15 +19,6 @@
 - Thêm cách chạy **Bảng chia sẻ** (mặc định): bấm nút, bảng chia sẻ hiện lên với file `ngay50k-yyyy-MM-dd.json`, chạm vào phím tắt. Phím tắt chạy ngay trong app, lưu vào iCloud Drive, xong vẫn ở app. Không dùng bảng tạm nên iPhone không hỏi dán.
 - Cách cũ **Mở Phím tắt** vẫn còn, chọn được bằng nút gạt. Hướng dẫn ⓘ đổi theo cách đang chọn, kèm cách tắt câu hỏi "Allow Paste" trong Cài đặt iPhone.
 - Huỷ bảng chia sẻ thì không báo lỗi và không tính là đã sao lưu.
-
----
-
-## Có gì mới trong v60 (so với v59)
-
-**Sửa lỗi không chuyển được tháng trong lịch chi tiêu.** Vào tab Tài khoản rồi bấm ‹ hoặc › thì không có gì xảy ra: lúc chuyển tab, app đặt lịch về tháng hiện tại nhưng chưa vẽ lại, nên nút chuyển tháng bị lỗi.
-
-- Giờ vào tab là lịch hiện tháng này và bấm ‹ › được ngay.
-- Nút › bị khoá ở tháng hiện tại (không xem được tháng tương lai).
 
 ---
 
@@ -120,7 +119,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v62** | Sửa báo lỗi nhầm khi mở Phím tắt, hướng dẫn ghim phím tắt |
 | **v61** | Sao lưu bằng Phím tắt qua bảng chia sẻ, không rời app |
-| **v60** | Sửa lỗi không chuyển được tháng trong lịch chi tiêu |
 
 *File này chỉ giữ ghi chú của hai bản gần nhất.*
