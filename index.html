@@ -1459,8 +1459,8 @@ header{margin-top:6px}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v46</p>
-      <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. Giới hạn khoảng 5 MB được tính chung cho các mini app cùng tài khoản GitHub.</p>
+      <p class="sync" id="appVersion">Phiên bản v47</p>
+      <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Xoá dữ liệu</h4>
       <div class="set-row"><button class="ghost danger grow" id="clearToday">Xoá hết khoản chi hôm nay</button></div>
@@ -1814,7 +1814,124 @@ header{margin-top:6px}
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
 <script src="vendor/jsQR.js"></script>
 <script>
-(function(){
+/* ---------- kho dữ liệu ----------
+   Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
+   App đọc hết vào bộ nhớ một lần khi mở, sau đó mọi lần lưu được ghi xuống IndexedDB ngay, lần ghi dồn dập được gộp lại.
+   Lần đầu mở bản này: dữ liệu cũ trong localStorage được chép sang, đọc lại để chắc chắn khớp rồi mới xoá bản cũ.
+   Máy nào không mở được IndexedDB (hoặc treo quá 4 giây) thì app lưu kiểu cũ vào localStorage, lần sau mở lại sẽ thử chuyển tiếp. */
+window.N50K = (function(){
+  var DB_NAME = "ngay50k", STORE = "kv", MAIN = "ngay50k:v1", KEYS = [MAIN, "ngay50k:beforeImport"];
+  var mem = {}, sizes = {}, db = null, mode = "ls", chan = null, dirty = {}, writing = null;
+  var api = { onError: null, onRemote: null };
+  function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+  function lsSet(k, v){ try{ localStorage.setItem(k, v); return true; }catch(e){ return false; } }
+  function lsDel(k){ try{ localStorage.removeItem(k); }catch(e){} }
+  function updatedOf(raw){ try{ return Number(JSON.parse(raw).updated) || 0; }catch(e){ return -1; } }
+  function open(){
+    return new Promise(function(res, rej){
+      if(!window.indexedDB) return rej(new Error("no indexedDB"));
+      var done = false, timer = setTimeout(function(){ if(!done){ done = true; rej(new Error("timeout")); } }, 4000);
+      try{
+        var r = indexedDB.open(DB_NAME, 1);
+        r.onupgradeneeded = function(){ if(!r.result.objectStoreNames.contains(STORE)) r.result.createObjectStore(STORE); };
+        r.onsuccess = function(){
+          clearTimeout(timer);
+          if(done){ try{ r.result.close(); }catch(e){} return; }
+          done = true;
+          var d = r.result;
+          d.onversionchange = function(){ try{ d.close(); }catch(e){} if(db === d) db = null; };
+          d.onclose = function(){ if(db === d) db = null; };
+          res(d);
+        };
+        r.onerror = function(){ clearTimeout(timer); if(!done){ done = true; rej(r.error); } };
+      }catch(e){ clearTimeout(timer); done = true; rej(e); }
+    });
+  }
+  function run(rw, fn){
+    return new Promise(function(res, rej){
+      var t = db.transaction(STORE, rw ? "readwrite" : "readonly"), out = fn(t.objectStore(STORE));
+      t.oncomplete = function(){ res(out); };
+      t.onerror = t.onabort = function(){ rej(t.error || new Error("transaction aborted")); };
+    });
+  }
+  function idbGet(k){ return run(false, function(st){ return st.get(k); }).then(function(r){ var v = r.result; return v == null ? null : v; }); }
+  function idbPut(k, v){ return run(true, function(st){ if(v == null) st.delete(k); else st.put(v, k); }); }
+  function idbPutMany(keys){ return run(true, function(st){ keys.forEach(function(k){ if(mem[k] == null) st.delete(k); else st.put(mem[k], k); }); }); }
+  /* iOS đôi khi làm rớt kết nối IndexedDB khi app nằm nền lâu: mở lại một lần rồi thử ghi lại. */
+  function writeKeys(keys){
+    var go = function(){ return (db ? Promise.resolve(db) : open().then(function(d){ db = d; return d; })).then(function(){ return idbPutMany(keys); }); };
+    return go().catch(function(){ db = null; return go(); });
+  }
+  function fallback(keys){
+    var ok = true;
+    keys.forEach(function(k){ if(mem[k] == null) lsDel(k); else if(!lsSet(k, mem[k])) ok = false; });
+    mode = "ls";
+    if(!ok && api.onError) api.onError("Máy hết chỗ lưu dữ liệu. Hãy xuất file sao lưu ngay.");
+  }
+  function flush(){
+    if(writing) return writing;
+    var keys = Object.keys(dirty);
+    if(!keys.length) return Promise.resolve();
+    dirty = {};
+    if(mode !== "idb"){ fallback(keys); return Promise.resolve(); }
+    writing = writeKeys(keys).then(function(){
+      if(chan){ var msg = {}; keys.forEach(function(k){ msg[k] = mem[k]; }); try{ chan.postMessage(msg); }catch(e){} }
+    }, function(){ fallback(keys); }).then(function(){
+      writing = null;
+      if(Object.keys(dirty).length) return flush();
+    });
+    return writing;
+  }
+  api.get = function(k){ return k in mem ? mem[k] : null; };
+  api.set = function(k, v){
+    mem[k] = v; sizes[k] = null; dirty[k] = 1;
+    if(mode !== "idb"){ var ok = lsSet(k, v); dirty = {}; if(!ok && api.onError) api.onError("Máy hết chỗ lưu dữ liệu. Hãy xuất file sao lưu ngay."); return; }
+    flush();
+  };
+  api.del = function(k){ delete mem[k]; delete sizes[k]; if(mode !== "idb"){ lsDel(k); return; } dirty[k] = 1; lsDel(k); flush(); };
+  api.flush = flush;
+  api.mode = function(){ return mode; };
+  /* số byte thật của dữ liệu đang giữ (chữ tiếng Việt có dấu chiếm hơn 1 byte) */
+  api.bytes = function(){
+    var n = 0;
+    for(var k in mem){ if(sizes[k] == null){ try{ sizes[k] = new Blob([mem[k]]).size; }catch(e){ sizes[k] = mem[k].length * 2; } } n += sizes[k]; }
+    return n;
+  };
+  function listen(){
+    if(!("BroadcastChannel" in window)) return;
+    try{
+      chan = new BroadcastChannel("ngay50k-data");
+      chan.onmessage = function(e){
+        var d = e.data || {};
+        for(var k in d){ if(d[k] == null) delete mem[k]; else mem[k] = d[k]; sizes[k] = null; if(api.onRemote) api.onRemote(k); }
+      };
+    }catch(e){ chan = null; }
+  }
+  async function migrate(){
+    for(var i = 0; i < KEYS.length; i++){
+      var k = KEYS[i], inDb = await idbGet(k), inLs = lsGet(k), val = inDb;
+      if(inLs != null){
+        /* bản trong localStorage mới hơn khi: chưa chuyển lần nào, hoặc lần trước phải lưu tạm vào localStorage */
+        if(inDb == null || (k === MAIN && updatedOf(inLs) > updatedOf(inDb))){ await idbPut(k, inLs); val = inLs; }
+        if(await idbGet(k) === val) lsDel(k);
+        else throw new Error("verify failed");
+      }
+      if(val != null) mem[k] = val;
+    }
+  }
+  api.ready = open().then(function(d){ db = d; mode = "idb"; return migrate(); }).catch(function(){
+    mode = "ls"; mem = {};
+    KEYS.forEach(function(k){ var v = lsGet(k); if(v != null) mem[k] = v; });
+  }).then(function(){
+    listen();
+    document.addEventListener("visibilitychange", function(){ if(document.hidden) flush(); });
+    window.addEventListener("pagehide", function(){ flush(); });
+  });
+  return api;
+})();
+</script>
+<script>
+function startNgay50k(){
   /* ---------- constants ---------- */
   const TAG_LIB = [
     {id:"an",label:"Ăn",icon:"🍜"},{id:"uong",label:"Uống",icon:"🧋"},{id:"dilai",label:"Đi lại",icon:"🛵"},
@@ -1904,7 +2021,7 @@ header{margin-top:6px}
     };  /* caps: giữ lại cho dữ liệu cũ, không còn dùng */
   }
   function loadLocal(){
-    try{ const raw = localStorage.getItem(LS_KEY); if(raw) state = normalize(JSON.parse(raw)); }catch(e){}
+    try{ const raw = N50K.get(LS_KEY); if(raw) state = normalize(JSON.parse(raw)); }catch(e){}
     sigs = collectSigs(state);
   }
   /* ---------- change tracking: lets two devices merge without losing edits or reviving deletions ---------- */
@@ -1943,8 +2060,7 @@ header{margin-top:6px}
     /* không xoá dữ liệu cũ: so sánh năm nay với năm ngoái là thứ đáng giá nhất của một sổ chi tiêu */
     track();
     state.updated = Date.now();
-    try{ localStorage.setItem(LS_KEY, JSON.stringify(state)); }
-    catch(e){ showSyncErr("Máy hết chỗ lưu dữ liệu. Hãy xuất file sao lưu ngay."); }
+    N50K.set(LS_KEY, JSON.stringify(state));
   }
   const todays = () => state.days[todayKey()] || [];
   const sumOf = items => (items||[]).reduce((a,b)=>a+(Number(b.amt)||0),0);
@@ -4876,9 +4992,21 @@ header{margin-top:6px}
   }
   /* ---------- storage usage ---------- */
   const LS_LIMIT = 5 * 1024 * 1024;
-  function kb(n){ return n < 1024 ? n + " byte" : n < 1024*1024 ? (n/1024).toFixed(n < 10240 ? 1 : 0).replace(".", ",") + " KB" : (n/1048576).toFixed(1).replace(".", ",") + " MB"; }
-  let cacheBytes = null;
+  function kb(n){
+    if(n < 1024) return n + " byte";
+    if(n < 1048576) return (n/1024).toFixed(n < 10240 ? 1 : 0).replace(".", ",") + " KB";
+    if(n < 1073741824) return (n/1048576).toFixed(1).replace(".", ",") + " MB";
+    return (n/1073741824).toFixed(1).replace(".", ",") + " GB";
+  }
+  let cacheBytes = null, quota = null, usage = null, persisted = null;
   async function measureCache(){
+    try{
+      if(navigator.storage && navigator.storage.estimate){
+        const e = await navigator.storage.estimate();
+        quota = Number(e.quota) || null; usage = e.usage == null ? null : Number(e.usage);
+      }
+      if(navigator.storage && navigator.storage.persisted) persisted = await navigator.storage.persisted();
+    }catch(e){}
     try{
       if(!("caches" in window)) return;
       let total = 0;
@@ -4887,23 +5015,40 @@ header{margin-top:6px}
         const c = await caches.open(name);
         for(const req of await c.keys()){ const r = await c.match(req); if(r) total += (await r.clone().blob()).size; }
       }
-      cacheBytes = total; renderStorage();
+      cacheBytes = total;
     }catch(e){}
+    renderStorage();
   }
   function renderStorage(){
     if($("navStore") && setPage === "setHome") setTimeout(renderSetHome, 0);
-    let data = 0, all = 0;
+    /* dữ liệu chính trong IndexedDB + vài cài đặt nhỏ còn để trong localStorage */
+    let data = N50K.mode() === "idb" ? N50K.bytes() : 0, lsAll = 0;
     try{
       for(let i = 0; i < localStorage.length; i++){
         const k = localStorage.key(i), v = localStorage.getItem(k) || "";
         const n = (k.length + v.length) * 2;
-        all += n; if(k.indexOf("ngay50k:") === 0) data += n;
+        lsAll += n; if(k.indexOf("ngay50k") === 0) data += n;
       }
     }catch(e){}
-    const pct = all / LS_LIMIT * 100;
-    $("storBar").style.width = Math.min(pct, 100) + "%";
+    let pct, text;
+    if(N50K.mode() === "idb"){
+      if(quota){
+        const used = usage != null ? usage : data + (cacheBytes || 0);
+        pct = used / quota * 100;
+        text = "Đã dùng " + (pct < 1 ? "dưới 1" : Math.round(pct)) + "% chỗ lưu máy cho phép (khoảng " + kb(quota) + ").";
+      } else {
+        pct = 0;
+        text = "Dữ liệu lưu trong IndexedDB, không còn giới hạn 5 MB như trước.";
+      }
+      if(persisted) text += " Máy đã cho phép giữ dữ liệu lâu dài.";
+    } else {
+      pct = lsAll / LS_LIMIT * 100;
+      text = "Đã dùng " + (pct < 1 ? "dưới 1" : Math.round(pct)) + "% chỗ lưu dữ liệu (khoảng 5 MB). Máy này chưa mở được IndexedDB nên vẫn lưu kiểu cũ.";
+    }
+    if(pct >= 80) text += " Sắp đầy, hãy xuất file sao lưu.";
+    $("storBar").style.width = Math.min(Math.max(pct, 0), 100) + "%";
     $("storBar").parentNode.classList.toggle("warn", pct >= 80);
-    $("storPct").textContent = "Đã dùng " + (pct < 1 ? "dưới 1" : Math.round(pct)) + "% chỗ lưu dữ liệu (khoảng 5 MB)." + (pct >= 80 ? " Sắp đầy, hãy xuất file sao lưu." : "");
+    $("storPct").textContent = text;
     $("storData").textContent = kb(data);
     $("storCache").textContent = cacheBytes == null ? "–" : kb(cacheBytes);
   }
@@ -5243,21 +5388,21 @@ header{margin-top:6px}
     r.readAsText(f);
   });
   function applyImport(next, label){
-    lsSet(UNDO_KEY, JSON.stringify(state));
+    N50K.set(UNDO_KEY, JSON.stringify(state));
     const d = diffCount(state, next);
     state = next; sigs = collectSigs(state); state.updated = Date.now();
-    if(!lsSet(LS_KEY, JSON.stringify(state))){ showSyncErr("Máy hết chỗ lưu dữ liệu."); return; }
+    N50K.set(LS_KEY, JSON.stringify(state));
     pending = null; $("importCard").hidden = true;
     viewDay = null; renderAll();
     showSyncOk("✓ " + label + ": " + diffText(d) + ".<button class=\"undo-btn\" id=\"undoImport\">Hoàn tác</button>");
     $("undoImport").onclick = undoImport;
   }
   function undoImport(){
-    const raw = lsGet(UNDO_KEY); if(!raw) return;
+    const raw = N50K.get(UNDO_KEY); if(!raw) return;
     try{
       state = normalize(JSON.parse(raw)); sigs = collectSigs(state);
-      lsSet(LS_KEY, JSON.stringify(state));
-      try{ localStorage.removeItem(UNDO_KEY); }catch(e){}
+      N50K.set(LS_KEY, JSON.stringify(state));
+      N50K.del(UNDO_KEY);
       renderAll(); showSyncOk("✓ Đã hoàn tác, dữ liệu trở lại như trước khi nhập.");
     }catch(e){ showSyncErr("Không hoàn tác được."); }
   }
@@ -5289,12 +5434,15 @@ header{margin-top:6px}
     try{
       Object.keys(localStorage).filter(k => k.indexOf("ngay50k:") === 0).forEach(k => localStorage.removeItem(k));
     }catch(e){}
+    N50K.del(LS_KEY); N50K.del(UNDO_KEY);
     state = normalize({}); sigs = collectSigs(state); pending = null;
     viewDay = null; $("importCard").hidden = true; $("wipeCard").hidden = true;
     $("syncMsg").hidden = true; $("syncErr").hidden = true;
     renderAll(); flash("wipeMsg", "✓ Đã xoá toàn bộ dữ liệu trên máy này.");
   };
-  window.addEventListener("storage", e => { if(e.key === LS_KEY){ loadLocal(); renderAll(); } });
+  /* app mở ở hai cửa sổ cùng lúc: cửa sổ kia lưu thì cửa sổ này cập nhật theo */
+  N50K.onRemote = k => { if(k === LS_KEY){ loadLocal(); renderAll(); } };
+  N50K.onError = msg => showSyncErr(msg);
   const rcMade = runRecur();
   renderAll();
   if(rcMade) flash("scanMsg", "✓ Đã ghi " + rcMade + " khoản định kỳ của kỳ này");
@@ -5313,8 +5461,9 @@ header{margin-top:6px}
     const hadController = !!navigator.serviceWorker.controller;
     $("reloadBtn").onclick = () => location.reload();
   }
-  if(navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(()=>{});
-})();
+  if(navigator.storage && navigator.storage.persist) navigator.storage.persist().then(v => { persisted = v; }).catch(()=>{});
+}
+N50K.ready.then(startNgay50k);
 </script>
 </body>
 </html>
