@@ -1636,7 +1636,7 @@ html{scroll-padding-top:var(--head-h, 100px)}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v59</p>
+      <p class="sync" id="appVersion">Phiên bản v60</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Xoá dữ liệu</h4>
@@ -3692,7 +3692,7 @@ function startNgay50k(){
   function resetTab(name){
     if(name === "wallet"){ flowLimit = 30; renderBalance(); }
     else if(name === "today"){
-      calMonth = null;
+      calMonth = null; renderCal();
       viewDay = null;
       if(!$("formBox").hidden) closeForm();
       msg("");
@@ -4089,8 +4089,14 @@ function startNgay50k(){
         + (fixed ? ". Chưa kể khoản định kỳ " + fmt(fixed) + "." : "")
       : fixed ? "Chỉ có khoản định kỳ " + fmt(fixed) + " trong tháng này." : "Chưa có khoản chi nào trong tháng này.";
   }
-  $("calPrev").onclick = () => { calMonth = new Date(calMonth.getFullYear(), calMonth.getMonth() - 1, 1); renderCal(); };
-  $("calNext").onclick = () => { if(!$("calNext").disabled){ calMonth = new Date(calMonth.getFullYear(), calMonth.getMonth() + 1, 1); renderCal(); } };
+  function calShift(n){
+    const base = calMonth || (() => { const d = new Date(); d.setDate(1); return d; })();
+    const next = new Date(base.getFullYear(), base.getMonth() + n, 1), now = new Date();
+    if(next.getFullYear() * 12 + next.getMonth() > now.getFullYear() * 12 + now.getMonth()) return;   /* không sang tháng tương lai */
+    calMonth = next; renderCal();
+  }
+  $("calPrev").onclick = () => calShift(-1);
+  $("calNext").onclick = () => calShift(1);
 
   /* ---------- số dư ví: hiển thị, đối chiếu, trả thẻ ----------
      (dùng var và function: renderAll() chạy lần đầu trước khi tới đoạn này) */

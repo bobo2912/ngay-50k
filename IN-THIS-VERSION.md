@@ -1,6 +1,15 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v59, ngày 06/10/2026
+**Phiên bản hiện tại:** v60, ngày 06/10/2026
+
+---
+
+## Có gì mới trong v60 (so với v59)
+
+**Sửa lỗi không chuyển được tháng trong lịch chi tiêu.** Vào tab Tài khoản rồi bấm ‹ hoặc › thì không có gì xảy ra: lúc chuyển tab, app đặt lịch về tháng hiện tại nhưng chưa vẽ lại, nên nút chuyển tháng bị lỗi.
+
+- Giờ vào tab là lịch hiện tháng này và bấm ‹ › được ngay.
+- Nút › bị khoá ở tháng hiện tại (không xem được tháng tương lai).
 
 ---
 
@@ -13,22 +22,6 @@
 - Đặt được tên phím tắt riêng; app nhớ tên này.
 - Tick **Nút Sao lưu trong lời nhắc dùng cách này** thì khi app nhắc "đã lâu chưa sao lưu", bấm **Sao lưu** là chạy luôn phím tắt.
 - Không mở được phím tắt (chưa tạo, sai tên) thì app báo rõ.
-
----
-
-## Có gì mới trong v58 (so với v57)
-
-**Tab Tài khoản chỉ lo chi tiêu trên tài khoản.**
-
-- Bỏ hai dòng *Số dư ví* và *Thẻ tháng này* khỏi thẻ *Hôm nay còn được tiêu*. Số dư vẫn xem ở tab Ví, chi thẻ ở tab Thẻ.
-
-**Lịch chi tiêu tháng** ở cuối tab Tài khoản.
-
-- Mỗi ô là một ngày, ghi số đã chi (vd 43k, 1,2tr). Màu càng đậm là chi càng nhiều so với ngày chi nhiều nhất trong tháng; có thang màu Ít → Nhiều bên dưới.
-- ★ đánh dấu ngày chi nhiều nhất, gạch đỏ dưới ô là ngày vượt hạn mức, viền đậm là hôm nay.
-- Dòng tóm tắt: tổng đã chi, số ngày có chi, ngày chi nhiều nhất và bao nhiêu, số ngày vượt hạn mức.
-- Khoản định kỳ (tiền nhà, tiền mạng…) không tô vào lịch để một khoản lớn không làm mọi ngày khác nhạt đi; tổng của chúng ghi riêng ở dòng tóm tắt.
-- Chạm một ngày để xem danh sách khoản chi ngày đó. Lùi, tiến để xem tháng khác.
 
 ---
 
@@ -129,7 +122,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v60** | Sửa lỗi không chuyển được tháng trong lịch chi tiêu |
 | **v59** | Sao lưu nhanh bằng Phím tắt iPhone |
-| **v58** | Lịch chi tiêu tháng ở tab Tài khoản, bỏ số dư ví và thẻ khỏi tab này |
 
 *File này chỉ giữ ghi chú của hai bản gần nhất.*
