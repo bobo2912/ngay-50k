@@ -1,6 +1,17 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v67, ngày 06/10/2026
+**Phiên bản hiện tại:** v68, ngày 06/10/2026
+
+---
+
+## Có gì mới trong v68 (so với v67)
+
+**Sửa lỗi khung nhập chat bị đẩy lên đầu màn hình khi quay lại Trò chuyện.** Đang mở bàn phím mà chạm sang tab khác, iPhone đôi khi không báo ô nhập đã thôi được chọn, nên app tưởng bàn phím vẫn mở: khung nhập treo ở trên cao, có lúc thanh menu còn bị ẩn.
+
+- Rời màn chat là bỏ chọn ô nhập (đóng bàn phím).
+- Quay lại chat, mở lại app từ nền, chạm vào màn hình: app đo lại vị trí từ đầu.
+- App tự kiểm tra lại mỗi vài giây; trạng thái lệch tự hết mà không cần bấm gì.
+- Vị trí đo được mà bất thường thì dùng vị trí mặc định ngay trên thanh menu.
 
 ---
 
@@ -8,20 +19,6 @@
 
 - **Hết giật khi cuộn màn Trò chuyện.** Trước đây mỗi lần cuộn, app đặt lại vị trí khung nhập và kéo màn hình về cuối nếu đang ở gần cuối, giành thao tác cuộn của bạn. Giờ app chỉ làm việc đó khi khung nhập thật sự đổi chỗ (bật/tắt bàn phím).
 - **Mỗi lần mở app là một cuộc trò chuyện mới** cho gọn. App nằm nền quá 30 phút rồi quay lại cũng bắt đầu mới. Các khoản đã ghi vẫn còn nguyên trong dữ liệu.
-
----
-
-## Có gì mới trong v66 (so với v65)
-
-**Trợ lý AI cho Trò chuyện: dùng khoá API của Claude, ChatGPT hoặc Gemini.**
-
-- **Cài đặt → Trợ lý AI:** chọn nhà cung cấp, dán khoá API, (tuỳ chọn) đổi mô hình, bấm **Thử kết nối**. Mặc định: Claude Sonnet 5.5, ChatGPT gpt-5-mini, Gemini gemini-flash-latest.
-- Khoá **chỉ lưu trên máy này**: không nằm trong mã trên GitHub, không vào file sao lưu. Có nút Xoá khoá.
-- Bật AI thì mỗi câu chat được AI hiểu (kèm ngữ cảnh: hôm nay là ngày nào, tên thẻ, khoản vay đang có, nhóm chi, nội dung quen dùng, vài câu vừa nói) rồi vẫn hiện **thẻ xác nhận** như cũ, bấm Ghi mới lưu.
-- AI chỉ lo hiểu câu; số liệu trả lời (đã chi, còn nợ, số dư) do app tự tính trên máy nên không bị AI đọc sai.
-- App kiểm tra lại mọi thứ AI trả về: bỏ khoản lạ, số tiền âm; sửa nhóm, ngày, thẻ, khoản vay không khớp.
-- Mất mạng, khoá sai, hết tiền API hoặc AI trả lời quá 25 giây thì tự dùng bộ hiểu câu trên máy và ghi rõ lý do.
-- Đầu màn chat có nhãn **✦ AI · Claude** (hoặc ChatGPT/Gemini) khi AI đang bật.
 
 ---
 
@@ -128,7 +125,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v68** | Sửa khung nhập chat bị đẩy lên đầu màn hình |
 | **v67** | Hết giật khi cuộn chat, mở app là trò chuyện mới |
-| **v66** | Trợ lý AI: khoá API Claude / ChatGPT / Gemini lưu trên máy |
 
 *File này chỉ giữ ghi chú của hai bản gần nhất.*

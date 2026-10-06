@@ -1745,7 +1745,7 @@ body.kb .tabs{display:none}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v67</p>
+      <p class="sync" id="appVersion">Phiên bản v68</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Xoá dữ liệu</h4>
@@ -3830,13 +3830,14 @@ function startNgay50k(){
   }
   function showTab(name){
     if(name !== currentTab){ clearSearch(); resetTab(name); }
+    if(name !== "chat" && document.activeElement === $("chatIn")){ $("chatIn").blur(); document.body.classList.remove("kb"); }
     currentTab = name;
     /* Trò chuyện và Ví dùng chung ô đầu tiên của thanh tab */
     const slot = (name === "chat" || name === "wallet") ? "first" : name;
     document.querySelectorAll(".tabs button").forEach(b => b.setAttribute("aria-selected", (b.id === "tabFirst" ? "first" : b.dataset.tab) === slot ? "true":"false"));
     ["chat","wallet","today","money","loans","cards"].forEach(n => $("tab-"+n).hidden = n !== name);
     window.scrollTo(0,0);
-    if(name === "chat"){ renderChat(); placeDock(); chatScrollEnd(false); }
+    if(name === "chat"){ renderChat(); dockLast = { b:-1, h:-1 }; placeDock(); chatScrollEnd(false); setTimeout(() => { dockLast = { b:-1, h:-1 }; placeDock(); }, 250); }
   }
   function renderAll(){ renderToday(); renderCal(); renderMoney(); renderLoans(); renderPeople(); renderCards(); renderBalance(); }
 
@@ -4683,12 +4684,16 @@ function startNgay50k(){
   var dockLast = { b:-1, h:-1 }, dockRaf = 0;
   function placeDock(){
     const dock = $("chatDock"), tabs = document.querySelector(".tabs"); if(!dock) return;
-    const vv = window.visualViewport, kb = document.body.classList.contains("kb") && vv;
+    const vv = window.visualViewport, typing = document.activeElement === $("chatIn") && !$("tab-chat").hidden;
+    if(!typing && document.body.classList.contains("kb")) document.body.classList.remove("kb");   /* iPhone đôi khi không báo mất tiêu điểm khi đổi tab */
+    const kb = typing && vv && vv.height < window.innerHeight * 0.85;
     let b;
-    if(kb){ b = Math.max(0, Math.round(window.innerHeight - (vv.height + vv.offsetTop))) + 8; }
+    if(kb){ b = Math.max(0, Math.round(window.innerHeight - (vv.height + vv.offsetTop))) + 8; if(b > window.innerHeight * 0.7) b = 16; }
     else if(tabs && getComputedStyle(tabs).display !== "none" && tabs.getBoundingClientRect().height){ b = Math.max(0, Math.round(window.innerHeight - tabs.getBoundingClientRect().top)) + 8; }
-    else b = 16;
+    else b = typing ? 8 : 16;
+    if(!kb && !typing && (b < 8 || b > 200)) b = 94;                                     /* không đo được thanh tab: dùng vị trí mặc định ngay trên thanh tab */
     const h = dock.offsetHeight;
+    if(!h) return;                                                            /* màn chat đang ẩn: đo lại khi quay về */
     if(Math.abs(b - dockLast.b) < 2 && h === dockLast.h) return;             /* không đổi gì: không động vào trang */
     const visible = currentTab === "chat" && !$("tab-chat").hidden;
     const atEnd = visible && window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 140;
@@ -4702,13 +4707,19 @@ function startNgay50k(){
   }
   function placeDockSoon(){ if(dockRaf) return; dockRaf = requestAnimationFrame(() => { dockRaf = 0; placeDock(); }); }
   $("chatIn").addEventListener("focus", () => { document.body.classList.add("kb"); placeDock(); setTimeout(() => { placeDock(); chatScrollEnd(true); }, 350); });
-  $("chatIn").addEventListener("blur", () => { document.body.classList.remove("kb"); setTimeout(placeDock, 60); });
+  $("chatIn").addEventListener("blur", () => { document.body.classList.remove("kb"); setTimeout(() => { if(window.visualViewport && visualViewport.offsetTop > 0) window.scrollTo(window.scrollX, window.scrollY); dockLast = { b:-1, h:-1 }; placeDock(); }, 60); });
   /* khung nhìn chỉ đổi thật khi bàn phím bật/tắt; lúc cuộn bình thường thì bỏ qua */
   if(window.visualViewport){
     visualViewport.addEventListener("resize", placeDockSoon);
     visualViewport.addEventListener("scroll", () => { if(document.body.classList.contains("kb")) placeDockSoon(); }, { passive:true });
   }
   window.addEventListener("resize", placeDockSoon);
+  document.addEventListener("focusout", () => setTimeout(() => { if(document.activeElement !== $("chatIn") && document.body.classList.contains("kb")){ document.body.classList.remove("kb"); dockLast = { b:-1, h:-1 }; placeDock(); } }, 80));
+  document.addEventListener("touchstart", () => { if(document.body.classList.contains("kb") && document.activeElement !== $("chatIn")){ document.body.classList.remove("kb"); dockLast = { b:-1, h:-1 }; placeDockSoon(); } }, { passive:true });
+  setInterval(() => { if(document.body.classList.contains("kb") && document.activeElement !== $("chatIn")){ document.body.classList.remove("kb"); dockLast = { b:-1, h:-1 }; placeDock(); } }, 1500);
+  const redock = () => { if(document.activeElement !== $("chatIn")) document.body.classList.remove("kb"); dockLast = { b:-1, h:-1 }; placeDockSoon(); };
+  document.addEventListener("visibilitychange", () => { if(!document.hidden) setTimeout(redock, 120); });
+  window.addEventListener("pageshow", redock); window.addEventListener("focus", redock);
   if(window.ResizeObserver) new ResizeObserver(placeDockSoon).observe($("chatDock"));
   $("chatToWallet").onclick = () => showTab("wallet");
   $("walletToChat").onclick = () => showTab("chat");
