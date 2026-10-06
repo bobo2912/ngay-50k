@@ -1124,6 +1124,8 @@ html{scroll-padding-top:var(--head-h, 100px)}
 
 /* sao lưu nhanh bằng Phím tắt */
 .sc-steps{margin:6px 0 8px; padding-left:20px}
+.sc-mode{margin-top:8px}
+.seg2{grid-template-columns:repeat(2,1fr)}
 .sc-steps li{margin:3px 0}
 #infoSc code{font-size:.85em; background:var(--note-soft); border-radius:5px; padding:0 4px}
 .sc-use{display:flex; align-items:center; gap:8px; margin-top:10px; font-size:.86rem; color:var(--muted)}
@@ -1582,20 +1584,36 @@ html{scroll-padding-top:var(--head-h, 100px)}
       <button class="ghost" id="csvBtn" style="width:100%; margin-top:10px">Xuất CSV để mở bằng Excel</button>
 
       <h4 class="sub">Sao lưu nhanh bằng Phím tắt <button class="ib" type="button" data-info="infoSc" aria-expanded="false" aria-label="Cách cài">i</button></h4>
-      <p class="set-now">Một chạm: app chép bản sao lưu rồi mở Phím tắt, Phím tắt tự lưu file vào iCloud Drive theo ngày. Không phải chọn chỗ lưu mỗi lần.</p>
-      <div class="set-now info" id="infoSc" hidden>
-        <b>Cài một lần trong app Phím tắt:</b>
-        <ol class="sc-steps">
-          <li>Mở <b>Phím tắt</b>, bấm <b>+</b>, đặt tên đúng như ô bên dưới (mặc định <b>Lưu Ngày 50k</b>).</li>
-          <li>Thêm tác vụ <b>Lấy bảng tạm</b> (Get Clipboard).</li>
-          <li>Thêm <b>Đặt tên</b> (Set Name): gõ <code>ngay50k-</code>, chèn biến <b>Ngày hiện tại</b> với định dạng tuỳ chỉnh <code>yyyy-MM-dd</code>, rồi gõ <code>.json</code>.</li>
-          <li>Thêm <b>Lưu tệp</b> (Save File): tắt <b>Hỏi nơi lưu</b>, chọn thư mục, vd <b>iCloud Drive › Ngay50k</b>, bật <b>Ghi đè</b>.</li>
-          <li>Thêm <b>Văn bản</b> để trống, rồi <b>Sao chép vào bảng tạm</b>: xoá dữ liệu khỏi bảng tạm sau khi lưu.</li>
-          <li>(Tuỳ chọn) <b>Hiện thông báo</b> "Đã sao lưu Ngày 50k".</li>
-        </ol>
-        Xong thì quay lại đây bấm nút bên dưới. Lần đầu iPhone hỏi cho phép mở Phím tắt, chọn <b>Mở</b>. Bản sao lưu chứa số tài khoản, nên để thư mục lưu ở iCloud Drive riêng của bạn.
+      <div class="seg seg2 sc-mode" id="scMode" role="group" aria-label="Cách chạy phím tắt">
+        <button type="button" data-sm="share" aria-pressed="true">Bảng chia sẻ</button>
+        <button type="button" data-sm="open" aria-pressed="false">Mở Phím tắt</button>
       </div>
-      <div class="field" style="margin-top:10px">
+      <p class="set-now" id="scModeText"></p>
+      <div class="set-now info" id="infoSc" hidden>
+        <div id="scHowShare">
+          <b>Cài một lần trong app Phím tắt (cách Bảng chia sẻ):</b>
+          <ol class="sc-steps">
+            <li>Mở phím tắt (vd <b>Backup 50k App</b>), bấm <b>ⓘ</b> ở dưới, bật <b>Hiện trong Bảng chia sẻ</b> (Show in Share Sheet). Ở mục loại đầu vào chỉ giữ <b>Tệp</b> (Files).</li>
+            <li>Xoá các tác vụ <b>Lấy bảng tạm</b>, <b>Đặt tên</b>, <b>Văn bản</b>, <b>Sao chép vào bảng tạm</b>. App đã đặt sẵn tên file theo ngày.</li>
+            <li>Ở tác vụ <b>Lưu tệp</b>, chạm vào ô đang chọn, đổi thành <b>Đầu vào phím tắt</b> (Shortcut Input). Giữ <b>Hỏi nơi lưu</b> tắt, <b>Ghi đè</b> bật, thư mục iCloud Drive như cũ.</li>
+            <li>Giữ <b>Hiện thông báo</b> nếu muốn.</li>
+            <li>Lần đầu bấm nút dưới đây, trong bảng chia sẻ kéo dàn ứng dụng sang phải, chọn <b>Sửa</b>, ghim phím tắt lên đầu cho lần sau chạm nhanh.</li>
+          </ol>
+        </div>
+        <div id="scHowOpen" hidden>
+          <b>Cài một lần trong app Phím tắt (cách Mở Phím tắt):</b>
+          <ol class="sc-steps">
+            <li>Tạo phím tắt, đặt tên đúng như ô bên dưới.</li>
+            <li>Thêm <b>Lấy bảng tạm</b>, rồi <b>Đặt tên</b>: <code>ngay50k-</code> + <b>Ngày hiện tại</b> (định dạng <code>yyyy-MM-dd</code>) + <code>.json</code>.</li>
+            <li>Thêm <b>Lưu tệp</b>: tắt <b>Hỏi nơi lưu</b>, chọn thư mục iCloud Drive, bật <b>Ghi đè</b>.</li>
+            <li>Thêm <b>Văn bản</b> để trống rồi <b>Sao chép vào bảng tạm</b> để xoá bảng tạm.</li>
+            <li>Để khỏi hỏi "Allow Paste" mỗi lần: <b>Cài đặt iPhone → Ứng dụng → Phím tắt → Dán từ ứng dụng khác → Cho phép</b>.</li>
+            <li>Chạy xong, chạm <b>◀</b> tên app ở góc trên bên trái để quay lại.</li>
+          </ol>
+        </div>
+        Bản sao lưu chứa số tài khoản, nên để thư mục lưu ở iCloud Drive riêng của bạn.
+      </div>
+      <div class="field" id="scNameField" style="margin-top:10px" hidden>
         <label for="scName"><span>Tên phím tắt</span></label>
         <input id="scName" class="inp" maxlength="60" autocomplete="off" placeholder="Lưu Ngày 50k">
       </div>
@@ -1636,7 +1654,7 @@ html{scroll-padding-top:var(--head-h, 100px)}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v60</p>
+      <p class="sync" id="appVersion">Phiên bản v61</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Xoá dữ liệu</h4>
@@ -6055,8 +6073,33 @@ function startNgay50k(){
       const ok = document.execCommand("copy"); ta.remove(); return ok;
     }catch(e){ return false; }
   }
+  const SCMODE_KEY = "ngay50k:scMode";
+  function scMode(){ return lsGet(SCMODE_KEY) === "open" ? "open" : "share"; }
+  function renderScMode(){
+    const m = scMode();
+    [...$("scMode").children].forEach(b => b.setAttribute("aria-pressed", b.dataset.sm === m ? "true" : "false"));
+    $("scModeText").textContent = m === "share"
+      ? "Bấm nút, bảng chia sẻ hiện lên, chạm vào phím tắt của bạn. Phím tắt chạy ngay trong app, lưu file vào iCloud Drive, không hỏi dán, không rời app."
+      : "Một chạm: app chép bản sao lưu rồi mở app Phím tắt để lưu. Chạy xong chạm ◀ tên app ở góc trên để quay lại.";
+    $("scHowShare").hidden = m !== "share"; $("scHowOpen").hidden = m !== "open";
+    $("scNameField").hidden = m !== "open";
+  }
+  /* cách Bảng chia sẻ: đưa file đã đặt tên theo ngày vào bảng chia sẻ, phím tắt nhận file làm đầu vào */
+  async function shareBackup(){
+    const text = JSON.stringify({ app:"ngay50k", format:1, exportedAt:new Date().toISOString(), data:state });
+    const name = "ngay50k-" + todayKey() + ".json";
+    if(!(navigator.canShare && typeof File === "function")){ showSyncErr("Máy này không mở được bảng chia sẻ. Hãy chọn cách Mở Phím tắt."); return false; }
+    try{
+      const file = new File([text], name, { type:"application/json" });
+      if(!navigator.canShare({ files:[file] })){ showSyncErr("Máy này không chia sẻ được file. Hãy chọn cách Mở Phím tắt."); return false; }
+      await navigator.share({ files:[file] });
+      doneExport("✓ Đã gửi bản sao lưu " + name + " cho phím tắt.");
+      return true;
+    }catch(e){ if(!(e && e.name === "AbortError")) showSyncErr("Chưa sao lưu được: " + (e && e.message ? e.message : e)); return false; }
+  }
   async function quickBackup(){
     $("syncErr").hidden = true;
+    if(scMode() === "share") return shareBackup();
     const text = JSON.stringify({ app:"ngay50k", format:1, exportedAt:new Date().toISOString(), data:state });
     let ok = copySync(text);
     if(!ok && navigator.clipboard && navigator.clipboard.writeText){
@@ -6079,6 +6122,8 @@ function startNgay50k(){
   $("scUse").checked = lsGet(SCUSE_KEY) === "1";
   $("scUse").addEventListener("change", () => { lsSet(SCUSE_KEY, $("scUse").checked ? "1" : "0"); });
   $("scBackup").onclick = () => { lsSet(SC_KEY, $("scName").value.trim()); quickBackup(); };
+  [...$("scMode").children].forEach(b => b.onclick = () => { lsSet(SCMODE_KEY, b.dataset.sm); renderScMode(); });
+  renderScMode();
   $("exportBtn").onclick = exportData;
   $("csvBtn").onclick = exportCSV;
   $("nudgeGo").onclick = () => {

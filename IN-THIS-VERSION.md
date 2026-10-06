@@ -1,6 +1,16 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v60, ngày 06/10/2026
+**Phiên bản hiện tại:** v61, ngày 06/10/2026
+
+---
+
+## Có gì mới trong v61 (so với v60)
+
+**Sao lưu bằng Phím tắt mà không rời app, không hỏi "Allow Paste".**
+
+- Thêm cách chạy **Bảng chia sẻ** (mặc định): bấm nút, bảng chia sẻ hiện lên với file `ngay50k-yyyy-MM-dd.json`, chạm vào phím tắt. Phím tắt chạy ngay trong app, lưu vào iCloud Drive, xong vẫn ở app. Không dùng bảng tạm nên iPhone không hỏi dán.
+- Cách cũ **Mở Phím tắt** vẫn còn, chọn được bằng nút gạt. Hướng dẫn ⓘ đổi theo cách đang chọn, kèm cách tắt câu hỏi "Allow Paste" trong Cài đặt iPhone.
+- Huỷ bảng chia sẻ thì không báo lỗi và không tính là đã sao lưu.
 
 ---
 
@@ -10,18 +20,6 @@
 
 - Giờ vào tab là lịch hiện tháng này và bấm ‹ › được ngay.
 - Nút › bị khoá ở tháng hiện tại (không xem được tháng tương lai).
-
----
-
-## Có gì mới trong v59 (so với v58)
-
-**Sao lưu nhanh bằng Phím tắt iPhone.** Không phải chọn chỗ lưu mỗi lần.
-
-- Trong **Cài đặt → Sao lưu và đồng bộ** có nút **Sao lưu nhanh bằng Phím tắt**. Bấm một lần: app chép bản sao lưu vào bảng tạm rồi mở phím tắt của bạn; phím tắt tự lưu file `ngay50k-yyyy-MM-dd.json` vào thư mục iCloud Drive đã chọn, rồi xoá bảng tạm.
-- Cách cài phím tắt (6 tác vụ, làm một lần) nằm sau nút **ⓘ** cạnh tiêu đề.
-- Đặt được tên phím tắt riêng; app nhớ tên này.
-- Tick **Nút Sao lưu trong lời nhắc dùng cách này** thì khi app nhắc "đã lâu chưa sao lưu", bấm **Sao lưu** là chạy luôn phím tắt.
-- Không mở được phím tắt (chưa tạo, sai tên) thì app báo rõ.
 
 ---
 
@@ -97,7 +95,7 @@
 - **Quản lý tag:** danh sách tag, chi tiết từng tag, đổi tên và icon, ẩn hoặc hiện, xoá tag tự tạo.
 - **Sao lưu và đồng bộ:**
   - Xuất file sao lưu, hoặc xuất CSV để mở bằng Excel.
-  - **Sao lưu nhanh bằng Phím tắt** iPhone: một chạm, tự lưu vào iCloud Drive theo ngày.
+  - **Sao lưu nhanh bằng Phím tắt** iPhone: qua bảng chia sẻ (ở lại app) hoặc mở app Phím tắt; tự lưu vào iCloud Drive theo ngày.
   - Nhập từ file, chọn **Gộp** hoặc **Thay toàn bộ**, có xem trước thay đổi và **Hoàn tác**.
   - Đồng bộ giữa các máy qua file.
 - **Dung lượng:** kèm số phiên bản app.
@@ -122,7 +120,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v61** | Sao lưu bằng Phím tắt qua bảng chia sẻ, không rời app |
 | **v60** | Sửa lỗi không chuyển được tháng trong lịch chi tiêu |
-| **v59** | Sao lưu nhanh bằng Phím tắt iPhone |
 
 *File này chỉ giữ ghi chú của hai bản gần nhất.*
