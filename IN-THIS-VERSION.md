@@ -1,6 +1,16 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v51, ngày 06/10/2026
+**Phiên bản hiện tại:** v52, ngày 06/10/2026
+
+---
+
+## Có gì mới trong v52 (so với v51)
+
+**Sửa lỗi số dư bị trừ hai lần.** Khoản vay, cho vay, trả nợ ghi bằng bản cũ (trước v49) không có giờ, chỉ có ngày. App từng coi chúng xảy ra lúc 12:00, nên khoản ghi sáng nay mà đối chiếu trước 12:00 bị trừ thêm một lần nữa.
+
+- Giờ khoản không có giờ được coi là xảy ra **đầu ngày**: cùng ngày với lần đối chiếu thì tính là đã có trong số dư bạn nhập, không trừ lại.
+- Khoản ghi từ v49 trở đi có giờ thật nên không bị ảnh hưởng.
+- Dòng biến động của khoản không có giờ chỉ ghi ngày, không ghi 00:00.
 
 ---
 
@@ -12,18 +22,6 @@
 - Mỗi tab một màu cho thẻ đầu trang: Ví bạc hà, Giao dịch hồng, Tổng quan vàng kem, Thẻ oải hương, Khoản vay hồng đào.
 - Bốn ô Thu vào, Chi thường, Chi thẻ, Khoản vay ở Tổng quan cũng mỗi ô một màu.
 - Pastel luôn sáng, kể cả khi iPhone đang để chế độ tối. Chọn lại Tự động thì về như cũ.
-
----
-
-## Có gì mới trong v50 (so với v49)
-
-**Tab Ví riêng, đứng đầu và mở mặc định.** Mở app là thấy ngay ví còn bao nhiêu tiền.
-
-- Thẻ **Số dư hiện tại** chuyển từ Tổng quan sang tab **Ví**, kèm hai nút **Đối chiếu số dư** và **Trả thẻ**.
-- **Biến động từ lần đối chiếu:** mọi khoản làm đổi số dư, mới nhất ở trên, mỗi dòng ghi số tiền và **số dư còn lại sau khoản đó**. Quẹt thẻ cũng hiện, ghi rõ là nợ thẻ, chưa trừ ví. Chạm một dòng chi hoặc thu để sửa ngay.
-- **Đối chiếu và trả thẻ:** lịch sử các lần đối chiếu (kèm số lệch) và các lần trả thẻ nằm luôn trên tab, xoá được nếu ghi nhầm.
-- Dòng **Số dư ví** ở tab Giao dịch giờ dẫn về tab Ví.
-- Thanh tab có 5 mục: Ví, Tổng quan, Giao dịch, Thẻ, Khoản vay.
 
 ---
 
@@ -120,7 +118,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v52** | Sửa lỗi số dư trừ hai lần khoản vay ghi bằng bản cũ |
 | **v51** | Thêm giao diện Pastel |
-| **v50** | Tab Ví riêng, đứng đầu, mở mặc định; biến động số dư từng khoản |
 
 *File này chỉ giữ ghi chú của hai bản gần nhất.*
