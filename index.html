@@ -1129,6 +1129,51 @@ html{scroll-padding-top:var(--head-h, 100px)}
 .sc-use{display:flex; align-items:center; gap:8px; margin-top:10px; font-size:.86rem; color:var(--muted)}
 .sc-use input{width:18px; height:18px; accent-color:var(--note)}
 .set-group .sub .ib{margin-left:4px; vertical-align:middle}
+
+/* ---------- Trò chuyện ---------- */
+.seg2h{grid-template-columns:repeat(2,1fr)}
+.chat-chip{display:flex; align-items:center; gap:8px; width:100%; border:1px solid var(--line); background:var(--flat); border-radius:16px; padding:10px 14px; font:inherit; font-size:.84rem; color:var(--muted); margin-bottom:12px}
+.chat-chip b{color:var(--ink); font-weight:700}
+.chat-chip .ch{margin-left:auto; color:var(--muted)}
+.chat-chip[hidden]{display:none}
+.chat-log{display:flex; flex-direction:column; gap:10px; min-height:40vh}
+.msg{max-width:86%; padding:10px 13px; border-radius:18px; font-size:.95rem; line-height:1.45; white-space:pre-wrap; word-wrap:break-word}
+.msg.me{align-self:flex-end; background:var(--note); color:#fff; border-bottom-right-radius:6px}
+.msg.bot{align-self:flex-start; background:var(--flat); border:1px solid var(--line); color:var(--ink); border-bottom-left-radius:6px}
+.msg.bot b{font-weight:700}
+.msg .undo{display:inline-block; margin-top:6px; border:0; background:none; padding:0; color:var(--note); font:inherit; font-size:.85rem; font-weight:600}
+.msg-time{align-self:center; font-size:.7rem; color:var(--muted); margin:4px 0 -2px}
+.prop{align-self:stretch; display:flex; flex-direction:column; gap:8px}
+.pcard{background:var(--flat); border:1px solid var(--line); border-radius:18px; padding:11px 12px; display:flex; flex-direction:column; gap:8px}
+.pcard.done{opacity:.75; padding:9px 12px}
+.pcard.skip{opacity:.45}
+.prow{display:flex; flex-wrap:wrap; gap:6px; align-items:center; min-width:0}
+.prow > *{min-width:0}
+.pcard select, .pcard input{font:inherit; font-size:16px; border:1px solid var(--line); background:var(--field, #fff); color:var(--ink); border-radius:10px; padding:7px 9px; height:38px}
+.pcard .pk{flex:0 0 auto; font-weight:700}
+.pcard .pa{flex:1; font-weight:800; text-align:right; font-variant-numeric:tabular-nums}
+.pcard .pn{flex:1}
+.pcard .pt, .pcard .pc, .pcard .pl{flex:1 1 130px}
+.pcard .pd{flex:1 1 130px}
+.pcard .pwarn{font-size:.8rem; color:var(--over); margin:0}
+.pbtns{display:flex; gap:8px}
+.pbtns button{flex:1; height:38px; border-radius:12px; font:inherit; font-weight:700; font-size:.9rem; border:1px solid var(--line); background:transparent; color:var(--ink)}
+.pbtns .ok{background:var(--note); border-color:var(--note); color:#fff}
+.pbtns .ok:disabled{opacity:.4}
+.pdone{display:flex; align-items:center; gap:8px; font-size:.88rem}
+.pdone span:first-child{flex:1; min-width:0}
+.pdone button{border:0; background:none; color:var(--note); font:inherit; font-weight:600; font-size:.85rem; padding:0}
+.prop-all{display:flex; gap:8px}
+.prop-all button{flex:1; height:40px; border-radius:14px; font:inherit; font-weight:700; border:1px solid var(--note); background:var(--note-soft); color:var(--note)}
+.chat-sugg{display:flex; gap:6px; overflow-x:auto; padding:12px 0 2px; scrollbar-width:none}
+.chat-sugg::-webkit-scrollbar{display:none}
+.chat-sugg button{flex:none; border:1px solid var(--line); background:var(--flat); color:var(--ink); border-radius:999px; padding:7px 12px; font:inherit; font-size:.82rem; white-space:nowrap}
+.chat-bar{display:flex; align-items:flex-end; gap:8px; margin-top:10px; background:var(--flat); border:1px solid var(--line); border-radius:24px; padding:6px 6px 6px 14px}
+.chat-bar textarea{flex:1; border:0; background:transparent; resize:none; font:inherit; font-size:16px; line-height:1.4; padding:7px 0; max-height:140px; color:var(--ink); outline:none}
+.chat-bar button{flex:none; width:38px; height:38px; border-radius:999px; border:0; background:var(--note); color:#fff; display:grid; place-items:center}
+.chat-bar button:disabled{opacity:.35}
+.chat-bar button svg{width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round}
+.chat-hint{text-align:center; font-size:.72rem; color:var(--muted); margin:8px 0 0}
 /* ================= PASTEL ================= */
 /* luôn sáng, dịu và gọn: nền kem ấm, thẻ trắng, một màu nhấn hồng đất, mọi thẻ đầu trang cùng một tông */
 :root[data-theme="pastel"]{
@@ -1164,7 +1209,7 @@ html{scroll-padding-top:var(--head-h, 100px)}
   </header>
 
   <nav class="tabs" role="tablist" aria-label="Menu">
-    <button role="tab" data-tab="wallet" aria-selected="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h15a3 3 0 0 1 3 3v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M3 7l12-4v4"/><circle cx="16.5" cy="13.5" r="1.2"/></svg><span>Ví</span></button>
+    <button role="tab" data-tab="chat" aria-selected="true" id="tabFirst"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-4.9A8 8 0 1 1 21 12z"/><path d="M8.5 11h.01M12 11h.01M15.5 11h.01"/></svg><span>Trò chuyện</span></button>
     <button role="tab" data-tab="money" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9h-9z"/><path d="M14 3.3A9 9 0 0 1 20.7 10H14z"/></svg><span>Tổng quan</span></button>
     <button role="tab" data-tab="today" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 10h18"/></svg><span>Tài khoản</span></button>
     <button role="tab" data-tab="cards" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="8" width="14" height="11" rx="2"/><path d="M2 12h14"/><path d="M7 5h13a2 2 0 0 1 2 2v8"/></svg><span>Thẻ</span></button>
@@ -1172,8 +1217,21 @@ html{scroll-padding-top:var(--head-h, 100px)}
   </nav>
 
   <!-- ================= TAB: HÔM NAY ================= -->
+  <!-- ================= TAB: TRÒ CHUYỆN ================= -->
+  <div id="tab-chat" role="tabpanel">
+    <button type="button" class="chat-chip" id="chatToWallet"><span>Số dư ví</span><b class="num" id="chatBal">–</b><span class="ch" aria-hidden="true">›</span></button>
+    <div class="chat-log" id="chatLog" aria-live="polite"></div>
+    <div class="chat-sugg" id="chatSugg"></div>
+    <form class="chat-bar" id="chatForm" autocomplete="off">
+      <textarea id="chatIn" rows="1" placeholder="Kể mình nghe hôm nay bạn tiêu gì…" aria-label="Tin nhắn"></textarea>
+      <button type="submit" id="chatSend" aria-label="Gửi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+    </form>
+    <p class="chat-hint">Bấm 🎤 trên bàn phím để nói thay vì gõ. Mình hỏi lại trước khi ghi.</p>
+  </div>
+
   <!-- ================= TAB: VÍ ================= -->
-  <div id="tab-wallet" role="tabpanel">
+  <div id="tab-wallet" role="tabpanel" hidden>
+    <button type="button" class="chat-chip" id="walletToChat" hidden><span>💬 Trò chuyện để ghi nhanh</span><span class="ch" aria-hidden="true">›</span></button>
     <div class="ledger chero balbox" id="balBox">
       <p class="chero-lb"><span>Số dư hiện tại</span><span class="lb-r"><span class="chero-n" id="balWhen"></span><button class="ib" type="button" data-info="infoBal" aria-expanded="false" aria-label="Giải thích">i</button></span></p>
       <p class="chero-big"><span class="num" id="balNow">Chưa có</span></p>
@@ -1448,6 +1506,7 @@ html{scroll-padding-top:var(--head-h, 100px)}
 
     <div class="set-page" id="setHome">
       <div class="set-list">
+        <button class="set-nav" data-go="setStart"><span class="nav-t">Màn hình mở đầu</span><span class="nav-v" id="navStart"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
         <button class="set-nav" data-go="setTheme"><span class="nav-t">Giao diện</span><span class="nav-v" id="navTheme"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
         <button class="set-nav" data-go="setScan"><span class="nav-t">Quét mã QR</span><span class="nav-v" id="navScan"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
         <button class="set-nav" data-go="setBudget"><span class="nav-t">Hạn mức chi một ngày</span><span class="nav-v" id="navBudget"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
@@ -1458,6 +1517,17 @@ html{scroll-padding-top:var(--head-h, 100px)}
         <button class="set-nav" data-go="setStore"><span class="nav-t">Dung lượng</span><span class="nav-v" id="navStore"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
       </div>
       <p class="set-ver" id="appVersionHome"></p>
+    </div>
+
+    <div class="set-page" id="setStart" hidden>
+      <div class="set-head"><button class="set-back" data-back>‹ Cài đặt</button><h2 tabindex="-1">Màn hình mở đầu</h2></div>
+<section class="set-group">
+      <p class="set-now">Ô đầu tiên của thanh tab, và là màn hình hiện ra khi mở app. Màn hình còn lại vẫn mở được từ nút ở đầu trang.</p>
+      <div class="seg seg2h" id="homeSeg" role="group" aria-label="Màn hình mở đầu" style="margin-top:12px">
+        <button data-home="chat" aria-pressed="true">Trò chuyện</button>
+        <button data-home="wallet" aria-pressed="false">Ví</button>
+      </div>
+    </section>
     </div>
 
     <div class="set-page" id="setTheme" hidden>
@@ -1632,7 +1702,7 @@ html{scroll-padding-top:var(--head-h, 100px)}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v63</p>
+      <p class="sync" id="appVersion">Phiên bản v64</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Xoá dữ liệu</h4>
@@ -2038,6 +2108,7 @@ html{scroll-padding-top:var(--head-h, 100px)}
 
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
 <script src="vendor/jsQR.js"></script>
+<script src="parse-vi.js"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -2045,7 +2116,7 @@ html{scroll-padding-top:var(--head-h, 100px)}
    Lần đầu mở bản này: dữ liệu cũ trong localStorage được chép sang, đọc lại để chắc chắn khớp rồi mới xoá bản cũ.
    Máy nào không mở được IndexedDB (hoặc treo quá 4 giây) thì app lưu kiểu cũ vào localStorage, lần sau mở lại sẽ thử chuyển tiếp. */
 window.N50K = (function(){
-  var DB_NAME = "ngay50k", STORE = "kv", MAIN = "ngay50k:v1", KEYS = [MAIN, "ngay50k:beforeImport"];
+  var DB_NAME = "ngay50k", STORE = "kv", MAIN = "ngay50k:v1", KEYS = [MAIN, "ngay50k:beforeImport", "ngay50k:chat"];
   var mem = {}, sizes = {}, gen = {}, db = null, mode = "ls", chan = null, dirty = {}, writing = null;
   var why = "", trying = null, lastTry = 0;
   var api = { onError: null, onRemote: null, onMode: null };
@@ -3684,7 +3755,7 @@ function startNgay50k(){
   }
 
   /* ---------- tabs ---------- */
-  let currentTab = "wallet";
+  let currentTab = "chat";
   function resetTab(name){
     if(name === "wallet"){ flowLimit = 30; renderBalance(); }
     else if(name === "today"){
@@ -3717,9 +3788,12 @@ function startNgay50k(){
   function showTab(name){
     if(name !== currentTab){ clearSearch(); resetTab(name); }
     currentTab = name;
-    document.querySelectorAll(".tabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.tab===name ? "true":"false"));
-    ["wallet","today","money","loans","cards"].forEach(n => $("tab-"+n).hidden = n !== name);
+    /* Trò chuyện và Ví dùng chung ô đầu tiên của thanh tab */
+    const slot = (name === "chat" || name === "wallet") ? "first" : name;
+    document.querySelectorAll(".tabs button").forEach(b => b.setAttribute("aria-selected", (b.id === "tabFirst" ? "first" : b.dataset.tab) === slot ? "true":"false"));
+    ["chat","wallet","today","money","loans","cards"].forEach(n => $("tab-"+n).hidden = n !== name);
     window.scrollTo(0,0);
+    if(name === "chat"){ renderChat(); chatScrollEnd(false); }
   }
   function renderAll(){ renderToday(); renderCal(); renderMoney(); renderLoans(); renderPeople(); renderCards(); renderBalance(); }
 
@@ -4030,6 +4104,323 @@ function startNgay50k(){
   }
   function settingsOpenNow(){ const el = $("settings"); return el && !el.hidden && el.classList.contains("show"); }
 
+  /* =================== TRÒ CHUYỆN ===================
+     Người dùng kể bằng lời, bộ hiểu câu (parse-vi.js) tách thành các khoản; mỗi khoản hiện thẻ xác nhận sửa được,
+     bấm Ghi mới lưu. Lịch sử chat lưu ở khoá riêng "ngay50k:chat" (không nằm trong file sao lưu). */
+  var CHAT_KEY = "ngay50k:chat", HOME_KEY = "ngay50k:home", chat = null;
+  function homeTab(){ return lsGet(HOME_KEY) === "wallet" ? "wallet" : "chat"; }
+  function applyHome(){
+    const h = homeTab(), b = $("tabFirst");
+    b.dataset.tab = h;
+    b.querySelector("span").textContent = h === "chat" ? "Trò chuyện" : "Ví";
+    b.querySelector("svg").innerHTML = h === "chat"
+      ? '<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-4.9A8 8 0 1 1 21 12z"/><path d="M8.5 11h.01M12 11h.01M15.5 11h.01"/>'
+      : '<path d="M3 7h15a3 3 0 0 1 3 3v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M3 7l12-4v4"/><circle cx="16.5" cy="13.5" r="1.2"/>';
+    $("chatToWallet").hidden = h !== "chat";
+    $("walletToChat").hidden = h !== "wallet";
+    [...$("homeSeg").children].forEach(x => x.setAttribute("aria-pressed", x.dataset.home === h ? "true" : "false"));
+  }
+  function chatLoad(){
+    try{ const raw = N50K.get(CHAT_KEY); chat = raw ? JSON.parse(raw) : null; }catch(e){ chat = null; }
+    if(!chat || !Array.isArray(chat.msgs)) chat = { msgs:[] };
+  }
+  function chatSave(){
+    if(chat.msgs.length > 200) chat.msgs = chat.msgs.slice(-200);
+    N50K.set(CHAT_KEY, JSON.stringify(chat));
+  }
+  function chatCtx(){
+    const loans = state.loans.map(l => ({ id:l.id, type:l.type, who:l.who || "", settled: leftOf(l) <= 0 }));
+    const recent = {};
+    const days = Object.keys(state.days).sort().slice(-120);
+    days.forEach(k => (state.days[k] || []).forEach(it => { if(it.note && it.cat) recent[it.note.trim().toLowerCase()] = it.cat; }));
+    for(const k in state.cardTx) (state.cardTx[k] || []).forEach(it => { if(it.where && it.cat) recent[it.where.trim().toLowerCase()] = it.cat; });
+    return { now:new Date(), cards:(state.cards || []).map(c => ({ id:c.id, name:c.name || "" })), loans,
+      history: text => { const k = String(text).trim().toLowerCase(); return recent[k] || ""; } };
+  }
+  const KIND_LABEL = { out:"Chi tài khoản", card:"Quẹt thẻ", "in":"Khoản thu", lend:"Cho vay", borrow:"Đi vay", repay:"Trả nợ", collect:"Được trả nợ", cardpay:"Trả thẻ", bal:"Số dư thật" };
+  const KIND_ICON = { out:"💸", card:"💳", "in":"💰", lend:"🤝", borrow:"🤝", repay:"🤝", collect:"🤝", cardpay:"💳", bal:"🏦" };
+  const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c]));
+  const sMoney = n => (n < 0 ? "−" : "") + fmt(Math.abs(n));
+
+  /* ---------- tính toán cho câu hỏi ---------- */
+  function rangeOf(period){
+    const now = new Date(), d0 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const wd = (d0.getDay() + 6) % 7;
+    if(period === "yesterday"){ const a = new Date(d0); a.setDate(a.getDate() - 1); return [keyOf(a), keyOf(a), "hôm qua"]; }
+    if(period === "week"){ const a = new Date(d0); a.setDate(a.getDate() - wd); return [keyOf(a), keyOf(d0), "tuần này"]; }
+    if(period === "lastweek"){ const a = new Date(d0); a.setDate(a.getDate() - wd - 7); const b = new Date(a); b.setDate(b.getDate() + 6); return [keyOf(a), keyOf(b), "tuần trước"]; }
+    if(period === "month"){ return [keyOf(new Date(now.getFullYear(), now.getMonth(), 1)), keyOf(d0), "tháng này"]; }
+    if(period === "lastmonth"){ const a = new Date(now.getFullYear(), now.getMonth() - 1, 1), b = new Date(now.getFullYear(), now.getMonth(), 0); return [keyOf(a), keyOf(b), "tháng trước"]; }
+    return [keyOf(d0), keyOf(d0), "hôm nay"];
+  }
+  function spentIn(a, b, tags){
+    let acc = 0, card = 0; const by = {};
+    const ok = cat => !tags || tags.includes(cat || "");
+    for(const k in state.days) if(k >= a && k <= b) (state.days[k] || []).forEach(it => { if(ok(it.cat)){ acc += Number(it.amt) || 0; by[k] = (by[k] || 0) + (Number(it.amt) || 0); } });
+    for(const k in state.cardTx) if(k >= a && k <= b) (state.cardTx[k] || []).forEach(it => { if(ok(it.cat)){ card += Number(it.amt) || 0; by[k] = (by[k] || 0) + (Number(it.amt) || 0); } });
+    return { acc, card, by };
+  }
+  function todayLeftText(){
+    const used = sumLimit(state.days[todayKey()] || []), left = state.budget - used;
+    return left >= 0 ? "Hôm nay còn được tiêu <b>" + fmt(left) + "</b>." : "Hôm nay đã vượt hạn mức <b>" + fmt(-left) + "</b> rồi, nhẹ tay chút nha 😅";
+  }
+  function answer(q){
+    if(q.q === "spent"){
+      const [a, b, lbl] = rangeOf(q.period);
+      const tags = q.tag === "an+uong" ? ["an","uong"] : q.tag ? [q.tag] : null;
+      const r = spentIn(a, b, tags), tot = r.acc + r.card;
+      const what = q.tag === "an+uong" ? " cho ăn uống" : q.tag ? " cho " + tagOf(q.tag).label.toLowerCase() : "";
+      let t = tot ? lbl.charAt(0).toUpperCase() + lbl.slice(1) + " bạn đã chi" + what + " <b>" + fmt(tot) + "</b>" + (r.card ? " (tài khoản " + fmt(r.acc) + ", thẻ " + fmt(r.card) + ")" : "") + "."
+                  : "Chưa thấy khoản chi nào" + what + " " + lbl + ".";
+      if(q.period === "today" && !tags) t += " " + todayLeftText();
+      return t;
+    }
+    if(q.q === "left"){ const r = balCalc(); return todayLeftText() + (r ? " Số dư ví: <b>" + sMoney(r.bal) + "</b>." : ""); }
+    if(q.q === "balance"){
+      const r = balCalc();
+      if(!r) return "Mình chưa biết số dư của bạn. Nói kiểu \"tài khoản còn 5 triệu 8\" là mình ghi lại làm mốc.";
+      return "Số dư ví hiện là <b>" + sMoney(r.bal) + "</b>" + (r.debt > 0 ? ", đang nợ thẻ " + fmt(r.debt) + " (trả xong còn " + sMoney(r.bal - r.debt) + ")" : "") + ".";
+    }
+    if(q.q === "card"){
+      const r = balCalc(), [a, b] = rangeOf("month"), m = spentIn(a, b, null);
+      return "Tháng này quẹt thẻ <b>" + fmt(m.card) + "</b>." + (r ? (r.debt > 0 ? " Đang nợ thẻ " + fmt(r.debt) + "." : " Hiện không nợ thẻ.") : "");
+    }
+    if(q.q === "topday"){
+      const [a, b, lbl] = rangeOf(q.period), r = spentIn(a, b, null);
+      let best = null; for(const k in r.by) if(!best || r.by[k] > r.by[best]) best = k;
+      if(!best) return "Chưa có khoản chi nào " + lbl + ".";
+      const d = new Date(best + "T00:00:00");
+      return lbl.charAt(0).toUpperCase() + lbl.slice(1) + " bạn chi nhiều nhất ngày <b>" + d.getDate() + "/" + (d.getMonth()+1) + "</b>: " + fmt(r.by[best]) + ".";
+    }
+    if(q.q === "loans"){
+      const open = state.loans.filter(l => leftOf(l) > 0);
+      if(q.who){
+        const P = window.N50KParse, n = P.norm(q.who);
+        const hit = open.filter(l => { const w = P.norm(l.who || ""); return w.includes(n) || n.includes(w) || w.split(" ").pop() === n.split(" ").pop(); });
+        if(!hit.length) return "Mình không thấy khoản vay nào còn dở với " + esc(q.who) + ".";
+        return hit.map(l => esc(l.who) + (l.type === "lend" ? " còn nợ bạn <b>" : ": bạn còn nợ <b>") + fmt(leftOf(l)) + "</b>").join(". ") + ".";
+      }
+      const owe = open.filter(l => l.type === "borrow").reduce((a, l) => a + leftOf(l), 0);
+      const owed = open.filter(l => l.type === "lend").reduce((a, l) => a + leftOf(l), 0);
+      if(!open.length) return "Hiện không có khoản vay nào còn dở 👍";
+      return "Bạn đang nợ <b>" + fmt(owe) + "</b>, người khác nợ bạn <b>" + fmt(owed) + "</b>." +
+        "\n" + open.slice(0, 6).map(l => "• " + esc(l.who) + (l.type === "lend" ? " nợ bạn " : ": bạn nợ ") + fmt(leftOf(l))).join("\n");
+    }
+    return HELP;
+  }
+  const HELP = "Mình chưa hiểu câu này 😅 Bạn thử kể kiểu:\n• trưa ăn phở 45k\n• quẹt thẻ VIB 1tr2 mua giày\n• cho chú Dũng vay 500k, Hào trả 870k\n• nhận lương 15 triệu\n• tài khoản còn 5 triệu 8\nHoặc hỏi: hôm nay tiêu bao nhiêu, ai còn nợ mình?";
+
+  /* ---------- ghi một khoản ---------- */
+  function loansFor(kind){ const type = (kind === "lend" || kind === "collect") ? "lend" : "borrow"; return state.loans.filter(l => l.type === type); }
+  function validate(it){
+    if(!(it.amt > 0)) return "Thiếu số tiền";
+    if((it.kind === "repay" || it.kind === "collect") && !it.loanId) return it.kind === "collect" ? "Chọn khoản cho vay được trả" : "Chọn khoản vay để trả";
+    if((it.kind === "lend" || it.kind === "borrow") && !it.loanId && !String(it.who || "").trim()) return "Ghi tên người";
+    if(it.kind === "card" && !(state.cards || []).length) return "Chưa có thẻ nào, thêm thẻ ở tab Thẻ trước";
+    return "";
+  }
+  function commit(it){
+    const k = /^\d{4}-\d{2}-\d{2}$/.test(it.date) ? it.date : todayKey();
+    const t = it.t || Date.now(), id = uid();
+    let ref = { kind:it.kind, id, day:k };
+    if(it.kind === "out"){ (state.days[k] = state.days[k] || []).push({ id, amt:it.amt, cat:it.cat || "khac", note:it.note || "", t }); }
+    else if(it.kind === "card"){ (state.cardTx[k] = state.cardTx[k] || []).push({ id, amt:it.amt, where:it.note || "Chi thẻ", cardId:it.cardId || null, cat:it.cat || "", t }); }
+    else if(it.kind === "in"){ (state.income[k] = state.income[k] || []).push({ id, amt:it.amt, cat:it.cat || "khac", note:it.note || "", t }); }
+    else if(it.kind === "lend" || it.kind === "borrow"){
+      const l = it.loanId ? getLoan(it.loanId) : null;
+      if(l){ (l.draws = l.draws || []).push({ id, amt:it.amt, date:k, note:"", t }); ref.loanId = l.id; ref.sub = "draw"; }
+      else { state.loans.push({ id, type:it.kind, who:String(it.who).trim(), amt:it.amt, date:k, due:"", note:"", payments:[], draws:[], prepaid:0, t }); ref.sub = "loan"; }
+    }
+    else if(it.kind === "repay" || it.kind === "collect"){
+      const l = getLoan(it.loanId); (l.payments = l.payments || []).push({ id, amt:it.amt, date:k, note:"", t }); ref.loanId = l.id; ref.sub = "pay";
+    }
+    else if(it.kind === "cardpay"){ const rec = { id, amt:it.amt, date:k, t }; if(it.cardId) rec.cardId = it.cardId; (state.cardPay = state.cardPay || []).push(rec); }
+    else if(it.kind === "bal"){
+      const r = balCalc(), rec = { id, amt:it.amt, t:Date.now() };
+      if(r){ rec.book = Math.round(r.bal); rec.card = r.debt; } else rec.card = 0;
+      (state.bals = state.bals || []).push(rec); ref.book = rec.book;
+    }
+    return ref;
+  }
+  function uncommit(ref){
+    const drop = (bag) => { if(!bag[ref.day]) return; bag[ref.day] = bag[ref.day].filter(x => x.id !== ref.id); if(!bag[ref.day].length) delete bag[ref.day]; };
+    if(ref.kind === "out") drop(state.days);
+    else if(ref.kind === "card") drop(state.cardTx);
+    else if(ref.kind === "in") drop(state.income);
+    else if(ref.sub === "loan") state.loans = state.loans.filter(l => l.id !== ref.id);
+    else if(ref.sub === "draw"){ const l = getLoan(ref.loanId); if(l) l.draws = (l.draws || []).filter(x => x.id !== ref.id); }
+    else if(ref.sub === "pay"){ const l = getLoan(ref.loanId); if(l) l.payments = (l.payments || []).filter(x => x.id !== ref.id); }
+    else if(ref.kind === "cardpay") state.cardPay = (state.cardPay || []).filter(x => x.id !== ref.id);
+    else if(ref.kind === "bal") state.bals = (state.bals || []).filter(x => x.id !== ref.id);
+  }
+  function afterText(it, ref){
+    const r = balCalc(), bal = r ? " Số dư ví: <b>" + sMoney(r.bal) + "</b>." : "";
+    if(it.kind === "out") return todayLeftText() + bal;
+    if(it.kind === "card"){ const [a, b] = rangeOf("month"); const nm = cardName(it.cardId); return "Tháng này " + (nm ? "thẻ " + esc(nm) : "thẻ") + " đã chi " + fmt(spentIn(a, b, null).card) + "." + (r && r.debt ? " Nợ thẻ " + fmt(r.debt) + "." : ""); }
+    if(it.kind === "in") return "Tuyệt 🎉" + bal;
+    if(it.kind === "lend" || it.kind === "collect"){ const l = getLoan(ref.loanId || ref.id); return l ? esc(l.who) + " còn nợ bạn <b>" + fmt(leftOf(l)) + "</b>." + bal : bal; }
+    if(it.kind === "borrow" || it.kind === "repay"){ const l = getLoan(ref.loanId || ref.id); return l ? (leftOf(l) > 0 ? "Bạn còn nợ " + esc(l.who) + " <b>" + fmt(leftOf(l)) + "</b>." : "Đã trả hết cho " + esc(l.who) + " 👏") + bal : bal; }
+    if(it.kind === "cardpay") return r ? "Nợ thẻ còn <b>" + fmt(r.debt) + "</b>." + bal : "";
+    if(it.kind === "bal"){ const d = ref.book == null ? null : it.amt - ref.book; return "Đã lấy " + fmt(it.amt) + " làm mốc số dư." + (d ? " Lệch " + (d > 0 ? "+" : "−") + fmt(Math.abs(d)) + " so với sổ." : d === 0 ? " Khớp sổ 👌" : ""); }
+    return "";
+  }
+
+  /* ---------- vẽ ---------- */
+  function dateLabel(k){
+    if(k === todayKey()) return "hôm nay";
+    const d = new Date(k + "T00:00:00"), y = new Date(); y.setDate(y.getDate() - 1);
+    if(k === keyOf(y)) return "hôm qua";
+    return d.getDate() + "/" + (d.getMonth()+1);
+  }
+  function itemLine(it){
+    let what = it.note || "";
+    if(it.kind === "card"){ const nm = cardName(it.cardId); what = (what || "Chi thẻ") + (nm ? " · thẻ " + nm : ""); }
+    if(it.kind === "lend" || it.kind === "borrow" || it.kind === "repay" || it.kind === "collect"){ const l = it.loanId ? getLoan(it.loanId) : null; what = (l ? l.who : it.who) || ""; }
+    if(it.kind === "cardpay"){ const nm = cardName(it.cardId); what = nm ? "thẻ " + nm : ""; }
+    const icon = it.kind === "out" || it.kind === "card" ? tagOf(it.cat).icon : it.kind === "in" ? (INC.find(x => x.id === it.cat) || INC[INC.length-1]).icon : KIND_ICON[it.kind];
+    return icon + " " + KIND_LABEL[it.kind] + (what ? ": " + what : "") + " · " + fmt(it.amt) + (it.kind !== "bal" && it.date !== todayKey() ? " · " + dateLabel(it.date) : "");
+  }
+  function optionList(list, sel){ return list.map(o => '<option value="' + esc(o[0]) + '"' + (o[0] === sel ? " selected" : "") + ">" + esc(o[1]) + "</option>").join(""); }
+  function cardEl(m, idx){
+    const it = m.items[idx], st = m.status[idx];
+    const el = document.createElement("div");
+    if(st === "saved" || st === "skipped"){
+      el.className = "pcard " + (st === "saved" ? "done" : "skip");
+      el.innerHTML = '<div class="pdone"><span></span>' + (st === "saved" ? '<button type="button">Hoàn tác</button>' : '<button type="button">Khôi phục</button>') + "</div>";
+      el.querySelector("span").textContent = (st === "saved" ? "✓ " : "✕ ") + itemLine(it);
+      el.querySelector("button").onclick = () => {
+        if(st === "saved"){ uncommit(m.refs[idx]); m.refs[idx] = null; persist(true); renderAll(); }
+        m.status[idx] = "pending"; chatSave(); renderChat();
+      };
+      return el;
+    }
+    el.className = "pcard";
+    const kinds = Object.keys(KIND_LABEL).map(k => [k, KIND_ICON[k] + " " + KIND_LABEL[k]]);
+    const loanOpts = l => [["", l.length ? "— chọn khoản vay —" : "— chưa có khoản nào —"]].concat(l.map(x => [x.id, x.who + " · còn " + fmt(leftOf(x))]));
+    const isLoan = ["lend","borrow","repay","collect"].includes(it.kind);
+    let html = '<div class="prow"><select class="pk" aria-label="Loại">' + optionList(kinds, it.kind) + '</select><input class="pa num" inputmode="numeric" aria-label="Số tiền" value="' + (it.amt ? it.amt.toLocaleString("vi-VN") : "") + '"></div>';
+    if(it.kind === "out" || it.kind === "card" || it.kind === "in") html += '<div class="prow"><input class="pn" placeholder="Nội dung" aria-label="Nội dung" value="' + esc(it.note) + '"></div>';
+    if(it.kind === "lend" || it.kind === "borrow"){
+      const l = loansFor(it.kind);
+      html += '<div class="prow"><select class="pl" aria-label="Khoản vay">' + optionList([["", "＋ Khoản mới"]].concat(l.map(x => [x.id, x.who + " · còn " + fmt(leftOf(x))])), it.loanId || "") + "</select></div>";
+      if(!it.loanId) html += '<div class="prow"><input class="pw" placeholder="Tên người" aria-label="Tên người" value="' + esc(it.who) + '"></div>';
+    }
+    if(it.kind === "repay" || it.kind === "collect") html += '<div class="prow"><select class="pl" aria-label="Khoản vay">' + optionList(loanOpts(loansFor(it.kind)), it.loanId || "") + "</select></div>";
+    const row3 = [];
+    if(it.kind === "out" || it.kind === "card") row3.push('<select class="pt" aria-label="Nhóm">' + optionList(allTags().map(t => [t.id, t.icon + " " + t.label]), it.cat || "khac") + "</select>");
+    if(it.kind === "in") row3.push('<select class="pt" aria-label="Nguồn thu">' + optionList(INC.map(t => [t.id, t.icon + " " + t.label]), it.cat || "khac") + "</select>");
+    if(it.kind === "card" || it.kind === "cardpay") row3.push('<select class="pc" aria-label="Thẻ">' + optionList([["", "— thẻ —"]].concat((state.cards || []).map(c => [c.id, c.name])), it.cardId || "") + "</select>");
+    if(it.kind !== "bal") row3.push('<input class="pd" type="date" aria-label="Ngày" value="' + esc(it.date) + '">');
+    if(row3.length) html += '<div class="prow">' + row3.join("") + "</div>";
+    html += '<p class="pwarn" hidden></p><div class="pbtns"><button type="button" class="no">Bỏ</button><button type="button" class="ok">Ghi</button></div>';
+    el.innerHTML = html;
+    const q = s => el.querySelector(s), warn = q(".pwarn"), okB = q(".ok");
+    const check = () => { const w = validate(it); warn.textContent = w; warn.hidden = !w; okB.disabled = !!w; };
+    q(".pk").onchange = e => {
+      it.kind = e.target.value; it.loanId = null;
+      if(it.kind === "in" && !INC.find(x => x.id === it.cat)) it.cat = "khac";
+      if((it.kind === "out" || it.kind === "card") && !allTags().some(t => t.id === it.cat)) it.cat = window.N50KParse.guessTag(it.note || "", chatCtx());
+      if(it.kind === "lend" || it.kind === "borrow" || it.kind === "repay" || it.kind === "collect"){ const l = window.N50KParse && it.who ? loansFor(it.kind).find(x => window.N50KParse.norm(x.who).includes(window.N50KParse.norm(it.who))) : null; if(l) it.loanId = l.id; }
+      chatSave(); renderChat(true);
+    };
+    q(".pa").oninput = e => { const v = window.N50KParse.amountText(e.target.value); it.amt = v; chatSave(); check(); };
+    q(".pa").onblur = e => { if(it.amt) e.target.value = it.amt.toLocaleString("vi-VN"); };
+    if(q(".pn")) q(".pn").oninput = e => { it.note = e.target.value; chatSave(); };
+    if(q(".pw")) q(".pw").oninput = e => { it.who = e.target.value; chatSave(); check(); };
+    if(q(".pl")) q(".pl").onchange = e => { it.loanId = e.target.value || null; if(it.loanId){ const l = getLoan(it.loanId); if(l) it.who = l.who; } chatSave(); renderChat(true); };
+    if(q(".pt")) q(".pt").onchange = e => { it.cat = e.target.value; chatSave(); };
+    if(q(".pc")) q(".pc").onchange = e => { it.cardId = e.target.value || null; chatSave(); };
+    if(q(".pd")) q(".pd").onchange = e => { if(/^\d{4}-\d{2}-\d{2}$/.test(e.target.value)){ it.date = e.target.value; const now = new Date(); it.t = it.date === todayKey() ? now.getTime() : new Date(it.date + "T" + pad(now.getHours()) + ":" + pad(now.getMinutes()) + ":00").getTime(); chatSave(); } };
+    q(".no").onclick = () => { m.status[idx] = "skipped"; chatSave(); renderChat(true); };
+    okB.onclick = () => saveItems(m, [idx]);
+    check();
+    return el;
+  }
+  function saveItems(m, idxs){
+    const done = [];
+    idxs.forEach(i => { if(m.status[i] !== "pending" || validate(m.items[i])) return; m.refs[i] = commit(m.items[i]); m.status[i] = "saved"; done.push(i); });
+    if(!done.length) return;
+    persist(true); renderAll();
+    /* mỗi loại khoản chỉ nói một lần: chi tài khoản -> hạn mức hôm nay, thẻ -> chi thẻ tháng này, vay -> còn nợ... */
+    const seen = new Set(), parts = [];
+    done.slice().reverse().forEach(i => { const it = m.items[i], key = it.kind === "out" ? "out" : it.kind + ":" + (it.loanId || it.cardId || ""); if(seen.has(key)) return; seen.add(key); parts.unshift(afterText(it, m.refs[i]).replace(/ Số dư ví: <b>[^<]*<\/b>\./, "")); });
+    const rb = balCalc();
+    const txt = (done.length > 1 ? "Ghi xong " + done.length + " khoản rồi nhé. " : "Ghi rồi nhé. ") + parts.join(" ") + (rb ? " Số dư ví: <b>" + sMoney(rb.bal) + "</b>." : "");
+    chat.msgs.push({ id:uid(), role:"bot", html:txt, t:Date.now() });
+    chatSave(); renderChat(true); chatScrollEnd(true);
+  }
+  function msgEl(m){
+    if(m.role === "me"){ const d = document.createElement("div"); d.className = "msg me"; d.textContent = m.text; return d; }
+    if(m.items){
+      const box = document.createElement("div"); box.className = "prop";
+      const intro = document.createElement("div"); intro.className = "msg bot";
+      const pend = m.status.filter(s => s === "pending").length;
+      intro.innerHTML = m.items.length > 1 ? "Mình hiểu là có <b>" + m.items.length + " khoản</b>, bạn xem lại rồi bấm Ghi nhé:" : "Mình hiểu vậy, đúng không?";
+      box.appendChild(intro);
+      m.items.forEach((_, i) => box.appendChild(cardEl(m, i)));
+      if(pend > 1){
+        const all = document.createElement("div"); all.className = "prop-all";
+        const okAll = m.items.every((it, i) => m.status[i] !== "pending" || !validate(it));
+        all.innerHTML = '<button type="button">Ghi tất cả (' + pend + ")</button>";
+        all.querySelector("button").disabled = !okAll;
+        all.querySelector("button").onclick = () => saveItems(m, m.items.map((_, i) => i));
+        box.appendChild(all);
+      }
+      return box;
+    }
+    const d = document.createElement("div"); d.className = "msg bot"; d.innerHTML = m.html; return d;
+  }
+  function renderChat(keepScroll){
+    if(!chat) chatLoad();
+    const log = $("chatLog"), y = window.scrollY;
+    log.innerHTML = "";
+    if(!chat.msgs.length){
+      const d = document.createElement("div"); d.className = "msg bot";
+      d.innerHTML = "Chào bạn 👋 Mình là bạn chi tiêu của bạn.\nCứ kể mình nghe như nhắn tin: <b>trưa ăn phở 45k</b>, <b>quẹt thẻ VIB 1tr2 mua giày</b>, <b>cho chú Dũng vay 500k</b>… Mình sẽ hỏi lại trước khi ghi.\nBạn cũng có thể hỏi: <b>hôm nay tiêu bao nhiêu?</b>";
+      log.appendChild(d);
+    }
+    let lastDay = "";
+    chat.msgs.forEach(m => {
+      const dk = keyOf(new Date(m.t || Date.now()));
+      if(dk !== lastDay){ const tm = document.createElement("div"); tm.className = "msg-time"; tm.textContent = dk === todayKey() ? "Hôm nay" : fmtDate(dk); log.appendChild(tm); lastDay = dk; }
+      log.appendChild(msgEl(m));
+    });
+    const r = balCalc(); $("chatBal").textContent = r ? sMoney(r.bal) : "chưa có";
+    const sg = $("chatSugg"); sg.innerHTML = "";
+    ["Hôm nay tiêu bao nhiêu?", "Ai còn nợ mình?", "Số dư còn bao nhiêu?", "Tháng này ăn uống bao nhiêu?"].forEach(t => {
+      const b = document.createElement("button"); b.type = "button"; b.textContent = t; b.onclick = () => chatSend(t); sg.appendChild(b);
+    });
+    if(keepScroll) window.scrollTo(0, y);
+  }
+  function chatScrollEnd(smooth){ if(currentTab !== "chat") return; requestAnimationFrame(() => window.scrollTo({ top:document.documentElement.scrollHeight, behavior:smooth ? "smooth" : "auto" })); }
+  function chatSend(text){
+    text = String(text || "").trim(); if(!text) return;
+    if(!chat) chatLoad();
+    chat.msgs.push({ id:uid(), role:"me", text, t:Date.now() });
+    let res; try{ res = window.N50KParse.parse(text, chatCtx()); }catch(e){ res = { items:[], query:null, unknown:[text] }; }
+    if(res.query) chat.msgs.push({ id:uid(), role:"bot", html:answer(res.query), t:Date.now() });
+    else if(res.items.length){
+      chat.msgs.push({ id:uid(), role:"bot", items:res.items, status:res.items.map(() => "pending"), refs:res.items.map(() => null), t:Date.now() });
+      if(res.unknown.length) chat.msgs.push({ id:uid(), role:"bot", html:"Phần \"" + esc(res.unknown.join(" ")) + "\" mình chưa thấy số tiền nên bỏ qua.", t:Date.now() });
+    }
+    else if(/^(chào|chao|hi|hello|alo|xin chào|hey)\b/i.test(text)) chat.msgs.push({ id:uid(), role:"bot", html:"Chào bạn 😊 Hôm nay bạn tiêu gì rồi, kể mình nghe với.", t:Date.now() });
+    else if(/^(cảm ơn|cam on|thanks|thank|ok|oke|okay|được rồi)\b/i.test(text)) chat.msgs.push({ id:uid(), role:"bot", html:"Có gì cứ nhắn mình nhé 💪", t:Date.now() });
+    else chat.msgs.push({ id:uid(), role:"bot", html:HELP, t:Date.now() });
+    chatSave(); renderChat(); chatScrollEnd(true);
+  }
+  function chatGrow(){ const ta = $("chatIn"); ta.style.height = "auto"; ta.style.height = Math.min(ta.scrollHeight, 140) + "px"; $("chatSend").disabled = !ta.value.trim(); }
+  $("chatForm").addEventListener("submit", e => { e.preventDefault(); const ta = $("chatIn"); const v = ta.value; ta.value = ""; chatGrow(); chatSend(v); });
+  $("chatIn").addEventListener("input", chatGrow);
+  $("chatIn").addEventListener("keydown", e => { if(e.key === "Enter" && !e.shiftKey && !e.isComposing){ e.preventDefault(); $("chatForm").requestSubmit ? $("chatForm").requestSubmit() : $("chatSend").click(); } });
+  $("chatToWallet").onclick = () => showTab("wallet");
+  $("walletToChat").onclick = () => showTab("chat");
+  [...$("homeSeg").children].forEach(b => b.onclick = () => { lsSet(HOME_KEY, b.dataset.home); applyHome(); renderSetHome(); });
+  /* bấm ô đầu tiên khi đang ở màn hình kia thì về màn hình mở đầu */
+  N50K.onRemoteChat = null;
+  chatLoad(); applyHome(); renderChat(); chatGrow();
+  if(homeTab() === "wallet"){ currentTab = "wallet"; $("tab-chat").hidden = true; $("tab-wallet").hidden = false; }
+  else { chatScrollEnd(false); setTimeout(() => chatScrollEnd(false), 350); }
+
   /* ---------- lịch chi tiêu tháng (tab Tài khoản) ----------
      Mỗi ô là một ngày: số tiền chi hằng ngày trên tài khoản (không kể khoản định kỳ như tiền nhà, để một khoản lớn
      không làm mọi ngày khác nhạt đi), màu càng đậm chi càng nhiều
@@ -4111,6 +4502,7 @@ function startNgay50k(){
     const big = $("balNow"), sub = $("balSub");
     if(!r){
       big.textContent = "Chưa có"; big.parentNode.classList.remove("neg");
+      if($("chatBal")) $("chatBal").textContent = "chưa có";
       sub.textContent = "Nhập số dư đang có trong tài khoản, app sẽ tự tính tiếp theo từng khoản bạn ghi.";
       $("balWhen").textContent = ""; $("balOpenLabel").textContent = "Nhập số dư hiện tại";
 
@@ -4119,6 +4511,7 @@ function startNgay50k(){
       return;
     }
     big.textContent = (r.bal < 0 ? "−" : "") + fmt(Math.abs(r.bal));
+    if($("chatBal")) $("chatBal").textContent = (r.bal < 0 ? "−" : "") + fmt(Math.abs(r.bal));
     big.parentNode.classList.toggle("neg", r.bal < 0);
     const parts = [];
     if(r.debt > 0 || hasCards) parts.push(r.debt > 0 ? "Đang nợ thẻ " + fmt(r.debt) + " · sau khi trả còn " + (r.bal - r.debt < 0 ? "−" : "") + fmt(Math.abs(r.bal - r.debt)) : "Không nợ thẻ");
@@ -5714,7 +6107,7 @@ function startNgay50k(){
   }
 
   /* ---- settings navigation ---- */
-  const SET_PAGES = ["setHome","setTheme","setScan","setBudget","setRecur","setPeople","setTags","setTagOne","setSync","setStore"];
+  const SET_PAGES = ["setHome","setStart","setTheme","setScan","setBudget","setRecur","setPeople","setTags","setTagOne","setSync","setStore"];
   let setPage = "setHome";
   function showSetPage(id, back){
     setPage = id;
@@ -5731,6 +6124,7 @@ function startNgay50k(){
   }
   function renderSetHome(){
     $("navTheme").textContent = { auto:"Tự động", light:"Sáng", dark:"Tối", pastel:"Pastel" }[curTheme] || "Tự động";
+    $("navStart").textContent = homeTab() === "chat" ? "Trò chuyện" : "Ví";
     $("navScan").textContent = scanMode === "live" ? "Quét trực tiếp" : "Camera iPhone";
     $("navBudget").textContent = fmt(state.budget) + "/ngày";
     $("navTags").textContent = allTags().length + " tag";
@@ -6080,7 +6474,7 @@ function startNgay50k(){
     try{
       Object.keys(localStorage).filter(k => k.indexOf("ngay50k:") === 0).forEach(k => localStorage.removeItem(k));
     }catch(e){}
-    N50K.del(LS_KEY); N50K.del(UNDO_KEY);
+    N50K.del(LS_KEY); N50K.del(UNDO_KEY); N50K.del("ngay50k:chat"); chat = { msgs:[] }; renderChat();
     state = normalize({}); sigs = collectSigs(state); pending = null;
     viewDay = null; $("importCard").hidden = true; $("wipeCard").hidden = true;
     $("syncMsg").hidden = true; $("syncErr").hidden = true;

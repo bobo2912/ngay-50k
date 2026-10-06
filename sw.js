@@ -1,6 +1,6 @@
 /* Ngày 50k – bộ nhớ đệm để app mở được khi không có mạng.
    Mỗi lần sửa app, hãy tăng số phiên bản dưới đây (v1 -> v2 ...) để máy nhận bản mới. */
-const VERSION = "ngay50k-v63";
+const VERSION = "ngay50k-v64";
 
 const ASSETS = [
   "./",
@@ -8,6 +8,7 @@ const ASSETS = [
   "./scan.html",
   "./manifest.webmanifest",
   "./vendor/jsQR.js",
+  "./parse-vi.js",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
   "./icons/apple-touch-icon.png",

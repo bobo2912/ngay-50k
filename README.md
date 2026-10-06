@@ -26,7 +26,9 @@ Phải mở qua một máy chủ web, không mở thẳng bằng `file://`, vì 
 
 ## Làm được gì
 
-**Ví** (tab đầu, mở mặc định) — Số dư hiện tại: số bạn nhập ở lần đối chiếu gần nhất, cộng trừ tiếp mọi khoản ghi sau lúc đó (quẹt thẻ chỉ cộng vào nợ thẻ, tới khi ghi Trả thẻ). Danh sách biến động kèm số dư sau từng khoản, lịch sử đối chiếu và trả thẻ.
+**Trò chuyện** (tab đầu, mở mặc định) — Kể chi tiêu bằng lời như nhắn tin. `parse-vi.js` (chạy trên máy, không gửi dữ liệu đi) tách câu thành các khoản, mỗi khoản là một thẻ xác nhận sửa được; bấm Ghi mới lưu, có Hoàn tác. Trả lời câu hỏi nhanh từ dữ liệu trên máy. Đổi màn hình mở đầu sang Ví trong Cài đặt.
+
+**Ví** — Số dư hiện tại: số bạn nhập ở lần đối chiếu gần nhất, cộng trừ tiếp mọi khoản ghi sau lúc đó (quẹt thẻ chỉ cộng vào nợ thẻ, tới khi ghi Trả thẻ). Danh sách biến động kèm số dư sau từng khoản, lịch sử đối chiếu và trả thẻ.
 
 **Tổng quan** — Còn lại thực tế của tháng: thu vào trừ chi thường trừ chi thẻ. Khoản vay để riêng vì tiền vay không phải thu nhập và tiền trả nợ không phải chi tiêu. Chọn được tính gồm chi thường, chi thẻ hay cả hai; thống kê theo tag đi theo lựa chọn đó. Biểu đồ so sánh thu chi và thống kê theo tag nằm trong bảng Phân tích tháng.
 
@@ -64,6 +66,8 @@ Hệ quả cần biết:
 
 ```
 index.html              toàn bộ app: giao diện, CSS và JavaScript trong một file
+parse-vi.js             bộ hiểu câu tiếng Việt cho màn Trò chuyện (chạy trên máy)
+tests-parse-vi.js       bộ câu mẫu: node tests-parse-vi.js
 sw.js                   service worker, giữ app chạy được khi mất mạng
 scan.html               trang riêng chứa camera quét QR, đóng là camera tắt hẳn
 manifest.webmanifest    tên, icon, màu, chế độ standalone
@@ -108,6 +112,7 @@ python3 -m http.server 8765 &
 Vài chỗ dễ vỡ, sửa xong nên thử lại:
 
 - **Số dư ví.** `state.bals` là các lần đối chiếu (lần có `t` lớn nhất là mốc), `state.cardPay` là các lần trả thẻ. `balCalc()` chỉ tính khoản có thời điểm sau mốc và không ở tương lai (khoản ngày tương lai hiện ở mục Sắp tới); thời điểm lấy từ `t` nếu cùng ngày với khoản, không thì 00:00 của ngày đó (`recTime`), để khoản cũ không có giờ trong ngày đối chiếu không bị trừ lại.
+- **Bộ hiểu câu.** Sửa `parse-vi.js` xong chạy `node tests-parse-vi.js`, phải ra `FAILED: 0`. Thêm câu mới vào bộ mẫu mỗi khi sửa một lỗi hiểu sai.
 - **Kho dữ liệu.** Đọc và ghi dữ liệu chính qua `N50K.get` / `N50K.set` / `N50K.del`, không gọi thẳng `localStorage` cho khoá `ngay50k:v1`. Toàn bộ app nằm trong hàm `startNgay50k()`, chỉ chạy sau khi `N50K.ready` xong.
 - **Thứ tự khai báo biến.** `renderAll()` chạy trước khi một số `const`/`let` kịp khởi tạo, nên những biến dùng trong lúc vẽ lần đầu phải là `var` hoặc hàm khai báo kiểu `function`.
 - **Bộ đọc thông báo ngân hàng.** Nhiều ngân hàng viết cả giao dịch trên một dòng ngăn bằng dấu `|`; bộ phân tích tách theo từng ô và bỏ qua ô số dư hay hạn mức còn lại. Sửa phần này thì thử lại với cả thông báo dán tay lẫn ảnh chụp màn hình.
