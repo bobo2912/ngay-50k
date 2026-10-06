@@ -1020,6 +1020,13 @@ body::after{content:""; position:fixed; inset:0; z-index:75; pointer-events:none
   -webkit-clip-path:inset(0 0 calc(100% - var(--safe-top)) 0);
   clip-path:inset(0 0 calc(100% - var(--safe-top)) 0)}
 header{margin-top:6px}
+/* thanh đầu trang luôn dính trên cùng; cuộn xuống thì có nền kính mờ để chữ bên dưới không lẫn vào */
+main > header{position:sticky; top:var(--safe-top); z-index:30; margin:0 -16px 14px; padding:6px 18px 10px;
+  transition:background-color .2s ease, box-shadow .2s ease}
+main > header.stuck{background:var(--glass-strong); background:color-mix(in srgb, var(--bg) 96%, transparent);
+  -webkit-backdrop-filter:blur(24px) saturate(160%); backdrop-filter:blur(24px) saturate(160%); box-shadow:0 1px 0 var(--line)}
+body:not(.searching) .ledger-head{top:calc(var(--safe-top) + var(--head-h, 64px))}
+html{scroll-padding-top:calc(var(--safe-top) + var(--head-h, 64px))}
 .settings{padding-top:var(--safe-top)}
 .settings-head{top:0}
 .cam-top{padding-top:calc(12px + var(--safe-top))}
@@ -1542,7 +1549,7 @@ header{margin-top:6px}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v53</p>
+      <p class="sync" id="appVersion">Phiên bản v54</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Xoá dữ liệu</h4>
@@ -5938,6 +5945,15 @@ function startNgay50k(){
     $("reloadBtn").onclick = () => location.reload();
   }
   if(navigator.storage && navigator.storage.persist) navigator.storage.persist().then(v => { persisted = v; }).catch(()=>{});
+
+  /* thanh đầu trang dính: đo chiều cao để các thanh dính khác nằm ngay dưới, và hiện nền mờ khi đã cuộn */
+  (function(){
+    const h = document.querySelector("main > header"); if(!h) return;
+    const setH = () => document.documentElement.style.setProperty("--head-h", h.offsetHeight + "px");
+    setH(); if(window.ResizeObserver) new ResizeObserver(setH).observe(h);
+    const onScroll = () => h.classList.toggle("stuck", window.scrollY > 4);
+    window.addEventListener("scroll", onScroll, { passive:true }); onScroll();
+  })();
 }
 N50K.ready.then(startNgay50k);
 </script>

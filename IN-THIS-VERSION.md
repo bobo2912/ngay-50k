@@ -1,6 +1,16 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v53, ngày 06/10/2026
+**Phiên bản hiện tại:** v54, ngày 06/10/2026
+
+---
+
+## Có gì mới trong v54 (so với v53)
+
+**Thanh đầu trang luôn dính trên cùng.** Thứ, ngày và nút Cài đặt không trôi mất khi cuộn.
+
+- Cuộn xuống thì thanh có nền mờ và một đường kẻ mảnh, để chữ bên dưới không lẫn vào.
+- Thanh "Tất cả thu chi trong tháng" ở Tổng quan dính ngay bên dưới, không bị che.
+- Lúc đang tìm kiếm, thanh đầu trang vẫn ẩn đi để ô tìm nằm sát đỉnh như trước.
 
 ---
 
@@ -11,16 +21,6 @@
 - Khoản có ngày tương lai chỉ được tính vào số dư **khi tới ngày đó**.
 - Tab Ví có thêm mục **Sắp tới, chưa trừ vào số dư**: liệt kê các khoản đó theo ngày, kèm **số dư dự kiến** sau mỗi khoản.
 - Ngày tương lai hiện đúng ngày, không còn ghi nhầm là "hôm nay".
-
----
-
-## Có gì mới trong v52 (so với v51)
-
-**Sửa lỗi số dư bị trừ hai lần.** Khoản vay, cho vay, trả nợ ghi bằng bản cũ (trước v49) không có giờ, chỉ có ngày. App từng coi chúng xảy ra lúc 12:00, nên khoản ghi sáng nay mà đối chiếu trước 12:00 bị trừ thêm một lần nữa.
-
-- Giờ khoản không có giờ được coi là xảy ra **đầu ngày**: cùng ngày với lần đối chiếu thì tính là đã có trong số dư bạn nhập, không trừ lại.
-- Khoản ghi từ v49 trở đi có giờ thật nên không bị ảnh hưởng.
-- Dòng biến động của khoản không có giờ chỉ ghi ngày, không ghi 00:00.
 
 ---
 
@@ -104,6 +104,7 @@
 
 ### Nền tảng
 - Cài lên màn hình chính như app, chạy **offline hoàn toàn**.
+- Thanh đầu trang (ngày, nút Cài đặt) luôn dính trên cùng khi cuộn.
 - Vuốt từ trái sang phải để từ trang con quay về trang trước trong cùng menu.
 - Dữ liệu **chỉ lưu trên máy** (IndexedDB), không gửi lên máy chủ nào. App không tải gì từ trang web khác.
 - Không còn giới hạn khoảng 5 MB dùng chung với các mini app khác.
@@ -118,7 +119,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v54** | Thanh đầu trang luôn dính trên cùng |
 | **v53** | Khoản ngày tương lai chưa trừ số dư, thêm mục Sắp tới |
-| **v52** | Sửa lỗi số dư trừ hai lần khoản vay ghi bằng bản cũ |
 
 *File này chỉ giữ ghi chú của hai bản gần nhất.*
