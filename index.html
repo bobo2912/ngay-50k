@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="format-detection" content="telephone=no">
 <link rel="manifest" href="manifest.webmanifest">
-<script>try{var t=localStorage.getItem("ngay50k-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
+<script>try{var t=localStorage.getItem("ngay50k-theme");if(t==="light"||t==="dark"||t==="pastel")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <style>
@@ -37,7 +37,7 @@
   padding-bottom:env(safe-area-inset-bottom,0px);
 }
 @media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
+  :root:not([data-theme="light"]):not([data-theme="pastel"]){
     --bg:#17111B; --surface:#221A28; --ink:#F3ECF5; --muted:#A99BB0; --line:#3A2E41;
     --note:#E0629C; --note-soft:#3F2233; --over:#F0645B; --ok:#5CC49A; --ok-soft:#1E3A30; --mb:#3B5BD9;
   }
@@ -451,7 +451,7 @@ header .date{color:var(--ink); font-size:1rem; font-weight:700}
   --blob1:#7FB4FF; --blob2:#C3B2FF; --blob3:#FFC9E1; --blob4:#B9F0DA;
 }
 @media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
+  :root:not([data-theme="light"]):not([data-theme="pastel"]){
     --bg:#0B1026; --surface:rgba(30,38,72,.62); --ink:#EEF2FF; --muted:#A7B1D0; --line:rgba(255,255,255,.10);
     --note:#78A8FF; --note-soft:rgba(120,168,255,.18); --over:#FF7D75; --ok:#52D39C; --ok-soft:rgba(82,211,156,.16); --mb:#8FB0FF;
     --glass:rgba(34,42,80,.46); --glass-strong:rgba(22,28,58,.86); --glass-border:rgba(255,255,255,.13); --glass-hi:rgba(255,255,255,.16);
@@ -654,7 +654,7 @@ html, body{overscroll-behavior-y:none; overscroll-behavior-x:none}
 .form label > span:first-child{color:var(--ink); font-weight:600}
 .form .field.need > label > span:first-child::after{content:" *"; color:var(--over)}
 :root{--field-strong:rgba(255,255,255,.9); --field-focus:#fff; --over-soft:rgba(195,52,44,.08)}
-@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){--field-strong:rgba(255,255,255,.10); --field-focus:rgba(255,255,255,.16); --over-soft:rgba(255,125,117,.12)} }
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]):not([data-theme="pastel"]){--field-strong:rgba(255,255,255,.10); --field-focus:rgba(255,255,255,.16); --over-soft:rgba(255,125,117,.12)} }
 :root[data-theme="dark"]{--field-strong:rgba(255,255,255,.10); --field-focus:rgba(255,255,255,.16); --over-soft:rgba(255,125,117,.12)}
 
 /* secondary controls stay small and quiet so the important fields lead */
@@ -698,7 +698,7 @@ html, body{overscroll-behavior-y:none; overscroll-behavior-x:none}
   --blob1:rgba(120,170,255,.30); --blob2:rgba(178,160,255,.24); --blob3:rgba(255,190,220,.22); --blob4:rgba(150,225,205,.18); --bg:#F2F4F9;
   --flat:#FFFFFF;
 }
-@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]):not([data-theme="pastel"]){
   --note:#78A8FF; --note-soft:rgba(120,168,255,.16); --ink:#EDF0F7; --muted:#9BA5BC; --line:rgba(255,255,255,.10);
   --glass:rgba(32,40,66,.55); --glass-border:rgba(255,255,255,.10); --glass-hi:rgba(255,255,255,.10); --glass-strong:rgba(20,26,46,.90);
   --shadow:0 8px 24px rgba(0,0,0,.35); --shadow-s:0 2px 10px rgba(0,0,0,.25);
@@ -827,7 +827,7 @@ main{padding-bottom:calc(86px + env(safe-area-inset-bottom,0px))}
 
 /* v24: solid sheet so no seam shows when the sheet is pulled down */
 :root{--sheet-bg:#F6F7FB}
-@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){--sheet-bg:#131829} }
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]):not([data-theme="pastel"]){--sheet-bg:#131829} }
 :root[data-theme="dark"]{--sheet-bg:#131829}
 .sheet{background:var(--sheet-bg); -webkit-backdrop-filter:none; backdrop-filter:none}
 .form-sheet > .grab, .form-sheet .form-head{background:var(--sheet-bg); -webkit-backdrop-filter:none; backdrop-filter:none}
@@ -1056,6 +1056,30 @@ header{margin-top:6px}
 .seg4{grid-template-columns:repeat(4,1fr)}
 .seg4 button{padding:7px 4px; font-size:.78rem}
 #cardPerCard[hidden]{display:none}
+
+/* ================= PASTEL ================= */
+/* luôn sáng, màu nhạt dịu; mỗi tab một màu nền cho thẻ đầu trang */
+:root[data-theme="pastel"]{
+  --bg:#FFF6F1; --surface:#FFFFFF; --ink:#3B2D3A; --muted:#857683; --line:#F1E1E6;
+  --note:#C65A82; --note-soft:#FBE2EC; --over:#D2574A; --over-soft:rgba(210,87,74,.10); --ok:#2F8A6A; --ok-soft:#DCF3E9; --mb:#1E3A8A;
+  --glass:rgba(255,255,255,.72); --glass-strong:rgba(255,250,247,.93); --glass-border:rgba(255,255,255,.9); --glass-hi:#FFFFFF;
+  --shadow:0 8px 22px rgba(198,90,130,.10); --shadow-s:0 2px 10px rgba(198,90,130,.08);
+  --field-strong:#FFFFFF; --field:#FFFFFF; --field-focus:#FFFFFF; --flat:#FFFFFF; --sheet-bg:#FFFAF7;
+  --tint-a:#F4A3C0; --tint-b:#D9668E; --tint-shadow:rgba(217,102,142,.28);
+  --blob1:rgba(170,232,210,.55); --blob2:rgba(206,192,255,.50); --blob3:rgba(255,198,178,.55); --blob4:rgba(255,234,160,.45);
+  --p-mint:#E2F6EE; --p-lilac:#EEE9FF; --p-peach:#FFEBE2; --p-butter:#FFF4D6; --p-sky:#E3F0FF; --p-rose:#FFE6EF;
+}
+:root[data-theme="pastel"] #tab-wallet .balbox{background:var(--p-mint); border-color:#CDEEDF}
+:root[data-theme="pastel"] #tab-today .note{background:var(--p-rose); border-color:#F9D3E1}
+:root[data-theme="pastel"] #tab-money .chero{background:var(--p-butter); border-color:#F7E6B5}
+:root[data-theme="pastel"] #tab-cards .chero{background:var(--p-lilac); border-color:#DCD3FB}
+:root[data-theme="pastel"] #tab-loans #loansMain > .ledger{background:var(--p-peach); border-color:#F8D6C8}
+:root[data-theme="pastel"] .kpi.inc{background:var(--p-mint); border-color:#CDEEDF}
+:root[data-theme="pastel"] #kpiCash{background:var(--p-peach); border-color:#F8D6C8}
+:root[data-theme="pastel"] #kpiCard{background:var(--p-lilac); border-color:#DCD3FB}
+:root[data-theme="pastel"] #kpiLoan{background:var(--p-sky); border-color:#CFE2FA}
+:root[data-theme="pastel"] .chero-foot{border-top-color:rgba(59,45,58,.08)}
+:root[data-theme="pastel"] .tabs button[aria-selected="true"]{background:var(--note-soft); color:var(--note)}
 </style>
 </head>
 <body>
@@ -1362,11 +1386,12 @@ header{margin-top:6px}
     <div class="set-page" id="setTheme" hidden>
       <div class="set-head"><button class="set-back" data-back>‹ Cài đặt</button><h2 tabindex="-1">Giao diện</h2></div>
 <section class="set-group" aria-labelledby="gTheme">
-      <p class="set-now">Tự động sẽ sáng hay tối theo cài đặt của iPhone.</p>
-      <div class="seg seg3" id="themeSeg" role="group" aria-label="Chọn giao diện" style="margin-top:12px">
+      <p class="set-now">Tự động sẽ sáng hay tối theo cài đặt của iPhone. Pastel luôn sáng, màu nhạt dịu, mỗi tab một màu.</p>
+      <div class="seg seg4" id="themeSeg" role="group" aria-label="Chọn giao diện" style="margin-top:12px">
         <button data-theme-opt="auto" aria-pressed="true">Tự động</button>
         <button data-theme-opt="light" aria-pressed="false">Sáng</button>
         <button data-theme-opt="dark" aria-pressed="false">Tối</button>
+        <button data-theme-opt="pastel" aria-pressed="false">Pastel</button>
       </div>
     </section>
     </div>
@@ -1513,7 +1538,7 @@ header{margin-top:6px}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v50</p>
+      <p class="sync" id="appVersion">Phiên bản v51</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Xoá dữ liệu</h4>
@@ -4376,10 +4401,11 @@ function startNgay50k(){
   const THEME_KEY = "ngay50k-theme";
   function applyTheme(t){
     const root = document.documentElement;
-    if(t === "light" || t === "dark") root.setAttribute("data-theme", t); else root.removeAttribute("data-theme");
+    const fixed = t === "light" || t === "dark" || t === "pastel";
+    if(fixed) root.setAttribute("data-theme", t); else root.removeAttribute("data-theme");
     document.querySelectorAll('meta[name="theme-color"]').forEach(m => {
       if(!m.dataset.media) m.dataset.media = m.getAttribute("media") || "";
-      if(t === "light" || t === "dark"){ m.removeAttribute("media"); m.setAttribute("content", t === "dark" ? "#0B1026" : "#EEF3FF"); }
+      if(fixed){ m.removeAttribute("media"); m.setAttribute("content", t === "dark" ? "#0B1026" : t === "pastel" ? "#FFF6F1" : "#EEF3FF"); }
       else { m.setAttribute("media", m.dataset.media); m.setAttribute("content", /dark/.test(m.dataset.media) ? "#0B1026" : "#EEF3FF"); }
     });
     document.querySelectorAll("#themeSeg button").forEach(b => b.setAttribute("aria-pressed", b.dataset.themeOpt === (t || "auto") ? "true" : "false"));
@@ -5531,7 +5557,7 @@ function startNgay50k(){
     if(id === "setRecur") renderRecur();
   }
   function renderSetHome(){
-    $("navTheme").textContent = { auto:"Tự động", light:"Sáng", dark:"Tối" }[curTheme] || "Tự động";
+    $("navTheme").textContent = { auto:"Tự động", light:"Sáng", dark:"Tối", pastel:"Pastel" }[curTheme] || "Tự động";
     $("navScan").textContent = scanMode === "live" ? "Quét trực tiếp" : "Camera iPhone";
     $("navBudget").textContent = fmt(state.budget) + "/ngày";
     $("navTags").textContent = allTags().length + " tag";

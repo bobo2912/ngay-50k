@@ -1,6 +1,17 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v50, ngày 06/10/2026
+**Phiên bản hiện tại:** v51, ngày 06/10/2026
+
+---
+
+## Có gì mới trong v51 (so với v50)
+
+**Giao diện Pastel.** Vào **Cài đặt → Giao diện**, chọn **Pastel** cạnh Tự động, Sáng, Tối.
+
+- Nền kem, chữ nâu tím than, nút và điểm nhấn màu hồng phấn.
+- Mỗi tab một màu cho thẻ đầu trang: Ví bạc hà, Giao dịch hồng, Tổng quan vàng kem, Thẻ oải hương, Khoản vay hồng đào.
+- Bốn ô Thu vào, Chi thường, Chi thẻ, Khoản vay ở Tổng quan cũng mỗi ô một màu.
+- Pastel luôn sáng, kể cả khi iPhone đang để chế độ tối. Chọn lại Tự động thì về như cũ.
 
 ---
 
@@ -13,25 +24,6 @@
 - **Đối chiếu và trả thẻ:** lịch sử các lần đối chiếu (kèm số lệch) và các lần trả thẻ nằm luôn trên tab, xoá được nếu ghi nhầm.
 - Dòng **Số dư ví** ở tab Giao dịch giờ dẫn về tab Ví.
 - Thanh tab có 5 mục: Ví, Tổng quan, Giao dịch, Thẻ, Khoản vay.
-
----
-
-## Có gì mới trong v49 (so với v48)
-
-**Biết ví đang còn bao nhiêu tiền, không chỉ thu chi theo tháng.** Ghi giao dịch vẫn y như cũ, không thêm bước nào.
-
-- **Số dư hiện tại** nằm đầu tab Tổng quan, và một dòng **Số dư ví** trong thẻ *Hôm nay còn được tiêu* ở tab Giao dịch.
-- Lần đầu bấm **Nhập số dư hiện tại**, gõ số đang thấy trong app ngân hàng. Từ đó app tự tính tiếp:
-  - khoản thu cộng vào, chi thường trừ ra;
-  - đi vay và được trả nợ cộng vào, cho vay và trả nợ trừ ra;
-  - **quẹt thẻ chưa trừ số dư**, chỉ cộng vào nợ thẻ.
-- **Trả thẻ** (nút mới ở tab Thẻ): tiền trả thẻ trừ vào số dư và trừ nợ thẻ, không tính là chi tiêu. Số tiền điền sẵn bằng số đang nợ.
-- Có nợ thẻ thì thấy luôn **sau khi trả thẻ còn bao nhiêu**.
-- **Đối chiếu số dư:** gõ số thật, app báo lệch bao nhiêu so với sổ rồi lấy số thật làm mốc mới. Khoản quên ghi trước lúc đối chiếu, ghi bù sau đó, không làm đổi số dư nữa vì số thật đã có nó.
-- **Lịch sử** các lần đối chiếu (kèm số lệch) và các lần trả thẻ, xoá được nếu ghi nhầm.
-- Số dư, lần đối chiếu và lần trả thẻ đi theo file sao lưu và gộp được giữa các máy.
-
-**Sửa lỗi Gộp file làm mất khoản định kỳ.** Trước đây gộp file sao lưu từ máy khác thì danh sách khoản định kỳ bị xoá trắng. Giờ được gộp như các khoản khác.
 
 ---
 
@@ -97,7 +89,7 @@
 - Bấm **Chuyển** để mở form đã điền sẵn thông tin.
 
 ### Cài đặt (bánh răng góc trên bên phải)
-- **Giao diện:** Tự động, Sáng hoặc Tối.
+- **Giao diện:** Tự động, Sáng, Tối hoặc Pastel.
 - **Quét mã QR:** Camera iPhone hoặc Quét trực tiếp, kèm thời gian tự tắt camera.
 - **Hạn mức chi một ngày.**
 - **Người nhận:** danh sách người hay chuyển tiền.
@@ -128,7 +120,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v51** | Thêm giao diện Pastel |
 | **v50** | Tab Ví riêng, đứng đầu, mở mặc định; biến động số dư từng khoản |
-| **v49** | Số dư ví: đối chiếu, trả thẻ, nợ thẻ; sửa lỗi gộp làm mất khoản định kỳ |
 
 *File này chỉ giữ ghi chú của hai bản gần nhất.*

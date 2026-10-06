@@ -40,7 +40,7 @@ Phải mở qua một máy chủ web, không mở thẳng bằng `file://`, vì 
 
 Chữ giải thích trên giao diện được giữ ở mức tối thiểu; phần dài hơn nằm sau nút **ⓘ** cạnh tiêu đề.
 
-**Cài đặt** — Giao diện sáng/tối/tự động, hạn mức mỗi ngày, quản lý tag, sao lưu và đồng bộ, dung lượng đang dùng.
+**Cài đặt** — Giao diện tự động/sáng/tối/pastel, hạn mức mỗi ngày, quản lý tag, sao lưu và đồng bộ, dung lượng đang dùng.
 
 ---
 
