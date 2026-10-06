@@ -1168,6 +1168,12 @@ html{scroll-padding-top:var(--head-h, 100px)}
 body.kb .chat-dock::before{display:none}
 .chat-dock .chat-bar{margin-top:0; box-shadow:var(--shadow-s); background:var(--glass-strong); -webkit-backdrop-filter:blur(18px); backdrop-filter:blur(18px)}
 body.kb .tabs{display:none}
+/* làm mờ nội dung cuộn phía sau, từ thanh menu xuống đáy màn hình */
+.tab-veil{position:fixed; z-index:38; left:0; right:0; bottom:0; height:calc(16px + 62px + 10px + env(safe-area-inset-bottom,0px)); pointer-events:none;
+  -webkit-backdrop-filter:blur(14px) saturate(140%); backdrop-filter:blur(14px) saturate(140%);
+  background:linear-gradient(to bottom, transparent, color-mix(in srgb, var(--bg) 55%, transparent));
+  -webkit-mask-image:linear-gradient(to bottom, transparent, #000 14px); mask-image:linear-gradient(to bottom, transparent, #000 14px)}
+body.kb .tab-veil{display:none}
 /* đang gõ: màn chat lấp đúng phần màn hình phía trên bàn phím (theo khung nhìn thật của iPhone),
    tin nhắn cuộn bên trong, khung nhập nằm ngay trên bàn phím; không phụ thuộc việc iPhone trượt trang */
 body.kb #tab-chat{position:fixed; z-index:45; left:0; right:0; top:var(--vv-top, 0px); height:var(--vv-h, 100vh);
@@ -1260,6 +1266,7 @@ body.kb #tab-chat .chat-sugg{display:none}
     </div>
   </header>
 
+  <div class="tab-veil" aria-hidden="true"></div>
   <nav class="tabs" role="tablist" aria-label="Menu">
     <button role="tab" data-tab="chat" aria-selected="true" id="tabFirst"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-4.9A8 8 0 1 1 21 12z"/><path d="M8.5 11h.01M12 11h.01M15.5 11h.01"/></svg><span>Trò chuyện</span></button>
     <button role="tab" data-tab="money" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9h-9z"/><path d="M14 3.3A9 9 0 0 1 20.7 10H14z"/></svg><span>Tổng quan</span></button>
@@ -1800,7 +1807,7 @@ body.kb #tab-chat .chat-sugg{display:none}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v74</p>
+      <p class="sync" id="appVersion">Phiên bản v75</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Xoá dữ liệu</h4>
