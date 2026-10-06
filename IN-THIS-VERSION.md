@@ -1,6 +1,16 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v54, ngày 06/10/2026
+**Phiên bản hiện tại:** v55, ngày 06/10/2026
+
+---
+
+## Có gì mới trong v55 (so với v54)
+
+**Thanh đầu trang liền một dải tới mép màn hình.** Ở v54, khi cuộn thì vùng giờ và pin vẫn là nền riêng, còn thanh ngày là một khối trắng tách rời, nhìn như có khe hở.
+
+- Giờ khi cuộn, nền mờ của thanh phủ lên tận vùng giờ và pin, thành một dải duy nhất.
+- Lúc chưa cuộn, mọi thứ nằm đúng chỗ như cũ.
+- App tự đo lại chiều cao thanh khi xoay máy, để thanh "Tất cả thu chi" luôn dính sát ngay bên dưới.
 
 ---
 
@@ -11,16 +21,6 @@
 - Cuộn xuống thì thanh có nền mờ và một đường kẻ mảnh, để chữ bên dưới không lẫn vào.
 - Thanh "Tất cả thu chi trong tháng" ở Tổng quan dính ngay bên dưới, không bị che.
 - Lúc đang tìm kiếm, thanh đầu trang vẫn ẩn đi để ô tìm nằm sát đỉnh như trước.
-
----
-
-## Có gì mới trong v53 (so với v52)
-
-**Khoản có ngày trong tương lai không trừ vào số dư hôm nay.** Trước đây ghi trước một lần cho vay thêm, trả nợ hay khoản thu cho ngày 28 tháng sau thì app trừ (hoặc cộng) luôn vào số dư hiện tại.
-
-- Khoản có ngày tương lai chỉ được tính vào số dư **khi tới ngày đó**.
-- Tab Ví có thêm mục **Sắp tới, chưa trừ vào số dư**: liệt kê các khoản đó theo ngày, kèm **số dư dự kiến** sau mỗi khoản.
-- Ngày tương lai hiện đúng ngày, không còn ghi nhầm là "hôm nay".
 
 ---
 
@@ -119,7 +119,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v55** | Thanh đầu trang liền một dải tới mép màn hình |
 | **v54** | Thanh đầu trang luôn dính trên cùng |
-| **v53** | Khoản ngày tương lai chưa trừ số dư, thêm mục Sắp tới |
 
 *File này chỉ giữ ghi chú của hai bản gần nhất.*
