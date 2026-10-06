@@ -1,6 +1,17 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v73, ngày 06/10/2026
+**Phiên bản hiện tại:** v74, ngày 06/10/2026
+
+---
+
+## Có gì mới trong v74 (so với v73)
+
+**Ngân sách AI bằng USD, báo khi sắp hết** (Cài đặt → Trợ lý AI → Ngân sách đã nạp).
+
+- Nhập số dư đang còn (USD) cho từng nền tảng: Claude, ChatGPT, Gemini. App trừ dần theo chi phí ước tính, hiện đã dùng, còn lại, phần trăm và thanh tiến độ.
+- Báo khi đã dùng **80%**, **95%** và khi **hết**; mỗi mức chỉ báo một lần.
+- **Thông báo đẩy** trên iPhone (bấm Bật thông báo đẩy; cần app đã thêm vào Màn hình chính), kèm lời nhắc ngay trong Trò chuyện. Chạm thông báo để mở app.
+- Nạp thêm: nhập lại số dư mới, bộ đếm của nền tảng đó bắt đầu lại.
 
 ---
 
@@ -12,13 +23,6 @@
 - Xem theo **Tháng này** hoặc **Từ trước tới nay**.
 - Tự sửa được **tỉ giá USD** (mặc định 26.000đ).
 - Số tiền là ước tính theo bảng giá niêm yết của nhà cung cấp (tháng 10/2026), chỉ đếm các lần gọi từ máy này kể từ bản v73. Nút **Đặt lại bộ đếm** (chạm hai lần).
-
----
-
-## Có gì mới trong v72 (so với v71)
-
-- **Sửa lỗi bản v71: chạm vào ô chat không hiện bàn phím.** Ô nhập bị dời lên ngay lúc ngón tay vừa chạm, nên cú chạm rơi ra ngoài ô. Giờ app đợi nhấc tay mới dời ô nhập và tự bật bàn phím; đầu trang và Số dư ví vẫn đứng yên.
-- Vuốt cuộn ngang qua ô chat không làm bật bàn phím.
 
 ---
 
@@ -125,6 +129,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v74** | Ngân sách AI bằng USD, thông báo khi sắp hết |
 | **v73** | Xem chi phí AI đã dùng theo từng nhà cung cấp |
 | **v72** | Sửa lỗi chạm ô chat không hiện bàn phím |
 | **v71** | Chạm ô chat chỉ đẩy ô nhập lên, ô nhập không bị menu che |
