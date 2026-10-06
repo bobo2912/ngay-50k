@@ -44,9 +44,9 @@ Chữ giải thích trên giao diện được giữ ở mức tối thiểu; ph
 
 ## Dữ liệu nằm ở đâu
 
-Dữ liệu chính nằm trong **IndexedDB** của trình duyệt: cơ sở dữ liệu `ngay50k`, bảng `kv`, khoá `ngay50k:v1` (bản để hoàn tác lần nhập file nằm ở khoá `ngay50k:beforeImport`). Giá trị là chuỗi JSON, giống hệt nội dung file sao lưu. Vài cài đặt nhỏ (giao diện, kiểu quét QR, lần sao lưu gần nhất) vẫn để trong `localStorage`. Không có API, không có cookie, không có thống kê truy cập.
+Dữ liệu chính nằm trong **IndexedDB** của trình duyệt: cơ sở dữ liệu `ngay50k` (phiên bản 2), bảng `kv`, khoá `ngay50k:v1` (bản để hoàn tác lần nhập file nằm ở khoá `ngay50k:beforeImport`). Giá trị là chuỗi JSON, giống hệt nội dung file sao lưu. Vài cài đặt nhỏ (giao diện, kiểu quét QR, lần sao lưu gần nhất) vẫn để trong `localStorage`. Không có API, không có cookie, không có thống kê truy cập.
 
-Khi mở, app đọc hết dữ liệu vào bộ nhớ một lần (`N50K.ready`), rồi mới chạy phần còn lại. Mỗi lần lưu được ghi xuống IndexedDB ngay; các lần ghi dồn dập được gộp lại. Từ bản v46 trở về trước dữ liệu nằm trong `localStorage`; lần mở đầu tiên ở v47 tự chép sang, đọc lại để kiểm tra rồi xoá bản cũ. Máy không mở được IndexedDB (hoặc treo quá 4 giây) thì app lưu tạm vào `localStorage`, lần sau mở được sẽ chuyển tiếp, lấy bản có `updated` mới hơn.
+Khi mở, app đọc hết dữ liệu vào bộ nhớ một lần (`N50K.ready`), rồi mới chạy phần còn lại. Mỗi lần lưu được ghi xuống IndexedDB ngay; các lần ghi dồn dập được gộp lại. Từ bản v46 trở về trước dữ liệu nằm trong `localStorage`; lần mở đầu tiên ở v47 tự chép sang, đọc lại để kiểm tra rồi xoá bản cũ. IndexedDB chưa mở xong sau 4 giây thì app chạy luôn bằng `localStorage` nhưng vẫn chờ tiếp; mở được lúc nào thì chuyển sang lúc đó (`adopt`), lấy bản có `updated` mới hơn. Mở lỗi thì app tự thử lại mỗi lần quay lại app, và trang Dung lượng ghi lý do (`N50K.why()`) kèm nút thử lại (`N50K.retry()`).
 
 Hệ quả cần biết:
 

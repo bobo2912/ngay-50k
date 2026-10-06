@@ -1,6 +1,19 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v47, ngày 06/10/2026
+**Phiên bản hiện tại:** v48, ngày 06/10/2026
+
+---
+
+## Có gì mới trong v48 (so với v47)
+
+**Sửa lỗi iPhone báo "chưa mở được IndexedDB".** Ở v47, nếu iPhone mở IndexedDB chậm hơn 4 giây hoặc báo lỗi một lần, app lưu kiểu cũ cho tới lần mở sau.
+
+- **Mở chậm thì vẫn chờ tiếp:** app mở ngay bằng dữ liệu cũ, IndexedDB mở xong lúc nào thì tự chuyển sang lúc đó, kể cả khoản vừa ghi trong lúc chờ.
+- **Tránh lỗi treo của Safari** ở lần mở IndexedDB đầu tiên.
+- **Tự thử lại** mỗi lần quay lại app (tối đa 30 giây một lần).
+- **Trang Dung lượng ghi rõ lý do** không mở được, kèm nút **Thử mở lại IndexedDB**.
+- Cơ sở dữ liệu bị thiếu bảng thì app tự tạo lại.
+- Trong mọi trường hợp dữ liệu vẫn được lưu, không mất khoản nào.
 
 ---
 
@@ -15,27 +28,6 @@
 - **Trang Dung lượng** hiện phần trăm theo chỗ lưu thật mà máy cho phép, kèm dòng báo khi máy đã cho phép giữ dữ liệu lâu dài.
 - Máy nào không mở được IndexedDB thì app tự lưu kiểu cũ, không mất dữ liệu; lần sau mở được sẽ tự chuyển tiếp, lấy bản mới hơn.
 - Mở app ở hai cửa sổ cùng lúc thì cửa sổ này lưu, cửa sổ kia tự cập nhật theo.
-
----
-
-## Có gì mới trong v46 (so với v45)
-
-**Sửa được khoản ngay tại chỗ vừa tìm thấy.** Trước đây tìm ra một khoản rồi muốn đổi số tiền thì phải nhớ ngày, sang tab Giao dịch, lùi về ngày đó rồi tìm lại trong danh sách.
-
-- **Chạm vào một dòng trong kết quả tìm kiếm** là mở luôn form sửa của khoản đó.
-- **Chạm vào một dòng trong bảng chi tiết nhóm** cũng vậy.
-- Khoản chi thẻ mở form sửa của thẻ, khoản thu mở form khoản thu, khoản chi thường mở form chi — đúng loại của nó.
-- Sửa xong lưu hay huỷ thì **bảng chi tiết nhóm mở lại và cập nhật luôn** số mới, không phải mở lại từ đầu.
-
-**Khoản định kỳ ghi được vào thẻ.** Tiền nhà, tiền mạng, tiền học trả bằng thẻ tín dụng thì trước đây vẫn bị ghi thành chi thường.
-
-- Khai khoản định kỳ giờ có thêm trường **Ghi vào**: chọn *Chi thường* hoặc chọn một thẻ trong danh sách.
-- Chọn thẻ thì mỗi tháng app tự ghi khoản đó vào đúng thẻ, có gắn nhóm, lên đúng kỳ sao kê và biểu đồ của thẻ.
-- Danh sách khoản định kỳ ghi rõ khoản nào vào thẻ nào.
-
-**Sửa lỗi form sửa bị nằm dưới bảng đang mở.** Mở form sửa từ một bảng đã mở sẵn thì form hiện ra phía sau bảng đó, coi như bấm không được. Giờ mỗi bảng mở thêm tự nằm trên bảng trước.
-
----
 
 ---
 
@@ -125,7 +117,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v48** | Sửa lỗi iPhone chưa mở được IndexedDB: tự chờ, tự thử lại, ghi rõ lý do |
 | **v47** | Dữ liệu chuyển sang IndexedDB, bỏ giới hạn khoảng 5 MB |
-| **v46** | Sửa được khoản ngay từ kết quả tìm kiếm và bảng chi tiết nhóm, khoản định kỳ ghi được vào thẻ |
 
 *File này chỉ giữ ghi chú của hai bản gần nhất.*
