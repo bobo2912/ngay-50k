@@ -481,12 +481,12 @@ main{padding:14px 16px calc(112px + env(safe-area-inset-bottom,0px))}
 
 /* glass surfaces */
 .note, .form, .ledger, .loan, .detail-card, .set-group, .import-card, .backup-nudge, .result,
-#tab-today section:has(#list), #tab-today section:has(#week), #tab-wallet section, .chart-sec, #tab-money section:has(#catBreakdown), #tab-money section:has(#ledgerList),
+#tab-today section:has(#list), #tab-today section:has(#week), #tab-today #calSec, #tab-wallet section, .chart-sec, #tab-money section:has(#catBreakdown), #tab-money section:has(#ledgerList),
 #setPeople section:has(#peopleList), .settings-head, .tabs{
   background:var(--glass); -webkit-backdrop-filter:blur(22px) saturate(180%); backdrop-filter:blur(22px) saturate(180%);
   border:1px solid var(--glass-border); box-shadow:inset 0 1px 0 var(--glass-hi), var(--shadow);
 }
-#tab-today section:has(#list), #tab-today section:has(#week), #tab-wallet section, .chart-sec, #tab-money section:has(#catBreakdown), #tab-money section:has(#ledgerList), #setPeople section:has(#peopleList){
+#tab-today section:has(#list), #tab-today section:has(#week), #tab-today #calSec, #tab-wallet section, .chart-sec, #tab-money section:has(#catBreakdown), #tab-money section:has(#ledgerList), #setPeople section:has(#peopleList){
   border-radius:26px; padding:14px 16px; margin-top:16px}
 .form, .ledger, .detail-card, .set-group, .result{border-radius:26px}
 .form{padding:16px}
@@ -722,7 +722,7 @@ body::before, .settings::before{background:
   var(--bg)}
 
 /* flat cards everywhere except the few that should float */
-#tab-today section:has(#list), #tab-today section:has(#week), #tab-wallet section, .chart-sec, #tab-money section:has(#catBreakdown),
+#tab-today section:has(#list), #tab-today section:has(#week), #tab-today #calSec, #tab-wallet section, .chart-sec, #tab-money section:has(#catBreakdown),
 #tab-money section:has(#ledgerList), #setPeople section:has(#peopleList), .loan, .detail-card, .set-group, .set-nav,
 .import-card, .backup-nudge, .result, .form{
   background:var(--flat); -webkit-backdrop-filter:none; backdrop-filter:none;
@@ -1086,6 +1086,41 @@ html{scroll-padding-top:var(--head-h, 100px)}
 .seg4 button{padding:7px 4px; font-size:.78rem}
 #cardPerCard[hidden]{display:none}
 
+
+/* ---------- lịch chi tiêu (tab Tài khoản) ---------- */
+#calSec{margin-top:16px}
+.cal-head{display:flex; align-items:center; justify-content:space-between; gap:8px}
+.cal-head h2{margin:0; flex:1; text-align:center; font-size:.95rem; font-weight:700; letter-spacing:0; text-transform:none; color:var(--ink)}
+.cal-head button{width:34px; height:34px; border-radius:999px; border:1px solid var(--line); background:var(--flat); font-size:1.1rem; color:var(--ink)}
+.cal-head button:disabled{opacity:.35}
+.cal-sum{margin:6px 0 10px; text-align:center; font-size:.8rem; color:var(--muted)}
+.cal-sum b{color:var(--ink)}
+.cal-wd, .cal{display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:4px}
+.cal-wd span{text-align:center; font-size:.68rem; font-weight:600; color:var(--muted); padding-bottom:2px}
+.cal button, .cal span{aspect-ratio:1/1.08; min-width:0; border-radius:10px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px; padding:0}
+.cal button{border:1px solid transparent; background:var(--line); background:color-mix(in srgb, var(--line) 55%, transparent); color:var(--ink); font:inherit}
+.cal button .d{font-size:.78rem; font-weight:600; line-height:1}
+.cal button .v{font-size:.6rem; font-weight:700; line-height:1.1; font-variant-numeric:tabular-nums; white-space:nowrap}
+.cal button .v:empty{display:none}
+.cal button.h1{background:color-mix(in srgb, var(--note) 14%, var(--flat))}
+.cal button.h2{background:color-mix(in srgb, var(--note) 30%, var(--flat))}
+.cal button.h3{background:color-mix(in srgb, var(--note) 48%, var(--flat))}
+.cal button.h4{background:color-mix(in srgb, var(--note) 68%, var(--flat)); color:#fff}
+.cal button.h5{background:var(--note); color:#fff}
+.cal button.over{box-shadow:inset 0 -3px 0 var(--over)}
+.cal button.today{border-color:var(--ink)}
+.cal button.sel{outline:2px solid var(--note); outline-offset:1px}
+.cal button.top::after{content:"★"; position:absolute; top:1px; right:3px; font-size:.55rem; line-height:1}
+.cal button{position:relative}
+.cal button.future{opacity:.35}
+.cal-legend{display:flex; align-items:center; justify-content:center; gap:4px; margin-top:10px; font-size:.7rem; color:var(--muted)}
+.cal-legend i{width:14px; height:10px; border-radius:3px; display:block}
+.cal-legend .h1{background:color-mix(in srgb, var(--note) 14%, var(--flat))}
+.cal-legend .h2{background:color-mix(in srgb, var(--note) 30%, var(--flat))}
+.cal-legend .h3{background:color-mix(in srgb, var(--note) 48%, var(--flat))}
+.cal-legend .h4{background:color-mix(in srgb, var(--note) 68%, var(--flat))}
+.cal-legend .h5{background:var(--note)}
+.cal-legend span{margin:0 3px}
 /* ================= PASTEL ================= */
 /* luôn sáng, dịu và gọn: nền kem ấm, thẻ trắng, một màu nhấn hồng đất, mọi thẻ đầu trang cùng một tông */
 :root[data-theme="pastel"]{
@@ -1163,15 +1198,7 @@ html{scroll-padding-top:var(--head-h, 100px)}
       <div class="remain num" id="remain">50.000đ</div>
       <div class="hero-bar"><div class="spent-mask" id="mask"></div></div>
       <p class="status" id="status"></p>
-      <button type="button" class="cardline" id="heroBal" hidden>
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h15a3 3 0 0 1 3 3v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M3 7l12-4v4"/><circle cx="16.5" cy="13.5" r="1.2"/></svg>
-        <span>Số dư ví</span><b class="num" id="heroBalSum">0đ</b><span class="ch" aria-hidden="true">›</span>
-      </button>
-      <button type="button" class="cardline" id="heroCard" hidden>
-        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2.5"/><path d="M2 10h20"/></svg>
-        <span>Thẻ tháng này</span><b class="num" id="heroCardSum">0đ</b><span class="ch" aria-hidden="true">›</span>
-      </button>
-    </div>
+      <span id="heroBal" hidden></span><span id="heroCard" hidden></span><b id="heroBalSum" hidden></b><b id="heroCardSum" hidden></b>    </div>
     <button type="button" class="miss-nudge" id="missNudge" hidden></button>
     <div class="backup-nudge" id="backupNudge" hidden>
       <p id="nudgeText"></p>
@@ -1218,6 +1245,18 @@ html{scroll-padding-top:var(--head-h, 100px)}
       <div class="week-labels" id="weekLabels"></div>
       <p class="week-avg" id="weekAvg" hidden></p>
       <p class="week-sum" id="weekSum"></p>
+    </section>
+
+    <section id="calSec">
+      <div class="cal-head">
+        <button type="button" id="calPrev" aria-label="Tháng trước">‹</button>
+        <h2 id="calTitle">Lịch chi tiêu</h2>
+        <button type="button" id="calNext" aria-label="Tháng sau">›</button>
+      </div>
+      <p class="cal-sum" id="calSum"></p>
+      <div class="cal-wd" aria-hidden="true"><span>T2</span><span>T3</span><span>T4</span><span>T5</span><span>T6</span><span>T7</span><span>CN</span></div>
+      <div class="cal" id="calGrid" role="grid"></div>
+      <div class="cal-legend" aria-hidden="true"><span>Ít</span><i class="h1"></i><i class="h2"></i><i class="h3"></i><i class="h4"></i><i class="h5"></i><span>Nhiều</span></div>
     </section>
 
   </div>
@@ -1568,7 +1607,7 @@ html{scroll-padding-top:var(--head-h, 100px)}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v57</p>
+      <p class="sync" id="appVersion">Phiên bản v58</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Xoá dữ liệu</h4>
@@ -2698,8 +2737,7 @@ function startNgay50k(){
     const mp = now.getFullYear() + "-" + pad(now.getMonth()+1) + "-";
     let cs = 0;
     for(const k in state.cardTx) if(k.indexOf(mp) === 0) (state.cardTx[k]||[]).forEach(x => cs += Number(x.amt) || 0);
-    $("heroCard").hidden = !cs;
-    if(cs) $("heroCardSum").textContent = fmt(cs);
+    /* tab Tài khoản chỉ lo chi tiêu trên tài khoản: không hiện số dư ví hay chi thẻ ở đây */
 
     renderRepeat(); renderMiss();
 
@@ -3625,6 +3663,7 @@ function startNgay50k(){
   function resetTab(name){
     if(name === "wallet"){ flowLimit = 30; renderBalance(); }
     else if(name === "today"){
+      calMonth = null;
       viewDay = null;
       if(!$("formBox").hidden) closeForm();
       msg("");
@@ -3657,7 +3696,7 @@ function startNgay50k(){
     ["wallet","today","money","loans","cards"].forEach(n => $("tab-"+n).hidden = n !== name);
     window.scrollTo(0,0);
   }
-  function renderAll(){ renderToday(); renderMoney(); renderLoans(); renderPeople(); renderCards(); renderBalance(); }
+  function renderAll(){ renderToday(); renderCal(); renderMoney(); renderLoans(); renderPeople(); renderCards(); renderBalance(); }
 
   /* ---------- wiring ---------- */
   function chipSet(container, list, onPick){
@@ -3966,6 +4005,64 @@ function startNgay50k(){
   }
   function settingsOpenNow(){ const el = $("settings"); return el && !el.hidden && el.classList.contains("show"); }
 
+  /* ---------- lịch chi tiêu tháng (tab Tài khoản) ----------
+     Mỗi ô là một ngày: số tiền chi hằng ngày trên tài khoản (không kể khoản định kỳ như tiền nhà, để một khoản lớn
+     không làm mọi ngày khác nhạt đi), màu càng đậm chi càng nhiều
+     (so với ngày chi nhiều nhất trong tháng). Gạch đỏ dưới ô: vượt hạn mức ngày. ★ là ngày chi nhiều nhất. */
+  var calMonth = null;
+  function renderCal(){
+    if(!calMonth){ calMonth = new Date(); calMonth.setDate(1); }
+    const y = calMonth.getFullYear(), m = calMonth.getMonth(), now = new Date();
+    const prefix = y + "-" + pad(m+1) + "-", tk = todayKey(), sel = viewDay || tk, b = state.budget;
+    $("calTitle").textContent = "Lịch chi tiêu tháng " + (m+1) + (y !== now.getFullYear() ? "/" + y : "");
+    $("calNext").disabled = y > now.getFullYear() || (y === now.getFullYear() && m >= now.getMonth());
+    const nDays = new Date(y, m+1, 0).getDate(), lead = (new Date(y, m, 1).getDay() + 6) % 7;
+    const vals = []; let total = 0, fixed = 0, maxV = 0, maxK = null, spentDays = 0, overDays = 0;
+    for(let d = 1; d <= nDays; d++){
+      const k = prefix + pad(d), v = sumLimit(state.days[k]);
+      fixed += sumOf(state.days[k]) - v;
+      vals.push(v); total += v;
+      if(v > 0) spentDays++;
+      if(sumLimit(state.days[k]) > b) overDays++;
+      if(v > maxV){ maxV = v; maxK = k; }
+    }
+    const grid = $("calGrid"); grid.innerHTML = "";
+    for(let i = 0; i < lead; i++) grid.appendChild(document.createElement("span"));
+    vals.forEach((v, i) => {
+      const d = i + 1, k = prefix + pad(d), bt = document.createElement("button");
+      bt.type = "button";
+      bt.innerHTML = '<span class="d"></span><span class="v"></span>';
+      bt.querySelector(".d").textContent = d;
+      bt.querySelector(".v").textContent = v ? fmtShort(v) : "";
+      let lv = 0;
+      if(v > 0 && maxV > 0){ const r = v / maxV; lv = r > .8 ? 5 : r > .6 ? 4 : r > .4 ? 3 : r > .2 ? 2 : 1; }
+      if(lv) bt.classList.add("h" + lv);
+      if(sumLimit(state.days[k]) > b) bt.classList.add("over");
+      if(k === maxK && spentDays > 1) bt.classList.add("top");
+      if(k === tk) bt.classList.add("today");
+      if(k === sel) bt.classList.add("sel");
+      const future = k > tk;
+      if(future){ bt.classList.add("future"); bt.disabled = true; }
+      bt.setAttribute("aria-label", fmtDate(k) + (v ? ", đã chi " + fmt(v) : ", chưa chi"));
+      bt.onclick = () => {
+        viewDay = k === tk ? null : k;
+        renderAll();
+        const sec = $("list").closest("section");
+        if(sec) sec.scrollIntoView({ behavior:"smooth", block:"start" });
+      };
+      grid.appendChild(bt);
+    });
+    const md = maxK ? new Date(maxK + "T00:00:00") : null;
+    $("calSum").innerHTML = total
+      ? "Đã chi <b>" + fmt(total) + "</b> trong " + spentDays + " ngày"
+        + (md ? " · nhiều nhất <b>" + md.getDate() + "/" + (md.getMonth()+1) + "</b>: <b>" + fmt(maxV) + "</b>" : "")
+        + (overDays ? " · " + overDays + " ngày vượt hạn mức" : "")
+        + (fixed ? ". Chưa kể khoản định kỳ " + fmt(fixed) + "." : "")
+      : fixed ? "Chỉ có khoản định kỳ " + fmt(fixed) + " trong tháng này." : "Chưa có khoản chi nào trong tháng này.";
+  }
+  $("calPrev").onclick = () => { calMonth = new Date(calMonth.getFullYear(), calMonth.getMonth() - 1, 1); renderCal(); };
+  $("calNext").onclick = () => { if(!$("calNext").disabled){ calMonth = new Date(calMonth.getFullYear(), calMonth.getMonth() + 1, 1); renderCal(); } };
+
   /* ---------- số dư ví: hiển thị, đối chiếu, trả thẻ ----------
      (dùng var và function: renderAll() chạy lần đầu trước khi tới đoạn này) */
   var balEditing = false, payCardId = null, flowLimit = 30;
@@ -3985,7 +4082,7 @@ function startNgay50k(){
       big.textContent = "Chưa có"; big.parentNode.classList.remove("neg");
       sub.textContent = "Nhập số dư đang có trong tài khoản, app sẽ tự tính tiếp theo từng khoản bạn ghi.";
       $("balWhen").textContent = ""; $("balOpenLabel").textContent = "Nhập số dư hiện tại";
-      $("heroBal").hidden = true; $("heroBal").classList.remove("mid");
+
       $("walletPay").hidden = true; $("flowSec").hidden = true; $("soonSec").hidden = true;
       renderBalHist();
       return;
@@ -3998,9 +4095,7 @@ function startNgay50k(){
     sub.hidden = !parts.length;
     $("balWhen").textContent = "đối chiếu " + stampText(r.anchor.t);
     $("balOpenLabel").textContent = "Đối chiếu số dư";
-    $("heroBal").hidden = false;
-    $("heroBalSum").textContent = (r.bal < 0 ? "−" : "") + fmt(Math.abs(r.bal));
-    $("heroBal").classList.toggle("mid", !$("heroCard").hidden);
+
     $("walletPay").hidden = !hasCards && !(r.debt > 0);
     renderFlows(r);
     renderBalHist();
@@ -4142,7 +4237,7 @@ function startNgay50k(){
   $("balOpen").onclick = openBalance;
   $("walletPay").onclick = () => openPayCard();
   $("flowMore").onclick = () => { flowLimit = (flowLimit || 30) + 30; renderBalance(); };
-  $("heroBal").onclick = () => showTab("wallet");
+
   $("closeBal").onclick = closeBalance; $("balCancel").onclick = closeBalance; $("balBack").onclick = closeBalance;
   $("balSave").onclick = saveBalance;
   ["balAmt", "balCard"].forEach(id => {
@@ -5386,7 +5481,7 @@ function startNgay50k(){
   $("addCardTxBtn").onclick = () => openCardTx(null, todayKey());
   $("addCardBtn").onclick = () => openCardEdit(null);
   $("openCardsBtn").onclick = () => { renderCardBank(); showSheet("cardsSheet", "cardsBack"); };
-  $("heroCard").onclick = () => showTab("cards");
+
   $("kpiLoan").onclick = () => showTab("loans");
   document.addEventListener("click", e => {
     const b = e.target.closest(".ib[data-info]"); if(!b) return;
