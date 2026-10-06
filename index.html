@@ -1538,7 +1538,7 @@ header{margin-top:6px}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v51</p>
+      <p class="sync" id="appVersion">Phiên bản v52</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Xoá dữ liệu</h4>
@@ -2257,10 +2257,13 @@ function startNgay50k(){
      + khoản thu, − chi thường, − tiền trả thẻ, ± tiền vay/cho vay/trả nợ.
      Quẹt thẻ không trừ số dư, chỉ cộng vào nợ thẻ. Khoản xảy ra trước lần đối chiếu (kể cả ghi bù sau đó)
      không tính lại, vì số dư thật bạn nhập đã bao gồm nó. */
+  /* Khoản không có giờ thật (ghi bằng bản cũ, hoặc chỉ có ngày) được coi là xảy ra lúc 00:00 của ngày đó:
+     nếu cùng ngày với lần đối chiếu thì tính là đã có trước khi đối chiếu, không trừ lại lần nữa. */
   function recTime(k, t){
     if(t && keyOf(new Date(t)) === k) return t;
-    return new Date((k || todayKey()) + "T12:00:00").getTime();
+    return new Date((k || todayKey()) + "T00:00:00").getTime();
   }
+  function untimed(t){ const d = new Date(t); return !d.getHours() && !d.getMinutes() && !d.getSeconds() && !d.getMilliseconds(); }
   function balAnchor(){
     let a = null;
     (state.bals || []).forEach(b => { if(!a || (b.t || 0) > (a.t || 0)) a = b; });
@@ -4008,7 +4011,7 @@ function startNgay50k(){
       li.innerHTML = '<span class="fi" aria-hidden="true"></span><div class="fd"><div></div><div></div></div><div class="fa"><b class="num"></b><small class="num"></small></div>';
       li.querySelector(".fi").textContent = x.icon;
       li.querySelector(".fd div:first-child").textContent = x.label;
-      li.querySelector(".fd div:last-child").textContent = stampText(x.t) + " · " + x.kind;
+      li.querySelector(".fd div:last-child").textContent = (untimed(x.t) ? stampText(x.t).replace(/ 00:00$/, "") : stampText(x.t)) + " · " + x.kind;
       const b = li.querySelector(".fa b");
       if(x.card){ b.textContent = fmt(x.amt); b.className = "num mute"; li.querySelector(".fa small").textContent = "nợ thẻ"; }
       else {
