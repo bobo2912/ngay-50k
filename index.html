@@ -1745,7 +1745,7 @@ body.kb .tabs{display:none}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v66</p>
+      <p class="sync" id="appVersion">Phiên bản v67</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Xoá dữ liệu</h4>
@@ -4677,32 +4677,53 @@ function startNgay50k(){
   $("chatForm").addEventListener("submit", e => { e.preventDefault(); const ta = $("chatIn"); const v = ta.value; ta.value = ""; chatGrow(); chatSend(v); });
   $("chatIn").addEventListener("input", chatGrow);
   $("chatIn").addEventListener("keydown", e => { if(e.key === "Enter" && !e.shiftKey && !e.isComposing){ e.preventDefault(); $("chatForm").requestSubmit ? $("chatForm").requestSubmit() : $("chatSend").click(); } });
+  /* Đặt khung nhập ngay trên thanh tab (hoặc ngay trên bàn phím khi đang gõ).
+     Chỉ ghi lại vị trí và chỉ kéo về cuối khi vị trí THẬT SỰ đổi; trước đây chạy theo mỗi lần cuộn
+     nên giành thao tác cuộn của người dùng, gây giật trên iPhone. */
+  var dockLast = { b:-1, h:-1 }, dockRaf = 0;
   function placeDock(){
     const dock = $("chatDock"), tabs = document.querySelector(".tabs"); if(!dock) return;
-    const atEnd = currentTab === "chat" && !$("tab-chat").hidden && window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 140;
     const vv = window.visualViewport, kb = document.body.classList.contains("kb") && vv;
     let b;
-    if(kb){ b = Math.max(0, window.innerHeight - (vv.height + vv.offsetTop)) + 8; }
-    else if(tabs && getComputedStyle(tabs).display !== "none" && tabs.getBoundingClientRect().height){ b = Math.max(0, window.innerHeight - tabs.getBoundingClientRect().top) + 8; }
+    if(kb){ b = Math.max(0, Math.round(window.innerHeight - (vv.height + vv.offsetTop))) + 8; }
+    else if(tabs && getComputedStyle(tabs).display !== "none" && tabs.getBoundingClientRect().height){ b = Math.max(0, Math.round(window.innerHeight - tabs.getBoundingClientRect().top)) + 8; }
     else b = 16;
-    document.documentElement.style.setProperty("--dock-b", b + "px");
-    document.documentElement.style.setProperty("--dock-h", dock.offsetHeight + "px");
-    /* chừa đủ chỗ cuối danh sách để tin cuối nằm ngay trên khung nhập: phần khung nhập chiếm từ đáy màn hình, trừ lề dưới sẵn có của trang */
+    const h = dock.offsetHeight;
+    if(Math.abs(b - dockLast.b) < 2 && h === dockLast.h) return;             /* không đổi gì: không động vào trang */
+    const visible = currentTab === "chat" && !$("tab-chat").hidden;
+    const atEnd = visible && window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 140;
+    dockLast = { b, h };
+    const root = document.documentElement.style;
+    root.setProperty("--dock-b", b + "px");
+    root.setProperty("--dock-h", h + "px");
     const mainPad = parseFloat(getComputedStyle(document.querySelector("main")).paddingBottom) || 0;
-    document.documentElement.style.setProperty("--chat-pad", Math.max(0, b + dock.offsetHeight + 10 - mainPad) + "px");
-    if(atEnd) requestAnimationFrame(() => window.scrollTo(0, document.documentElement.scrollHeight));   /* đang ở cuối thì giữ ở cuối khi khung nhập đổi chỗ */
+    root.setProperty("--chat-pad", Math.max(0, b + h + 10 - mainPad) + "px");
+    if(atEnd) requestAnimationFrame(() => window.scrollTo(0, document.documentElement.scrollHeight));
   }
+  function placeDockSoon(){ if(dockRaf) return; dockRaf = requestAnimationFrame(() => { dockRaf = 0; placeDock(); }); }
   $("chatIn").addEventListener("focus", () => { document.body.classList.add("kb"); placeDock(); setTimeout(() => { placeDock(); chatScrollEnd(true); }, 350); });
   $("chatIn").addEventListener("blur", () => { document.body.classList.remove("kb"); setTimeout(placeDock, 60); });
-  if(window.visualViewport){ visualViewport.addEventListener("resize", placeDock); visualViewport.addEventListener("scroll", placeDock); }
-  window.addEventListener("resize", placeDock);
-  if(window.ResizeObserver) new ResizeObserver(placeDock).observe($("chatDock"));
+  /* khung nhìn chỉ đổi thật khi bàn phím bật/tắt; lúc cuộn bình thường thì bỏ qua */
+  if(window.visualViewport){
+    visualViewport.addEventListener("resize", placeDockSoon);
+    visualViewport.addEventListener("scroll", () => { if(document.body.classList.contains("kb")) placeDockSoon(); }, { passive:true });
+  }
+  window.addEventListener("resize", placeDockSoon);
+  if(window.ResizeObserver) new ResizeObserver(placeDockSoon).observe($("chatDock"));
   $("chatToWallet").onclick = () => showTab("wallet");
   $("walletToChat").onclick = () => showTab("chat");
   [...$("homeSeg").children].forEach(b => b.onclick = () => { lsSet(HOME_KEY, b.dataset.home); applyHome(); renderSetHome(); });
   /* bấm ô đầu tiên khi đang ở màn hình kia thì về màn hình mở đầu */
   N50K.onRemoteChat = null;
-  chatLoad(); applyHome(); renderChat(); chatGrow();
+  /* mỗi lần mở app là một cuộc trò chuyện mới cho gọn; khoản đã ghi vẫn nằm trong dữ liệu.
+     App nằm nền quá 30 phút rồi mở lại cũng bắt đầu cuộc trò chuyện mới. */
+  chatLoad(); chat.msgs = []; chatSave();
+  var chatHiddenAt = 0;
+  document.addEventListener("visibilitychange", () => {
+    if(document.hidden){ chatHiddenAt = Date.now(); return; }
+    if(chatHiddenAt && Date.now() - chatHiddenAt > 30 * 60000 && !aiBusy){ chat.msgs = []; chatSave(); renderChat(); }
+  });
+  applyHome(); renderChat(); chatGrow();
   if(homeTab() === "wallet"){ currentTab = "wallet"; $("tab-chat").hidden = true; $("tab-wallet").hidden = false; }
   else { chatScrollEnd(false); setTimeout(() => chatScrollEnd(false), 350); }
   placeDock(); setTimeout(placeDock, 300);
