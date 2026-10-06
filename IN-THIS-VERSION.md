@@ -1,6 +1,16 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v55, ngày 06/10/2026
+**Phiên bản hiện tại:** v56, ngày 06/10/2026
+
+---
+
+## Có gì mới trong v56 (so với v55)
+
+**Thanh đầu của Cài đặt cũng liền một dải tới mép màn hình.** Trước đây vùng giờ và pin trong Cài đặt là nền riêng, thanh "Cài đặt · Xong" là một khối tách rời bên dưới.
+
+- Thanh giờ phủ lên tận vùng giờ và pin, giống thanh đầu trang chính.
+- Chưa cuộn thì trong suốt, cuộn xuống thì có nền mờ và đường kẻ mảnh.
+- Áp dụng cho mọi trang con trong Cài đặt và mọi giao diện.
 
 ---
 
@@ -11,16 +21,6 @@
 - Giờ khi cuộn, nền mờ của thanh phủ lên tận vùng giờ và pin, thành một dải duy nhất.
 - Lúc chưa cuộn, mọi thứ nằm đúng chỗ như cũ.
 - App tự đo lại chiều cao thanh khi xoay máy, để thanh "Tất cả thu chi" luôn dính sát ngay bên dưới.
-
----
-
-## Có gì mới trong v54 (so với v53)
-
-**Thanh đầu trang luôn dính trên cùng.** Thứ, ngày và nút Cài đặt không trôi mất khi cuộn.
-
-- Cuộn xuống thì thanh có nền mờ và một đường kẻ mảnh, để chữ bên dưới không lẫn vào.
-- Thanh "Tất cả thu chi trong tháng" ở Tổng quan dính ngay bên dưới, không bị che.
-- Lúc đang tìm kiếm, thanh đầu trang vẫn ẩn đi để ô tìm nằm sát đỉnh như trước.
 
 ---
 
@@ -119,7 +119,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v56** | Thanh đầu Cài đặt liền một dải tới mép màn hình |
 | **v55** | Thanh đầu trang liền một dải tới mép màn hình |
-| **v54** | Thanh đầu trang luôn dính trên cùng |
 
 *File này chỉ giữ ghi chú của hai bản gần nhất.*
