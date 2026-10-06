@@ -1137,13 +1137,13 @@ html{scroll-padding-top:var(--head-h, 100px)}
 .chat-chip .ch{margin-left:auto; color:var(--muted)}
 .chat-chip[hidden]{display:none}
 /* màn chat: ô Số dư ví dính ngay dưới thanh đầu trang */
-#tab-chat > #chatToWallet{position:sticky; top:var(--head-h, 100px); z-index:29; background:var(--glass-strong); background:color-mix(in srgb, var(--flat) 92%, transparent);
+#tab-chat > #chatToWallet{position:sticky; top:calc(var(--head-h, 100px) + 8px); z-index:29; margin-top:4px; background:var(--glass-strong); background:color-mix(in srgb, var(--flat) 97%, transparent);
   -webkit-backdrop-filter:blur(16px); backdrop-filter:blur(16px)}
 .chat-log{display:flex; flex-direction:column; gap:10px}
 /* khung nhập luôn nằm sát ngay trên thanh tab (hoặc ngay trên bàn phím khi đang gõ) */
-#tab-chat{padding-bottom:var(--chat-pad, 120px)}
+#tab-chat{padding-bottom:calc(var(--dock-h, 110px) + 22px)}
 .chat-dock{position:fixed; z-index:39; left:50%; transform:translateX(-50%); width:min(calc(100% - 28px), 430px);
-  bottom:var(--dock-b, calc(86px + env(safe-area-inset-bottom,0px)))}
+  bottom:calc(86px + env(safe-area-inset-bottom,0px))}
 .chat-dock .chat-sugg{padding:0 0 6px}
 /* nền mờ dần phía sau hàng gợi ý để tin nhắn cuộn bên dưới không lẫn vào */
 .chat-dock::before{content:""; position:absolute; z-index:-1; left:-14px; right:-14px; top:-14px; bottom:-10px; pointer-events:none;
@@ -1154,12 +1154,14 @@ body.kb .tabs{display:none}
 /* đang gõ: màn chat lấp đúng phần màn hình phía trên bàn phím (theo khung nhìn thật của iPhone),
    tin nhắn cuộn bên trong, khung nhập nằm ngay trên bàn phím; không phụ thuộc việc iPhone trượt trang */
 body.kb #tab-chat{position:fixed; z-index:45; left:0; right:0; top:var(--vv-top, 0px); height:var(--vv-h, 100vh);
-  display:flex; flex-direction:column; padding:var(--head-h, 100px) 16px 8px; margin:0 auto; max-width:460px; background:var(--bg); overflow:hidden}
+  display:flex; flex-direction:column; padding:calc(var(--head-h, 100px) + 8px) 16px 8px; margin:0 auto; max-width:460px; background:var(--bg); overflow:hidden}
 /* đang gõ: thanh đầu trang vẫn nằm trên cùng phần nhìn thấy */
 body.kb main > header{position:fixed; top:var(--vv-top, 0px); left:0; right:0; z-index:46; margin:0 auto; max-width:460px;
   background:var(--glass-strong); background:color-mix(in srgb, var(--bg) 96%, transparent); box-shadow:0 1px 0 var(--line)}
 body.kb #tab-chat::before{content:""; position:fixed; inset:0; z-index:-1; background:var(--bg)}
+#tab-chat > #chatToWallet::before{content:""; position:absolute; left:-16px; right:-16px; top:-14px; height:14px; background:var(--bg); pointer-events:none}   /* che khe giữa đầu trang và ô số dư khi cuộn */
 body.kb #tab-chat > #chatToWallet{position:static; flex:none; margin-bottom:8px}
+body.kb #tab-chat > #chatToWallet::before{display:none}
 body.kb #tab-chat .chat-log{flex:1 1 auto; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior:contain; padding-bottom:8px}
 body.kb #tab-chat .chat-dock{position:static; transform:none; width:auto; margin-top:6px}
 body.kb #tab-chat .chat-sugg{display:none}
@@ -1764,7 +1766,7 @@ body.kb #tab-chat .chat-sugg{display:none}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v70</p>
+      <p class="sync" id="appVersion">Phiên bản v71</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Xoá dữ liệu</h4>
@@ -4727,14 +4729,36 @@ function startNgay50k(){
      Chỉ ghi lại vị trí và chỉ kéo về cuối khi vị trí THẬT SỰ đổi; trước đây chạy theo mỗi lần cuộn
      nên giành thao tác cuộn của người dùng, gây giật trên iPhone. */
   var dockLast = { b:-1, h:-1 }, dockRaf = 0;
+  var KBH_KEY = "ngay50k:kbh";
+  function kbEstimate(){ const v = parseInt(lsGet(KBH_KEY), 10); return v > 150 && v < window.innerHeight * 0.7 ? v : Math.round(window.innerHeight * 0.42); }
   function fitTyping(){
     const vv = window.visualViewport, root = document.documentElement.style;
     if(!document.body.classList.contains("kb")) return;
-    root.setProperty("--vv-top", (vv ? Math.max(0, vv.offsetTop) : 0) + "px");
-    root.setProperty("--vv-h", (vv ? vv.height : window.innerHeight) + "px");
+    if(vv && vv.height < window.innerHeight * 0.85){
+      /* bàn phím đã mở thật: theo đúng khung nhìn, và nhớ chiều cao bàn phím cho lần sau */
+      const kbh = Math.round(window.innerHeight - vv.height - Math.max(0, vv.offsetTop));
+      if(kbh > 150) lsSet(KBH_KEY, String(Math.round(window.innerHeight - vv.height)));
+      root.setProperty("--vv-top", Math.max(0, vv.offsetTop) + "px");
+      root.setProperty("--vv-h", vv.height + "px");
+    } else {
+      /* bàn phím chưa kịp mở: đặt sẵn theo chiều cao đã nhớ */
+      root.setProperty("--vv-top", "0px");
+      root.setProperty("--vv-h", (window.innerHeight - kbEstimate()) + "px");
+    }
   }
+  /* chạm vào ô nhập: chuyển bố cục ngay, trước khi bàn phím bật. Ô nhập đã nằm sẵn trên chỗ bàn phím
+     nên iPhone không phải trượt cả trang; chỉ ô nhập dịch lên, đầu trang và số dư đứng yên. */
+  let preUntil = 0;
+  function preType(){
+    if(document.activeElement === $("chatIn") || $("tab-chat").hidden) return;
+    preUntil = Date.now() + 700;
+    document.body.classList.add("kb"); fitTyping(); chatScrollEnd(false);
+    setTimeout(() => { if(document.activeElement !== $("chatIn")){ document.body.classList.remove("kb"); dockLast = { b:-1, h:-1 }; placeDock(); } }, 700);
+  }
+  $("chatIn").addEventListener("touchstart", preType, { passive:true });
+  $("chatIn").addEventListener("mousedown", preType);
   function placeDock(){
-    if(document.body.classList.contains("kb") && document.activeElement === $("chatIn")){ fitTyping(); return; }
+    if(document.body.classList.contains("kb") && (document.activeElement === $("chatIn") || Date.now() < preUntil)){ fitTyping(); return; }
     const dock = $("chatDock"), tabs = document.querySelector(".tabs"); if(!dock) return;
     const vv = window.visualViewport, typing = document.activeElement === $("chatIn") && !$("tab-chat").hidden;
     if(!typing && document.body.classList.contains("kb")){ document.body.classList.remove("kb"); dockLast = { b:-1, h:-1 }; }   /* iPhone đôi khi không báo mất tiêu điểm khi đổi tab */
@@ -4778,7 +4802,7 @@ function startNgay50k(){
   }
   window.addEventListener("resize", placeDockSoon);
   document.addEventListener("focusout", () => setTimeout(() => { if(document.activeElement !== $("chatIn") && document.body.classList.contains("kb")){ document.body.classList.remove("kb"); dockLast = { b:-1, h:-1 }; placeDock(); } }, 80));
-  document.addEventListener("touchstart", () => { if(document.body.classList.contains("kb") && document.activeElement !== $("chatIn")){ document.body.classList.remove("kb"); dockLast = { b:-1, h:-1 }; placeDockSoon(); } }, { passive:true });
+  document.addEventListener("touchstart", e => { if(e.target === $("chatIn")) return; if(document.body.classList.contains("kb") && document.activeElement !== $("chatIn")){ document.body.classList.remove("kb"); dockLast = { b:-1, h:-1 }; placeDockSoon(); } }, { passive:true });
   setInterval(() => { if(document.body.classList.contains("kb") && document.activeElement !== $("chatIn")){ document.body.classList.remove("kb"); dockLast = { b:-1, h:-1 }; placeDock(); } }, 1500);
   const redock = () => { if(document.activeElement !== $("chatIn")) document.body.classList.remove("kb"); dockLast = { b:-1, h:-1 }; placeDockSoon(); };
   document.addEventListener("visibilitychange", () => { if(!document.hidden) setTimeout(redock, 120); });
