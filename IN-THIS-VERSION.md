@@ -1,6 +1,16 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v68, ngày 06/10/2026
+**Phiên bản hiện tại:** v69, ngày 06/10/2026
+
+---
+
+## Có gì mới trong v69 (so với v68)
+
+**Mở bàn phím trong Trò chuyện không còn mất phần trên.** Khi bàn phím bật, iPhone trượt cả trang xuống để ô nhập không bị che, làm đầu trang và tin nhắn trôi khỏi màn hình, chỉ còn khoảng trống.
+
+- Giờ khi đang gõ, màn chat lấp đúng phần màn hình còn lại phía trên bàn phím: tin nhắn cuộn bên trong, tin mới nhất nằm ngay trên khung nhập, khung nhập nằm sát bàn phím, giống các app nhắn tin.
+- Đóng bàn phím là về bố cục thường, khung nhập lại nằm sát trên thanh menu.
+- Sửa thêm: trạng thái "tưởng đang gõ" bị kẹt giờ tự hết hẳn, khung nhập về đúng chỗ.
 
 ---
 
@@ -12,13 +22,6 @@
 - Quay lại chat, mở lại app từ nền, chạm vào màn hình: app đo lại vị trí từ đầu.
 - App tự kiểm tra lại mỗi vài giây; trạng thái lệch tự hết mà không cần bấm gì.
 - Vị trí đo được mà bất thường thì dùng vị trí mặc định ngay trên thanh menu.
-
----
-
-## Có gì mới trong v67 (so với v66)
-
-- **Hết giật khi cuộn màn Trò chuyện.** Trước đây mỗi lần cuộn, app đặt lại vị trí khung nhập và kéo màn hình về cuối nếu đang ở gần cuối, giành thao tác cuộn của bạn. Giờ app chỉ làm việc đó khi khung nhập thật sự đổi chỗ (bật/tắt bàn phím).
-- **Mỗi lần mở app là một cuộc trò chuyện mới** cho gọn. App nằm nền quá 30 phút rồi quay lại cũng bắt đầu mới. Các khoản đã ghi vẫn còn nguyên trong dữ liệu.
 
 ---
 
@@ -125,7 +128,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v69** | Mở bàn phím trong chat không mất phần trên |
 | **v68** | Sửa khung nhập chat bị đẩy lên đầu màn hình |
-| **v67** | Hết giật khi cuộn chat, mở app là trò chuyện mới |
 
 *File này chỉ giữ ghi chú của hai bản gần nhất.*
