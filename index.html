@@ -1121,6 +1121,14 @@ html{scroll-padding-top:var(--head-h, 100px)}
 .cal-legend .h4{background:color-mix(in srgb, var(--note) 68%, var(--flat))}
 .cal-legend .h5{background:var(--note)}
 .cal-legend span{margin:0 3px}
+
+/* sao lưu nhanh bằng Phím tắt */
+.sc-steps{margin:6px 0 8px; padding-left:20px}
+.sc-steps li{margin:3px 0}
+#infoSc code{font-size:.85em; background:var(--note-soft); border-radius:5px; padding:0 4px}
+.sc-use{display:flex; align-items:center; gap:8px; margin-top:10px; font-size:.86rem; color:var(--muted)}
+.sc-use input{width:18px; height:18px; accent-color:var(--note)}
+.set-group .sub .ib{margin-left:4px; vertical-align:middle}
 /* ================= PASTEL ================= */
 /* luôn sáng, dịu và gọn: nền kem ấm, thẻ trắng, một màu nhấn hồng đất, mọi thẻ đầu trang cùng một tông */
 :root[data-theme="pastel"]{
@@ -1572,6 +1580,27 @@ html{scroll-padding-top:var(--head-h, 100px)}
         <label class="ghost grow file-btn">Nhập từ file<input type="file" id="importFile"></label>
       </div>
       <button class="ghost" id="csvBtn" style="width:100%; margin-top:10px">Xuất CSV để mở bằng Excel</button>
+
+      <h4 class="sub">Sao lưu nhanh bằng Phím tắt <button class="ib" type="button" data-info="infoSc" aria-expanded="false" aria-label="Cách cài">i</button></h4>
+      <p class="set-now">Một chạm: app chép bản sao lưu rồi mở Phím tắt, Phím tắt tự lưu file vào iCloud Drive theo ngày. Không phải chọn chỗ lưu mỗi lần.</p>
+      <div class="set-now info" id="infoSc" hidden>
+        <b>Cài một lần trong app Phím tắt:</b>
+        <ol class="sc-steps">
+          <li>Mở <b>Phím tắt</b>, bấm <b>+</b>, đặt tên đúng như ô bên dưới (mặc định <b>Lưu Ngày 50k</b>).</li>
+          <li>Thêm tác vụ <b>Lấy bảng tạm</b> (Get Clipboard).</li>
+          <li>Thêm <b>Đặt tên</b> (Set Name): gõ <code>ngay50k-</code>, chèn biến <b>Ngày hiện tại</b> với định dạng tuỳ chỉnh <code>yyyy-MM-dd</code>, rồi gõ <code>.json</code>.</li>
+          <li>Thêm <b>Lưu tệp</b> (Save File): tắt <b>Hỏi nơi lưu</b>, chọn thư mục, vd <b>iCloud Drive › Ngay50k</b>, bật <b>Ghi đè</b>.</li>
+          <li>Thêm <b>Văn bản</b> để trống, rồi <b>Sao chép vào bảng tạm</b>: xoá dữ liệu khỏi bảng tạm sau khi lưu.</li>
+          <li>(Tuỳ chọn) <b>Hiện thông báo</b> "Đã sao lưu Ngày 50k".</li>
+        </ol>
+        Xong thì quay lại đây bấm nút bên dưới. Lần đầu iPhone hỏi cho phép mở Phím tắt, chọn <b>Mở</b>. Bản sao lưu chứa số tài khoản, nên để thư mục lưu ở iCloud Drive riêng của bạn.
+      </div>
+      <div class="field" style="margin-top:10px">
+        <label for="scName"><span>Tên phím tắt</span></label>
+        <input id="scName" class="inp" maxlength="60" autocomplete="off" placeholder="Lưu Ngày 50k">
+      </div>
+      <button class="primary" id="scBackup">Sao lưu nhanh bằng Phím tắt</button>
+      <label class="sc-use"><input type="checkbox" id="scUse"> Nút <b>Sao lưu</b> trong lời nhắc dùng cách này</label>
       <div class="import-card" id="importCard" hidden>
         <h3>Nhập dữ liệu từ file</h3>
         <p id="importInfo"></p>
@@ -1607,7 +1636,7 @@ html{scroll-padding-top:var(--head-h, 100px)}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v58</p>
+      <p class="sync" id="appVersion">Phiên bản v59</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Xoá dữ liệu</h4>
@@ -6006,9 +6035,50 @@ function startNgay50k(){
     applyImport(next, "Đã thay toàn bộ");
   };
   $("cancelImport").onclick = () => { pending = null; $("importCard").hidden = true; };
+
+  /* ---------- sao lưu nhanh: chép bản sao lưu rồi mở phím tắt iPhone (shortcuts://run-shortcut?input=clipboard) ---------- */
+  const SC_KEY = "ngay50k:scName", SCUSE_KEY = "ngay50k:scUse";
+  function openURL(u){ if(typeof window.__n50kOpen === "function") window.__n50kOpen(u); else window.location.href = u; }
+  function scName(){ return (lsGet(SC_KEY) || "").trim() || "Lưu Ngày 50k"; }
+  function copySync(text){
+    /* chép ngay trong lúc bấm (iOS chỉ cho chép khi đang chạm), không chờ, để còn mở Phím tắt liền sau */
+    try{
+      const ta = document.createElement("textarea");
+      ta.value = text; ta.setAttribute("readonly", ""); ta.style.cssText = "position:fixed;top:0;left:0;opacity:0;font-size:16px";
+      document.body.appendChild(ta); ta.focus(); ta.select(); ta.setSelectionRange(0, text.length);
+      const ok = document.execCommand("copy"); ta.remove(); return ok;
+    }catch(e){ return false; }
+  }
+  async function quickBackup(){
+    $("syncErr").hidden = true;
+    const text = JSON.stringify({ app:"ngay50k", format:1, exportedAt:new Date().toISOString(), data:state });
+    let ok = copySync(text);
+    if(!ok && navigator.clipboard && navigator.clipboard.writeText){
+      try{ await navigator.clipboard.writeText(text); ok = true; }catch(e){}
+    }
+    if(!ok){ showSyncErr("Chưa chép được bản sao lưu. Hãy dùng nút Xuất file sao lưu."); return false; }
+    let left = false;
+    const onHide = () => { if(document.hidden) left = true; };
+    document.addEventListener("visibilitychange", onHide);
+    openURL("shortcuts://run-shortcut?name=" + encodeURIComponent(scName()) + "&input=clipboard");
+    setTimeout(() => {
+      document.removeEventListener("visibilitychange", onHide);
+      if(left){ doneExport("✓ Đã chuyển bản sao lưu sang Phím tắt “" + scName() + "”."); }
+      else showSyncErr("Chưa mở được Phím tắt. Kiểm tra đã tạo phím tắt tên “" + scName() + "” chưa (xem ⓘ). Bản sao lưu đang nằm trong bảng tạm.");
+    }, 1500);
+    return true;
+  }
+  $("scName").value = lsGet(SC_KEY) || "";
+  $("scName").addEventListener("change", () => { lsSet(SC_KEY, $("scName").value.trim()); });
+  $("scUse").checked = lsGet(SCUSE_KEY) === "1";
+  $("scUse").addEventListener("change", () => { lsSet(SCUSE_KEY, $("scUse").checked ? "1" : "0"); });
+  $("scBackup").onclick = () => { lsSet(SC_KEY, $("scName").value.trim()); quickBackup(); };
   $("exportBtn").onclick = exportData;
   $("csvBtn").onclick = exportCSV;
-  $("nudgeGo").onclick = () => { openSettings(); setTimeout(() => $("syncBox").scrollIntoView({ behavior:"smooth", block:"start" }), 280); exportData(); };
+  $("nudgeGo").onclick = () => {
+    if(lsGet(SCUSE_KEY) === "1"){ quickBackup().then(() => renderBackup()); return; }
+    openSettings(); setTimeout(() => $("syncBox").scrollIntoView({ behavior:"smooth", block:"start" }), 280); exportData();
+  };
   $("nudgeLater").onclick = () => { lsSet(SNOOZE_KEY, String(Date.now() + 86400000)); renderBackup(); };
   $("wipeBtn").onclick = () => {
     $("syncMsg").hidden = true; $("syncErr").hidden = true;
