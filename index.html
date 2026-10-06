@@ -188,6 +188,14 @@ input[type="date"].inp::-webkit-date-and-time-value{text-align:left; margin:0}
 .subtle{font-size:.82rem; color:var(--muted); margin:10px 2px 0}
 .inline-ok{margin:10px 2px 0; color:var(--ok); font-weight:600; font-size:.92rem}
 .inline-ok.warn{color:var(--over)}
+.ai-use{border:1px solid var(--line); border-radius:16px; overflow:hidden; background:var(--surface)}
+.ai-use .r{display:flex; justify-content:space-between; gap:10px; padding:11px 14px; border-top:1px solid var(--line)}
+.ai-use .r:first-child{border-top:0}
+.ai-use .r b{font-weight:650}
+.ai-use .r small{display:block; color:var(--muted); font-size:.8rem; margin-top:2px; line-height:1.35}
+.ai-use .r .v{text-align:right; white-space:nowrap}
+.ai-use .r.tot{background:color-mix(in srgb, var(--line) 35%, transparent)}
+.ai-use .empty{padding:12px 14px; color:var(--muted); font-size:.9rem}
 
 .result{margin-top:16px; border-radius:16px; padding:16px; background:var(--surface); border:2px solid var(--mb)}
 .result h2{color:var(--mb); font-size:.9rem}
@@ -1589,6 +1597,18 @@ body.kb #tab-chat .chat-sugg{display:none}
       <label class="sc-use"><input type="checkbox" id="aiOn"> Dùng AI khi trò chuyện</label>
       <div class="set-row" style="margin-top:12px"><button class="ghost grow" id="aiTest">Thử kết nối</button><button class="ghost danger" id="aiDel" hidden>Xoá khoá</button></div>
       <p class="inline-ok" id="aiMsg" hidden></p>
+      <h4 class="sub" style="margin-top:18px">Chi phí đã dùng</h4>
+      <div class="seg seg2h" id="aiUseSeg" role="group" aria-label="Khoảng thời gian" style="margin:8px 0 10px">
+        <button data-r="m" aria-pressed="true">Tháng này</button>
+        <button data-r="all" aria-pressed="false">Từ trước tới nay</button>
+      </div>
+      <div id="aiUseList" class="ai-use"></div>
+      <div class="field" style="margin-top:10px">
+        <label for="aiRate"><span>Tỉ giá 1 USD <span class="opt">(đồng)</span></span></label>
+        <input id="aiRate" class="inp" inputmode="numeric" autocomplete="off">
+      </div>
+      <p class="set-now">Số tiền là ước tính: app đếm token mỗi lần gọi AI rồi nhân với bảng giá niêm yết của nhà cung cấp (đơn giá USD cho 1 triệu token). Hoá đơn thật xem ở trang của nhà cung cấp. Chỉ đếm các lần gọi từ máy này, tính từ bản v73.</p>
+      <div class="set-row" style="margin-top:10px"><button class="ghost danger grow" id="aiUseReset">Đặt lại bộ đếm</button></div>
       <h4 class="sub">An toàn</h4>
       <p class="set-now">Khoá chỉ lưu trên máy này: không nằm trong mã nguồn trên GitHub, không nằm trong file sao lưu, không gửi đi đâu ngoài nhà cung cấp bạn chọn. Câu bạn gõ cùng danh sách tên thẻ, tên người vay và nhóm chi được gửi cho nhà cung cấp để AI hiểu ngữ cảnh. Số liệu trả lời (đã chi, còn nợ, số dư) do app tự tính trên máy. Mất mạng hay AI lỗi thì app dùng bộ hiểu câu trên máy. Nên đặt hạn mức chi tiêu cho khoá trong trang của nhà cung cấp.</p>
     </section>
@@ -1766,7 +1786,7 @@ body.kb #tab-chat .chat-sugg{display:none}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v72</p>
+      <p class="sync" id="appVersion">Phiên bản v73</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Xoá dữ liệu</h4>
@@ -4482,6 +4502,71 @@ function startNgay50k(){
   function aiBadge(){ const b = $("chatAI"); if(!b) return; const c = aiCfg(); b.hidden = !aiReady(); b.textContent = "✦ AI · " + AI_PROVIDERS[c.provider].name; }
   function aiReady(){ const c = aiCfg(); return !!(c.on && c.key && String(c.key).trim()); }
   function aiModel(c){ return (c.model && String(c.model).trim()) || AI_PROVIDERS[c.provider].model; }
+  /* ---- Đếm chi phí AI: token mỗi lần gọi × bảng giá niêm yết (USD / 1 triệu token, cập nhật 10/2026) ---- */
+  var AI_USE_KEY = "ngay50k:aiUse", AI_RATE_KEY = "ngay50k:usdVnd";
+  function aiPrice(provider, model){
+    const m = String(model || "").toLowerCase(), late = Date.now() >= new Date("2027-01-01T00:00:00").getTime();
+    if(provider === "claude"){
+      if(/fable|mythos/.test(m)) return [10, 50];
+      if(/opus-5-5|opus-5\.5/.test(m)) return [4, 20];
+      if(/opus-(5|4-[5-9])/.test(m)) return [5, 25];
+      if(/opus/.test(m)) return [15, 75];
+      if(/sonnet-(5|4-6)/.test(m)) return /sonnet-4-6/.test(m) ? [3, 15] : [2, 10];
+      if(/sonnet/.test(m)) return [3, 15];
+      if(/haiku-4/.test(m)) return [1, 5];
+      if(/haiku-3-5/.test(m)) return [0.8, 4];
+      if(/haiku/.test(m)) return [0.25, 1.25];
+      return null;
+    }
+    if(provider === "openai"){
+      if(/nano/.test(m)) return [0.05, 0.4];
+      if(/gpt-5[\w.-]*mini/.test(m)) return [0.25, 2];
+      if(/gpt-5/.test(m)) return [1.25, 10];
+      if(/gpt-4o-mini/.test(m)) return [0.15, 0.6];
+      if(/gpt-4\.1-mini/.test(m)) return [0.4, 1.6];
+      return null;
+    }
+    if(/pro/.test(m)) return [2, 12];
+    if(/flash-lite/.test(m)) return /3\.5/.test(m) ? [0.3, 2.5] : [0.25, 1.5];
+    if(/3\.5-flash/.test(m)) return [1.5, 9];
+    if(/flash/.test(m)) return late ? [1.5, 7.5] : [0.75, 3.75];
+    return null;
+  }
+  function aiUseGet(){ try{ const u = JSON.parse(lsGet(AI_USE_KEY) || "null"); return u && typeof u === "object" ? u : {}; }catch(e){ return {}; } }
+  function aiUseAdd(provider, model, inTok, outTok){
+    inTok = Math.max(0, Math.round(+inTok || 0)); outTok = Math.max(0, Math.round(+outTok || 0));
+    if(!inTok && !outTok) return;
+    const u = aiUseGet(), mk = todayKey().slice(0, 7), p = aiPrice(provider, model);
+    const usd = p ? (inTok * p[0] + outTok * p[1]) / 1e6 : 0;
+    const row = ((u[mk] = u[mk] || {})[provider] = u[mk][provider] || {})[model] = u[mk][provider][model] || { n:0, i:0, o:0, usd:0, np:0 };
+    row.n++; row.i += inTok; row.o += outTok; row.usd += usd; if(!p) row.np++;
+    lsSet(AI_USE_KEY, JSON.stringify(u));
+    if(!$("setAI").hidden) renderAIUse();
+  }
+  function aiRate(){ const v = parseInt(lsGet(AI_RATE_KEY), 10); return v > 1000 && v < 1e6 ? v : 26000; }
+  let aiUseRange = "m";
+  function renderAIUse(){
+    const u = aiUseGet(), mk = todayKey().slice(0, 7), months = aiUseRange === "m" ? [mk] : Object.keys(u), rate = aiRate();
+    [...$("aiUseSeg").children].forEach(b => b.setAttribute("aria-pressed", b.dataset.r === aiUseRange ? "true" : "false"));
+    $("aiRate").value = rate.toLocaleString("vi-VN");
+    const agg = {};
+    months.forEach(k => Object.entries(u[k] || {}).forEach(([pv, ms]) => Object.entries(ms).forEach(([m, r]) => {
+      const a = (agg[pv] = agg[pv] || { n:0, i:0, o:0, usd:0, np:0, models:{} }); a.n += r.n; a.i += r.i; a.o += r.o; a.usd += r.usd; a.np += r.np || 0;
+      const b = (a.models[m] = a.models[m] || { n:0, usd:0 }); b.n += r.n; b.usd += r.usd;
+    })));
+    const usdTxt = v => "$" + (v < 0.01 && v > 0 ? v.toFixed(4) : v.toFixed(2));
+    const vnd = v => fmt(Math.round(v * rate));
+    const tok = v => v >= 1e6 ? (v / 1e6).toFixed(2).replace(".", ",") + " tr" : v.toLocaleString("vi-VN");
+    const keys = ["claude", "openai", "gemini"].filter(k => agg[k]);
+    if(!keys.length){ $("aiUseList").innerHTML = '<div class="empty">' + (aiUseRange === "m" ? "Tháng này chưa gọi AI lần nào." : "Chưa gọi AI lần nào.") + '</div>'; return; }
+    let tot = 0, totN = 0;
+    $("aiUseList").innerHTML = keys.map(k => {
+      const a = agg[k]; tot += a.usd; totN += a.n;
+      const ms = Object.entries(a.models).map(([m, b]) => esc(m) + " · " + b.n + " lần").join("<br>");
+      return '<div class="r"><div><b>' + esc(AI_PROVIDERS[k].name) + '</b><small>' + a.n + ' lần gọi · ' + tok(a.i) + ' token vào, ' + tok(a.o) + ' token ra<br>' + ms + (a.np ? '<br>' + a.np + ' lần chưa có bảng giá cho mô hình này' : '') + '</small></div>' +
+        '<div class="v"><b class="num">' + vnd(a.usd) + '</b><small>' + usdTxt(a.usd) + '</small></div></div>';
+    }).join("") + (keys.length > 1 ? '<div class="r tot"><div><b>Tổng</b><small>' + totN + ' lần gọi</small></div><div class="v"><b class="num">' + vnd(tot) + '</b><small>' + usdTxt(tot) + '</small></div></div>' : "");
+  }
 
   const AI_SCHEMA = {
     type:"object",
@@ -4575,6 +4660,7 @@ function startNgay50k(){
         /* mô hình hoặc tài khoản chưa hỗ trợ kết quả có cấu trúc: gửi lại kiểu thường */
         if(!x.r.ok && x.r.status === 400 && /output_config|format|schema|structured/i.test((x.d.error && x.d.error.message) || "")) x = await send(false);
         res = x.r; data = x.d;
+        if(res.ok && data.usage) aiUseAdd("claude", data.model || model, (data.usage.input_tokens || 0) + (data.usage.cache_creation_input_tokens || 0) * 1.25 + (data.usage.cache_read_input_tokens || 0) * 0.1, data.usage.output_tokens);
         if(!res.ok) throw new Error((data.error && data.error.message) || ("HTTP " + res.status));
         out = jsonFrom((data.content || []).filter(b => b.type === "text").map(b => b.text).join(""));
       } else if(c.provider === "openai"){
@@ -4584,6 +4670,7 @@ function startNgay50k(){
           headers:{ "content-type":"application/json", "authorization":"Bearer " + key },
           body:JSON.stringify({ model, messages:msgs, response_format:{ type:"json_object" } }) });
         data = await res.json().catch(() => ({}));
+        if(res.ok && data.usage) aiUseAdd("openai", model, data.usage.prompt_tokens, data.usage.completion_tokens);
         if(!res.ok) throw new Error((data.error && data.error.message) || ("HTTP " + res.status));
         out = jsonFrom((((data.choices || [])[0] || {}).message || {}).content || "{}");
       } else {
@@ -4592,6 +4679,7 @@ function startNgay50k(){
           headers:{ "content-type":"application/json", "x-goog-api-key":key },
           body:JSON.stringify({ systemInstruction:{ parts:[{ text:aiSystem() + "\nChỉ trả về một đối tượng JSON có các khoá reply, items, query." }] }, contents, generationConfig:{ responseMimeType:"application/json" } }) });
         data = await res.json().catch(() => ({}));
+        if(res.ok && data.usageMetadata){ const g = data.usageMetadata; aiUseAdd("gemini", model, g.promptTokenCount, (g.candidatesTokenCount || 0) + (g.thoughtsTokenCount || 0)); }
         if(!res.ok) throw new Error((data.error && data.error.message) || ("HTTP " + res.status));
         const parts = (((data.candidates || [])[0] || {}).content || {}).parts || [];
         out = jsonFrom(parts.map(p => p.text || "").join("") || "{}");
@@ -4700,7 +4788,11 @@ function startNgay50k(){
     $("aiWhere").textContent = "Lấy khoá ở: " + P.where;
     $("aiOn").checked = !!c.on;
     $("aiDel").hidden = !c.key;
+    renderAIUse();
   }
+  [...$("aiUseSeg").children].forEach(b => b.onclick = () => { aiUseRange = b.dataset.r; renderAIUse(); });
+  $("aiRate").addEventListener("change", () => { const v = parseInt($("aiRate").value.replace(/\D/g, ""), 10); if(v > 1000 && v < 1e6) lsSet(AI_RATE_KEY, String(v)); renderAIUse(); });
+  $("aiUseReset").onclick = e => { if(!armed(e.currentTarget)) return; lsSet(AI_USE_KEY, "{}"); renderAIUse(); };
   function aiNav(){ const c = aiCfg(); return c.key ? AI_PROVIDERS[c.provider].name + (c.on ? " · bật" : " · tắt") : "chưa cài"; }
   function aiSaveForm(){ const c = aiCfg(); c.key = $("aiKey").value.trim(); c.model = $("aiModel").value.trim(); c.on = $("aiOn").checked; aiSet(c); $("aiDel").hidden = !c.key; }
   [...$("aiProv").children].forEach(b => b.onclick = () => { const c = aiCfg(); if(c.provider !== b.dataset.p){ c.provider = b.dataset.p; c.model = ""; c.key = (c.keys && c.keys[b.dataset.p]) || ""; } aiSet(c); renderAISet(); $("aiMsg").hidden = true; });
