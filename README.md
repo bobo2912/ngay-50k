@@ -106,7 +106,7 @@ python3 -m http.server 8765 &
 
 Vài chỗ dễ vỡ, sửa xong nên thử lại:
 
-- **Số dư ví.** `state.bals` là các lần đối chiếu (lần có `t` lớn nhất là mốc), `state.cardPay` là các lần trả thẻ. `balCalc()` chỉ tính khoản có thời điểm sau mốc; thời điểm lấy từ `t` nếu cùng ngày với khoản, không thì 00:00 của ngày đó (`recTime`), để khoản cũ không có giờ trong ngày đối chiếu không bị trừ lại.
+- **Số dư ví.** `state.bals` là các lần đối chiếu (lần có `t` lớn nhất là mốc), `state.cardPay` là các lần trả thẻ. `balCalc()` chỉ tính khoản có thời điểm sau mốc và không ở tương lai (khoản ngày tương lai hiện ở mục Sắp tới); thời điểm lấy từ `t` nếu cùng ngày với khoản, không thì 00:00 của ngày đó (`recTime`), để khoản cũ không có giờ trong ngày đối chiếu không bị trừ lại.
 - **Kho dữ liệu.** Đọc và ghi dữ liệu chính qua `N50K.get` / `N50K.set` / `N50K.del`, không gọi thẳng `localStorage` cho khoá `ngay50k:v1`. Toàn bộ app nằm trong hàm `startNgay50k()`, chỉ chạy sau khi `N50K.ready` xong.
 - **Thứ tự khai báo biến.** `renderAll()` chạy trước khi một số `const`/`let` kịp khởi tạo, nên những biến dùng trong lúc vẽ lần đầu phải là `var` hoặc hàm khai báo kiểu `function`.
 - **Bộ đọc thông báo ngân hàng.** Nhiều ngân hàng viết cả giao dịch trên một dòng ngăn bằng dấu `|`; bộ phân tích tách theo từng ô và bỏ qua ô số dư hay hạn mức còn lại. Sửa phần này thì thử lại với cả thông báo dán tay lẫn ảnh chụp màn hình.

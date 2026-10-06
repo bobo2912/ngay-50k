@@ -1,6 +1,16 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v52, ngày 06/10/2026
+**Phiên bản hiện tại:** v53, ngày 06/10/2026
+
+---
+
+## Có gì mới trong v53 (so với v52)
+
+**Khoản có ngày trong tương lai không trừ vào số dư hôm nay.** Trước đây ghi trước một lần cho vay thêm, trả nợ hay khoản thu cho ngày 28 tháng sau thì app trừ (hoặc cộng) luôn vào số dư hiện tại.
+
+- Khoản có ngày tương lai chỉ được tính vào số dư **khi tới ngày đó**.
+- Tab Ví có thêm mục **Sắp tới, chưa trừ vào số dư**: liệt kê các khoản đó theo ngày, kèm **số dư dự kiến** sau mỗi khoản.
+- Ngày tương lai hiện đúng ngày, không còn ghi nhầm là "hôm nay".
 
 ---
 
@@ -14,23 +24,13 @@
 
 ---
 
-## Có gì mới trong v51 (so với v50)
-
-**Giao diện Pastel.** Vào **Cài đặt → Giao diện**, chọn **Pastel** cạnh Tự động, Sáng, Tối.
-
-- Nền kem, chữ nâu tím than, nút và điểm nhấn màu hồng phấn.
-- Mỗi tab một màu cho thẻ đầu trang: Ví bạc hà, Giao dịch hồng, Tổng quan vàng kem, Thẻ oải hương, Khoản vay hồng đào.
-- Bốn ô Thu vào, Chi thường, Chi thẻ, Khoản vay ở Tổng quan cũng mỗi ô một màu.
-- Pastel luôn sáng, kể cả khi iPhone đang để chế độ tối. Chọn lại Tự động thì về như cũ.
-
----
-
 ## Tất cả tính năng của app
 
 ### Tab Ví (mở mặc định)
 - **Số dư hiện tại** của ví, nợ thẻ và số còn lại sau khi trả thẻ.
 - Nút **Đối chiếu số dư** và **Trả thẻ**.
 - **Biến động từ lần đối chiếu**, mỗi dòng kèm số dư còn lại; chạm để sửa.
+- **Sắp tới:** khoản ghi cho ngày tương lai, kèm số dư dự kiến; tới ngày mới trừ vào số dư.
 - Lịch sử đối chiếu và trả thẻ.
 
 ### Tab Tổng quan
@@ -118,7 +118,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v53** | Khoản ngày tương lai chưa trừ số dư, thêm mục Sắp tới |
 | **v52** | Sửa lỗi số dư trừ hai lần khoản vay ghi bằng bản cũ |
-| **v51** | Thêm giao diện Pastel |
 
 *File này chỉ giữ ghi chú của hai bản gần nhất.*
