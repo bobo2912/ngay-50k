@@ -1,6 +1,18 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v86, ngày 07/10/2026
+**Phiên bản hiện tại:** v87, ngày 07/10/2026
+
+---
+
+## Có gì mới trong v87 (so với v86)
+
+**Phân tích lại bằng AI cho mọi câu trả lời của máy** (tab Trò chuyện).
+- Câu trả lời nào do bộ hiểu câu trên máy làm (thẻ khoản chi, câu trả lời cho câu hỏi, câu "mình chưa hiểu") đều có nút **✦ Chưa đúng? Phân tích lại bằng AI** ngay bên dưới.
+- Bấm là gửi đúng câu đó cho AI, cả nhóm câu trả lời cũ được thay bằng kết quả của AI. Khoản đã bấm Ghi thì giữ nguyên.
+- Chưa cài Trợ lý AI: câu nào máy chưa hiểu có nút **✦ Dùng Trợ lý AI để hiểu câu này**, mở thẳng trang cài đặt AI.
+- Mất mạng thì nút mờ đi.
+
+**Khe giữa đầu trang và ô Số dư ví**: v86 dùng cùng màu đầu trang nên ô Số dư ví trông dính vào đầu trang. Giờ khe là một dải kính mờ nhạt riêng, đầu trang giữ đường kẻ mảnh ở đáy, ô Số dư ví nổi tách hẳn ra.
 
 ---
 
@@ -8,13 +20,6 @@
 
 - **Bỏ dải trắng giữa đầu trang và ô Số dư ví** (tab Trò chuyện). Miếng che khe hở trước đây dùng màu nền phẳng nên lệch với nền loang của app, rõ nhất ở giao diện Pastel. Giờ nó chỉ hiện khi đang cuộn, và dùng cùng lớp kính mờ với đầu trang, khớp cả giao diện Sáng, Tối, Pastel.
 - Giao diện Tối: ô Số dư ví có nền đặc hơn, khi cuộn không còn nhìn xuyên thấy tin nhắn bên dưới.
-
----
-
-## Có gì mới trong v85 (so với v84)
-
-- **"Còn lại thực tế" đổi tên thành "Dòng tiền ròng tháng này"** (tab Tổng quan), đúng với cách tính: tổng thu trong tháng trừ tổng chi. Dương là tháng này để ra được tiền, âm là tiêu nhiều hơn thu. Nút ⓘ giải thích thêm rằng đây không phải số dư trong ví. Khi chọn một loại chi: "Dòng tiền ròng (chỉ tính chi thường)" hoặc "(chỉ tính chi thẻ)".
-- **Thẻ Hôm nay còn được tiêu** (tab Ví): thu khoảng cách giữa nhãn, số tiền, thanh tiến độ và dòng giải thích.
 
 ---
 
@@ -125,6 +130,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v87** | Nút Phân tích lại bằng AI dưới mọi câu trả lời của máy; khe dưới đầu trang tách màu |
 | **v86** | Bỏ dải trắng dưới đầu trang ở tab Trò chuyện, khớp mọi giao diện |
 | **v85** | "Còn lại thực tế" đổi thành "Dòng tiền ròng tháng này"; thẻ hạn mức hôm nay gọn hơn |
 | **v84** | Chữ gọn hơn, thẻ hạn mức hôm nay thu nhỏ, chỉ nhấn số chính mỗi tab |
