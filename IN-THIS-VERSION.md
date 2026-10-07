@@ -1,6 +1,16 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v92, ngày 07/10/2026
+**Phiên bản hiện tại:** v93, ngày 07/10/2026
+
+---
+
+## Có gì mới trong v93 (so với v92)
+
+**Sửa lỗi Claude hay báo "AI trả lời quá lâu", kể cả khi Thử kết nối.** Khoá API không có vấn đề; nguyên nhân nằm ở cách app gọi:
+- App yêu cầu Claude trả về theo **khuôn có cấu trúc**. Từ v91 khuôn này có hơn 24 trường tuỳ chọn, vượt giới hạn của API, nên máy chủ phải dựng khuôn rất lâu (tối đa 180 giây) trước khi trả lời. Giờ app không dùng khuôn nữa: dặn AI trả JSON rồi tự đọc, giống cách gọi ChatGPT và Gemini.
+- **Sonnet 5.5 mặc định suy nghĩ ở mức cao** nên chậm. Giờ app đặt mức suy nghĩ thấp cho Sonnet, Opus (Haiku 4.5 vốn không suy nghĩ thêm).
+- **Mô hình mặc định đổi sang Claude Haiku 4.5**, nhanh và rẻ nhất, đủ tốt cho việc hiểu câu. Ai đã tự chọn mô hình khác thì giữ nguyên.
+- **Thử kết nối** hiện số giây đang chờ, báo thời gian trả lời khi thành công. Lỗi được ghi vào Nhật ký lỗi (Cài đặt → Dung lượng).
 
 ---
 
@@ -16,25 +26,6 @@
 **Nhãn nguồn cho mọi kết quả:** **✦ AI** cho câu do Trợ lý AI trả lời, **⚡ Máy** cho câu máy tự trả lời (bộ hiểu câu, đọc ảnh, báo cáo tính trên máy).
 
 **AI ít bị "trả lời quá lâu" hơn:** chờ lâu hơn (tối đa 50 giây). Lần gửi dùng kết quả có cấu trúc mà quá 18 giây thì tự gửi lại kiểu thường, và cả phiên đó dùng kiểu thường cho nhanh.
-
----
-
-## Có gì mới trong v91 (so với v90)
-
-**Hỏi chi tiêu trong Trò chuyện giờ trả lời chi tiết, liệt kê và gom nhóm.**
-- Hỏi kiểu *"tháng rồi tiêu gì"*, *"tháng này tiêu gì từ tài khoản"*, *"liệt kê các khoản quẹt thẻ VIB tuần này"*, *"7 ngày qua tiêu gì theo ngày"*, *"top 5 khoản lớn nhất tháng 9"*, *"các khoản trên 500k tháng trước"*, *"tháng này tiêu ở đâu"*, *"tháng này thu nhập những gì"*, *"tháng này so với tháng trước"* → app trả về **báo cáo**:
-  - Tổng tiền, số khoản, tách tài khoản / thẻ, trung bình mỗi ngày, so với kỳ trước.
-  - Gom theo nhóm (hoặc theo ngày, tuần, tháng, nơi chi, nguồn tiền), mỗi nhóm có thanh %, mức tăng giảm so với kỳ trước; **chạm vào nhóm để xem từng giao dịch**.
-  - Danh sách phẳng khi hỏi liệt kê hoặc top khoản lớn.
-  - Nhận xét ngắn: khoản lớn nhất, nhóm tốn nhất, số ngày vượt hạn mức, nhóm tăng nhiều nhất.
-- Bóc tách câu hỏi thông minh hơn: kỳ (hôm nay, tuần, tháng rồi, tháng 9, năm nay, 7 ngày qua, từ ngày 1 đến 15), nguồn tiền (tài khoản, tiền mặt, thẻ, tên thẻ), nhóm, từ khoá nơi chi, khoản từ X trở lên, top N, thu hay chi, có so sánh hay không.
-- Bộ hiểu câu trên máy làm được hầu hết các câu này (không tốn AI). Câu khó hơn thì AI bóc tách, nhưng **số liệu luôn tính trên máy**: AI không nhận dữ liệu chi tiêu của bạn.
-- Câu trả lời "đã chi bao nhiêu" có thêm nút **Xem chi tiết từng khoản ›**.
-- Sửa: hỏi "từ tài khoản" trước đây vẫn cộng cả tiền thẻ.
-
-**Sửa bàn phím không hiện khi chạm ô chat.** App không tự chặn cú chạm để đặt tiêu điểm nữa (trên iOS 26 cách đó có lúc chỉ hiện thanh ^ v ✓ mà không có bàn phím); để iPhone tự mở bàn phím như ô nhập bình thường.
-
-**Sửa thanh màu ở vùng giờ/pin trên iOS 26.** iOS 26 bỏ qua thẻ theme-color (cách v90 dùng) và lấy màu từ nền trang hoặc phần tử dính ở mép trên; trước đây đầu trang trong suốt nên iPhone tô màu xám nhạt. Giờ đầu trang, nền trang, thanh Cài đặt, màn khoá và màn chào đều có màu nền đặc đúng màu đỉnh của từng giao diện (Sáng, Tối, Pastel).
 
 ---
 
@@ -146,6 +137,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v93** | Sửa Claude hay báo trả lời quá lâu; mặc định Haiku 4.5 |
 | **v92** | Hiểu câu nối tiếp trong chat; nhãn ✦ AI / ⚡ Máy; AI ít quá thời gian |
 | **v91** | Báo cáo chi tiêu trong chat (liệt kê, gom nhóm, so sánh); sửa bàn phím không hiện; sửa thanh màu trên iOS 26 |
 | **v90** | Thanh trạng thái iPhone cùng màu với app ở mọi giao diện |
