@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v87";
+  var K = "ngay50k:errlog", VER = "v88";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -2190,7 +2190,7 @@ header .date{font-size:1.25rem}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v87</p>
+      <p class="sync" id="appVersion">Phiên bản v88</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -2601,8 +2601,8 @@ header .date{font-size:1.25rem}
 
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
 <script src="vendor/jsQR.js"></script>
-<script src="parse-vi.js?v=87"></script>
-<script src="lock.js?v=87"></script>
+<script src="parse-vi.js?v=88"></script>
+<script src="lock.js?v=88"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -4924,7 +4924,7 @@ function startNgay50k(){
         all.querySelector("button").onclick = () => saveItems(m, m.items.map((_, i) => i));
         box.appendChild(all);
       }
-      if(m.retry && pend === m.items.length) retryBtn(m, box);
+      if(m.retry) retryBtn(m, box);
       return box;
     }
     const d = document.createElement("div"); d.className = "msg bot"; d.innerHTML = m.html;
@@ -4935,9 +4935,9 @@ function startNgay50k(){
   /* nút chọn nhanh dưới câu trả lời của máy: có AI thì phân tích lại; chưa cài AI thì chỉ hiện ở câu máy chưa hiểu, mở Cài đặt */
   function retryBtn(m, box){
     const rb = document.createElement("button"); rb.type = "button"; rb.className = "ai-retry";
-    if(aiReady()){ rb.textContent = "✦ Chưa đúng? Phân tích lại bằng AI"; rb.onclick = () => aiRetry(m); }
-    else if(m.html === HELP){ rb.textContent = "✦ Dùng Trợ lý AI để hiểu câu này"; rb.onclick = () => { openSettings(); showSetPage("setAI"); }; }
-    else return;
+    rb.textContent = "✦ Chưa đúng? Phân tích lại bằng AI";
+    if(aiReady()) rb.onclick = () => aiRetry(m);
+    else rb.onclick = () => { openSettings(); showSetPage("setAI"); const msg = $("aiMsg"); msg.className = "inline-ok warn"; msg.textContent = "Dán khoá API và bật \"Dùng AI khi trò chuyện\" để phân tích lại bằng AI."; msg.hidden = false; };
     if(navigator.onLine === false) rb.disabled = true;
     box.appendChild(rb);
   }
@@ -5375,12 +5375,28 @@ function startNgay50k(){
       const intro = "Mình đọc được " + r.items.length + " giao dịch trong ảnh (bằng bộ đọc chữ trên máy), bạn xem lại rồi bấm Ghi nhé:" + dupNote(r.items);
       msgs.push({ id:uid(), role:"bot", items:r.items, intro, introHtml:true, status:r.items.map(() => "pending"), refs:r.items.map(() => null), t:Date.now() });
     } else msgs.push({ id:uid(), role:"bot", html:"Mình không thấy giao dịch trừ tiền nào trong ảnh. Thử chụp gần phần thông báo có số tiền nhé.", t:Date.now() });
+    tagRetry(msgs, cap || "(ảnh)"); if(msgs.length) retryImgs[msgs[0].grp] = files;
     aiBusy = false; chatGrow();
     const i = chat.msgs.indexOf(wait); chat.msgs.splice(i < 0 ? chat.msgs.length : i, i < 0 ? 0 : 1, ...msgs);
     chatSave(); renderChat(); chatScrollEnd(true);
   }
   $("chatImg").addEventListener("change", e => { const fl = e.target.files; if(fl && fl.length) chatSendImgs([...fl]); e.target.value = ""; });
   /* khoản máy hiểu chưa đúng: gửi lại đúng câu đó cho AI, thay thẻ cũ bằng kết quả của AI */
+  /* kết quả AI → các tin trả lời (dùng chung cho gửi tin, phân tích lại) */
+  function aiMsgs(r){
+    const msgs = [];
+    if(r.items.length) msgs.push({ id:uid(), role:"bot", items:r.items, intro:r.reply || "", status:r.items.map(() => "pending"), refs:r.items.map(() => null), t:Date.now(), ai:true });
+    if(r.query) msgs.push({ id:uid(), role:"bot", html:(r.reply && !r.items.length ? esc(r.reply) + "\n" : "") + answer(r.query), t:Date.now(), ai:true });
+    if(!r.items.length && !r.query) msgs.push({ id:uid(), role:"bot", html:esc(r.reply || "Mình chưa rõ ý bạn, kể lại giúp mình nhé?"), t:Date.now(), ai:true });
+    return msgs;
+  }
+  /* ảnh đã gửi trong lần mở app này, để "Phân tích lại bằng AI" gửi ảnh gốc (không lưu xuống máy) */
+  const retryImgs = {};
+  async function imgsForAI(files){
+    const out = [];
+    for(const f of files){ try{ const { i, u } = await imgLoad(f); const d = imgJpeg(i, 1600, 0.85); URL.revokeObjectURL(u); out.push({ mime:"image/jpeg", data:d.split(",")[1] }); }catch(e){} }
+    return out;
+  }
   async function aiRetry(m){
     if(aiBusy || !m.retry) return;
     const text = m.retry, wait = { id:uid(), role:"bot", html:'<span class="typing"><i></i><i></i><i></i></span>', thinking:true, t:Date.now() };
@@ -5393,14 +5409,18 @@ function startNgay50k(){
     aiBusy = true; renderChat(true);
     let msgs = [];
     try{
-      const r = await aiCall(text);
-      if(r.items.length) msgs.push({ id:uid(), role:"bot", items:r.items, intro:r.reply || "", status:r.items.map(() => "pending"), refs:r.items.map(() => null), t:Date.now(), ai:true });
-      if(r.query) msgs.push({ id:uid(), role:"bot", html:(r.reply && !r.items.length ? esc(r.reply) + "\n" : "") + answer(r.query), t:Date.now(), ai:true });
-      if(!r.items.length && !r.query) msgs.push({ id:uid(), role:"bot", html:esc(r.reply || "Mình chưa rõ ý bạn, kể lại giúp mình nhé?"), t:Date.now(), ai:true });
-      const v = aiSavedGet(), mk = todayKey().slice(0, 7); if(v[mk] > 0){ v[mk]--; lsSet(AI_SAVED_KEY, JSON.stringify(v)); }
+      const files = m.grp && retryImgs[m.grp], wasLocal = !group.some(x => x.ai);
+      let r;
+      if(files){
+        const imgs = await imgsForAI(files);
+        r = await aiCall("Đọc các giao dịch trừ tiền trong ảnh chụp thông báo ngân hàng này, mỗi giao dịch một khoản." + (text && text !== "(ảnh)" ? "\n" + text : ""), null, imgs);
+      } else r = await aiCall(text);
+      msgs = tagRetry(aiMsgs(r), text);
+      if(files) retryImgs[msgs[0].grp] = files;
+      if(wasLocal && !files){ const v = aiSavedGet(), mk = todayKey().slice(0, 7); if(v[mk] > 0){ v[mk]--; lsSet(AI_SAVED_KEY, JSON.stringify(v)); } }
     }catch(e){
-      group.forEach(x => { delete x.retry; });
-      msgs = group.filter(x => keep.indexOf(x) < 0).concat([{ id:uid(), role:"bot", html:"<i>(" + esc(aiErrText(e)) + ". Bạn sửa trực tiếp trên thẻ hoặc kể lại nhé.)</i>", t:Date.now() }]);
+      /* lỗi: trả lại câu trả lời cũ, vẫn giữ nút để thử lại lần nữa */
+      msgs = group.filter(x => keep.indexOf(x) < 0).concat([{ id:uid(), role:"bot", html:"<i>(" + esc(aiErrText(e)) + ". Bạn sửa trực tiếp trên thẻ hoặc thử lại sau.)</i>", t:Date.now() }]);
     }
     aiBusy = false;
     if(aiBudNote){ msgs.push({ id:uid(), role:"bot", html:aiBudNote, t:Date.now() }); aiBudNote = ""; }
@@ -5429,10 +5449,7 @@ function startNgay50k(){
     let msgs;
     try{
       const r = await aiCall(text);
-      msgs = [];
-      if(r.items.length) msgs.push({ id:uid(), role:"bot", items:r.items, intro:r.reply || "", status:r.items.map(() => "pending"), refs:r.items.map(() => null), t:Date.now(), ai:true });
-      if(r.query) msgs.push({ id:uid(), role:"bot", html:(r.reply && !r.items.length ? esc(r.reply) + "\n" : "") + answer(r.query), t:Date.now(), ai:true });
-      if(!r.items.length && !r.query) msgs.push({ id:uid(), role:"bot", html:esc(r.reply || "Mình chưa rõ ý bạn, kể lại giúp mình nhé?"), t:Date.now(), ai:true });
+      msgs = tagRetry(aiMsgs(r), text);
     }catch(e){
       msgs = tagRetry(localReply(text, res0), text);
       msgs.push({ id:uid(), role:"bot", html:"<i>(" + esc(aiErrText(e)) + ", mình dùng bộ hiểu câu trên máy. Kiểm tra ở Cài đặt → Trợ lý AI.)</i>", t:Date.now() });

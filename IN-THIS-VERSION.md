@@ -1,6 +1,19 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v87, ngày 07/10/2026
+**Phiên bản hiện tại:** v88, ngày 07/10/2026
+
+---
+
+## Có gì mới trong v88 (so với v87)
+
+**Nút "✦ Chưa đúng? Phân tích lại bằng AI" có dưới mọi câu trả lời trong Trò chuyện:**
+- Câu trả lời do máy tự hiểu: gửi câu đó cho AI.
+- Câu trả lời do AI làm: AI phân tích lại lần nữa, bấm được nhiều lần.
+- Kết quả đọc ảnh thông báo ngân hàng (kể cả khi máy không đọc được): gửi chính ảnh đó cho AI đọc. Ảnh chỉ giữ trong lúc app đang mở, không lưu xuống máy. Đọc ảnh bằng AI tốn nhiều token hơn đọc chữ.
+- Khoản đã bấm Ghi trong câu trả lời cũ được giữ nguyên; AI lỗi thì câu trả lời cũ quay lại, nút vẫn còn để thử lại.
+- Chưa cài Trợ lý AI: nút vẫn hiện, bấm là mở trang cài đặt AI kèm hướng dẫn.
+
+Tin báo đã ghi xong ("Ghi rồi nhé…") không có nút này, vì đó là xác nhận việc đã làm chứ không phải câu trả lời cần hiểu lại.
 
 ---
 
@@ -13,13 +26,6 @@
 - Mất mạng thì nút mờ đi.
 
 **Khe giữa đầu trang và ô Số dư ví**: v86 dùng cùng màu đầu trang nên ô Số dư ví trông dính vào đầu trang. Giờ khe là một dải kính mờ nhạt riêng, đầu trang giữ đường kẻ mảnh ở đáy, ô Số dư ví nổi tách hẳn ra.
-
----
-
-## Có gì mới trong v86 (so với v85)
-
-- **Bỏ dải trắng giữa đầu trang và ô Số dư ví** (tab Trò chuyện). Miếng che khe hở trước đây dùng màu nền phẳng nên lệch với nền loang của app, rõ nhất ở giao diện Pastel. Giờ nó chỉ hiện khi đang cuộn, và dùng cùng lớp kính mờ với đầu trang, khớp cả giao diện Sáng, Tối, Pastel.
-- Giao diện Tối: ô Số dư ví có nền đặc hơn, khi cuộn không còn nhìn xuyên thấy tin nhắn bên dưới.
 
 ---
 
@@ -130,6 +136,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v88** | Nút Phân tích lại bằng AI dưới mọi câu trả lời, kể cả câu của AI và kết quả đọc ảnh |
 | **v87** | Nút Phân tích lại bằng AI dưới mọi câu trả lời của máy; khe dưới đầu trang tách màu |
 | **v86** | Bỏ dải trắng dưới đầu trang ở tab Trò chuyện, khớp mọi giao diện |
 | **v85** | "Còn lại thực tế" đổi thành "Dòng tiền ròng tháng này"; thẻ hạn mức hôm nay gọn hơn |
