@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v88";
+  var K = "ngay50k:errlog", VER = "v89";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -1493,6 +1493,8 @@ header .date{font-size:1.25rem}
 .chat-chip{font-size:.82rem}
 .day-pick{font-size:.88rem}
 #tab-today .note .status b{font-weight:700}
+.ai-mark{color:var(--note); font-weight:800; font-size:.9em; margin-right:6px; line-height:1}
+.msg.bot.by-ai{border-color:color-mix(in srgb, var(--note) 28%, var(--line))}
 </style>
 </head>
 <body>
@@ -2190,7 +2192,7 @@ header .date{font-size:1.25rem}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v88</p>
+      <p class="sync" id="appVersion">Phiên bản v89</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -2601,8 +2603,8 @@ header .date{font-size:1.25rem}
 
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
 <script src="vendor/jsQR.js"></script>
-<script src="parse-vi.js?v=88"></script>
-<script src="lock.js?v=88"></script>
+<script src="parse-vi.js?v=89"></script>
+<script src="lock.js?v=89"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -4914,6 +4916,7 @@ function startNgay50k(){
       const intro = document.createElement("div"); intro.className = "msg bot";
       const pend = m.status.filter(s => s === "pending").length;
       if(m.introHtml) intro.innerHTML = m.intro; else intro.innerHTML = (m.intro ? esc(m.intro) + "\n" : "") + (m.items.length > 1 ? "Mình hiểu là có <b>" + m.items.length + " khoản</b>, bạn xem lại rồi bấm Ghi nhé:" : (m.intro ? "Bạn xem lại rồi bấm Ghi nhé:" : "Mình hiểu vậy, đúng không?"));
+      if(m.ai) markAI(intro);
       box.appendChild(intro);
       m.items.forEach((_, i) => box.appendChild(cardEl(m, i)));
       if(pend > 1){
@@ -4928,14 +4931,21 @@ function startNgay50k(){
       return box;
     }
     const d = document.createElement("div"); d.className = "msg bot"; d.innerHTML = m.html;
+    if(m.ai) markAI(d);
     if(!m.retry) return d;
     const wrap = document.createElement("div"); wrap.className = "msg-wrap"; wrap.appendChild(d); retryBtn(m, wrap);
     return wrap;
   }
+  /* dấu ✦ ở đầu câu trả lời do AI làm; câu do máy tự hiểu thì không có dấu */
+  function markAI(el){
+    el.classList.add("by-ai");
+    const k = document.createElement("span"); k.className = "ai-mark"; k.textContent = "✦"; k.title = "AI trả lời"; k.setAttribute("aria-label", "AI trả lời");
+    el.insertBefore(k, el.firstChild);
+  }
   /* nút chọn nhanh dưới câu trả lời của máy: có AI thì phân tích lại; chưa cài AI thì chỉ hiện ở câu máy chưa hiểu, mở Cài đặt */
   function retryBtn(m, box){
     const rb = document.createElement("button"); rb.type = "button"; rb.className = "ai-retry";
-    rb.textContent = "✦ Chưa đúng? Phân tích lại bằng AI";
+    rb.textContent = "↻ Chưa đúng? Phân tích lại bằng AI";
     if(aiReady()) rb.onclick = () => aiRetry(m);
     else rb.onclick = () => { openSettings(); showSetPage("setAI"); const msg = $("aiMsg"); msg.className = "inline-ok warn"; msg.textContent = "Dán khoá API và bật \"Dùng AI khi trò chuyện\" để phân tích lại bằng AI."; msg.hidden = false; };
     if(navigator.onLine === false) rb.disabled = true;

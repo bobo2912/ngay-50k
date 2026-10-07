@@ -1,6 +1,15 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v88, ngày 07/10/2026
+**Phiên bản hiện tại:** v89, ngày 07/10/2026
+
+---
+
+## Có gì mới trong v89 (so với v88)
+
+**Nhận biết câu trả lời của AI** (tab Trò chuyện).
+- Câu trả lời do AI làm có dấu **✦** ở đầu và viền nhạt màu nhấn.
+- Câu do máy tự hiểu (bộ hiểu câu trên máy, đọc ảnh trên máy) không có dấu.
+- Nút phân tích lại đổi biểu tượng thành **↻ Chưa đúng? Phân tích lại bằng AI**, để dấu ✦ chỉ dùng cho câu của AI.
 
 ---
 
@@ -14,18 +23,6 @@
 - Chưa cài Trợ lý AI: nút vẫn hiện, bấm là mở trang cài đặt AI kèm hướng dẫn.
 
 Tin báo đã ghi xong ("Ghi rồi nhé…") không có nút này, vì đó là xác nhận việc đã làm chứ không phải câu trả lời cần hiểu lại.
-
----
-
-## Có gì mới trong v87 (so với v86)
-
-**Phân tích lại bằng AI cho mọi câu trả lời của máy** (tab Trò chuyện).
-- Câu trả lời nào do bộ hiểu câu trên máy làm (thẻ khoản chi, câu trả lời cho câu hỏi, câu "mình chưa hiểu") đều có nút **✦ Chưa đúng? Phân tích lại bằng AI** ngay bên dưới.
-- Bấm là gửi đúng câu đó cho AI, cả nhóm câu trả lời cũ được thay bằng kết quả của AI. Khoản đã bấm Ghi thì giữ nguyên.
-- Chưa cài Trợ lý AI: câu nào máy chưa hiểu có nút **✦ Dùng Trợ lý AI để hiểu câu này**, mở thẳng trang cài đặt AI.
-- Mất mạng thì nút mờ đi.
-
-**Khe giữa đầu trang và ô Số dư ví**: v86 dùng cùng màu đầu trang nên ô Số dư ví trông dính vào đầu trang. Giờ khe là một dải kính mờ nhạt riêng, đầu trang giữ đường kẻ mảnh ở đáy, ô Số dư ví nổi tách hẳn ra.
 
 ---
 
@@ -136,6 +133,7 @@ Tin báo đã ghi xong ("Ghi rồi nhé…") không có nút này, vì đó là 
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v89** | Dấu ✦ ở câu trả lời của AI; nút phân tích lại dùng ↻ |
 | **v88** | Nút Phân tích lại bằng AI dưới mọi câu trả lời, kể cả câu của AI và kết quả đọc ảnh |
 | **v87** | Nút Phân tích lại bằng AI dưới mọi câu trả lời của máy; khe dưới đầu trang tách màu |
 | **v86** | Bỏ dải trắng dưới đầu trang ở tab Trò chuyện, khớp mọi giao diện |
