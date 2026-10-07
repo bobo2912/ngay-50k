@@ -1,6 +1,15 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v83, ngày 07/10/2026
+**Phiên bản hiện tại:** v84, ngày 07/10/2026
+
+---
+
+## Có gì mới trong v84 (so với v83)
+
+**Chữ gọn hơn, chỉ nhấn số quan trọng.**
+- Tab Ví: thẻ **Hôm nay còn được tiêu** thu gọn, số tiền cỡ vừa nằm ngay trên thanh tiến độ. Số to nhất của tab là **Số dư hiện tại**.
+- Mỗi tab chỉ còn một con số to và đậm: Ví là số dư, Tổng quan là còn lại thực tế, Thẻ là chi bằng thẻ tháng này, Khoản vay là hai dòng tổng nợ.
+- Chữ thường, danh sách, nút, chip, tin nhắn trò chuyện, thẻ xác nhận trong chat và Cài đặt đều nhỏ lại một chút, vẫn đủ đọc.
 
 ---
 
@@ -13,21 +22,6 @@
 - **Lưới an toàn:** mở app sau 9 giây mà chưa xong (không phải đang chờ nhập mã PIN) thì hiện hộp **App mở chưa xong** với nút **Tải lại** và **Tải bản mới nhất**. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng dữ liệu.
 - **Nhật ký lỗi:** Cài đặt → Dung lượng → **Nhật ký lỗi**. App ghi lại lỗi và chỗ bị kẹt khi khởi động; bấm **Sao chép để gửi** rồi gửi khi gặp lỗi.
 - Thanh **Đã có bản mới** chỉ hiện khi thật sự có bản mới hơn bản đang chạy.
-
----
-
-## Có gì mới trong v82 (so với v81)
-
-**Gộp Ví và Tài khoản thành một tab Ví.** Trước đây số dư nằm ở màn hình Ví (mở từ ô Số dư trong Trò chuyện), còn chi tiêu hôm nay nằm ở tab Tài khoản. Giờ tất cả ở tab **Ví** (ô thứ ba trên thanh tab), từ trên xuống:
-1. **Số dư hiện tại**, nợ thẻ, nút **Đối chiếu số dư** và **Trả thẻ** (thu gọn hơn trước).
-2. **Hôm nay còn được tiêu** với thanh tiến độ.
-3. **Quét QR**, Ảnh QR, Nhập tay, Tiền mặt, khoản hay lặp, người hay chuyển.
-4. **Giao dịch theo ngày**, rồi Sắp tới (khoản ghi cho ngày tương lai).
-5. 7 ngày gần nhất, Lịch chi tiêu tháng.
-6. Biến động từ lần đối chiếu, Lịch sử đối chiếu và trả thẻ.
-
-- Ô đầu tiên của thanh tab luôn là **Trò chuyện**. Chạm ô **Số dư ví** trong Trò chuyện thì sang tab Ví.
-- Cài đặt → Màn hình mở đầu vẫn chọn được Trò chuyện hoặc Ví, giờ chỉ quyết định tab nào hiện ra khi mở app.
 
 ---
 
@@ -138,6 +132,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v84** | Chữ gọn hơn, thẻ hạn mức hôm nay thu nhỏ, chỉ nhấn số chính mỗi tab |
 | **v83** | Sửa lỗi đơ khi mở app (trang và file phụ lệch bản, Face ID chặn bàn phím), thêm lưới an toàn và nhật ký lỗi |
 | **v82** | Gộp Ví và Tài khoản thành một tab Ví |
 | **v81** | Bộ hiểu câu: không dấu, viết tắt (hnay, hqua, 1k5, 1,5tr), 104 câu thử mới |

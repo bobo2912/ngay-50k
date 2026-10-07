@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v83";
+  var K = "ngay50k:errlog", VER = "v84";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -1418,6 +1418,68 @@ html.locked, html.locked body{overflow:hidden}
 .wallet-part section{margin-top:16px}
 
 .errlog{margin:8px 0 0; padding:10px; border-radius:12px; background:var(--field); border:1px solid var(--line); font:12px/1.45 ui-monospace,Menlo,monospace; white-space:pre-wrap; word-break:break-word; max-height:240px; overflow:auto; -webkit-user-select:text; user-select:text}
+
+/* ================= CỠ CHỮ GỌN (v84) =================
+   Chữ thường nhỏ lại, vừa đủ đọc. Mỗi tab chỉ một con số được to và đậm:
+   Ví → số dư hiện tại · Tổng quan → còn lại thực tế · Thẻ → chi bằng thẻ tháng này · Khoản vay → hai dòng tổng nợ.
+   Thẻ "Hôm nay còn được tiêu" thành một thẻ gọn: số tiền cỡ vừa nằm ngay trên thanh tiến độ. */
+body{font-size:14px; line-height:1.42}
+h2{font-size:.92rem}
+header .date{font-size:1.25rem}
+.date-small{font-size:.74rem}
+
+/* số chính của mỗi tab */
+.chero-big{font-size:1.55rem}
+.balbox.compact .chero-big .num{font-size:1.5rem}
+.chero-lb{font-size:.8rem}
+.ov-sub{font-size:.74rem}
+.balbox.compact .ov-sub{font-size:.76rem}
+
+/* Ví: hạn mức hôm nay, gọn */
+#tab-today .note{padding:12px 16px 12px}
+#tab-today .note .hero-top{gap:8px}
+#tab-today .note .remain-label{font-size:.68rem; letter-spacing:.06em}
+#tab-today .note .badge{font-size:.62rem; padding:3px 8px}
+#tab-today .note .remain{font-size:1.2rem; font-weight:800; letter-spacing:-.01em; margin:6px 0 6px; line-height:1.2}
+#tab-today .note .hero-bar{height:5px}
+#tab-today .note .status{font-size:.74rem; margin-top:6px; min-height:0}
+
+/* ô số phụ, danh sách */
+.kpi small{font-size:.72rem}
+.kpi b{font-size:.98rem}
+.ledger-row span{font-size:.86rem}
+.ledger-row b{font-size:1.05rem}
+.item{padding:9px 2px}
+.item .desc div:first-child{font-size:.88rem}
+.item .desc div:last-child{font-size:.72rem}
+.item .amt{font-size:.88rem}
+.item .cat{width:28px; height:28px; font-size:.95rem}
+.day-sum, .week-sum, .week-avg, .cal-sum{font-size:.78rem}
+
+/* nút, chip, thanh chọn */
+.scan-btn{height:44px; font-size:.9rem}
+.q-btn{font-size:.82rem}
+.primary{font-size:.9rem; padding:12px}
+.ghost{font-size:.84rem; padding:9px 14px}
+.seg button{font-size:.78rem}
+.chip{font-size:.78rem}
+.chat-sugg button{font-size:.78rem}
+
+/* trò chuyện, cài đặt */
+.msg{font-size:.88rem; padding:9px 12px}
+.set-nav{padding:12px 14px}
+.set-nav .nav-t{font-size:.9rem}
+.set-nav .nav-v{font-size:.8rem}
+.set-now{font-size:.82rem}
+.settings-head h2, .set-head h2{font-size:1.25rem}
+.pcard select, .pcard input{font-size:.88rem; height:34px; padding:5px 8px}
+.pcard .pk, .pcard .pa{font-size:.9rem}
+.pcard .pbtns button, .pcard button{font-size:.86rem}
+.demo-bar{font-size:.78rem}
+#addLoanBtn{padding:11px; margin-top:10px}
+.chat-chip{font-size:.82rem}
+.day-pick{font-size:.88rem}
+#tab-today .note .status b{font-weight:700}
 </style>
 </head>
 <body>
@@ -2115,7 +2177,7 @@ html.locked, html.locked body{overflow:hidden}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v83</p>
+      <p class="sync" id="appVersion">Phiên bản v84</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -2526,8 +2588,8 @@ html.locked, html.locked body{overflow:hidden}
 
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
 <script src="vendor/jsQR.js"></script>
-<script src="parse-vi.js?v=83"></script>
-<script src="lock.js?v=83"></script>
+<script src="parse-vi.js?v=84"></script>
+<script src="lock.js?v=84"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
