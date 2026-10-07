@@ -1,22 +1,27 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v96, ngày 07/10/2026
+**Phiên bản hiện tại:** v97, ngày 07/10/2026
+
+---
+
+## Có gì mới trong v97 (so với v96)
+
+**Nhiều ví (bước 1 của mục 2.2).** ⚠️ Nên xuất file sao lưu trước khi cập nhật.
+- Ví mặc định **Tài khoản** gồm tài khoản ngân hàng chính và tiền mặt, như trước giờ. Dữ liệu cũ không phải chuyển đổi.
+- Nút **Thêm ví** ở tab Ví: thêm tài khoản ngân hàng khác hoặc ví điện tử (Momo, ZaloPay…), nhập số dư đang có nếu muốn.
+- Có từ hai ví trở lên thì tab Ví hiện **hàng ví** với số dư từng ví. Số lớn phía trên là **tổng các ví đã trừ nợ thẻ**, dòng dưới ghi rõ tiền trong các ví và số đang nợ thẻ.
+- Bấm vào một ví để mở màn riêng của ví đó: số dư, đối chiếu, biến động, lịch sử. Ví thêm có nút **Sửa ví** (đổi tên, loại, xoá).
+- Xoá ví: các khoản đã ghi vẫn nằm trong thống kê chi tiêu, chỉ bỏ số dư ví đó khỏi tổng.
+- Hỏi chat "số dư bao nhiêu" sẽ liệt kê từng ví và tổng.
+- Dữ liệu mẫu có thêm ví "Momo (mẫu)".
+
+Chọn ví khi ghi khoản và chuyển tiền giữa các ví sẽ có ở v98.
 
 ---
 
 ## Có gì mới trong v96 (so với v95)
 
 **Chạm ô chat không còn làm đầu trang giật.** Trước đây lúc bàn phím bật, iPhone trượt cả màn hình lên để lộ ô nhập, đầu trang và ô Số dư ví bị đẩy lên rồi mới hạ về chỗ cũ. Giờ ô nhập tạm trong suốt trong tích tắc lúc chạm nên iPhone không trượt trang nữa, app tự đặt ô nhập ngay trên bàn phím. Trong lúc bàn phím trượt lên, app bám theo màn hình từng khung hình nên đầu trang đứng yên.
-
----
-
-## Có gì mới trong v95 (so với v94)
-
-- **Đầu trang giữ đúng màu khi đang chat:** lúc bàn phím mở, đầu trang không còn chuyển sang màu trắng nhạt mà giữ cùng màu với vùng giờ, pin ở mọi giao diện.
-- **Sửa lỗi đơ sau khi chụp màn hình lúc đang gõ:** iPhone tắt bàn phím mà ô chat vẫn nằm lơ lửng giữa màn hình, chạm đâu cũng không ăn. Giờ app nhận ra bàn phím đã tắt, hạ ô chat về chỗ cũ và mọi nút bấm được bình thường.
-- **Kiểm tra cập nhật trong Cài đặt:** mục Phiên bản → Kiểm tra cập nhật. Có bản mới thì hiện "Có bản mới vN" và nút **Cập nhật lên vN**, bấm một lần là app tải bản mới rồi tự mở lại. Mở Cài đặt là app tự kiểm tra.
-- **Câu chào chat ngắn gọn:** "Hôm nay bạn cần tôi giúp gì nào?"
-- **Đối chiếu số dư thành màn hình riêng:** bấm Đối chiếu số dư ở tab Ví để mở. Trong đó có ô nhập Số dư thật đang có, Đang nợ thẻ, và các mục Sắp tới (chưa trừ vào số dư), Biến động từ lần đối chiếu, Đối chiếu và trả thẻ. Các mục này không còn nằm dài ở tab Ví nữa. Lưu xong vẫn ở lại màn hình để xem mốc mới.
 
 ---
 
@@ -129,6 +134,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v97** | Nhiều ví: thêm ví, hàng ví, tổng các ví trừ nợ thẻ, màn riêng từng ví |
 | **v96** | Chạm ô chat không làm đầu trang và ô Số dư ví giật lên xuống |
 | **v95** | Giữ màu đầu trang khi chat; sửa đơ sau khi chụp màn hình; nút Kiểm tra cập nhật; màn Đối chiếu số dư riêng |
 | **v94** | Ô chat luôn một dòng; tab Chat; lớp mờ quanh ô Số dư ví |
