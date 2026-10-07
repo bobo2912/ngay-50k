@@ -404,10 +404,51 @@
     return { items, query:null, unknown };
   }
 
+  /* ---------------- máy tự xử lý được hay cần nhờ AI ----------------
+     Dùng khi người dùng có bật AI: câu nào chắc chắn hiểu đúng trên máy thì không gọi AI cho đỡ tốn.
+     Trả { local:true|false, why:[lý do cần AI] }. Lý do:
+       noitem    không tìm ra khoản nào, cũng không phải câu hỏi
+       query     câu hỏi mà máy không biết hỏi gì
+       leftover  còn đoạn chữ không gắn được với số tiền nào
+       numbers   trong câu có nhiều số tiền hơn số khoản tìm được
+       words     có từ khó: chia tiền, trừ, nhầm, sửa, xoá, trả góp, phần trăm…
+       query     (cũng dùng khi) câu xin lời khuyên, hỏi tương lai, hỏi lý do
+       card      quẹt thẻ nhưng có nhiều thẻ mà không biết thẻ nào
+       who       vay, trả nợ nhưng thiếu tên người hoặc không thấy khoản vay
+       long      câu dài so với số khoản
+     Mọi khoản vẫn hiện thẻ xác nhận trước khi ghi, nên máy hiểu sai thì người dùng sửa được hoặc bấm "Nhờ AI hiểu lại". */
+  const HARD = / (chia|chia deu|moi nguoi|moi dua|tru di|tru ra|tru vao|cong them|cong vao|nham|sua lai|sua thanh|doi thanh|xoa|huy|khong phai|chu khong|tra gop|lai suat|phan tram|giam gia|hoan tien mot phan|tong cong|tat ca la|ca thay|moi cai|moi ly|moi phan|neu|thi sao|bao gio) /;
+  /* câu hỏi mà bộ trả lời trên máy chỉ đoán bừa: xin lời khuyên, hỏi tương lai, hỏi lý do */
+  const ASK = / (nen|co nen|tu van|goi y|lam sao|lam the nao|tai sao|vi sao|du doan|du kien|tuan sau|thang sau|nam sau|ke hoach|so sanh|so voi|trung binh|xu huong) |^ sao /;
+  const EDIT = / (sua|doi|chinh) (khoan|cai|lai|thanh|so|tien) | thanh \d| ghi (nham|sai|lon|thieu|thua) /;
+  function assess(text, res, ctx){
+    ctx = ctx || {};
+    const why = [], n = " " + norm(text).replace(/[?!.,;:]/g, " ").replace(/\s+/g, " ") + " ";
+    if(!res) res = parse(text, ctx);
+    if(res.query){
+      if(res.query.q === "unknown" || ASK.test(n)) why.push("query");
+      return { local:!why.length, why };
+    }
+    if(!res.items.length){ why.push("noitem"); return { local:false, why }; }
+    if(res.unknown && res.unknown.length) why.push("leftover");
+    const { N } = tokenize(text); let cnt = 0;
+    for(let i = 0; i < N.length; i++){ const a = amountAt(N, i); if(a){ cnt++; i += a.n - 1; } }
+    if(cnt > res.items.length) why.push("numbers");
+    if(HARD.test(n) || EDIT.test(n) || /%/.test(text)) why.push("words");
+    const cards = ctx.cards || [];
+    res.items.forEach(it => {
+      if(it.kind === "card" && !it.cardId && cards.length > 1 && why.indexOf("card") < 0) why.push("card");
+      if((it.kind === "lend" || it.kind === "borrow") && !it.who && !it.loanId && why.indexOf("who") < 0) why.push("who");
+      if((it.kind === "repay" || it.kind === "collect") && (it.loanMissing || !it.loanId) && why.indexOf("who") < 0) why.push("who");
+    });
+    if(N.length > 14 * res.items.length + 4) why.push("long");
+    return { local:!why.length, why };
+  }
+
   /* đọc số tiền người dùng gõ trong ô sửa ("45k", "1tr2", "45.000") */
   function amountText(s){ const { N } = tokenize(s); const a = amountAt(N, 0); return a ? a.v : (parseInt(String(s).replace(/\D/g, ""), 10) || 0); }
 
-  const api = { parse, amountText, guessTag, norm, _amountAt:amountAt, _clauses:clauses };
+  const api = { parse, assess, amountText, guessTag, norm, _amountAt:amountAt, _clauses:clauses };
   if(typeof module !== "undefined" && module.exports) module.exports = api;
   else root.N50KParse = api;
 })(typeof window !== "undefined" ? window : this);
