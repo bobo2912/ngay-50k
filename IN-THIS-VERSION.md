@@ -1,6 +1,21 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v79, ngày 07/10/2026
+**Phiên bản hiện tại:** v80, ngày 07/10/2026
+
+---
+
+## Có gì mới trong v80 (so với v79)
+
+**Máy trước, AI sau: chỉ câu khó mới tốn tiền AI.** Khi đã bật Trợ lý AI, mỗi câu bạn gõ được bộ hiểu câu trên máy xem trước:
+- Câu đơn giản ("phở 45k", "grab 28k, trà sữa 35k", "Dũng trả 200k", "hôm nay tiêu bao nhiêu?") → **máy tự xử lý, không gọi AI**.
+- Câu khó → gửi cho AI: chia tiền ("lẩu 600k chia 4 người"), sửa khoản ("ghi nhầm 45k thành 54k"), giảm giá hay phần trăm, nhiều số mà máy không gắn được, quẹt thẻ khi có nhiều thẻ mà không nói thẻ nào, trả nợ không rõ ai, câu xin lời khuyên hay so sánh, câu quá dài.
+- Khoản do máy hiểu có nút **✦ Sai? Nhờ AI hiểu lại** ngay bên dưới, bấm là gửi đúng câu đó cho AI.
+- Tắt được trong Cài đặt → Trợ lý AI → **Chỉ gọi AI cho câu khó**.
+- Trong **Chi phí và ngân sách** có dòng đếm số câu máy tự hiểu và số tiền ước tính đã tiết kiệm.
+
+**Trợ lý AI chuyển xuống nhóm Nâng cao** trong Cài đặt, ghi rõ là không bắt buộc. Phần chi phí, tỉ giá, ngân sách được gập lại.
+
+**Dán khoá API không tự bật AI.** Người mới dán khoá rồi bấm Thử kết nối, sau đó tự bật **Dùng AI khi trò chuyện**. Máy đã có khoá từ bản trước vẫn giữ AI bật như cũ.
 
 ---
 
@@ -14,27 +29,6 @@
 
 ---
 
-## Có gì mới trong v78 (so với v77)
-
-**Màn hình chào cho người mới.** Lần đầu mở app (máy chưa có dữ liệu), app hướng dẫn 4 bước:
-
-1. **Hạn mức mỗi ngày:** chọn nhanh 50k, 80k, 100k, 150k, 200k, 300k hoặc nhập số khác.
-2. **Ngân hàng hay dùng:** 18 ngân hàng phổ biến, hoặc Không dùng.
-3. **Thẻ tín dụng:** có thì nhập tên thẻ, 4 số cuối, ngày sao kê.
-4. **Khoá app bằng mã PIN:** đặt luôn hoặc để sau.
-
-Màn hình đầu còn có **Xem thử với dữ liệu mẫu** (10 ngày chi tiêu, lương, một thẻ, một khoản cho vay) và **Tôi đã có file sao lưu** (mở thẳng trang Sao lưu). Đang xem mẫu thì đầu trang có thanh **Xoá mẫu, bắt đầu thật**: xoá đúng các khoản mẫu, khoản bạn tự ghi vẫn giữ, rồi vào bước thiết lập.
-
-**Không còn gắn cứng MB Bank.** Nút sau khi ghi chuyển khoản giờ là **Sao chép và mở** ngân hàng bạn chọn (Cài đặt → **Ngân hàng hay dùng**).
-- MB Bank vẫn như cũ: đoạn chép dán thẳng vào ô trợ lý của MB Bank.
-- Ngân hàng khác mở qua liên kết của VietQR, chỉ gửi mã app ngân hàng, không gửi số tài khoản hay số tiền.
-- Chọn Không dùng thì chỉ còn nút sao chép.
-- Máy đã có dữ liệu từ bản trước tự giữ MB Bank, không phải chọn lại.
-
-Đang xem dữ liệu mẫu thì app không nhắc sao lưu.
-
----
-
 ## Tất cả tính năng của app
 
 ### Tab Trò chuyện (mở mặc định)
@@ -42,7 +36,7 @@ Màn hình đầu còn có **Xem thử với dữ liệu mẫu** (10 ngày chi t
 - Gửi ảnh thông báo trừ tiền: đọc bằng bộ đọc chữ trên máy, không tốn token AI.
 - Hỏi nhanh: hôm nay tiêu bao nhiêu, ai còn nợ mình, số dư còn bao nhiêu…
 - Chọn Trò chuyện hay Ví làm màn hình mở đầu trong Cài đặt.
-- **Trợ lý AI** (tuỳ chọn): dùng khoá API Claude, ChatGPT hoặc Gemini để hiểu câu chính xác hơn; khoá chỉ lưu trên máy. Xem chi phí đã dùng theo từng nhà cung cấp trong Cài đặt.
+- **Trợ lý AI** (tuỳ chọn, trong nhóm Nâng cao): dùng khoá API Claude, ChatGPT hoặc Gemini; khoá chỉ lưu trên máy. Mặc định chỉ gọi AI cho câu khó, câu đơn giản máy tự hiểu; có nút Nhờ AI hiểu lại. Xem chi phí và số câu tiết kiệm trong Cài đặt.
 
 ### Tab Ví
 - **Số dư hiện tại** của ví, nợ thẻ và số còn lại sau khi trả thẻ.
@@ -143,6 +137,7 @@ Màn hình đầu còn có **Xem thử với dữ liệu mẫu** (10 ngày chi t
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v80** | Máy trước, AI sau: chỉ câu khó mới gọi AI; AI xuống nhóm Nâng cao, dán khoá không tự bật |
 | **v79** | Đổi tên app thành Tiêu Gọn |
 | **v78** | Màn hình chào và dữ liệu mẫu, chọn ngân hàng hay dùng thay cho MB Bank cố định |
 | **v77** | Khoá app bằng mã PIN, mã hoá dữ liệu, Face ID, sao lưu có mật khẩu |

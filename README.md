@@ -117,6 +117,8 @@ python3 -m http.server 8765 &
 # rồi bấm qua từng tab và chụp màn hình so sánh
 ```
 
+Bộ hiểu câu có hai bài thử chạy bằng Node: `node tests-parse-vi.js` (hiểu câu) và `node tests-assess-vi.js` (câu nào máy tự xử lý, câu nào gửi AI, dùng `N50KParse.assess`).
+
 Vài chỗ dễ vỡ, sửa xong nên thử lại:
 
 - **Số dư ví.** `state.bals` là các lần đối chiếu (lần có `t` lớn nhất là mốc), `state.cardPay` là các lần trả thẻ. `balCalc()` chỉ tính khoản có thời điểm sau mốc và không ở tương lai (khoản ngày tương lai hiện ở mục Sắp tới); thời điểm lấy từ `t` nếu cùng ngày với khoản, không thì 00:00 của ngày đó (`recTime`), để khoản cũ không có giờ trong ngày đối chiếu không bị trừ lại.

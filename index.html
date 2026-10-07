@@ -1354,6 +1354,17 @@ html.locked, html.locked body{overflow:hidden}
 .demo-bar span{flex:1}
 .demo-bar button{border:0; border-radius:999px; padding:7px 12px; background:var(--bg); color:var(--ink); font-weight:700; font-size:.82rem}
 @media (prefers-reduced-motion: reduce){ .welcome{transition:none} }
+
+/* Cài đặt: nhóm Nâng cao, phần gập, nút nhờ AI */
+.set-label{margin:22px 4px 8px; font-size:.78rem; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:var(--muted)}
+.set-nav .opt{font-weight:400; color:var(--muted); font-size:.85em}
+.set-more{margin-top:18px; border-top:1px solid var(--line); padding-top:12px}
+.set-more > summary{cursor:pointer; font-weight:700; list-style:none; display:flex; align-items:center; justify-content:space-between}
+.set-more > summary::-webkit-details-marker{display:none}
+.set-more > summary::after{content:"›"; transform:rotate(90deg); transition:transform .15s; color:var(--muted); font-size:1.2rem}
+.set-more[open] > summary::after{transform:rotate(-90deg)}
+.ai-saved{margin-top:10px; padding:10px 12px; border-radius:12px; background:var(--ok-soft); color:var(--ink)}
+.ai-retry{display:block; margin:6px 0 0 auto; border:0; background:none; color:var(--note); font-weight:600; font-size:.85rem; padding:6px 4px}
 </style>
 </head>
 <body>
@@ -1744,7 +1755,6 @@ html.locked, html.locked body{overflow:hidden}
       <div class="set-list">
         <button class="set-nav" data-go="setLock"><span class="nav-t">Khoá app</span><span class="nav-v" id="navLock"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
         <button class="set-nav" data-go="setStart"><span class="nav-t">Màn hình mở đầu</span><span class="nav-v" id="navStart"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
-        <button class="set-nav" data-go="setAI"><span class="nav-t">Trợ lý AI</span><span class="nav-v" id="navAI"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
         <button class="set-nav" data-go="setTheme"><span class="nav-t">Giao diện</span><span class="nav-v" id="navTheme"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
         <button class="set-nav" data-go="setScan"><span class="nav-t">Quét mã QR</span><span class="nav-v" id="navScan"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
         <button class="set-nav" data-go="setBank"><span class="nav-t">Ngân hàng hay dùng</span><span class="nav-v" id="navBank"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
@@ -1754,6 +1764,10 @@ html.locked, html.locked body{overflow:hidden}
         <button class="set-nav" data-go="setTags"><span class="nav-t">Quản lý tag</span><span class="nav-v" id="navTags"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
         <button class="set-nav" data-go="setSync"><span class="nav-t">Sao lưu và đồng bộ</span><span class="nav-v" id="navSync"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
         <button class="set-nav" data-go="setStore"><span class="nav-t">Dung lượng</span><span class="nav-v" id="navStore"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+      </div>
+      <h3 class="set-label">Nâng cao</h3>
+      <div class="set-list">
+        <button class="set-nav" data-go="setAI"><span class="nav-t">Trợ lý AI <span class="opt">(không bắt buộc)</span></span><span class="nav-v" id="navAI"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
       </div>
       <p class="set-ver" id="appVersionHome"></p>
     </div>
@@ -1803,7 +1817,7 @@ html.locked, html.locked body{overflow:hidden}
     <div class="set-page" id="setAI" hidden>
       <div class="set-head"><button class="set-back" data-back>‹ Cài đặt</button><h2 tabindex="-1">Trợ lý AI</h2></div>
 <section class="set-group">
-      <p class="set-now">Dùng AI để hiểu câu bạn kể trong Trò chuyện chính xác hơn. Mỗi câu chat tốn một khoản phí nhỏ trả cho nhà cung cấp, tính vào tài khoản API của bạn.</p>
+      <p class="set-now"><b>Không bắt buộc.</b> Trò chuyện vẫn chạy bằng bộ hiểu câu trên máy, không cần mạng, không tốn phí. Nếu bạn có khoá API của Claude, ChatGPT hoặc Gemini, app có thể nhờ AI hiểu những câu khó. Mỗi lần gọi AI tốn một khoản phí nhỏ, tính vào tài khoản API của bạn.</p>
       <div class="seg seg3" id="aiProv" role="group" aria-label="Nhà cung cấp" style="margin-top:12px">
         <button data-p="claude" aria-pressed="true">Claude</button>
         <button data-p="openai" aria-pressed="false">ChatGPT</button>
@@ -1820,9 +1834,14 @@ html.locked, html.locked body{overflow:hidden}
         <datalist id="aiModels"></datalist>
       </div>
       <label class="sc-use"><input type="checkbox" id="aiOn"> Dùng AI khi trò chuyện</label>
+      <label class="sc-use"><input type="checkbox" id="aiSmart" checked> Chỉ gọi AI cho câu khó <span class="opt">(tiết kiệm)</span></label>
+      <p class="set-now" style="margin:4px 0 0 28px">Câu đơn giản như "phở 45k", "hôm nay tiêu bao nhiêu" do máy tự hiểu. Câu có chia tiền, sửa khoản, nhiều số, hỏi lời khuyên… mới gửi cho AI. Máy hiểu sai thì bấm <b>Nhờ AI hiểu lại</b> ngay dưới khoản đó.</p>
       <div class="set-row" style="margin-top:12px"><button class="ghost grow" id="aiTest">Thử kết nối</button><button class="ghost danger" id="aiDel" hidden>Xoá khoá</button></div>
       <p class="inline-ok" id="aiMsg" hidden></p>
-      <h4 class="sub" style="margin-top:18px">Chi phí đã dùng</h4>
+      <details class="set-more">
+      <summary>Chi phí và ngân sách</summary>
+      <p class="set-now ai-saved" id="aiSavedLine" hidden></p>
+      <h4 class="sub" style="margin-top:12px">Chi phí đã dùng</h4>
       <div class="seg seg2h" id="aiUseSeg" role="group" aria-label="Khoảng thời gian" style="margin:8px 0 10px">
         <button data-r="m" aria-pressed="true">Tháng này</button>
         <button data-r="all" aria-pressed="false">Từ trước tới nay</button>
@@ -1839,6 +1858,7 @@ html.locked, html.locked body{overflow:hidden}
       <div id="aiBudList" class="ai-use" style="margin-top:10px"></div>
       <div class="set-row" style="margin-top:10px"><button class="ghost grow" id="aiNotif">Bật thông báo đẩy</button></div>
       <p class="set-now" id="aiNotifMsg" style="margin-top:6px"></p>
+      </details>
       <h4 class="sub">An toàn</h4>
       <p class="set-now">Khoá chỉ lưu trên máy này: không nằm trong mã nguồn trên GitHub, không nằm trong file sao lưu, không gửi đi đâu ngoài nhà cung cấp bạn chọn. Câu bạn gõ cùng danh sách tên thẻ, tên người vay và nhóm chi được gửi cho nhà cung cấp để AI hiểu ngữ cảnh. Số liệu trả lời (đã chi, còn nợ, số dư) do app tự tính trên máy. Mất mạng hay AI lỗi thì app dùng bộ hiểu câu trên máy. Nên đặt hạn mức chi tiêu cho khoá trong trang của nhà cung cấp.</p>
     </section>
@@ -2036,7 +2056,7 @@ html.locked, html.locked body{overflow:hidden}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v79</p>
+      <p class="sync" id="appVersion">Phiên bản v80</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Xoá dữ liệu</h4>
@@ -4773,6 +4793,10 @@ function startNgay50k(){
         all.querySelector("button").onclick = () => saveItems(m, m.items.map((_, i) => i));
         box.appendChild(all);
       }
+      if(m.retry && pend === m.items.length && aiReady()){
+        const rb = document.createElement("button"); rb.type = "button"; rb.className = "ai-retry"; rb.textContent = "✦ Sai? Nhờ AI hiểu lại";
+        rb.onclick = () => aiRetry(m); box.appendChild(rb);
+      }
       return box;
     }
     const d = document.createElement("div"); d.className = "msg bot"; d.innerHTML = m.html; return d;
@@ -4817,7 +4841,7 @@ function startNgay50k(){
     openai: { name:"ChatGPT", model:"gpt-5-mini", models:["gpt-5-mini","gpt-5"], keyHint:"sk-…", where:"platform.openai.com → API keys" },
     gemini: { name:"Gemini", model:"gemini-flash-latest", models:["gemini-flash-latest","gemini-pro-latest"], keyHint:"AIza…", where:"aistudio.google.com → Get API key" }
   };
-  function aiCfg(){ let c = null; try{ c = JSON.parse(N50K.get(AI_KEY) || "null"); }catch(e){} c = c || {}; if(!AI_PROVIDERS[c.provider]) c.provider = "claude"; if(c.on === undefined) c.on = true; return c; }
+  function aiCfg(){ let c = null; try{ c = JSON.parse(N50K.get(AI_KEY) || "null"); }catch(e){} c = c || {}; if(!AI_PROVIDERS[c.provider]) c.provider = "claude"; if(c.on === undefined) c.on = !!(c.key && String(c.key).trim()); if(c.smart === undefined) c.smart = true; return c; }
   function aiSet(c){ N50K.set(AI_KEY, JSON.stringify(c)); aiBadge(); }
   function aiBadge(){ const b = $("chatAI"); if(!b) return; const c = aiCfg(); b.hidden = !aiReady(); b.textContent = "✦ AI · " + AI_PROVIDERS[c.provider].name; }
   function aiReady(){ const c = aiCfg(); return !!(c.on && c.key && String(c.key).trim()); }
@@ -4930,7 +4954,9 @@ function startNgay50k(){
     const vnd = v => fmt(Math.round(v * rate));
     const tok = v => v >= 1e6 ? (v / 1e6).toFixed(2).replace(".", ",") + " tr" : v.toLocaleString("vi-VN");
     const keys = ["claude", "openai", "gemini"].filter(k => agg[k]);
-    if(!keys.length){ $("aiUseList").innerHTML = '<div class="empty">' + (aiUseRange === "m" ? "Tháng này chưa gọi AI lần nào." : "Chưa gọi AI lần nào.") + '</div>'; return; }
+    const sv = aiSavedGet(), saved = aiUseRange === "m" ? (sv[mk] || 0) : Object.values(sv).reduce((a, b) => a + b, 0);
+    $("aiSavedLine").hidden = !saved;
+    if(!keys.length){ $("aiUseList").innerHTML = '<div class="empty">' + (aiUseRange === "m" ? "Tháng này chưa gọi AI lần nào." : "Chưa gọi AI lần nào.") + '</div>'; if(saved) $("aiSavedLine").innerHTML = "<b>" + saved + " câu</b> máy tự hiểu, không gọi AI."; return; }
     let tot = 0, totN = 0;
     $("aiUseList").innerHTML = keys.map(k => {
       const a = agg[k]; tot += a.usd; totN += a.n;
@@ -4938,6 +4964,7 @@ function startNgay50k(){
       return '<div class="r"><div><b>' + esc(AI_PROVIDERS[k].name) + '</b><small>' + a.n + ' lần gọi · ' + tok(a.i) + ' token vào, ' + tok(a.o) + ' token ra<br>' + ms + (a.np ? '<br>' + a.np + ' lần chưa có bảng giá cho mô hình này' : '') + '</small></div>' +
         '<div class="v"><b class="num">' + vnd(a.usd) + '</b><small>' + usdTxt(a.usd) + '</small></div></div>';
     }).join("") + (keys.length > 1 ? '<div class="r tot"><div><b>Tổng</b><small>' + totN + ' lần gọi</small></div><div class="v"><b class="num">' + vnd(tot) + '</b><small>' + usdTxt(tot) + '</small></div></div>' : "");
+    if(saved) $("aiSavedLine").innerHTML = "<b>" + saved + " câu</b> máy tự hiểu, không gọi AI" + (totN && tot > 0 ? ", tiết kiệm khoảng <b>" + vnd(tot / totN * saved) + "</b> (tính theo chi phí trung bình mỗi lần gọi)." : ".");
   }
 
   const AI_SCHEMA = {
@@ -5111,8 +5138,19 @@ function startNgay50k(){
   }
 
   /* ---------- gửi tin: có AI thì nhờ AI, không thì dùng bộ hiểu câu trên máy ---------- */
-  function localReply(text){
-    let res; try{ res = window.N50KParse.parse(text, chatCtx()); }catch(e){ res = { items:[], query:null, unknown:[text] }; }
+  function localParse(text){ try{ return window.N50KParse.parse(text, chatCtx()); }catch(e){ return { items:[], query:null, unknown:[text] }; } }
+  const GREET = /^(chào|chao|hi|hello|alo|xin chào|hey)\b/i, THANKS = /^(cảm ơn|cam on|thanks|thank|ok|oke|okay|được rồi)\b/i;
+  /* AI đang bật: câu này máy tự xử lý được không (máy trước, AI sau) */
+  function localEnough(text, res){
+    if(GREET.test(text) || THANKS.test(text)) return true;
+    try{ return window.N50KParse.assess(text, res, chatCtx()).local; }catch(e){ return false; }
+  }
+  /* đếm số câu đã xử lý trên máy thay vì gọi AI, theo tháng */
+  const AI_SAVED_KEY = "ngay50k:aiSaved";
+  function aiSavedGet(){ try{ const v = JSON.parse(lsGet(AI_SAVED_KEY) || "null"); return v && typeof v === "object" ? v : {}; }catch(e){ return {}; } }
+  function aiSavedAdd(){ const v = aiSavedGet(), mk = todayKey().slice(0, 7); v[mk] = (v[mk] || 0) + 1; lsSet(AI_SAVED_KEY, JSON.stringify(v)); }
+  function localReply(text, res){
+    if(!res) res = localParse(text);
     const out = [];
     if(res.query) out.push({ id:uid(), role:"bot", html:answer(res.query), t:Date.now() });
     else if(res.items.length){
@@ -5194,12 +5232,41 @@ function startNgay50k(){
     chatSave(); renderChat(); chatScrollEnd(true);
   }
   $("chatImg").addEventListener("change", e => { const fl = e.target.files; if(fl && fl.length) chatSendImgs([...fl]); e.target.value = ""; });
+  /* khoản máy hiểu chưa đúng: gửi lại đúng câu đó cho AI, thay thẻ cũ bằng kết quả của AI */
+  async function aiRetry(m){
+    if(aiBusy || !m.retry) return;
+    const text = m.retry, wait = { id:uid(), role:"bot", html:'<span class="typing"><i></i><i></i><i></i></span>', thinking:true, t:Date.now() };
+    const at = chat.msgs.indexOf(m); if(at < 0) return;
+    chat.msgs.splice(at, 1, wait); aiBusy = true; renderChat(true);
+    let msgs = [];
+    try{
+      const r = await aiCall(text);
+      if(r.items.length) msgs.push({ id:uid(), role:"bot", items:r.items, intro:r.reply || "", status:r.items.map(() => "pending"), refs:r.items.map(() => null), t:Date.now(), ai:true });
+      if(r.query) msgs.push({ id:uid(), role:"bot", html:(r.reply && !r.items.length ? esc(r.reply) + "\n" : "") + answer(r.query), t:Date.now(), ai:true });
+      if(!r.items.length && !r.query) msgs.push({ id:uid(), role:"bot", html:esc(r.reply || "Mình chưa rõ ý bạn, kể lại giúp mình nhé?"), t:Date.now(), ai:true });
+      const v = aiSavedGet(), mk = todayKey().slice(0, 7); if(v[mk] > 0){ v[mk]--; lsSet(AI_SAVED_KEY, JSON.stringify(v)); }
+    }catch(e){
+      delete m.retry; msgs = [m, { id:uid(), role:"bot", html:"<i>(" + esc(aiErrText(e)) + ". Bạn sửa trực tiếp trên thẻ nhé.)</i>", t:Date.now() }];
+    }
+    aiBusy = false;
+    if(aiBudNote){ msgs.push({ id:uid(), role:"bot", html:aiBudNote, t:Date.now() }); aiBudNote = ""; }
+    const i = chat.msgs.indexOf(wait); chat.msgs.splice(i < 0 ? chat.msgs.length : i, i < 0 ? 0 : 1, ...msgs);
+    chatSave(); renderChat(true); chatScrollEnd(true);
+  }
   async function chatSend(text){
     text = String(text || "").trim(); if(!text || aiBusy) return;
     if(!chat) chatLoad();
     chat.msgs.push({ id:uid(), role:"me", text, t:Date.now() });
+    const res0 = localParse(text);
+    if(aiReady() && navigator.onLine !== false && aiCfg().smart && localEnough(text, res0)){
+      /* máy hiểu chắc chắn: không gọi AI. Khoản chờ ghi có nút "Nhờ AI hiểu lại" phòng khi máy hiểu sai */
+      const out = localReply(text, res0);
+      out.forEach(m => { if(m.items) m.retry = text; });
+      chat.msgs.push(...out); aiSavedAdd();
+      chatSave(); renderChat(); chatScrollEnd(true); return;
+    }
     if(!aiReady() || (navigator.onLine === false)){
-      chat.msgs.push(...localReply(text));
+      chat.msgs.push(...localReply(text, res0));
       if(aiReady()) chat.msgs.push({ id:uid(), role:"bot", html:"<i>(Đang không có mạng, mình dùng bộ hiểu câu trên máy.)</i>", t:Date.now() });
       chatSave(); renderChat(); chatScrollEnd(true); return;
     }
@@ -5214,7 +5281,7 @@ function startNgay50k(){
       if(r.query) msgs.push({ id:uid(), role:"bot", html:(r.reply && !r.items.length ? esc(r.reply) + "\n" : "") + answer(r.query), t:Date.now(), ai:true });
       if(!r.items.length && !r.query) msgs.push({ id:uid(), role:"bot", html:esc(r.reply || "Mình chưa rõ ý bạn, kể lại giúp mình nhé?"), t:Date.now(), ai:true });
     }catch(e){
-      msgs = localReply(text);
+      msgs = localReply(text, res0);
       msgs.push({ id:uid(), role:"bot", html:"<i>(" + esc(aiErrText(e)) + ", mình dùng bộ hiểu câu trên máy. Kiểm tra ở Cài đặt → Trợ lý AI.)</i>", t:Date.now() });
     }
     aiBusy = false; chatGrow();
@@ -5231,7 +5298,7 @@ function startNgay50k(){
     $("aiModel").value = c.model || ""; $("aiModel").placeholder = P.model;
     $("aiModels").innerHTML = P.models.map(m => '<option value="' + esc(m) + '">').join("");
     $("aiWhere").textContent = "Lấy khoá ở: " + P.where;
-    $("aiOn").checked = !!c.on;
+    $("aiOn").checked = !!c.on; $("aiSmart").checked = c.smart !== false;
     $("aiDel").hidden = !c.key;
     renderAIUse(); renderAIBud();
   }
@@ -5244,11 +5311,15 @@ function startNgay50k(){
   $("aiRate").addEventListener("change", () => { const v = parseInt($("aiRate").value.replace(/\D/g, ""), 10); if(v > 1000 && v < 1e6) lsSet(AI_RATE_KEY, String(v)); renderAIUse(); });
   $("aiUseReset").onclick = e => { if(!armed(e.currentTarget)) return; lsSet(AI_USE_KEY, "{}"); renderAIUse(); };
   function aiNav(){ const c = aiCfg(); return c.key ? AI_PROVIDERS[c.provider].name + (c.on ? " · bật" : " · tắt") : "chưa cài"; }
-  function aiSaveForm(){ const c = aiCfg(); c.key = $("aiKey").value.trim(); c.model = $("aiModel").value.trim(); c.on = $("aiOn").checked; aiSet(c); $("aiDel").hidden = !c.key; }
+  function aiSaveForm(){ const c = aiCfg(); c.key = $("aiKey").value.trim(); c.model = $("aiModel").value.trim(); c.on = $("aiOn").checked && !!c.key; c.smart = $("aiSmart").checked; aiSet(c); $("aiDel").hidden = !c.key; $("aiOn").checked = c.on; }
   [...$("aiProv").children].forEach(b => b.onclick = () => { const c = aiCfg(); if(c.provider !== b.dataset.p){ c.provider = b.dataset.p; c.model = ""; c.key = (c.keys && c.keys[b.dataset.p]) || ""; } aiSet(c); renderAISet(); $("aiMsg").hidden = true; });
   $("aiKey").addEventListener("change", () => { aiSaveForm(); const c = aiCfg(); c.keys = c.keys || {}; c.keys[c.provider] = c.key; aiSet(c); });
   $("aiModel").addEventListener("change", aiSaveForm);
-  $("aiOn").addEventListener("change", aiSaveForm);
+  $("aiOn").addEventListener("change", () => {
+    if($("aiOn").checked && !$("aiKey").value.trim()){ $("aiOn").checked = false; const msg = $("aiMsg"); msg.className = "inline-ok warn"; msg.textContent = "Dán khoá API vào trước đã."; msg.hidden = false; return; }
+    aiSaveForm();
+  });
+  $("aiSmart").addEventListener("change", aiSaveForm);
   $("aiShow").onclick = () => { const k = $("aiKey"); k.type = k.type === "password" ? "text" : "password"; $("aiShow").textContent = k.type === "password" ? "Hiện" : "Ẩn"; };
   $("aiDel").onclick = e => { if(!armed(e.currentTarget)) return; const c = aiCfg(); c.key = ""; if(c.keys) delete c.keys[c.provider]; aiSet(c); renderAISet(); flash("aiMsg", "✓ Đã xoá khoá khỏi máy này."); };
   $("aiTest").onclick = async () => {
@@ -5259,7 +5330,7 @@ function startNgay50k(){
     try{
       const r = await aiCall("trưa nay ăn phở 45k", c);
       const it = r.items[0];
-      msg.className = "inline-ok"; msg.textContent = it ? "✓ Kết nối được với " + AI_PROVIDERS[c.provider].name + " (" + aiModel(c) + "). Thử câu \"trưa nay ăn phở 45k\" → " + KIND_LABEL[it.kind] + " " + fmt(it.amt) + (it.note ? " · " + it.note : "") + "." : "✓ Kết nối được, nhưng AI chưa trả về khoản nào. Thử đổi mô hình khác.";
+      msg.className = "inline-ok"; msg.textContent = it ? "✓ Kết nối được với " + AI_PROVIDERS[c.provider].name + " (" + aiModel(c) + "). Thử câu \"trưa nay ăn phở 45k\" → " + KIND_LABEL[it.kind] + " " + fmt(it.amt) + (it.note ? " · " + it.note : "") + "." + (c.on ? "" : " Bật \"Dùng AI khi trò chuyện\" để bắt đầu dùng.") : "✓ Kết nối được, nhưng AI chưa trả về khoản nào. Thử đổi mô hình khác.";
     }catch(e){ msg.className = "inline-ok warn"; msg.textContent = "Chưa được: " + aiErrText(e) + "."; }
     msg.hidden = false; b.disabled = false; b.textContent = "Thử kết nối";
   };
