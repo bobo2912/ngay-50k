@@ -1300,6 +1300,54 @@ html.locked, html.locked body{overflow:hidden}
 .lock-forgot[hidden], .lock-pad[hidden], .lock-dots[hidden], .lock-link[hidden]{display:none}
 @media (max-height:640px){ .lock-pad{grid-template-columns:repeat(3, 66px); gap:10px 22px} .lk{width:66px; height:66px; font-size:1.5rem} .lock-icon{width:48px; height:48px} }
 @media (prefers-reduced-motion: reduce){ .lock, .lock-dots.shake{transition:none; animation:none} }
+
+/* ================= MÀN HÌNH CHÀO ================= */
+.welcome{position:fixed; inset:0; z-index:150; overflow:auto; -webkit-overflow-scrolling:touch;
+  padding:calc(16px + env(safe-area-inset-top,0px)) 20px calc(24px + env(safe-area-inset-bottom,0px));
+  background:
+    radial-gradient(60% 40% at 10% 6%, var(--blob1) 0%, transparent 70%),
+    radial-gradient(55% 38% at 100% 30%, var(--blob2) 0%, transparent 70%),
+    radial-gradient(60% 40% at 0% 70%, var(--blob4) 0%, transparent 70%),
+    radial-gradient(70% 45% at 70% 100%, var(--blob3) 0%, transparent 70%),
+    var(--bg);
+  opacity:0; transition:opacity .2s ease}
+.welcome.show{opacity:1}
+.welcome-in{max-width:420px; margin:0 auto; min-height:100%; display:flex; flex-direction:column}
+.w-top{display:flex; align-items:center; justify-content:space-between; min-height:40px}
+.w-back{border:0; background:none; color:var(--note); font-weight:600; padding:8px 0}
+.w-steps{display:flex; gap:6px; margin-left:auto}
+.w-steps span{width:22px; height:5px; border-radius:3px; background:var(--line)}
+.w-steps span.on{background:var(--note)}
+.w-step{display:flex; flex-direction:column; flex:1; padding-top:8px}
+.w-step[hidden]{display:none}
+.w-step h2{font-size:1.45rem; line-height:1.25; font-weight:800; margin:10px 0 8px; outline:none}
+.w-step[data-step="0"]{text-align:center; align-items:center; justify-content:center}
+.w-icon{width:72px; height:72px; border-radius:18px; box-shadow:var(--shadow-s)}
+.w-sub{margin:0 0 14px; color:var(--muted); font-size:.95rem}
+.w-points{list-style:none; margin:14px 0 6px; padding:0; display:flex; flex-direction:column; gap:10px; text-align:left; width:100%}
+.w-points li{display:flex; gap:12px; align-items:flex-start; padding:12px 14px; border-radius:16px; background:var(--glass); border:1px solid var(--glass-border);
+  -webkit-backdrop-filter:blur(18px) saturate(1.6); backdrop-filter:blur(18px) saturate(1.6)}
+.w-points li > span{font-size:1.3rem; line-height:1.3}
+.w-points b{display:block; font-size:.95rem}
+.w-points div{color:var(--muted); font-size:.88rem}
+.w-wide{width:100%; margin-top:10px}
+.w-note{margin:10px 0 0; text-align:center; color:var(--muted); font-size:.85rem}
+.w-chips{margin:0 0 14px; gap:10px}
+.w-chips .chip{padding:9px 16px; font-size:.98rem; font-weight:600}
+.w-step .primary{margin-top:auto}
+.w-step .field + .primary, .w-step .seg + .primary{margin-top:18px}
+#wCardBox{margin-top:12px}
+.bank-grid{display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-bottom:16px}
+.bank-grid button{border:1.5px solid var(--glass-border); background:var(--glass); border-radius:14px; padding:11px 6px; font-weight:600; font-size:.88rem; color:var(--ink);
+  -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px)}
+.bank-grid button[aria-pressed="true"]{background:var(--ink); color:var(--bg); border-color:var(--ink)}
+.bank-grid button.none{grid-column:1 / -1; color:var(--muted)}
+.bank-grid button.none[aria-pressed="true"]{color:var(--bg)}
+.demo-bar{margin:4px 0 12px; display:flex; align-items:center; gap:10px; padding:8px 8px 8px 14px; border-radius:999px; background:var(--ink); color:var(--bg); font-size:.85rem; box-shadow:var(--shadow)}
+.demo-bar[hidden]{display:none}
+.demo-bar span{flex:1}
+.demo-bar button{border:0; border-radius:999px; padding:7px 12px; background:var(--bg); color:var(--ink); font-weight:700; font-size:.82rem}
+@media (prefers-reduced-motion: reduce){ .welcome{transition:none} }
 </style>
 </head>
 <body>
@@ -1313,6 +1361,10 @@ html.locked, html.locked body{overflow:hidden}
       </button>
     </div>
   </header>
+  <div class="demo-bar" id="demoBar" hidden>
+    <span>Đang xem <b>dữ liệu mẫu</b></span>
+    <button type="button" id="demoEnd">Xoá mẫu, bắt đầu thật</button>
+  </div>
 
   <div class="tab-veil" aria-hidden="true"></div>
   <nav class="tabs" role="tablist" aria-label="Menu">
@@ -1606,6 +1658,75 @@ html.locked, html.locked body{overflow:hidden}
   </div>
 </main>
 
+<div class="welcome" id="welcome" role="dialog" aria-modal="true" aria-labelledby="wTitle0" hidden>
+  <div class="welcome-in">
+    <div class="w-top">
+      <button type="button" class="w-back" id="wBack" hidden>‹ Quay lại</button>
+      <div class="w-steps" id="wSteps" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+    </div>
+
+    <section class="w-step" data-step="0">
+      <img class="w-icon" src="icons/icon-192.png" alt="" width="72" height="72">
+      <h2 id="wTitle0" tabindex="-1">Ghi chi tiêu mỗi ngày, nhẹ như nhắn tin</h2>
+      <ul class="w-points">
+        <li><span aria-hidden="true">💬</span><div><b>Kể bằng lời</b>Gõ "trưa ăn phở 45k" là app ghi xong.</div></li>
+        <li><span aria-hidden="true">📷</span><div><b>Quét mã VietQR</b>Chuyển khoản xong là khoản chi đã được ghi.</div></li>
+        <li><span aria-hidden="true">🎯</span><div><b>Hạn mức mỗi ngày</b>Luôn biết hôm nay còn được tiêu bao nhiêu.</div></li>
+        <li><span aria-hidden="true">🔒</span><div><b>Dữ liệu chỉ nằm trên máy</b>Không tài khoản, không máy chủ, không quảng cáo.</div></li>
+      </ul>
+      <button class="primary" id="wStart">Bắt đầu thiết lập</button>
+      <button class="ghost w-wide" id="wDemo">Xem thử với dữ liệu mẫu</button>
+      <button class="lock-link" id="wRestore">Tôi đã có file sao lưu</button>
+    </section>
+
+    <section class="w-step" data-step="1" hidden>
+      <h2 tabindex="-1">Mỗi ngày bạn muốn tiêu tối đa bao nhiêu?</h2>
+      <p class="w-sub">Đây là hạn mức cho chi tiêu lặt vặt hằng ngày: ăn uống, đi lại, mua vặt. Tiền nhà, điện nước và quẹt thẻ được tính riêng.</p>
+      <div class="chips w-chips" id="wBudChips"></div>
+      <div class="field"><label for="wBudget"><span>Hoặc nhập số khác</span></label>
+        <input id="wBudget" class="inp num" inputmode="numeric" autocomplete="off" placeholder="vd: 80.000"></div>
+      <p class="sync-err" id="wBudErr" hidden></p>
+      <button class="primary" id="wNext1">Tiếp</button>
+      <p class="w-note">Đổi lại lúc nào cũng được trong Cài đặt.</p>
+    </section>
+
+    <section class="w-step" data-step="2" hidden>
+      <h2 tabindex="-1">Bạn hay chuyển khoản bằng app ngân hàng nào?</h2>
+      <p class="w-sub">Ghi xong một khoản chuyển khoản, app có nút sao chép thông tin và mở thẳng app ngân hàng này.</p>
+      <div class="bank-grid" id="wBanks" role="group" aria-label="Ngân hàng hay dùng"></div>
+      <button class="primary" id="wNext2">Tiếp</button>
+    </section>
+
+    <section class="w-step" data-step="3" hidden>
+      <h2 tabindex="-1">Bạn có dùng thẻ tín dụng không?</h2>
+      <p class="w-sub">App theo dõi quẹt thẻ riêng, không trừ vào hạn mức mỗi ngày, và báo số tiền của kỳ sao kê.</p>
+      <div class="seg" id="wCardSeg" role="group" aria-label="Có dùng thẻ tín dụng">
+        <button data-c="no" aria-pressed="true">Không</button>
+        <button data-c="yes" aria-pressed="false">Có</button>
+      </div>
+      <div id="wCardBox" hidden>
+        <div class="field"><label for="wCardName"><span>Tên thẻ</span></label><input id="wCardName" class="inp" maxlength="30" autocomplete="off" placeholder="vd: VIB Online Plus"></div>
+        <div class="set-row" style="gap:10px">
+          <div class="field" style="flex:1; min-width:0"><label for="wCardLast4"><span>4 số cuối</span></label><input id="wCardLast4" class="inp num" inputmode="numeric" maxlength="4" autocomplete="off"></div>
+          <div class="field" style="flex:1; min-width:0"><label for="wCardStmt"><span>Ngày sao kê <span class="opt">(tuỳ chọn)</span></span></label><input id="wCardStmt" class="inp num" inputmode="numeric" maxlength="2" autocomplete="off" placeholder="vd: 25"></div>
+        </div>
+        <p class="w-note" style="text-align:left">Thêm thẻ khác hoặc 6 số đầu sau, ở tab Thẻ.</p>
+      </div>
+      <p class="sync-err" id="wCardErr" hidden></p>
+      <button class="primary" id="wNext3">Tiếp</button>
+    </section>
+
+    <section class="w-step" data-step="4" hidden>
+      <h2 tabindex="-1">Khoá app bằng mã PIN?</h2>
+      <p class="w-sub">Mở app phải nhập mã PIN, và mọi dữ liệu trên máy được mã hoá. Hợp khi bạn hay đưa điện thoại cho người khác.</p>
+      <p class="w-sub"><b>Quên mã PIN thì không lấy lại được dữ liệu</b>, chỉ còn cách nhập lại từ file sao lưu.</p>
+      <button class="primary" id="wPin">Đặt mã PIN</button>
+      <button class="ghost w-wide" id="wSkipPin">Để sau</button>
+      <p class="sync-err" id="wPinErr" hidden></p>
+    </section>
+  </div>
+</div>
+
 <div class="settings" id="settings" role="dialog" aria-modal="true" aria-labelledby="settingsTitle" hidden>
   <div class="settings-in">
     <div class="settings-head">
@@ -1620,6 +1741,7 @@ html.locked, html.locked body{overflow:hidden}
         <button class="set-nav" data-go="setAI"><span class="nav-t">Trợ lý AI</span><span class="nav-v" id="navAI"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
         <button class="set-nav" data-go="setTheme"><span class="nav-t">Giao diện</span><span class="nav-v" id="navTheme"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
         <button class="set-nav" data-go="setScan"><span class="nav-t">Quét mã QR</span><span class="nav-v" id="navScan"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+        <button class="set-nav" data-go="setBank"><span class="nav-t">Ngân hàng hay dùng</span><span class="nav-v" id="navBank"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
         <button class="set-nav" data-go="setBudget"><span class="nav-t">Hạn mức chi một ngày</span><span class="nav-v" id="navBudget"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
         <button class="set-nav" data-go="setRecur"><span class="nav-t">Khoản định kỳ</span><span class="nav-v" id="navRecur"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
         <button class="set-nav" data-go="setPeople"><span class="nav-t">Người nhận</span><span class="nav-v" id="navPeople"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
@@ -1745,6 +1867,14 @@ html.locked, html.locked body{overflow:hidden}
         <button data-off="120">2 phút</button>
         <button data-off="300">5 phút</button>
       </div>
+    </section>
+    </div>
+
+    <div class="set-page" id="setBank" hidden>
+      <div class="set-head"><button class="set-back" data-back>‹ Cài đặt</button><h2 tabindex="-1">Ngân hàng hay dùng</h2></div>
+<section class="set-group">
+      <p class="set-now">Ghi xong một khoản chuyển khoản, nút <b>Sao chép và mở</b> sẽ mở app ngân hàng này. Với MB Bank, đoạn sao chép dán thẳng được vào ô trợ lý của MB Bank.</p>
+      <div class="bank-grid" id="setBanks" role="group" aria-label="Ngân hàng hay dùng" style="margin-top:12px"></div>
     </section>
     </div>
 
@@ -1900,7 +2030,7 @@ html.locked, html.locked body{overflow:hidden}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v77</p>
+      <p class="sync" id="appVersion">Phiên bản v78</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Xoá dữ liệu</h4>
@@ -2203,14 +2333,14 @@ html.locked, html.locked body{overflow:hidden}
         <p class="scan-msg err" id="saveErr" hidden></p>
 
         <div class="result" id="resultBox" hidden>
-          <h2>✓ Đã ghi. Đoạn chuyển tiền để dán vào MB Bank</h2>
+          <h2 id="resultTitle">✓ Đã ghi. Đoạn thông tin chuyển tiền</h2>
           <textarea id="transferText" aria-label="Đoạn thông tin chuyển tiền"></textarea>
           <div class="btn-row">
             <button class="copy-btn" id="copyBtn">Sao chép đoạn này</button>
             <p class="inline-ok" id="mbMsg" hidden></p>
-            <a class="mb-btn" id="mbBtn" href="mbbank://">Sao chép và mở <span class="tag">MB Bank</span></a>
+            <a class="mb-btn" id="mbBtn" href="#">Sao chép và mở <span class="tag" id="mbBtnName">MB Bank</span></a>
           </div>
-          <p class="subtle">Dán vào ô trợ lý trong MB Bank. Kiểm tra tên người nhận trước khi xác nhận.</p>
+          <p class="subtle" id="resultHint">Kiểm tra tên người nhận trước khi xác nhận.</p>
           <button class="link-btn" id="doneBtn">Xong</button>
         </div>
       </div>
@@ -2907,6 +3037,7 @@ function startNgay50k(){
     lockForm(true);
     $("transferText").value = buildText(it);
     $("copyBtn").textContent = "Sao chép đoạn này";
+    renderResultBank();
     $("resultBox").hidden = false;
   }
   async function copyText(){
@@ -4141,14 +4272,16 @@ function startNgay50k(){
   $("copyBtn").onclick = async () => { $("copyBtn").textContent = await copyText() ? "✓ Đã sao chép" : "Chưa sao chép được, giữ tay lên đoạn chữ để chép"; };
   $("mbBtn").addEventListener("click", e => {
     e.preventDefault();
+    const bk = myBank(); if(!bk) return;
     copyText().then(ok => { if(ok) $("copyBtn").textContent = "✓ Đã sao chép"; });
+    if(bk.url.indexOf("https:") === 0){ window.open(bk.url, "_blank", "noopener"); return; }
     let left = false;
     const onHide = () => { if(document.hidden) left = true; };
     document.addEventListener("visibilitychange", onHide);
-    window.location.href = "mbbank://";
+    window.location.href = bk.url;
     setTimeout(() => {
       document.removeEventListener("visibilitychange", onHide);
-      if(!left && !document.hidden) flash("mbMsg", "Chưa mở được app MB Bank. Đoạn chuyển khoản đã được sao chép, bạn mở MB Bank rồi dán vào nhé.");
+      if(!left && !document.hidden) flash("mbMsg", "Chưa mở được app " + bk.name + ". Đoạn chuyển khoản đã được sao chép, bạn mở app rồi dán vào nhé.");
     }, 2000);
   });
 
@@ -6825,7 +6958,7 @@ function startNgay50k(){
       st.classList.toggle("stale", daysAgo(last) >= NUDGE_DAYS);
     }
     const snooze = Number(lsGet(SNOOZE_KEY)) || 0;
-    const due = hasData() && (!last || daysAgo(last) >= NUDGE_DAYS) && Date.now() > snooze;
+    const due = hasData() && (!last || daysAgo(last) >= NUDGE_DAYS) && Date.now() > snooze && lsGet("ngay50k:demo") !== "1";
     $("backupNudge").hidden = !due;
     if(due){
       const d = last ? daysAgo(last) : 0, n = countAll(state);
@@ -6940,7 +7073,7 @@ function startNgay50k(){
   }
 
   /* ---- settings navigation ---- */
-  const SET_PAGES = ["setHome","setLock","setStart","setAI","setTheme","setScan","setBudget","setRecur","setPeople","setTags","setTagOne","setSync","setStore"];
+  const SET_PAGES = ["setHome","setLock","setBank","setStart","setAI","setTheme","setScan","setBudget","setRecur","setPeople","setTags","setTagOne","setSync","setStore"];
   let setPage = "setHome";
   function showSetPage(id, back){
     setPage = id;
@@ -6956,6 +7089,7 @@ function startNgay50k(){
     if(id === "setPeople"){ closeContactForm(); renderPeople(); }
     if(id === "setRecur") renderRecur();
     if(id === "setLock") renderLockSet();
+    if(id === "setBank") renderBanks("setBanks", true);
   }
   function renderSetHome(){
     $("navLock").textContent = N50KLock.isOn() ? (N50KLock.meta().pk ? "PIN, Face ID" : "Mã PIN") : "Tắt";
@@ -6963,6 +7097,7 @@ function startNgay50k(){
     $("navStart").textContent = homeTab() === "chat" ? "Trò chuyện" : "Ví";
     $("navAI").textContent = aiNav();
     $("navScan").textContent = scanMode === "live" ? "Quét trực tiếp" : "Camera iPhone";
+    $("navBank").textContent = myBank() ? myBank().name : (lsGet(BANK_KEY) === "none" ? "Không dùng" : "chưa chọn");
     $("navBudget").textContent = fmt(state.budget) + "/ngày";
     $("navTags").textContent = allTags().length + " tag";
     $("navRecur").textContent = (state.recur || []).length ? (state.recur.length + " khoản") : "chưa có";
@@ -7406,8 +7541,171 @@ function startNgay50k(){
     renderStorage(); measureCache();
     if(ok) $("storPct").textContent = "✓ Đã chuyển sang IndexedDB. " + $("storPct").textContent;
   };
+
+  /* ---------- ngân hàng hay dùng: nút "Sao chép và mở" sau khi ghi chuyển khoản ----------
+     MB Bank mở bằng mbbank:// (đoạn chép dán được vào ô trợ lý của MB Bank).
+     Ngân hàng khác mở qua liên kết dl.vietqr.io/pay?app=… của VietQR; liên kết chỉ chứa mã app, không gửi số tài khoản hay số tiền. */
+  const BANK_KEY = "ngay50k:bank";
+  const BANK_APPS = [
+    { id:"mb", name:"MB Bank", url:"mbbank://", assist:true }, { id:"vcb", name:"Vietcombank" }, { id:"tcb", name:"Techcombank" },
+    { id:"icb", name:"VietinBank" }, { id:"bidv", name:"BIDV" }, { id:"vba", name:"Agribank" }, { id:"acb", name:"ACB" },
+    { id:"vpb", name:"VPBank" }, { id:"tpb", name:"TPBank" }, { id:"hdb", name:"HDBank" }, { id:"vib-2", name:"VIB" },
+    { id:"shb", name:"SHB" }, { id:"ocb", name:"OCB" }, { id:"seab", name:"SeABank" }, { id:"lpb", name:"LPBank" },
+    { id:"eib", name:"Eximbank" }, { id:"cake", name:"Cake" }, { id:"timo", name:"Timo" }
+  ].map(b => Object.assign({ url:"https://dl.vietqr.io/pay?app=" + b.id }, b));
+  function myBank(){ const id = lsGet(BANK_KEY); return BANK_APPS.find(b => b.id === id) || null; }
+  function renderBanks(boxId, saveNow){
+    const box = $(boxId), cur = boxId === "wBanks" ? wBank : (lsGet(BANK_KEY) || "none");
+    box.innerHTML = "";
+    BANK_APPS.concat([{ id:"none", name:"Không dùng" }]).forEach(b => {
+      const el = document.createElement("button"); el.type = "button"; el.textContent = b.name; el.dataset.bank = b.id;
+      el.setAttribute("aria-pressed", String(b.id === cur)); if(b.id === "none") el.className = "none";
+      el.onclick = () => {
+        if(boxId === "wBanks") wBank = b.id; else lsSet(BANK_KEY, b.id);
+        renderBanks(boxId, saveNow);
+      };
+      box.appendChild(el);
+    });
+  }
+  function renderResultBank(){
+    const bk = myBank();
+    $("mbBtn").hidden = !bk;
+    if(bk) $("mbBtnName").textContent = bk.name;
+    $("resultTitle").textContent = bk && bk.assist ? "✓ Đã ghi. Đoạn chuyển tiền để dán vào " + bk.name : "✓ Đã ghi. Đoạn thông tin chuyển tiền";
+    $("resultHint").textContent = (bk && bk.assist ? "Dán vào ô trợ lý trong " + bk.name + ". " : bk ? "Mở " + bk.name + ", dán số tài khoản và nội dung từ đoạn này. " : "Chọn ngân hàng hay dùng trong Cài đặt để có nút mở thẳng app ngân hàng. ") + "Kiểm tra tên người nhận trước khi xác nhận.";
+  }
+  /* người dùng cũ (đã có dữ liệu trước bản này) vẫn giữ nút MB Bank như trước */
+  if(lsGet(BANK_KEY) == null && hasData()) lsSet(BANK_KEY, "mb");
+
+  /* ---------- màn hình chào lần đầu và dữ liệu mẫu ---------- */
+  const WELCOME_KEY = "ngay50k:welcome", DEMO_KEY = "ngay50k:demo", DEMO = "demo_";
+  let wStep = 0, wBank = "none", wBudget = 50000, wCard = false;
+  const W_BUDGETS = [50000, 80000, 100000, 150000, 200000, 300000];
+  function wShow(n){
+    wStep = n;
+    document.querySelectorAll("#welcome .w-step").forEach(el => el.hidden = Number(el.dataset.step) !== n);
+    $("wBack").hidden = n === 0; $("wSteps").hidden = n === 0;
+    document.querySelectorAll("#wSteps span").forEach((d, i) => d.classList.toggle("on", i < n));
+    if(n === 1) renderBudChips();
+    if(n === 2) renderBanks("wBanks");
+    $("welcome").scrollTop = 0;
+    const h = document.querySelector('#welcome .w-step[data-step="' + n + '"] h2'); if(h) h.focus({ preventScroll:true });
+  }
+  function openWelcome(step){
+    wBudget = state.budget || 50000; wBank = lsGet(BANK_KEY) || "none";
+    const el = $("welcome"); el.hidden = false; document.body.style.overflow = "hidden";
+    document.querySelector("main").setAttribute("aria-hidden", "true");
+    requestAnimationFrame(() => el.classList.add("show"));
+    wShow(step || 0);
+  }
+  function closeWelcome(){
+    lsSet(WELCOME_KEY, "1");
+    const el = $("welcome"); el.classList.remove("show");
+    document.querySelector("main").removeAttribute("aria-hidden"); document.body.style.overflow = "";
+    setTimeout(() => { el.hidden = true; }, 220);
+  }
+  function renderBudChips(){
+    const box = $("wBudChips"); box.innerHTML = "";
+    W_BUDGETS.forEach(v => {
+      const b = document.createElement("button"); b.type = "button"; b.className = "chip"; b.textContent = (v / 1000) + "k";
+      b.setAttribute("aria-pressed", String(v === wBudget && !$("wBudget").value));
+      b.onclick = () => { wBudget = v; $("wBudget").value = ""; $("wBudErr").hidden = true; renderBudChips(); };
+      box.appendChild(b);
+    });
+  }
+  $("wBudget").addEventListener("input", e => {
+    const v = parseInt(digits(e.target.value), 10) || 0;
+    e.target.value = v ? v.toLocaleString("vi-VN") : "";
+    if(v) wBudget = v; renderBudChips();
+  });
+  $("wStart").onclick = () => wShow(1);
+  $("wBack").onclick = () => wShow(Math.max(0, wStep - 1));
+  $("wRestore").onclick = () => { closeWelcome(); openSettings(); showSetPage("setSync"); };
+  $("wNext1").onclick = () => {
+    if(!(wBudget >= 1000)){ $("wBudErr").textContent = "Hạn mức cần ít nhất 1.000đ."; $("wBudErr").hidden = false; return; }
+    wShow(2);
+  };
+  $("wNext2").onclick = () => wShow(3);
+  document.querySelectorAll("#wCardSeg button").forEach(b => b.onclick = () => {
+    wCard = b.dataset.c === "yes";
+    document.querySelectorAll("#wCardSeg button").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+    $("wCardBox").hidden = !wCard; $("wCardErr").hidden = true;
+    if(wCard) setTimeout(() => $("wCardName").focus(), 50);
+  });
+  $("wCardName").addEventListener("input", () => { $("wCardErr").hidden = true; });
+  $("wCardLast4").addEventListener("input", e => { e.target.value = digits(e.target.value).slice(0, 4); });
+  $("wCardStmt").addEventListener("input", e => { const v = parseInt(digits(e.target.value).slice(0, 2), 10); e.target.value = v > 0 && v <= 31 ? String(v) : ""; });
+  $("wNext3").onclick = () => {
+    if(wCard && !$("wCardName").value.trim()){ $("wCardErr").textContent = "Cần có tên thẻ, hoặc chọn Không."; $("wCardErr").hidden = false; return; }
+    /* lưu luôn những gì đã chọn, bước khoá app là tuỳ chọn */
+    state.budget = wBudget;
+    if(wBank && wBank !== "none") lsSet(BANK_KEY, wBank); else lsSet(BANK_KEY, "none");
+    if(wCard){
+      const stmt = parseInt($("wCardStmt").value, 10);
+      state.cards.push({ id:uid(), name:$("wCardName").value.trim(), first6:"", last4:digits($("wCardLast4").value).slice(0, 4), stmt:(stmt > 0 && stmt <= 31) ? stmt : 0 });
+      wCard = false; $("wCardName").value = $("wCardLast4").value = $("wCardStmt").value = "";
+      document.querySelectorAll("#wCardSeg button").forEach(x => x.setAttribute("aria-pressed", String(x.dataset.c === "no"))); $("wCardBox").hidden = true;
+    }
+    persist(); renderAll();
+    if(N50KLock.isOn() || !N50KLock.supported()) finishWelcome(); else wShow(4);
+  };
+  $("wSkipPin").onclick = () => finishWelcome();
+  $("wPin").onclick = async () => {
+    $("wPinErr").hidden = true;
+    try{ await N50KLock.enable(); finishWelcome("Đã bật khoá app."); }
+    catch(e){ if(!(e && e.message === "cancel")){ $("wPinErr").textContent = "Chưa bật được: " + (e && e.message ? e.message : e); $("wPinErr").hidden = false; } }
+  };
+  function finishWelcome(extra){
+    closeWelcome(); showTab(homeTab());
+    if(homeTab() === "chat"){
+      chat.msgs.push({ id:uid(), role:"bot", html:"Xong rồi 🎉 " + (extra ? extra + " " : "") + "Hạn mức của bạn là <b>" + fmt(state.budget) + "</b> mỗi ngày. Thử kể một khoản chi, ví dụ: <i>trưa ăn phở 45k</i>.", t:Date.now() });
+      chatSave(); renderChat(true); chatScrollEnd(true);
+    }
+  }
+
+  /* dữ liệu mẫu: 10 ngày chi tiêu, một khoản lương, một thẻ, một khoản cho vay. Mã của mọi khoản bắt đầu bằng "demo_" để xoá sạch được. */
+  function makeDemo(){
+    const d = n => shiftKey(todayKey(), -n), id = () => DEMO + uid(), t0 = Date.now();
+    const out = [["uong","Cà phê",25000],["uong","Trà sữa",35000],["dilai","Grab đi làm",28000],["an","Cơm văn phòng",40000],["cho","Đi chợ",62000],["uong","Cà phê",25000],["xang","Đổ xăng",70000],["an","Bún chả",50000],["muasam","Ốp điện thoại",90000],["an","Phở bò",45000]];
+    out.forEach((x, i) => {
+      const k = d(i % 10);
+      (state.days[k] = state.days[k] || []).push({ id:id(), amt:x[2], cat:x[0], note:x[1], t:t0 - i * 3600000 });
+      if(i % 3 === 0) state.days[k].push({ id:id(), amt:15000 + (i * 2000), cat:"an", note:"Bánh mì", t:t0 - i * 3600000 - 900000 });
+    });
+    const m1 = keyOf(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
+    (state.income[m1] = state.income[m1] || []).push({ id:id(), amt:15000000, cat:"luong", note:"Lương tháng (mẫu)", t:t0 });
+    const card = { id:id(), name:"Thẻ mẫu", first6:"", last4:"1234", stmt:25 };
+    state.cards.push(card);
+    [[1,"Shopee",320000,"muasam"],[3,"Lotte Mart",540000,"cho"],[6,"Điện thoại, mạng",199000,"dienthoai"]].forEach(x => {
+      const k = d(x[0]); (state.cardTx[k] = state.cardTx[k] || []).push({ id:id(), amt:x[2], where:x[1], cardId:card.id, cat:x[3], t:t0 });
+    });
+    state.loans.push({ id:id(), type:"lend", who:"Minh (mẫu)", amt:500000, date:d(4), due:"", note:"", payments:[{ id:id(), amt:200000, date:d(1), note:"", t:t0 }], draws:[], prepaid:0, t:t0 });
+    state.bals.push({ id:id(), amt:4800000, book:0, card:0, t:t0 - 11 * 86400000 });
+  }
+  function isDemo(o){ return o && typeof o.id === "string" && o.id.indexOf(DEMO) === 0; }
+  function clearDemo(){
+    const keep = list => (list || []).filter(o => !isDemo(o));
+    ["days","income","cardTx"].forEach(f => { for(const k in state[f]){ state[f][k] = keep(state[f][k]); if(!state[f][k].length) delete state[f][k]; } });
+    ["cards","loans","bals","cardPay","recur"].forEach(f => state[f] = keep(state[f]));
+    state.loans.forEach(l => { l.payments = keep(l.payments); l.draws = keep(l.draws); });
+    for(const k in state.days) state.days[k].forEach(it => { if(isDemo({ id:it.cardId })) it.cardId = null; });
+    for(const k in state.cardTx) state.cardTx[k].forEach(it => { if(isDemo({ id:it.cardId })) it.cardId = null; });
+    persist();
+    for(const k in state.deleted) if(k.indexOf(DEMO) === 0) delete state.deleted[k];
+    N50K.set(LS_KEY, JSON.stringify(state));
+    lsSet(DEMO_KEY, "0");
+  }
+  function renderDemoBar(){ $("demoBar").hidden = lsGet(DEMO_KEY) !== "1"; document.body.classList.toggle("has-demo", lsGet(DEMO_KEY) === "1"); }
+  $("wDemo").onclick = () => {
+    makeDemo(); persist(); lsSet(DEMO_KEY, "1"); lsSet(BANK_KEY, lsGet(BANK_KEY) || "none");
+    closeWelcome(); renderAll(); renderDemoBar(); showTab("money");
+  };
+  $("demoEnd").onclick = () => { clearDemo(); renderAll(); renderDemoBar(); openWelcome(1); };
+
   const rcMade = runRecur();
   renderAll();
+  renderDemoBar();
+  if(!hasData() && lsGet(WELCOME_KEY) !== "1") openWelcome(0);
   if(rcMade) flash("scanMsg", "✓ Đã ghi " + rcMade + " khoản định kỳ của kỳ này");
 
   /* ---------- offline app shell & updates ---------- */
