@@ -1,6 +1,15 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v89, ngày 07/10/2026
+**Phiên bản hiện tại:** v90, ngày 07/10/2026
+
+---
+
+## Có gì mới trong v90 (so với v89)
+
+**Thanh trạng thái iPhone (giờ, sóng, pin) cùng màu với app ở mọi giao diện.**
+- Trước đây màu thanh trạng thái được đặt muộn, sau khi app mở xong. iPhone lại lấy màu lúc mở app, nên hay giữ màu của giao diện cũ (ví dụ màu kem của Pastel khi đang dùng Sáng). Màu đó cũng là màu nền phẳng, lệch với đỉnh trang loang màu.
+- Giờ màu được đặt ngay khi trang bắt đầu tải, theo giao diện đang chọn (Sáng, Tối, Pastel, hoặc theo máy nếu chọn Tự động).
+- Thanh trạng thái, dải mép trên và đầu trang khi cuộn dùng chung một màu đỉnh của từng giao diện; bên dưới là dải chuyển màu mượt xuống nền loang. Trang Cài đặt cũng vậy.
 
 ---
 
@@ -10,19 +19,6 @@
 - Câu trả lời do AI làm có dấu **✦** ở đầu và viền nhạt màu nhấn.
 - Câu do máy tự hiểu (bộ hiểu câu trên máy, đọc ảnh trên máy) không có dấu.
 - Nút phân tích lại đổi biểu tượng thành **↻ Chưa đúng? Phân tích lại bằng AI**, để dấu ✦ chỉ dùng cho câu của AI.
-
----
-
-## Có gì mới trong v88 (so với v87)
-
-**Nút "✦ Chưa đúng? Phân tích lại bằng AI" có dưới mọi câu trả lời trong Trò chuyện:**
-- Câu trả lời do máy tự hiểu: gửi câu đó cho AI.
-- Câu trả lời do AI làm: AI phân tích lại lần nữa, bấm được nhiều lần.
-- Kết quả đọc ảnh thông báo ngân hàng (kể cả khi máy không đọc được): gửi chính ảnh đó cho AI đọc. Ảnh chỉ giữ trong lúc app đang mở, không lưu xuống máy. Đọc ảnh bằng AI tốn nhiều token hơn đọc chữ.
-- Khoản đã bấm Ghi trong câu trả lời cũ được giữ nguyên; AI lỗi thì câu trả lời cũ quay lại, nút vẫn còn để thử lại.
-- Chưa cài Trợ lý AI: nút vẫn hiện, bấm là mở trang cài đặt AI kèm hướng dẫn.
-
-Tin báo đã ghi xong ("Ghi rồi nhé…") không có nút này, vì đó là xác nhận việc đã làm chứ không phải câu trả lời cần hiểu lại.
 
 ---
 
@@ -133,6 +129,7 @@ Tin báo đã ghi xong ("Ghi rồi nhé…") không có nút này, vì đó là 
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v90** | Thanh trạng thái iPhone cùng màu với app ở mọi giao diện |
 | **v89** | Dấu ✦ ở câu trả lời của AI; nút phân tích lại dùng ↻ |
 | **v88** | Nút Phân tích lại bằng AI dưới mọi câu trả lời, kể cả câu của AI và kết quả đọc ảnh |
 | **v87** | Nút Phân tích lại bằng AI dưới mọi câu trả lời của máy; khe dưới đầu trang tách màu |

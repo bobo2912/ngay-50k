@@ -11,8 +11,8 @@
 <meta property="og:description" content="Tiêu Gọn – app quản lý chi tiêu, sổ thu chi cho iPhone và Android: ghi bằng lời, quét VietQR, đặt hạn mức mỗi ngày. Không cần tài khoản, dữ liệu chỉ nằm trên máy của bạn.">
 <meta property="og:locale" content="vi_VN">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Tiêu Gọn","alternateName":"Tieu Gon","applicationCategory":"FinanceApplication","operatingSystem":"iOS, Android, Web","inLanguage":"vi","description":"Tiêu Gọn – app quản lý chi tiêu, sổ thu chi cho iPhone và Android: ghi bằng lời, quét VietQR, đặt hạn mức mỗi ngày. Không cần tài khoản, dữ liệu chỉ nằm trên máy của bạn.","offers":{"@type":"Offer","price":"0","priceCurrency":"VND"}}</script>
-<meta name="theme-color" content="#EEF3FF" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0B1026" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#E9EFFD" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0E1530" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Tiêu Gọn">
@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v89";
+  var K = "ngay50k:errlog", VER = "v90";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -62,7 +62,21 @@
   }, 9000);
 })();
 </script>
-<script>try{var t=localStorage.getItem("ngay50k-theme");if(t==="light"||t==="dark"||t==="pastel")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
+<script>
+/* giao diện + màu thanh trạng thái iPhone: đặt ngay khi trang bắt đầu tải, vì iPhone lấy màu thanh trạng thái lúc mở app.
+   Màu = màu đỉnh trang của từng giao diện (cùng giá trị --top-c trong CSS), đỉnh trang có dải chuyển màu từ màu này xuống. */
+window.__themeColor = function(t){
+  var TOP = { light:"#E9EFFD", dark:"#0E1530", pastel:"#F9F2F0" }, fixed = t === "light" || t === "dark" || t === "pastel";
+  var ms = document.querySelectorAll('meta[name="theme-color"]');
+  for(var i = 0; i < ms.length; i++){
+    var m = ms[i]; if(!m.getAttribute("data-media")) m.setAttribute("data-media", m.getAttribute("media") || "");
+    var isDark = /dark/.test(m.getAttribute("data-media"));
+    if(fixed){ m.removeAttribute("media"); m.setAttribute("content", TOP[t]); }
+    else { m.setAttribute("media", m.getAttribute("data-media")); m.setAttribute("content", isDark ? TOP.dark : TOP.light); }
+  }
+};
+try{ var t = localStorage.getItem("ngay50k-theme"); if(t === "light" || t === "dark" || t === "pastel") document.documentElement.setAttribute("data-theme", t); window.__themeColor(t || "auto"); }catch(e){}
+</script>
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <style>
@@ -1089,13 +1103,9 @@ body.searching header{display:none}
 /* ================= v25: top safe area ================= */
 :root{--safe-top:max(env(safe-area-inset-top,0px), 18px); padding-top:var(--safe-top)}
 /* an opaque strip, cut from the very same background, so nothing scrolls into the status bar */
+/* v90: dải này dùng đúng màu thanh trạng thái (--top-c = theme-color) thay vì cắt từ nền loang, để thanh trạng thái liền màu với app */
 body::after{content:""; position:fixed; inset:0; z-index:75; pointer-events:none;
-  background:
-    radial-gradient(70% 45% at 8% 0%, var(--blob1) 0%, transparent 70%),
-    radial-gradient(60% 40% at 100% 18%, var(--blob2) 0%, transparent 70%),
-    radial-gradient(60% 40% at 0% 68%, var(--blob4) 0%, transparent 70%),
-    radial-gradient(75% 40% at 70% 100%, var(--blob3) 0%, transparent 70%),
-    var(--bg);
+  background:var(--top-c, var(--bg));
   -webkit-clip-path:inset(0 0 calc(100% - var(--safe-top)) 0);
   clip-path:inset(0 0 calc(100% - var(--safe-top)) 0)}
 header{margin-top:6px}
@@ -1105,7 +1115,7 @@ main > header{position:sticky; top:0; z-index:30;
   margin:calc(-12px - var(--safe-top)) -16px 14px; padding:calc(18px + var(--safe-top)) 18px 10px;
   transition:background-color .2s ease, box-shadow .2s ease}
 body.head-stuck:not(.searching)::after{display:none}
-main > header.stuck{background:var(--glass-strong); background:color-mix(in srgb, var(--bg) 96%, transparent);
+main > header.stuck{background:var(--glass-strong); background:color-mix(in srgb, var(--top-c, var(--bg)) 96%, transparent);
   -webkit-backdrop-filter:blur(24px) saturate(160%); backdrop-filter:blur(24px) saturate(160%); box-shadow:0 1px 0 var(--line)}
 body:not(.searching) .ledger-head{top:var(--head-h, 100px)}
 html{scroll-padding-top:var(--head-h, 100px)}
@@ -1495,9 +1505,20 @@ header .date{font-size:1.25rem}
 #tab-today .note .status b{font-weight:700}
 .ai-mark{color:var(--note); font-weight:800; font-size:.9em; margin-right:6px; line-height:1}
 .msg.bot.by-ai{border-color:color-mix(in srgb, var(--note) 28%, var(--line))}
+
+/* đỉnh trang (v90): dải chuyển màu từ đúng màu thanh trạng thái iPhone (theme-color) xuống nền loang,
+   để thanh trạng thái và đầu trang liền một màu ở mọi giao diện */
+:root{--top-c:#E9EFFD}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]):not([data-theme="pastel"]){--top-c:#0E1530} }
+:root[data-theme="dark"]{--top-c:#0E1530}
+:root[data-theme="pastel"]{--top-c:#F9F2F0}
+.top-fade, .settings::after{content:""; position:fixed; left:0; right:0; top:0; height:calc(env(safe-area-inset-top, 0px) + 84px); z-index:-1; pointer-events:none;
+  background:linear-gradient(var(--top-c) 0%, var(--top-c) 12%, color-mix(in srgb, var(--top-c) 55%, transparent) 50%, transparent 100%)}
+.top-fade{z-index:0}            /* nằm trên nền loang (body::before), dưới đầu trang (z 30) và các ô dính */
 </style>
 </head>
 <body>
+<div class="top-fade" aria-hidden="true"></div>
 <main>
   <header>
     <h1 class="vh">Tiêu Gọn</h1>
@@ -2192,7 +2213,7 @@ header .date{font-size:1.25rem}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v89</p>
+      <p class="sync" id="appVersion">Phiên bản v90</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -2603,8 +2624,8 @@ header .date{font-size:1.25rem}
 
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
 <script src="vendor/jsQR.js"></script>
-<script src="parse-vi.js?v=89"></script>
-<script src="lock.js?v=89"></script>
+<script src="parse-vi.js?v=90"></script>
+<script src="lock.js?v=90"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -6182,11 +6203,7 @@ function startNgay50k(){
     const root = document.documentElement;
     const fixed = t === "light" || t === "dark" || t === "pastel";
     if(fixed) root.setAttribute("data-theme", t); else root.removeAttribute("data-theme");
-    document.querySelectorAll('meta[name="theme-color"]').forEach(m => {
-      if(!m.dataset.media) m.dataset.media = m.getAttribute("media") || "";
-      if(fixed){ m.removeAttribute("media"); m.setAttribute("content", t === "dark" ? "#0B1026" : t === "pastel" ? "#FAF6F2" : "#EEF3FF"); }
-      else { m.setAttribute("media", m.dataset.media); m.setAttribute("content", /dark/.test(m.dataset.media) ? "#0B1026" : "#EEF3FF"); }
-    });
+    if(window.__themeColor) window.__themeColor(fixed ? t : "auto");
     document.querySelectorAll("#themeSeg button").forEach(b => b.setAttribute("aria-pressed", b.dataset.themeOpt === (t || "auto") ? "true" : "false"));
   }
   let curTheme = "auto";
