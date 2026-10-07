@@ -1261,6 +1261,45 @@ body.kb #tab-chat .chat-sugg{display:none}
 :root[data-theme="pastel"] .kpi{background:#FFFFFF; border-color:var(--line)}
 :root[data-theme="pastel"] .chero-foot{border-top-color:rgba(58,50,54,.08)}
 :root[data-theme="pastel"] .tabs button[aria-selected="true"]{background:var(--note-soft); color:var(--note)}
+
+/* ================= MÀN HÌNH KHOÁ ================= */
+html.locked, html.locked body{overflow:hidden}
+.lock{position:fixed; inset:0; z-index:200; display:flex; justify-content:center; overflow:auto;
+  padding:calc(28px + env(safe-area-inset-top,0px)) 20px calc(20px + env(safe-area-inset-bottom,0px));
+  background:
+    radial-gradient(60% 40% at 10% 6%, var(--blob1) 0%, transparent 70%),
+    radial-gradient(55% 38% at 100% 30%, var(--blob2) 0%, transparent 70%),
+    radial-gradient(70% 45% at 70% 100%, var(--blob3) 0%, transparent 70%),
+    var(--bg);
+  opacity:0; transition:opacity .18s ease}
+.lock.show{opacity:1}
+.lock-in{width:100%; max-width:340px; display:flex; flex-direction:column; align-items:center; text-align:center; margin:auto 0}
+.lock-icon{width:64px; height:64px; border-radius:16px; box-shadow:var(--shadow-s)}
+.lock h2{margin:14px 0 4px; font-size:1.25rem; font-weight:800; outline:none}
+.lock-sub{margin:0; min-height:1.2em; color:var(--muted); font-size:.88rem; max-width:300px}
+.lock-dots{display:flex; gap:14px; justify-content:center; margin:22px 0 6px; height:16px}
+.lock-dots span{width:14px; height:14px; border-radius:50%; border:2px solid var(--ink); opacity:.55; transition:background .12s, opacity .12s}
+.lock-dots span.on{background:var(--ink); opacity:1}
+.lock-dots.shake{animation:lockShake .35s}
+@keyframes lockShake{20%{transform:translateX(-10px)}40%{transform:translateX(9px)}60%{transform:translateX(-6px)}80%{transform:translateX(4px)}}
+.lock-err{margin:6px 0 0; min-height:1.3em; color:var(--over); font-weight:600; font-size:.88rem}
+.lock-pad{display:grid; grid-template-columns:repeat(3, 76px); gap:14px 24px; justify-content:center; margin-top:14px}
+.lk{width:76px; height:76px; border-radius:50%; border:1px solid var(--glass-border); background:var(--glass);
+  -webkit-backdrop-filter:blur(18px) saturate(1.6); backdrop-filter:blur(18px) saturate(1.6); box-shadow:var(--shadow-s);
+  font-size:1.75rem; font-weight:500; color:var(--ink); display:grid; place-items:center; -webkit-tap-highlight-color:transparent; touch-action:manipulation}
+.lk:active{background:var(--note-soft); transform:scale(.96)}
+.lk-del, .lk-bio{background:transparent; border-color:transparent; box-shadow:none; -webkit-backdrop-filter:none; backdrop-filter:none}
+.lk-bio.off{visibility:hidden; pointer-events:none}
+.lk svg{width:30px; height:30px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round}
+.lk-bio svg{width:38px; height:38px; color:var(--note)}
+.lock.busy .lock-pad{opacity:.5; pointer-events:none}
+.lock-foot{display:flex; gap:18px; justify-content:center; margin-top:18px; min-height:40px}
+.lock-link{border:0; background:none; color:var(--note); font-weight:600; padding:10px 6px}
+.lock-forgot{margin-top:18px; display:flex; flex-direction:column; gap:10px; align-items:stretch}
+.lock-forgot p{margin:0; color:var(--muted); font-size:.9rem; text-align:left}
+.lock-forgot[hidden], .lock-pad[hidden], .lock-dots[hidden], .lock-link[hidden]{display:none}
+@media (max-height:640px){ .lock-pad{grid-template-columns:repeat(3, 66px); gap:10px 22px} .lk{width:66px; height:66px; font-size:1.5rem} .lock-icon{width:48px; height:48px} }
+@media (prefers-reduced-motion: reduce){ .lock, .lock-dots.shake{transition:none; animation:none} }
 </style>
 </head>
 <body>
@@ -1576,6 +1615,7 @@ body.kb #tab-chat .chat-sugg{display:none}
 
     <div class="set-page" id="setHome">
       <div class="set-list">
+        <button class="set-nav" data-go="setLock"><span class="nav-t">Khoá app</span><span class="nav-v" id="navLock"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
         <button class="set-nav" data-go="setStart"><span class="nav-t">Màn hình mở đầu</span><span class="nav-v" id="navStart"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
         <button class="set-nav" data-go="setAI"><span class="nav-t">Trợ lý AI</span><span class="nav-v" id="navAI"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
         <button class="set-nav" data-go="setTheme"><span class="nav-t">Giao diện</span><span class="nav-v" id="navTheme"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
@@ -1588,6 +1628,37 @@ body.kb #tab-chat .chat-sugg{display:none}
         <button class="set-nav" data-go="setStore"><span class="nav-t">Dung lượng</span><span class="nav-v" id="navStore"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
       </div>
       <p class="set-ver" id="appVersionHome"></p>
+    </div>
+
+    <div class="set-page" id="setLock" hidden>
+      <div class="set-head"><button class="set-back" data-back>‹ Cài đặt</button><h2 tabindex="-1">Khoá app</h2></div>
+<section class="set-group">
+      <p class="set-now" id="lockState"></p>
+      <div id="lockOff">
+        <button class="primary" id="lockEnable">Đặt mã PIN</button>
+      </div>
+      <div id="lockOnBox" hidden>
+        <h4 class="sub">Tự khoá khi rời app</h4>
+        <div class="seg seg4" id="lockAutoSeg" role="group" aria-label="Tự khoá sau" style="margin-top:8px">
+          <button data-auto="0">Ngay</button>
+          <button data-auto="1">1 phút</button>
+          <button data-auto="5">5 phút</button>
+          <button data-auto="15">15 phút</button>
+        </div>
+        <p class="set-now" style="margin-top:8px">Chọn <b>Ngay</b> thì màn hình cũng được che khi bạn vuốt sang app khác, số liệu không lộ trong trình chuyển app.</p>
+        <h4 class="sub">Face ID</h4>
+        <p class="set-now" id="pkState"></p>
+        <div class="set-row" style="margin-top:10px"><button class="ghost grow" id="pkToggle"></button></div>
+        <h4 class="sub">Mã PIN</h4>
+        <div class="set-row"><button class="ghost grow" id="lockChange">Đổi mã PIN</button><button class="ghost grow" id="lockNowBtn">Khoá ngay</button></div>
+        <div class="set-row" style="margin-top:10px"><button class="ghost danger grow" id="lockDisable">Tắt khoá</button></div>
+      </div>
+      <p class="inline-ok" id="lockMsg" hidden></p>
+      <p class="sync-err" id="lockErrMsg" hidden></p>
+      <h4 class="sub">Cách app bảo vệ dữ liệu</h4>
+      <p class="set-now">Khi bật khoá, toàn bộ dữ liệu trên máy (khoản chi, lịch sử trò chuyện, khoá API của Trợ lý AI) được mã hoá AES-256. Khoá mã hoá được bảo vệ bằng mã PIN của bạn, app không lưu mã PIN ở đâu cả.</p>
+      <p class="set-now" style="margin-top:8px"><b>Quên mã PIN thì không lấy lại được dữ liệu trên máy.</b> Khi đó chỉ còn cách xoá dữ liệu rồi nhập lại từ file sao lưu, nên hãy sao lưu đều đặn. Nhập sai 5 lần thì phải chờ một lúc mới thử tiếp.</p>
+    </section>
     </div>
 
     <div class="set-page" id="setStart" hidden>
@@ -1765,6 +1836,12 @@ body.kb #tab-chat .chat-sugg{display:none}
         <label class="ghost grow file-btn">Nhập từ file<input type="file" id="importFile"></label>
       </div>
       <button class="ghost" id="csvBtn" style="width:100%; margin-top:10px">Xuất CSV để mở bằng Excel</button>
+      <label class="sc-use"><input type="checkbox" id="bkPwOn"> Khoá file sao lưu bằng mật khẩu</label>
+      <div id="bkPwBox" hidden>
+        <div class="field"><label for="bkPw"><span>Mật khẩu file <span class="opt">(ít nhất 8 ký tự)</span></span></label><input id="bkPw" class="inp" type="password" autocomplete="new-password" autocapitalize="off" spellcheck="false"></div>
+        <div class="field"><label for="bkPw2"><span>Nhập lại mật khẩu</span></label><input id="bkPw2" class="inp" type="password" autocomplete="new-password" autocapitalize="off" spellcheck="false"></div>
+        <p class="set-now">Dùng cho Xuất file sao lưu và Sao lưu nhanh. App không lưu mật khẩu này, quên thì file không mở được. File CSV không có mật khẩu.</p>
+      </div>
 
       <h4 class="sub">Sao lưu nhanh bằng Phím tắt <button class="ib" type="button" data-info="infoSc" aria-expanded="false" aria-label="Cách cài">i</button></h4>
       <p class="set-now">Bấm nút, bảng chia sẻ hiện lên, chạm vào phím tắt của bạn. Phím tắt chạy ngay trong app, lưu file vào iCloud Drive theo ngày, không rời app.</p>
@@ -1782,6 +1859,12 @@ body.kb #tab-chat .chat-sugg{display:none}
       </div>
       <button class="primary" id="scBackup">Sao lưu nhanh bằng Phím tắt</button>
       <label class="sc-use"><input type="checkbox" id="scUse"> Nút <b>Sao lưu</b> trong lời nhắc dùng cách này</label>
+      <div class="import-card" id="impPwCard" hidden>
+        <h3>File sao lưu có mật khẩu</h3>
+        <div class="field"><label for="impPw"><span>Mật khẩu của file</span></label><input id="impPw" class="inp" type="password" autocomplete="current-password" autocapitalize="off" spellcheck="false"></div>
+        <button class="primary" id="impPwGo">Mở file</button>
+        <div class="row2"><button class="ghost" id="impPwCancel">Huỷ</button></div>
+      </div>
       <div class="import-card" id="importCard" hidden>
         <h3>Nhập dữ liệu từ file</h3>
         <p id="importInfo"></p>
@@ -1817,7 +1900,7 @@ body.kb #tab-chat .chat-sugg{display:none}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v76</p>
+      <p class="sync" id="appVersion">Phiên bản v77</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Xoá dữ liệu</h4>
@@ -2224,16 +2307,31 @@ body.kb #tab-chat .chat-sugg{display:none}
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
 <script src="vendor/jsQR.js"></script>
 <script src="parse-vi.js"></script>
+<script src="lock.js"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
    App đọc hết vào bộ nhớ một lần khi mở, sau đó mọi lần lưu được ghi xuống IndexedDB ngay, lần ghi dồn dập được gộp lại.
    Lần đầu mở bản này: dữ liệu cũ trong localStorage được chép sang, đọc lại để chắc chắn khớp rồi mới xoá bản cũ.
-   Máy nào không mở được IndexedDB (hoặc treo quá 4 giây) thì app lưu kiểu cũ vào localStorage, lần sau mở lại sẽ thử chuyển tiếp. */
+   Máy nào không mở được IndexedDB (hoặc treo quá 4 giây) thì app lưu kiểu cũ vào localStorage, lần sau mở lại sẽ thử chuyển tiếp.
+   Khi bật khoá bằng mã PIN (lock.js): trong bộ nhớ là dữ liệu thường, lúc ghi xuống máy mới mã hoá ("enc1:…").
+   Chưa mở khoá thì không ghi các khoá dữ liệu, chỉ ghi được thông tin khoá "ngay50k:lock". */
 window.N50K = (function(){
-  var DB_NAME = "ngay50k", STORE = "kv", MAIN = "ngay50k:v1", KEYS = [MAIN, "ngay50k:beforeImport", "ngay50k:chat"];
+  var DB_NAME = "ngay50k", STORE = "kv", MAIN = "ngay50k:v1", LOCK = "ngay50k:lock", KEYS = [MAIN, "ngay50k:beforeImport", "ngay50k:chat", "ngay50k:ai", LOCK];
   var mem = {}, sizes = {}, gen = {}, db = null, mode = "ls", chan = null, dirty = {}, writing = null;
-  var why = "", trying = null, lastTry = 0;
+  var why = "", trying = null, lastTry = 0, codec = null, unlocked = false;
+  function isEnc(k){ return k !== LOCK; }
+  /* chưa mở khoá thì giữ lại các khoá dữ liệu, không ghi */
+  function writable(k){ return unlocked || !isEnc(k); }
+  /* chuẩn bị giá trị để ghi: mã hoá nếu đang bật khoá */
+  async function prepare(keys){
+    var out = {};
+    for(var i = 0; i < keys.length; i++){
+      var k = keys[i], v = mem[k];
+      out[k] = (v != null && codec && isEnc(k)) ? await codec.enc(v) : (v == null ? null : v);
+    }
+    return out;
+  }
   var api = { onError: null, onRemote: null, onMode: null };
   function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
   function lsSet(k, v){ try{ localStorage.setItem(k, v); return true; }catch(e){ return false; } }
@@ -2284,48 +2382,88 @@ window.N50K = (function(){
   }
   function idbGet(k){ return run(false, function(st){ return st.get(k); }).then(function(r){ var v = r.result; return v == null ? null : v; }); }
   function idbPut(k, v){ return run(true, function(st){ if(v == null) st.delete(k); else st.put(v, k); }); }
-  function idbPutMany(keys){ return run(true, function(st){ keys.forEach(function(k){ if(mem[k] == null) st.delete(k); else st.put(mem[k], k); }); }); }
+  function idbPutMany(vals){ return run(true, function(st){ Object.keys(vals).forEach(function(k){ if(vals[k] == null) st.delete(k); else st.put(vals[k], k); }); }); }
   /* iOS đôi khi làm rớt kết nối IndexedDB khi app nằm nền lâu: mở lại một lần rồi thử ghi lại. */
-  function writeKeys(keys){
-    var go = function(){ return (db ? Promise.resolve(db) : open(4000).then(function(d){ db = d; return d; })).then(function(){ return idbPutMany(keys); }); };
+  function writeKeys(vals){
+    var go = function(){ return (db ? Promise.resolve(db) : open(4000).then(function(d){ db = d; return d; })).then(function(){ return idbPutMany(vals); }); };
     return go().catch(function(){ db = null; return go(); });
   }
   function setMode(m, e){
     var was = mode; mode = m; why = m === "idb" ? "" : reason(e);
     if(was !== m && api.onMode) try{ api.onMode(m); }catch(x){}
   }
-  function fallback(keys, e){
+  function fallback(vals, e){
     var ok = true;
-    keys.forEach(function(k){ if(mem[k] == null) lsDel(k); else if(!lsSet(k, mem[k])) ok = false; });
+    Object.keys(vals).forEach(function(k){ if(vals[k] == null) lsDel(k); else if(!lsSet(k, vals[k])) ok = false; });
     setMode("ls", e);
     if(!ok && api.onError) api.onError("Máy hết chỗ lưu dữ liệu. Hãy xuất file sao lưu ngay.");
   }
   function flush(){
     if(writing) return writing;
-    var keys = Object.keys(dirty);
+    var keys = Object.keys(dirty).filter(writable);
     if(!keys.length) return Promise.resolve();
-    dirty = {};
-    if(mode !== "idb"){ fallback(keys, new Error(why || "timeout")); return Promise.resolve(); }
-    writing = writeKeys(keys).then(function(){
-      if(chan){ var msg = {}; keys.forEach(function(k){ msg[k] = mem[k]; }); try{ chan.postMessage(msg); }catch(e){} }
-    }, function(e){ fallback(keys, e); }).then(function(){
+    keys.forEach(function(k){ delete dirty[k]; });
+    var vals = null;
+    writing = prepare(keys).then(function(v){
+      vals = v;
+      if(mode !== "idb"){ fallback(vals, new Error(why || "timeout")); return; }
+      return writeKeys(vals).then(function(){
+        if(chan){ var msg = {}; keys.forEach(function(k){ msg[k] = mem[k]; }); try{ chan.postMessage(msg); }catch(e){} }
+      }, function(e){ fallback(vals, e); });
+    }).catch(function(e){
+      /* mã hoá lỗi: giữ lại để lần sau ghi tiếp, tuyệt đối không ghi dữ liệu thường thay vào */
+      keys.forEach(function(k){ dirty[k] = 1; });
+      if(api.onError) api.onError("Chưa lưu được dữ liệu đã mã hoá: " + (e && e.message ? e.message : e));
+    }).then(function(){
       writing = null;
-      if(Object.keys(dirty).length) return flush();
+      if(Object.keys(dirty).filter(writable).length) return flush();
     });
     return writing;
   }
   api.get = function(k){ return k in mem ? mem[k] : null; };
   api.set = function(k, v){
     mem[k] = v; sizes[k] = null; gen[k] = (gen[k] || 0) + 1;
-    if(mode !== "idb"){ if(!lsSet(k, v) && api.onError) api.onError("Máy hết chỗ lưu dữ liệu. Hãy xuất file sao lưu ngay."); return; }
+    if(mode !== "idb" && !codec && writable(k)){ if(!lsSet(k, v) && api.onError) api.onError("Máy hết chỗ lưu dữ liệu. Hãy xuất file sao lưu ngay."); return; }
     dirty[k] = 1; flush();
   };
   api.del = function(k){
-    delete mem[k]; delete sizes[k]; gen[k] = (gen[k] || 0) + 1; lsDel(k);
+    delete mem[k]; delete sizes[k]; gen[k] = (gen[k] || 0) + 1;
+    if(!writable(k)) return;
+    lsDel(k);
     if(mode !== "idb") return;
     dirty[k] = 1; flush();
   };
-  api.flush = flush;
+  /* flush cho tới khi ghi xong hết, kể cả các lần ghi xếp hàng phía sau */
+  api.flush = function(){ return flush().then(function(){ return writing || Object.keys(dirty).filter(writable).length ? api.flush() : null; }); };
+  api.encKeys = function(){ return KEYS.filter(isEnc); };
+  api.allKeys = function(){ return KEYS.slice(); };
+  /* app không bật khoá */
+  api.unlockPlain = function(){ unlocked = true; };
+  /* giải mã dữ liệu đã đọc lên bằng khoá vừa mở; khoá nào còn dạng thường thì ghi lại cho được mã hoá */
+  api.unlock = async function(c){
+    var plain = {};
+    for(var i = 0; i < KEYS.length; i++){
+      var k = KEYS[i], v = mem[k];
+      if(!isEnc(k) || v == null) continue;
+      plain[k] = v.indexOf("enc1:") === 0 ? await c.dec(v) : (dirty[k] = 1, v);
+    }
+    for(var x in plain){ mem[x] = plain[x]; sizes[x] = null; }
+    codec = c; unlocked = true;
+    flush();
+  };
+  /* xoá sạch mọi khoá, kể cả khi chưa mở khoá (người dùng quên mã PIN) */
+  api.wipe = function(){
+    codec = null; unlocked = true;
+    KEYS.forEach(function(k){ delete mem[k]; sizes[k] = null; gen[k] = (gen[k] || 0) + 1; lsDel(k); dirty[k] = 1; });
+    return api.flush();
+  };
+  /* bật / tắt mã hoá: ghi lại mọi khoá dữ liệu theo kiểu mới. silent: chỉ đổi, không ghi */
+  api.setCodec = function(c, silent){
+    codec = c;
+    if(silent) return Promise.resolve();
+    KEYS.forEach(function(k){ if(isEnc(k) && mem[k] != null) dirty[k] = 1; });
+    return api.flush();
+  };
   api.mode = function(){ return mode; };
   api.why = function(){ return why; };
   /* số byte thật của dữ liệu đang giữ (chữ tiếng Việt có dấu chiếm hơn 1 byte) */
@@ -2340,6 +2478,9 @@ window.N50K = (function(){
       chan = new BroadcastChannel("ngay50k-data");
       chan.onmessage = function(e){
         var d = e.data || {};
+        /* cửa sổ kia vừa bật hay tắt khoá: mở lại cho đúng trạng thái */
+        if(LOCK in d){ location.reload(); return; }
+        if(!unlocked) return;
         for(var k in d){ if(d[k] == null) delete mem[k]; else mem[k] = d[k]; sizes[k] = null; if(api.onRemote) api.onRemote(k); }
       };
     }catch(e){ chan = null; }
@@ -4528,7 +4669,7 @@ function startNgay50k(){
     });
   }
   /* =================== TRỢ LÝ AI ===================
-     Khoá API chỉ lưu trên máy này (localStorage "ngay50k:ai"), không nằm trong code, không nằm trong file sao lưu.
+     Khoá API chỉ lưu trên máy này (khoá "ngay50k:ai" trong kho dữ liệu, được mã hoá khi bật mã PIN), không nằm trong code, không nằm trong file sao lưu.
      AI chỉ có nhiệm vụ HIỂU câu: trả về các khoản và câu hỏi dạng JSON. Số liệu trả lời luôn do app tự tính từ dữ liệu trên máy.
      Lỗi, hết hạn chờ hoặc mất mạng thì dùng bộ hiểu câu trên máy (parse-vi.js). */
   var AI_KEY = "ngay50k:ai";
@@ -4537,8 +4678,8 @@ function startNgay50k(){
     openai: { name:"ChatGPT", model:"gpt-5-mini", models:["gpt-5-mini","gpt-5"], keyHint:"sk-…", where:"platform.openai.com → API keys" },
     gemini: { name:"Gemini", model:"gemini-flash-latest", models:["gemini-flash-latest","gemini-pro-latest"], keyHint:"AIza…", where:"aistudio.google.com → Get API key" }
   };
-  function aiCfg(){ let c = null; try{ c = JSON.parse(lsGet(AI_KEY) || "null"); }catch(e){} c = c || {}; if(!AI_PROVIDERS[c.provider]) c.provider = "claude"; if(c.on === undefined) c.on = true; return c; }
-  function aiSet(c){ lsSet(AI_KEY, JSON.stringify(c)); aiBadge(); }
+  function aiCfg(){ let c = null; try{ c = JSON.parse(N50K.get(AI_KEY) || "null"); }catch(e){} c = c || {}; if(!AI_PROVIDERS[c.provider]) c.provider = "claude"; if(c.on === undefined) c.on = true; return c; }
+  function aiSet(c){ N50K.set(AI_KEY, JSON.stringify(c)); aiBadge(); }
   function aiBadge(){ const b = $("chatAI"); if(!b) return; const c = aiCfg(); b.hidden = !aiReady(); b.textContent = "✦ AI · " + AI_PROVIDERS[c.provider].name; }
   function aiReady(){ const c = aiCfg(); return !!(c.on && c.key && String(c.key).trim()); }
   function aiModel(c){ return (c.model && String(c.model).trim()) || AI_PROVIDERS[c.provider].model; }
@@ -6799,7 +6940,7 @@ function startNgay50k(){
   }
 
   /* ---- settings navigation ---- */
-  const SET_PAGES = ["setHome","setStart","setAI","setTheme","setScan","setBudget","setRecur","setPeople","setTags","setTagOne","setSync","setStore"];
+  const SET_PAGES = ["setHome","setLock","setStart","setAI","setTheme","setScan","setBudget","setRecur","setPeople","setTags","setTagOne","setSync","setStore"];
   let setPage = "setHome";
   function showSetPage(id, back){
     setPage = id;
@@ -6814,8 +6955,10 @@ function startNgay50k(){
     if(id === "setTags") renderTagList();
     if(id === "setPeople"){ closeContactForm(); renderPeople(); }
     if(id === "setRecur") renderRecur();
+    if(id === "setLock") renderLockSet();
   }
   function renderSetHome(){
+    $("navLock").textContent = N50KLock.isOn() ? (N50KLock.meta().pk ? "PIN, Face ID" : "Mã PIN") : "Tắt";
     $("navTheme").textContent = { auto:"Tự động", light:"Sáng", dark:"Tối", pastel:"Pastel" }[curTheme] || "Tự động";
     $("navStart").textContent = homeTab() === "chat" ? "Trò chuyện" : "Ví";
     $("navAI").textContent = aiNav();
@@ -6831,6 +6974,55 @@ function startNgay50k(){
   }
   document.querySelectorAll("[data-go]").forEach(b => b.onclick = () => showSetPage(b.dataset.go));
   document.querySelectorAll("[data-back]").forEach(b => b.onclick = () => showSetPage(b.dataset.back || "setHome", true));
+  /* ---- khoá app (lock.js) ---- */
+  let pkOk = null;
+  function lockFlash(ok, t){ const a = $("lockMsg"), b = $("lockErrMsg"); a.hidden = b.hidden = true; if(!t) return; const el = ok ? a : b; el.innerHTML = t; el.hidden = false; }
+  function renderLockSet(){
+    const on = N50KLock.isOn(), m = N50KLock.meta();
+    $("lockOff").hidden = on; $("lockOnBox").hidden = !on;
+    if(!N50KLock.supported()){ $("lockState").textContent = "Trình duyệt này không hỗ trợ mã hoá nên chưa bật khoá được."; $("lockEnable").disabled = true; return; }
+    $("lockState").innerHTML = on
+      ? "<b>Đang bật.</b> Mở app phải nhập mã PIN " + m.len + " số" + (m.pk ? " hoặc dùng Face ID" : "") + ". Dữ liệu trên máy đã được mã hoá."
+      : "Đang tắt: ai cầm máy của bạn cũng mở được app. Đặt mã PIN để khoá app và mã hoá dữ liệu trên máy.";
+    if(!on) return;
+    document.querySelectorAll("#lockAutoSeg button").forEach(b => b.setAttribute("aria-pressed", String(Number(b.dataset.auto) === m.auto)));
+    $("pkToggle").textContent = m.pk ? "Tắt mở bằng Face ID" : "Bật mở bằng Face ID";
+    $("pkState").textContent = m.pk ? "Đang bật. Mã PIN vẫn dùng được khi Face ID không nhận." : "Mở app bằng Face ID thay cho nhập mã PIN.";
+    if(pkOk === null) N50KLock.pkAvailable().then(v => { pkOk = v; renderLockSet(); });
+    else if(!pkOk && !m.pk){ $("pkToggle").disabled = true; $("pkState").textContent = "Máy hoặc trình duyệt này không có Face ID, Touch ID cho web app."; }
+  }
+  $("lockEnable").onclick = async () => {
+    lockFlash();
+    try{ await N50KLock.enable(); renderLockSet(); lockFlash(true, "✓ Đã bật khoá. Dữ liệu trên máy đã được mã hoá."); }
+    catch(e){ if(!(e && e.message === "cancel")) lockFlash(false, "Chưa bật được: " + (e && e.message ? e.message : e)); renderLockSet(); }
+  };
+  $("lockChange").onclick = async () => {
+    lockFlash();
+    try{ await N50KLock.changePin(); lockFlash(true, "✓ Đã đổi mã PIN."); }
+    catch(e){ if(!(e && e.message === "cancel")) lockFlash(false, "Chưa đổi được: " + (e && e.message ? e.message : e)); }
+    renderLockSet();
+  };
+  $("lockDisable").onclick = async () => {
+    lockFlash();
+    try{ await N50KLock.disable(); lockFlash(true, "✓ Đã tắt khoá. Dữ liệu trên máy trở lại dạng thường."); }
+    catch(e){ if(!(e && e.message === "cancel")) lockFlash(false, "Chưa tắt được: " + (e && e.message ? e.message : e)); }
+    renderLockSet();
+  };
+  $("lockNowBtn").onclick = () => { closeSettings(); setTimeout(() => N50KLock.lockNow(), 280); };
+  document.querySelectorAll("#lockAutoSeg button").forEach(b => b.onclick = () => { N50KLock.setAuto(Number(b.dataset.auto)); renderLockSet(); });
+  $("pkToggle").onclick = async () => {
+    lockFlash(); const b = $("pkToggle"); b.disabled = true;
+    try{
+      if(N50KLock.meta().pk){ await N50KLock.disablePasskey(); lockFlash(true, "✓ Đã tắt mở bằng Face ID."); }
+      else { await N50KLock.enablePasskey(); lockFlash(true, "✓ Đã bật. Lần sau mở app, bấm biểu tượng Face ID trên màn hình khoá."); }
+    }catch(e){
+      const n = e && e.name, m = e && e.message;
+      if(n === "NotAllowedError" || n === "AbortError") lockFlash(false, "Đã huỷ hoặc Face ID không xác nhận.");
+      else if(m === "noprf") lockFlash(false, "Trình duyệt này chưa hỗ trợ mở khoá dữ liệu bằng Face ID (cần iOS 18 trở lên). Bạn vẫn dùng mã PIN bình thường.");
+      else lockFlash(false, "Chưa bật được: " + (m || e));
+    }
+    b.disabled = false; renderLockSet();
+  };
   /* ---- tag management ---- */
   let tagOneId = null, oneIcon = "";
   function tagUses(id){
@@ -6980,11 +7172,22 @@ function startNgay50k(){
       setTimeout(() => URL.revokeObjectURL(url), 4000);
     }catch(e){ showSyncErr("Chưa xuất được file CSV."); }
   }
+  /* nội dung file sao lưu; bật mật khẩu thì mã hoá. Trả về null nếu mật khẩu chưa hợp lệ. */
+  async function backupText(){
+    const plain = JSON.stringify({ app:"ngay50k", format:1, exportedAt:new Date().toISOString(), data:state });
+    if(!$("bkPwOn").checked) return plain;
+    const pw = $("bkPw").value;
+    if(pw.length < 8){ showSyncErr("Mật khẩu file cần ít nhất 8 ký tự."); openSyncPw(); return null; }
+    if(pw !== $("bkPw2").value){ showSyncErr("Hai ô mật khẩu chưa khớp."); openSyncPw(); return null; }
+    return N50KLock.encBackup(plain, pw);
+  }
+  function openSyncPw(){ if(!settingsOpen) openSettings(); showSetPage("setSync"); setTimeout(() => $("bkPw").focus(), 300); }
+  ["bkPw","bkPw2"].forEach(id => $(id).addEventListener("input", () => { const p = $("bkPw").value; if(p.length >= 8 && p === $("bkPw2").value) N50KLock.prepBackup(p); }));
+  $("bkPwOn").addEventListener("change", () => { $("bkPwBox").hidden = !$("bkPwOn").checked; if(!$("bkPwOn").checked){ $("bkPw").value = $("bkPw2").value = ""; } });
   async function exportData(){
     $("syncErr").hidden = true;
-    const payload = { app:"ngay50k", format:1, exportedAt:new Date().toISOString(), data:state };
     const name = "ngay50k-saoluu-" + fileStamp() + ".json";
-    const text = JSON.stringify(payload);
+    const text = await backupText(); if(text == null) return;
     const coarse = window.matchMedia && matchMedia("(pointer:coarse)").matches;
     if(coarse && navigator.canShare && typeof File === "function"){
       try{
@@ -7092,11 +7295,29 @@ function startNgay50k(){
     r.onload = () => {
       let obj;
       try{ obj = JSON.parse(r.result); }catch(err){ showSyncErr("File này không phải file sao lưu của Ngày 50k."); return; }
+      if(obj && obj.app === "ngay50k" && obj.enc && typeof obj.data === "string"){
+        encPending = obj; $("importCard").hidden = true; $("impPw").value = ""; $("impPwCard").hidden = false;
+        $("impPwCard").scrollIntoView({ behavior:"smooth", block:"nearest" }); setTimeout(() => $("impPw").focus(), 300);
+        return;
+      }
       if(!obj || obj.app !== "ngay50k" || !obj.data || typeof obj.data !== "object"){ showSyncErr("File này không phải file sao lưu của Ngày 50k."); return; }
       offerImport(obj, "File");
     };
     r.readAsText(f);
   });
+  let encPending = null;
+  $("impPwGo").onclick = async () => {
+    if(!encPending) return;
+    const b = $("impPwGo"); b.disabled = true; b.textContent = "Đang mở…"; $("syncErr").hidden = true;
+    try{
+      const obj = JSON.parse(await N50KLock.decBackup(encPending, $("impPw").value));
+      encPending = null; $("impPwCard").hidden = true; $("impPw").value = "";
+      offerImport(obj, "File có mật khẩu");
+    }catch(e){ showSyncErr("Mật khẩu chưa đúng, hoặc file bị hỏng."); }
+    b.disabled = false; b.textContent = "Mở file";
+  };
+  $("impPw").addEventListener("keydown", e => { if(e.key === "Enter") $("impPwGo").click(); });
+  $("impPwCancel").onclick = () => { encPending = null; $("impPwCard").hidden = true; $("impPw").value = ""; };
   function applyImport(next, label){
     N50K.set(UNDO_KEY, JSON.stringify(state));
     const d = diffCount(state, next);
@@ -7132,8 +7353,8 @@ function startNgay50k(){
   try{ localStorage.removeItem("ngay50k:scMode"); localStorage.removeItem("ngay50k:scName"); }catch(e){}
   async function quickBackup(){
     $("syncErr").hidden = true;
-    const text = JSON.stringify({ app:"ngay50k", format:1, exportedAt:new Date().toISOString(), data:state });
     const name = "ngay50k-" + todayKey() + ".json";
+    const text = await backupText(); if(text == null) return false;
     if(!(navigator.canShare && typeof File === "function")){ showSyncErr("Máy này không mở được bảng chia sẻ. Hãy dùng nút Xuất file sao lưu."); return false; }
     try{
       const file = new File([text], name, { type:"application/json" });
@@ -7168,7 +7389,7 @@ function startNgay50k(){
     try{
       Object.keys(localStorage).filter(k => k.indexOf("ngay50k:") === 0).forEach(k => localStorage.removeItem(k));
     }catch(e){}
-    N50K.del(LS_KEY); N50K.del(UNDO_KEY); N50K.del("ngay50k:chat"); chat = { msgs:[] }; renderChat();
+    N50K.del(LS_KEY); N50K.del(UNDO_KEY); N50K.del("ngay50k:chat"); N50K.del("ngay50k:ai"); N50KLock.forget(); chat = { msgs:[] }; renderChat();
     state = normalize({}); sigs = collectSigs(state); pending = null;
     viewDay = null; $("importCard").hidden = true; $("wipeCard").hidden = true;
     $("syncMsg").hidden = true; $("syncErr").hidden = true;
@@ -7217,7 +7438,7 @@ function startNgay50k(){
     window.addEventListener("scroll", onScroll, { passive:true }); onScroll();
   })();
 }
-N50K.ready.then(startNgay50k);
+N50K.ready.then(N50KLock.gate).then(startNgay50k);
 </script>
 </body>
 </html>

@@ -1,6 +1,22 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v76, ngày 06/10/2026
+**Phiên bản hiện tại:** v77, ngày 07/10/2026
+
+---
+
+## Có gì mới trong v77 (so với v76)
+
+**Khoá app bằng mã PIN, dữ liệu trên máy được mã hoá.** Cài đặt → **Khoá app** → **Đặt mã PIN**.
+
+- Mã PIN 6 số (hoặc 4 số), nhập hai lần. App không cho đặt mã dễ đoán như 111111, 123456.
+- Khi bật, toàn bộ dữ liệu trên máy được mã hoá AES-256: khoản chi, lịch sử trò chuyện, khoá API của Trợ lý AI. App không lưu mã PIN ở đâu cả.
+- Mở app phải nhập mã PIN. Sai 5 lần thì phải chờ 30 giây, sai tiếp thì thời gian chờ tăng gấp đôi.
+- **Tự khoá khi rời app:** Ngay, 1 phút, 5 phút hoặc 15 phút. Chọn Ngay thì màn hình được che luôn trong trình chuyển app.
+- **Mở bằng Face ID:** bật trong cùng trang. Face ID mở khoá thật bằng passkey trên máy (cần iOS 18 trở lên). Máy không hỗ trợ thì app báo, mã PIN vẫn dùng bình thường.
+- Đổi mã PIN, Khoá ngay, Tắt khoá (tắt thì dữ liệu trở lại dạng thường).
+- **Quên mã PIN:** không lấy lại được dữ liệu trên máy. Màn hình khoá có nút xoá dữ liệu để bắt đầu lại rồi nhập từ file sao lưu.
+
+**File sao lưu có mật khẩu.** Trong Sao lưu và đồng bộ, tick **Khoá file sao lưu bằng mật khẩu** (ít nhất 8 ký tự). Áp dụng cho Xuất file và Sao lưu nhanh bằng Phím tắt. Nhập file có mật khẩu thì app hỏi mật khẩu trước khi gộp.
 
 ---
 
@@ -17,12 +33,6 @@
   - Lấy đúng nội dung chuyển khoản (ND, Ref) làm ghi chú, không dính sang thông báo kế tiếp.
   - Không nhầm hạn mức còn lại / available limit thành một khoản chi.
   - Đọc được nơi chi kiểu "at CIRCLE K", "tại GRAB lúc …".
-
----
-
-## Có gì mới trong v75 (so với v74)
-
-- **Làm mờ phần dưới thanh menu:** từ ngay trên thanh menu xuống tới đáy màn hình, nội dung cuộn phía sau được làm mờ, mép trên chuyển mềm. Chữ không còn lộ rõ dưới thanh menu. Khi đang gõ (thanh menu ẩn) thì lớp mờ cũng ẩn.
 
 ---
 
@@ -97,6 +107,7 @@
 - Bấm **Chuyển** để mở form đã điền sẵn thông tin.
 
 ### Cài đặt (bánh răng góc trên bên phải)
+- **Khoá app:** mã PIN 4 hoặc 6 số, mã hoá dữ liệu trên máy, tự khoá khi rời app, mở bằng Face ID, đổi và tắt mã PIN.
 - **Giao diện:** Tự động, Sáng, Tối hoặc Pastel.
 - **Quét mã QR:** Camera iPhone hoặc Quét trực tiếp, kèm thời gian tự tắt camera.
 - **Hạn mức chi một ngày.**
@@ -105,6 +116,7 @@
 - **Quản lý tag:** danh sách tag, chi tiết từng tag, đổi tên và icon, ẩn hoặc hiện, xoá tag tự tạo.
 - **Sao lưu và đồng bộ:**
   - Xuất file sao lưu, hoặc xuất CSV để mở bằng Excel.
+  - Khoá file sao lưu bằng mật khẩu (tuỳ chọn).
   - **Sao lưu nhanh bằng Phím tắt** iPhone qua bảng chia sẻ: một chạm, ở lại app, tự lưu vào iCloud Drive theo ngày.
   - Nhập từ file, chọn **Gộp** hoặc **Thay toàn bộ**, có xem trước thay đổi và **Hoàn tác**.
   - Đồng bộ giữa các máy qua file.
@@ -117,7 +129,7 @@
 - Cài lên màn hình chính như app, chạy **offline hoàn toàn**.
 - Thanh đầu trang (ngày, nút Cài đặt) luôn dính trên cùng khi cuộn.
 - Vuốt từ trái sang phải để từ trang con quay về trang trước trong cùng menu.
-- Dữ liệu **chỉ lưu trên máy** (IndexedDB), không gửi lên máy chủ nào. App không tải gì từ trang web khác.
+- Dữ liệu **chỉ lưu trên máy** (IndexedDB), không gửi lên máy chủ nào, mã hoá khi bật khoá app. App không tải gì từ trang web khác.
 - Không còn giới hạn khoảng 5 MB dùng chung với các mini app khác.
 - Tự báo khi có bản mới, bấm **Tải lại** để cập nhật.
 - Chữ giải thích nằm sau nút **ⓘ** cạnh tiêu đề, chạm mới hiện.
@@ -130,6 +142,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v77** | Khoá app bằng mã PIN, mã hoá dữ liệu, Face ID, sao lưu có mật khẩu |
 | **v76** | Gửi ảnh thông báo trong chat, đọc trên máy không tốn token |
 | **v75** | Làm mờ nội dung phía dưới thanh menu |
 | **v74** | Ngân sách AI bằng USD, thông báo khi sắp hết |
