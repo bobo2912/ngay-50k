@@ -32,7 +32,7 @@ Phải mở qua một máy chủ web, không mở thẳng bằng `file://`, vì 
 
 **Ví** — Số dư hiện tại: số bạn nhập ở lần đối chiếu gần nhất, cộng trừ tiếp mọi khoản ghi sau lúc đó (quẹt thẻ chỉ cộng vào nợ thẻ, tới khi ghi Trả thẻ). Danh sách biến động kèm số dư sau từng khoản, lịch sử đối chiếu và trả thẻ.
 
-**Tổng quan** — Còn lại thực tế của tháng: thu vào trừ chi thường trừ chi thẻ. Khoản vay để riêng vì tiền vay không phải thu nhập và tiền trả nợ không phải chi tiêu. Chọn được tính gồm chi thường, chi thẻ hay cả hai; thống kê theo tag đi theo lựa chọn đó. Biểu đồ so sánh thu chi và thống kê theo tag nằm trong bảng Phân tích tháng.
+**Tổng quan** — Dòng tiền ròng của tháng: thu vào trừ chi thường trừ chi thẻ. Khoản vay để riêng vì tiền vay không phải thu nhập và tiền trả nợ không phải chi tiêu. Chọn được tính gồm chi thường, chi thẻ hay cả hai; thống kê theo tag đi theo lựa chọn đó. Biểu đồ so sánh thu chi và thống kê theo tag nằm trong bảng Phân tích tháng.
 
 **Thẻ** — Quản lý chi tiêu thẻ tín dụng, không tính vào hạn mức mỗi ngày. Nhập nhanh bằng cách dán thông báo ngân hàng hoặc chọn ảnh chụp màn hình: app đọc chữ trong ảnh, tách ra từng giao dịch, tự gán vào đúng thẻ theo 6 số đầu và 4 số cuối, rồi để bạn tick chọn khoản đúng trước khi ghi. Biểu đồ theo ngày và theo 12 tháng. Mỗi thẻ khai được ngày sao kê, mỗi khoản gắn được nhóm.
 
