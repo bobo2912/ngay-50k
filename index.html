@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v90";
+  var K = "ngay50k:errlog", VER = "v91";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -1512,13 +1512,81 @@ header .date{font-size:1.25rem}
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]):not([data-theme="pastel"]){--top-c:#0E1530} }
 :root[data-theme="dark"]{--top-c:#0E1530}
 :root[data-theme="pastel"]{--top-c:#F9F2F0}
-.top-fade, .settings::after{content:""; position:fixed; left:0; right:0; top:0; height:calc(env(safe-area-inset-top, 0px) + 84px); z-index:-1; pointer-events:none;
+.settings::after{content:""; position:fixed; left:0; right:0; top:0; height:calc(env(safe-area-inset-top, 0px) + 84px); z-index:-1; pointer-events:none;
   background:linear-gradient(var(--top-c) 0%, var(--top-c) 12%, color-mix(in srgb, var(--top-c) 55%, transparent) 50%, transparent 100%)}
-.top-fade{z-index:0}            /* nằm trên nền loang (body::before), dưới đầu trang (z 30) và các ô dính */
+
+/* báo cáo trong chat (v91) */
+.msg.bot:has(.rpt){max-width:100%; width:100%}
+.msg-wrap:has(.rpt){max-width:100%; width:100%}
+.rpt{white-space:normal; font-size:.86rem; line-height:1.4; margin-top:2px}
+.ai-mark + .rpt, .msg > .rpt:first-child{margin-top:0}
+.msg.by-ai .rpt{margin-top:8px}
+.rpt p{margin:0}
+.rpt-h b{font-size:1.02rem}
+.rpt-s{margin-top:3px!important; color:var(--muted); font-size:.76rem}
+.rpt-t{margin-top:8px!important; font-weight:700; font-size:.8rem}
+.rpt-g{margin-top:10px; display:flex; flex-direction:column; gap:2px}
+.rpt details{margin:0; padding:0}
+.rpt-g details{border-top:1px solid var(--line)}
+.rpt-g details:first-child{border-top:0}
+.rpt-g summary{list-style:none; cursor:pointer; display:grid; grid-template-columns:22px 1fr auto auto; grid-template-rows:auto 4px; column-gap:8px; row-gap:4px; align-items:center; padding:7px 0 7px}
+.rpt-g summary::-webkit-details-marker{display:none}
+.rpt-g summary .i{grid-row:1 / span 2; font-size:1rem; text-align:center}
+.rpt-g summary .n{min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:600}
+.rpt-g summary .n small{display:block; font-weight:400; color:var(--muted); font-size:.72rem}
+.rpt-g summary b{font-variant-numeric:tabular-nums; text-align:right}
+.rpt-g summary > i{font-style:normal; font-size:.68rem; font-weight:700; padding:1px 6px; border-radius:999px}
+.rpt-g summary > i.up{color:var(--over); background:var(--over-soft, rgba(195,52,44,.08))}
+.rpt-g summary > i.down{color:var(--ok); background:var(--ok-soft)}
+.rpt-g summary .bar{grid-column:2 / span 3; justify-self:stretch; width:auto!important; max-width:none; height:4px; border-radius:2px; background:var(--line); overflow:hidden}
+.rpt-g summary .bar i{display:block; height:100%; border-radius:2px; background:linear-gradient(90deg, var(--tint-a, var(--note)), var(--tint-b, var(--note)))}
+.rpt-g details[open] summary .n{color:var(--note)}
+.rpt-l{list-style:none; margin:2px 0 8px; padding:0 0 0 30px}
+.rpt > .rpt-l{padding-left:0; margin-top:6px}
+.rpt-l li{display:flex; align-items:baseline; gap:6px; padding:4px 0; border-bottom:1px dashed var(--line); font-size:.8rem}
+.rpt-l li:last-child{border-bottom:0}
+.rpt-l .d{flex:none; width:36px; color:var(--muted); font-size:.72rem; font-variant-numeric:tabular-nums}
+.rpt-l .i{flex:none; font-size:.85rem}
+.rpt-l .n{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.rpt-l .n em{font-style:normal; margin-left:6px; font-size:.66rem; color:var(--note); background:var(--note-soft); padding:0 5px; border-radius:6px}
+.rpt-l b{flex:none; font-variant-numeric:tabular-nums; font-weight:600}
+.rpt-more{margin:0!important; padding:0!important; border:0!important}
+.rpt-more summary{cursor:pointer; color:var(--note); font-weight:600; font-size:.78rem; padding:4px 0; list-style:none}
+.rpt-more summary::-webkit-details-marker{display:none}
+.rpt-tip{margin-top:6px!important; color:var(--muted); font-size:.72rem}
+.rpt-n{margin:10px 0 0; padding:8px 10px; list-style:none; border-radius:12px; background:var(--note-soft); font-size:.78rem}
+.rpt-n li{padding:1px 0}
+.rpt-n li::before{content:"• "; color:var(--note)}
+.chat-q{display:block; margin-top:6px; border:0; background:none; padding:0; color:var(--note); font:inherit; font-weight:600; font-size:.8rem}
+.chat-q:disabled{opacity:.45}
+
+/* ================= THANH TRẠNG THÁI iOS 26 (v91) =================
+   Từ iOS 26, iPhone KHÔNG dùng thẻ theme-color nữa. Màu vùng giờ/pin được lấy từ:
+   (1) background-color của phần tử fixed/sticky nằm sát mép trên (cả backdrop-filter), nếu có;
+   (2) nếu không thì background-color của body/html. Ảnh nền, gradient và ::before/::after thì bị bỏ qua;
+   nền trong suốt dễ bị coi là trắng.
+   Vì vậy: html/body, đầu trang (sticky), thanh Cài đặt, màn khoá, màn chào đều có background-color ĐẶC = --top-c;
+   các ô dính khác (Số dư ví) vẽ nền bằng background-image để iPhone không lấy màu của chúng. */
+html, body{background-color:var(--top-c)}
+main > header{background-color:var(--top-c)}
+main > header::after{content:""; position:absolute; left:0; right:0; top:100%; height:14px; pointer-events:none; background:linear-gradient(var(--top-c), color-mix(in srgb, var(--top-c) 0%, transparent))}
+main > header.stuck{background:var(--top-c); -webkit-backdrop-filter:none; backdrop-filter:none; box-shadow:0 1px 0 var(--line)}
+main > header.stuck::after{display:none}
+.settings{background-color:var(--top-c)}
+.settings-head, .settings-head.stuck{background:var(--top-c); -webkit-backdrop-filter:none; backdrop-filter:none}
+.settings-head.stuck{box-shadow:0 1px 0 var(--line)}
+.lock, .welcome{background-color:var(--top-c)}
+#tab-chat > #chatToWallet{--chip-bg:color-mix(in srgb, var(--flat) 97%, transparent);
+  background-color:transparent!important; background-image:linear-gradient(var(--chip-bg), var(--chip-bg))!important;
+  -webkit-backdrop-filter:none; backdrop-filter:none}
+:root[data-theme="dark"] #tab-chat > #chatToWallet{--chip-bg:color-mix(in srgb, var(--bg), white 7%)}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]):not([data-theme="pastel"]) #tab-chat > #chatToWallet{--chip-bg:color-mix(in srgb, var(--bg), white 7%)} }
+#tab-chat > #chatToWallet::before{background:transparent; background-image:linear-gradient(color-mix(in srgb, var(--bg) 78%, transparent), color-mix(in srgb, var(--bg) 78%, transparent))}
+.ledger-head{-webkit-backdrop-filter:none!important; backdrop-filter:none!important}
+body.searching .ledger-head{background:var(--top-c)}
 </style>
 </head>
 <body>
-<div class="top-fade" aria-hidden="true"></div>
 <main>
   <header>
     <h1 class="vh">Tiêu Gọn</h1>
@@ -2213,7 +2281,7 @@ header .date{font-size:1.25rem}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v90</p>
+      <p class="sync" id="appVersion">Phiên bản v91</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -2624,8 +2692,8 @@ header .date{font-size:1.25rem}
 
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
 <script src="vendor/jsQR.js"></script>
-<script src="parse-vi.js?v=90"></script>
-<script src="lock.js?v=90"></script>
+<script src="parse-vi.js?v=91"></script>
+<script src="lock.js?v=91"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -4736,15 +4804,176 @@ function startNgay50k(){
     const used = sumLimit(state.days[todayKey()] || []), left = state.budget - used;
     return left >= 0 ? "Hôm nay còn được tiêu <b>" + fmt(left) + "</b>." : "Hôm nay đã vượt hạn mức <b>" + fmt(-left) + "</b> rồi, nhẹ tay chút nha 😅";
   }
+
+  /* =================== BÁO CÁO TRONG TRÒ CHUYỆN (v91) ===================
+     AI hoặc bộ hiểu câu trên máy chỉ bóc tách câu hỏi thành điều kiện (kỳ, nguồn tiền, nhóm, từ khoá, cách gom…).
+     Số liệu, danh sách giao dịch và nhận xét đều tính ngay trên máy từ dữ liệu của bạn, không gửi đi đâu. */
+  const DOW = ["CN","T2","T3","T4","T5","T6","T7"];
+  const isKey = v => /^\d{4}-\d{2}-\d{2}$/.test(v || "") && !isNaN(new Date(v + "T12:00:00"));
+  const dm = k => { const [, m, d] = k.split("-"); return (+d) + "/" + (+m); };
+  function rangeLabel(a, b){
+    const A = new Date(a + "T12:00:00"), B = new Date(b + "T12:00:00");
+    const last = new Date(B.getFullYear(), B.getMonth() + 1, 0).getDate();
+    if(a === b) return "ngày " + dm(a);
+    if(A.getDate() === 1 && A.getMonth() === B.getMonth() && A.getFullYear() === B.getFullYear() && B.getDate() === last) return "tháng " + (A.getMonth() + 1) + "/" + A.getFullYear();
+    if(a.slice(5) === "01-01" && b.slice(5) === "12-31" && a.slice(0, 4) === b.slice(0, 4)) return "năm " + a.slice(0, 4);
+    return "từ " + dm(a) + " đến " + dm(b);
+  }
+  function qRange(q){
+    if(q.period === "custom" && isKey(q.from) && isKey(q.to)){ const a = q.from <= q.to ? q.from : q.to, b = q.from <= q.to ? q.to : q.from; return [a, b, rangeLabel(a, b)]; }
+    if(q.period === "year"){ const y = new Date().getFullYear(); return [y + "-01-01", todayKey(), "năm nay"]; }
+    return rangeOf(q.period || "month");
+  }
+  /* kỳ liền trước để so sánh: tháng thì lấy tháng trước (cùng số ngày nếu tháng này chưa hết), còn lại lùi đúng độ dài */
+  function prevRange(a, b){
+    const A = new Date(a + "T12:00:00"), B = new Date(b + "T12:00:00");
+    if(A.getDate() === 1){
+      const months = (B.getFullYear() - A.getFullYear()) * 12 + B.getMonth() - A.getMonth() + 1;
+      const pa = new Date(A.getFullYear(), A.getMonth() - months, 1);
+      const lastB = new Date(B.getFullYear(), B.getMonth() + 1, 0).getDate();
+      let pb;
+      if(B.getDate() === lastB) pb = new Date(A.getFullYear(), A.getMonth(), 0);
+      else { pb = new Date(pa.getFullYear(), pa.getMonth() + months - 1, 1); pb.setDate(Math.min(B.getDate(), new Date(pb.getFullYear(), pb.getMonth() + 1, 0).getDate())); }
+      return [keyOf(pa), keyOf(pb)];
+    }
+    const L = Math.round((B - A) / 86400000) + 1, pb = new Date(A); pb.setDate(pb.getDate() - 1); const pa = new Date(pb); pa.setDate(pa.getDate() - L + 1);
+    return [keyOf(pa), keyOf(pb)];
+  }
+  function rptTags(q){ return q.tag === "an+uong" ? ["an","uong"] : q.tag ? [q.tag] : (Array.isArray(q.tags) && q.tags.length ? q.tags : null); }
+  /* gom mọi giao dịch khớp điều kiện trong khoảng ngày */
+  function rptTx(a, b, q){
+    const out = [], tags = rptTags(q), kw = q.kw ? window.N50KParse.norm(q.kw).trim() : "";
+    const okKw = (txt, cat) => !kw || window.N50KParse.norm(txt || "").includes(kw) || window.N50KParse.norm(tagOf(cat).label).includes(kw);
+    const push = (k, it, src, name) => {
+      const amt = Number(it.amt) || 0; if(!(amt > 0)) return;
+      if(tags && !tags.includes(it.cat || "")) return;
+      if(q.minAmt && amt < q.minAmt) return;
+      if(!okKw(name, it.cat)) return;
+      out.push({ k, t:it.t || 0, amt, cat:it.cat || "", note:name || "", src, cardId:it.cardId || null, cash:it.src === "cash" });
+    };
+    if(q.kind === "in"){
+      for(const k in state.income) if(k >= a && k <= b) (state.income[k] || []).forEach(it => push(k, it, "in", it.note || (INC.find(x => x.id === it.cat) || {}).label || "Khoản thu"));
+      return out;
+    }
+    if(q.src !== "card") for(const k in state.days) if(k >= a && k <= b) (state.days[k] || []).forEach(it => push(k, it, "tk", it.note || it.who || tagOf(it.cat).label));
+    if(q.src !== "tk") for(const k in state.cardTx) if(k >= a && k <= b) (state.cardTx[k] || []).forEach(it => { if(q.cardId && it.cardId !== q.cardId) return; push(k, it, "card", it.where || tagOf(it.cat).label); });
+    return out;
+  }
+  function rptGroupKey(x, g){
+    if(g === "day") return x.k;
+    if(g === "week"){ const d = new Date(x.k + "T12:00:00"); d.setDate(d.getDate() - (d.getDay() + 6) % 7); return keyOf(d); }
+    if(g === "month") return x.k.slice(0, 7);
+    if(g === "place") return window.N50KParse.norm(x.note).trim() || "-";
+    if(g === "src") return x.src === "card" ? "card:" + (x.cardId || "") : (x.cash ? "cash" : "tk");
+    return x.cat || "khac";
+  }
+  function rptGroupLabel(key, g, sample, kind){
+    if(g === "day"){ const d = new Date(key + "T12:00:00"); return { icon:"📅", label:DOW[d.getDay()] + ", " + dm(key) }; }
+    if(g === "week"){ const d = new Date(key + "T12:00:00"), e = new Date(d); e.setDate(e.getDate() + 6); return { icon:"🗓️", label:"Tuần " + dm(key) + " – " + dm(keyOf(e)) }; }
+    if(g === "month"){ const [y, m] = key.split("-"); return { icon:"🗓️", label:"Tháng " + (+m) + "/" + y }; }
+    if(g === "place") return { icon:(kind === "in" ? "💰" : tagOf(sample.cat).icon), label:sample.note || "(không ghi chú)" };
+    if(g === "src") return key === "tk" ? { icon:"🏦", label:"Tài khoản" } : key === "cash" ? { icon:"💵", label:"Tiền mặt" } : { icon:"💳", label:cardName(key.slice(5)) ? cardLbl(key.slice(5)) : "Thẻ tín dụng" };
+    if(kind === "in"){ const c = INC.find(x => x.id === key) || { icon:"💰", label:"Khác" }; return { icon:c.icon, label:c.label }; }
+    const t = tagOf(key); return { icon:t.icon, label:t.label };
+  }
+  const cardLbl = id => { const n = cardName(id) || ""; return /^thẻ/i.test(n) ? n : ("Thẻ " + n).trim(); };
+  let rptHideSrc = false;
+  function rptLine(x, kind){
+    const tg = kind === "in" ? (INC.find(c => c.id === x.cat) || { icon:"💰" }) : tagOf(x.cat);
+    const badge = rptHideSrc ? "" : x.src === "card" ? '<em>' + esc(cardLbl(x.cardId)) + '</em>' : x.cash ? "<em>Tiền mặt</em>" : "";
+    return '<li><span class="d">' + dm(x.k) + '</span><span class="i">' + tg.icon + '</span><span class="n">' + esc(x.note) + badge + '</span><b>' + fmt(x.amt) + '</b></li>';
+  }
+  function rptList(list, kind, cap){
+    cap = cap || 15;
+    const head = list.slice(0, cap).map(x => rptLine(x, kind)).join("");
+    const rest = list.slice(cap);
+    return '<ul class="rpt-l">' + head + '</ul>' + (rest.length ? '<details class="rpt-more"><summary>Xem thêm ' + rest.length + ' khoản</summary><ul class="rpt-l">' + rest.slice(0, 300).map(x => rptLine(x, kind)).join("") + '</ul>' + (rest.length > 300 ? '<p class="rpt-tip">…còn ' + (rest.length - 300) + ' khoản, xem đủ ở tab Tổng quan.</p>' : "") + '</details>' : "");
+  }
+  function pctTxt(v){ return (v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(Math.round(v)) + "%"; }
+  function report(q){
+    q = Object.assign({ group:"tag", src:"all", kind:"out" }, q || {});
+    const [a, b, lbl] = qRange(q), kind = q.kind === "in" ? "in" : "out";
+    const list = rptTx(a, b, q).sort((x, y) => q.top ? y.amt - x.amt : (y.k < x.k ? -1 : y.k > x.k ? 1 : (y.t || 0) - (x.t || 0)));
+    const verb = kind === "in" ? "thu" : "chi";
+    const srcTxt = kind === "in" ? "" : q.cardId ? " bằng " + esc(cardLbl(q.cardId).replace(/^Thẻ/, "thẻ")) : q.src === "card" ? " bằng thẻ" : q.src === "tk" ? " từ tài khoản" : "";
+    rptHideSrc = q.src === "card" && (!!q.cardId || (state.cards || []).length <= 1);
+    const tags = rptTags(q);
+    const what = tags ? " cho " + esc(q.tag === "an+uong" ? "ăn uống" : tags.map(t => tagOf(t).label.toLowerCase()).join(", ")) : "";
+    const kwTxt = q.kw ? " có chữ “" + esc(q.kw) + "”" : "", minTxt = q.minAmt ? " (khoản từ " + fmt(q.minAmt) + ")" : "";
+    const Lbl = lbl.charAt(0).toUpperCase() + lbl.slice(1);
+    if(!list.length) return '<div class="rpt"><p class="rpt-h">' + Lbl + ' chưa có khoản ' + verb + srcTxt + what + kwTxt + minTxt + ' nào.</p></div>';
+    const total = list.reduce((s, x) => s + x.amt, 0);
+    let h = '<div class="rpt">';
+    h += '<p class="rpt-h">' + Lbl + ' bạn ' + verb + srcTxt + what + kwTxt + minTxt + ' <b>' + fmt(total) + '</b> · ' + list.length + ' khoản</p>';
+    /* dòng phụ: tách nguồn, trung bình mỗi ngày */
+    const sub = [];
+    if(kind === "out" && q.src === "all" && !q.cardId){ const acc = list.filter(x => x.src === "tk").reduce((s, x) => s + x.amt, 0); if(acc && acc < total) sub.push("Tài khoản " + fmt(acc), "Thẻ " + fmt(total - acc)); }
+    const lastDay = b > todayKey() ? todayKey() : b, nDays = Math.max(1, Math.round((new Date(lastDay + "T12:00:00") - new Date(a + "T12:00:00")) / 86400000) + 1);
+    if(nDays > 1) sub.push("TB " + fmt(total / nDays) + "/ngày");
+    let prevTot = null, prevBy = null, pa, pb;
+    if(q.compare || q.group === "tag"){
+      [pa, pb] = prevRange(a, b);
+      const pl = rptTx(pa, pb, Object.assign({}, q, { top:0 }));
+      prevTot = pl.reduce((s, x) => s + x.amt, 0);
+      prevBy = {}; pl.forEach(x => { const g = rptGroupKey(x, q.group === "none" ? "tag" : q.group); prevBy[g] = (prevBy[g] || 0) + x.amt; });
+    }
+    if(prevTot != null && (q.compare || prevTot)) sub.push((prevTot ? pctTxt((total - prevTot) / prevTot * 100) + " so với " + rangeLabel(pa, pb) + " (" + fmt(prevTot) + ")" : rangeLabel(pa, pb) + " chưa có khoản nào"));
+    if(sub.length) h += '<p class="rpt-s">' + sub.join(" · ") + '</p>';
+
+    if(q.group === "none" || q.top){
+      const shown = q.top ? list.slice(0, q.top) : list;
+      if(q.top) h += '<p class="rpt-t">' + shown.length + ' khoản lớn nhất</p>';
+      h += rptList(shown, kind, q.top ? q.top : 15);
+    } else {
+      const map = new Map();
+      list.forEach(x => { const g = rptGroupKey(x, q.group); if(!map.has(g)) map.set(g, { key:g, sum:0, items:[] }); const e = map.get(g); e.sum += x.amt; e.items.push(x); });
+      let groups = [...map.values()];
+      if(q.group === "day" || q.group === "week" || q.group === "month") groups.sort((x, y) => x.key < y.key ? 1 : -1); else groups.sort((x, y) => y.sum - x.sum);
+      const max = Math.max(...groups.map(g => g.sum)), openAll = q.list && list.length <= 30;
+      h += '<div class="rpt-g">' + groups.map(g => {
+        const L = rptGroupLabel(g.key, q.group, g.items[0], kind), pct = Math.round(g.sum / total * 100);
+        let delta = "";
+        if(prevBy && (q.compare || q.group === "tag")){ const p = prevBy[g.key] || 0; if(p) { const d = (g.sum - p) / p * 100; if(Math.abs(d) >= 10) delta = '<i class="' + (d > 0 ? "up" : "down") + '">' + pctTxt(d) + '</i>'; } else if(q.compare) delta = '<i class="up">mới</i>'; }
+        g.items.sort((x, y) => y.k < x.k ? -1 : y.k > x.k ? 1 : (y.t || 0) - (x.t || 0));
+        return '<details' + (openAll ? " open" : "") + '><summary><span class="i">' + L.icon + '</span><span class="n">' + esc(L.label) + '<small>' + g.items.length + ' khoản · ' + pct + '%' + '</small></span>' + delta + '<b>' + fmt(g.sum) + '</b><span class="bar"><i style="width:' + Math.max(3, Math.round(g.sum / max * 100)) + '%"></i></span></summary>' + rptList(g.items, kind, 12) + '</details>';
+      }).join("") + '</div>';
+      h += '<p class="rpt-tip">Chạm vào một ' + (q.group === "day" ? "ngày" : q.group === "place" ? "nơi" : "nhóm") + ' để xem từng khoản.</p>';
+    }
+    /* nhận xét ngắn, tính trên máy */
+    const notes = [];
+    const big = list.reduce((m, x) => x.amt > m.amt ? x : m, list[0]);
+    if(list.length > 1 && !q.top) notes.push("Khoản lớn nhất: " + esc(big.note) + " " + fmt(big.amt) + " (" + dm(big.k) + ")");
+    if(kind === "out" && q.group !== "tag" && !tags){
+      const by = {}; list.forEach(x => { by[x.cat] = (by[x.cat] || 0) + x.amt; });
+      const top = Object.entries(by).sort((x, y) => y[1] - x[1])[0];
+      if(top && Object.keys(by).length > 1) notes.push("Nhóm tốn nhiều nhất: " + tagOf(top[0]).icon + " " + esc(tagOf(top[0]).label) + " " + Math.round(top[1] / total * 100) + "%");
+    }
+    if(kind === "out" && q.src !== "card" && !tags && !q.kw && !q.minAmt && state.budget > 0){
+      let over = 0, n = 0; for(let d = new Date(a + "T12:00:00"); keyOf(d) <= lastDay; d.setDate(d.getDate() + 1)){ n++; if(sumLimit(state.days[keyOf(d)] || []) > state.budget) over++; }
+      if(n > 1) notes.push(over ? over + "/" + n + " ngày vượt hạn mức " + fmt(state.budget) : "Không ngày nào vượt hạn mức " + fmt(state.budget) + " 👍");
+    }
+    if(prevBy && q.compare){
+      const ch = [...map2arr(list, q)].map(([k, v]) => [k, v - (prevBy[k] || 0)]).sort((x, y) => y[1] - x[1])[0];
+      if(ch && ch[1] > 0) notes.push("Tăng nhiều nhất: " + esc(rptGroupLabel(ch[0], q.group === "none" ? "tag" : q.group, list.find(x => rptGroupKey(x, q.group === "none" ? "tag" : q.group) === ch[0]) || {}, kind).label) + " +" + fmt(ch[1]));
+    }
+    if(notes.length) h += '<ul class="rpt-n">' + notes.map(t => "<li>" + t + "</li>").join("") + "</ul>";
+    return h + "</div>";
+  }
+  function map2arr(list, q){ const g = q.group === "none" ? "tag" : q.group, m = {}; list.forEach(x => { const k = rptGroupKey(x, g); m[k] = (m[k] || 0) + x.amt; }); return Object.entries(m); }
+
   function answer(q){
+    if(q.q === "report") return report(q);
     if(q.q === "spent"){
-      const [a, b, lbl] = rangeOf(q.period);
+      const [a, b, lbl] = qRange(q);
       const tags = q.tag === "an+uong" ? ["an","uong"] : q.tag ? [q.tag] : null;
-      const r = spentIn(a, b, tags), tot = r.acc + r.card;
-      const what = q.tag === "an+uong" ? " cho ăn uống" : q.tag ? " cho " + tagOf(q.tag).label.toLowerCase() : "";
-      let t = tot ? lbl.charAt(0).toUpperCase() + lbl.slice(1) + " bạn đã chi" + what + " <b>" + fmt(tot) + "</b>" + (r.card ? " (tài khoản " + fmt(r.acc) + ", thẻ " + fmt(r.card) + ")" : "") + "."
+      const r = spentIn(a, b, tags), src = q.src || "all";
+      const tot = src === "tk" ? r.acc : src === "card" ? r.card : r.acc + r.card;
+      const what = (q.tag === "an+uong" ? " cho ăn uống" : q.tag ? " cho " + tagOf(q.tag).label.toLowerCase() : "") + (src === "tk" ? " từ tài khoản" : src === "card" ? " bằng thẻ" : "");
+      let t = tot ? lbl.charAt(0).toUpperCase() + lbl.slice(1) + " bạn đã chi" + what + " <b>" + fmt(tot) + "</b>" + (src === "all" && r.card ? " (tài khoản " + fmt(r.acc) + ", thẻ " + fmt(r.card) + ")" : "") + "."
                   : "Chưa thấy khoản chi nào" + what + " " + lbl + ".";
-      if(q.period === "today" && !tags) t += " " + todayLeftText();
+      if(q.period === "today" && !tags && src === "all") t += " " + todayLeftText();
+      /* nút xem chi tiết: mở báo cáo gom nhóm ngay trên máy, không tốn AI */
+      if(tot) t += '<button type="button" class="chat-q" data-q="' + esc(JSON.stringify(Object.assign({}, q, { q:"report", group:"tag" }))) + '">Xem chi tiết từng khoản ›</button>';
       return t;
     }
     if(q.q === "left"){ const r = balCalc(); return todayLeftText() + (r ? " Số dư ví: <b>" + sMoney(r.bal) + "</b>." : ""); }
@@ -5150,9 +5379,14 @@ function startNgay50k(){
         cardId:{ type:"string" }, loanId:{ type:"string" }, who:{ type:"string" }
       }, required:["kind","amt"] } },
       query:{ type:"object", properties:{
-        q:{ type:"string", enum:["spent","left","balance","loans","card","topday"] },
-        period:{ type:"string", enum:["today","yesterday","week","lastweek","month","lastmonth"] },
-        tag:{ type:"string" }, who:{ type:"string" }
+        q:{ type:"string", enum:["spent","left","balance","loans","card","topday","report"] },
+        period:{ type:"string", enum:["today","yesterday","week","lastweek","month","lastmonth","year","custom"] },
+        from:{ type:"string", description:"yyyy-mm-dd, khi period=custom" }, to:{ type:"string", description:"yyyy-mm-dd, khi period=custom" },
+        tag:{ type:"string" }, tags:{ type:"array", items:{ type:"string" } }, who:{ type:"string" },
+        src:{ type:"string", enum:["all","tk","card"] }, cardId:{ type:"string" },
+        kind:{ type:"string", enum:["out","in"] },
+        group:{ type:"string", enum:["tag","day","week","month","place","src","none"] },
+        list:{ type:"boolean" }, top:{ type:"integer" }, minAmt:{ type:"integer" }, kw:{ type:"string" }, compare:{ type:"boolean" }
       } }
     },
     required:["reply","items"]
@@ -5191,9 +5425,17 @@ function startNgay50k(){
       "Số tiền: k/nghìn/ngàn = ×1.000; tr/triệu/củ/m = ×1.000.000; \"1tr2\" = 1.200.000; \"1 triệu 250\" = 1.250.000; \"2 trăm\" (tiền) = 200.000; \"rưỡi\" = thêm nửa đơn vị; số trần nhỏ hơn 1000 khi nói về tiền là nghìn (\"phở 45\" = 45.000). Số lượng (2 ly, 3 cái, 2 người) KHÔNG phải tiền. Nếu nhiều món có giá riêng thì tách thành nhiều khoản; \"2 ly cà phê 25k mỗi ly\" = 50.000.",
       "Ngày: tính theo hom_nay và thu ở dưới (hôm qua, tối qua, thứ 7 tuần trước, ngày 5, 5/10…). Không nói thì là hôm nay. time: sáng ≈ 08:00, trưa ≈ 12:00, chiều ≈ 16:00, tối ≈ 20:00, nếu có nói; không có thì để rỗng.",
       "note: nội dung ngắn gọn, viết hoa chữ đầu, bỏ số tiền, ngày và từ thừa (vd \"Ăn phở\", \"Grab về nhà\", \"Shopee mua giày\"). cat cho out/card: id trong nhom_chi; ưu tiên noi_dung_quen nếu nội dung giống; không chắc thì \"khac\".",
-      "Câu hỏi (không cần ghi gì) thì để items rỗng và điền query: spent (đã chi bao nhiêu, có thể kèm tag là id nhóm hoặc \"an+uong\"), left (hôm nay còn tiêu được bao nhiêu), balance (số dư), loans (ai nợ/mình nợ ai, who nếu hỏi một người), card (chi thẻ, nợ thẻ), topday (ngày tiêu nhiều nhất). period mặc định today, \"tháng này\" = month.",
+      "Câu hỏi (không cần ghi gì) thì để items rỗng và điền query. App tự tính số liệu trên máy, bạn chỉ cần BÓC TÁCH câu hỏi thật kỹ:",
+      "- spent: chỉ hỏi TỔNG đã chi bao nhiêu (\"hôm nay tiêu bao nhiêu\").",
+      "- report: hỏi chi/thu NHỮNG GÌ, vào đâu, liệt kê, chi tiết, phân tích, gom nhóm, top khoản lớn, khoản trên X, so với kỳ trước, tại sao tiêu nhiều. Đây là loại nên dùng cho mọi câu muốn xem sâu. Các trường:",
+      "  period: today|yesterday|week|lastweek|month|lastmonth|year|custom (\"tháng rồi\" = lastmonth; \"tháng 9\", \"từ 1 đến 15\", \"7 ngày qua\" = custom kèm from/to yyyy-mm-dd tính theo hom_nay).",
+      "  src: all | tk (tài khoản, chuyển khoản, tiền mặt, ví) | card (thẻ tín dụng; có tên thẻ thì kèm cardId). kind: out (chi, mặc định) | in (thu nhập).",
+      "  tag hoặc tags: id nhóm trong nhom_chi khi hỏi về một/vài nhóm (ăn uống = \"an+uong\"). kw: từ khoá nơi/nội dung (\"grab\", \"shopee\", \"cà phê\") khi hỏi về một nơi cụ thể. minAmt: chỉ khoản từ số tiền này.",
+      "  group: tag (theo nhóm, mặc định) | day | week | month | place (theo nơi chi/nội dung, \"tiêu ở đâu\") | src (tài khoản hay thẻ) | none (danh sách phẳng). list: true khi muốn liệt kê từng khoản. top: N khi hỏi N khoản lớn nhất (kèm group none). compare: true khi so với kỳ trước, hỏi tăng/giảm, hoặc hỏi vì sao tiêu nhiều.",
+      "- left (hôm nay còn tiêu được bao nhiêu), balance (số dư), loans (ai nợ/mình nợ ai, who nếu hỏi một người), card (tổng chi thẻ, nợ thẻ), topday (ngày tiêu nhiều nhất).",
+      "Ví dụ: \"tháng rồi tiêu gì\" → report lastmonth group tag. \"tháng này tiêu gì từ tài khoản\" → report month src tk. \"liệt kê các khoản grab tuần này\" → report week kw grab group none list true. \"sao tháng này tiêu nhiều thế\" → report month compare true. \"5 khoản lớn nhất tháng 9\" → report custom from/to tháng 9 top 5 group none.",
       "Câu chào hỏi, tâm sự, hoặc thiếu số tiền: items rỗng, reply hỏi lại ngắn gọn (vd hỏi số tiền). Không bịa số tiền.",
-      "reply: 1 câu ngắn, ấm áp, tự nhiên như bạn bè; không đọc lại số liệu tổng (app tự hiện).",
+      "reply: 1 câu ngắn, ấm áp, tự nhiên như bạn bè; KHÔNG nêu số liệu (bạn không xem được dữ liệu, app tự tính và hiện). Với report chỉ cần nói ngắn bạn đang xem gì, vd \"Đây là chi tiêu tháng trước theo nhóm nè\".",
       "",
       "Ngữ cảnh hiện tại (JSON): " + JSON.stringify(ctx)
     ].join("\n");
@@ -5202,7 +5444,7 @@ function startNgay50k(){
     const out = [];
     (chat ? chat.msgs : []).slice(-8).forEach(m => {
       if(m.role === "me") out.push({ role:"user", text:(m.imgs && m.imgs.length ? "(gửi " + m.imgs.length + " ảnh) " : "") + (m.text || "") });
-      else if(m.html && !m.thinking) out.push({ role:"assistant", text:m.html.replace(/<[^>]+>/g, "") });
+      else if(m.html && !m.thinking) out.push({ role:"assistant", text:m.html.replace(/<details[\s\S]*?<\/details>/g, "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().slice(0, 300) });
       else if(m.items) out.push({ role:"assistant", text:"(đã đề xuất: " + m.items.map(it => KIND_LABEL[it.kind] + " " + it.amt + (it.note ? " " + it.note : "")).join("; ") + ")" });
     });
     return out;
@@ -5285,9 +5527,22 @@ function startNgay50k(){
       return it;
     }).filter(Boolean);
     let query = null;
-    if(o.query && typeof o.query === "object" && ["spent","left","balance","loans","card","topday"].includes(o.query.q)){
-      query = { q:o.query.q, period:["today","yesterday","week","lastweek","month","lastmonth"].includes(o.query.period) ? o.query.period : (o.query.q === "card" || o.query.q === "topday" ? "month" : "today"),
-        tag:o.query.tag === "an+uong" || tagIds.includes(o.query.tag) ? o.query.tag : null, who:String(o.query.who || "").trim() };
+    if(o.query && typeof o.query === "object" && ["spent","left","balance","loans","card","topday","report"].includes(o.query.q)){
+      const Q = o.query, isK = v => /^\d{4}-\d{2}-\d{2}$/.test(v || "");
+      query = { q:Q.q, period:["today","yesterday","week","lastweek","month","lastmonth","year","custom"].includes(Q.period) ? Q.period : (Q.q === "card" || Q.q === "topday" || Q.q === "report" ? "month" : "today"),
+        tag:Q.tag === "an+uong" || tagIds.includes(Q.tag) ? Q.tag : null, who:String(Q.who || "").trim(),
+        src:["all","tk","card"].includes(Q.src) ? Q.src : "all" };
+      if(query.period === "custom"){ if(isK(Q.from) && isK(Q.to)){ query.from = Q.from; query.to = Q.to; } else query.period = "month"; }
+      if(Q.q === "report"){
+        query.tags = Array.isArray(Q.tags) ? Q.tags.filter(t => tagIds.includes(t)).slice(0, 8) : [];
+        query.cardId = (state.cards || []).some(c => c.id === Q.cardId) ? Q.cardId : null; if(query.cardId) query.src = "card";
+        query.kind = Q.kind === "in" ? "in" : "out";
+        query.group = ["tag","day","week","month","place","src","none"].includes(Q.group) ? Q.group : "tag";
+        query.list = !!Q.list; query.compare = !!Q.compare;
+        query.top = Math.max(0, Math.min(50, parseInt(Q.top, 10) || 0)); if(query.top) query.group = "none";
+        query.minAmt = Math.max(0, parseInt(Q.minAmt, 10) || 0);
+        query.kw = String(Q.kw || "").trim().slice(0, 40);
+      }
     }
     return { reply:String(o.reply || "").trim().slice(0, 400), items, query };
   }
@@ -5417,7 +5672,7 @@ function startNgay50k(){
   function aiMsgs(r){
     const msgs = [];
     if(r.items.length) msgs.push({ id:uid(), role:"bot", items:r.items, intro:r.reply || "", status:r.items.map(() => "pending"), refs:r.items.map(() => null), t:Date.now(), ai:true });
-    if(r.query) msgs.push({ id:uid(), role:"bot", html:(r.reply && !r.items.length ? esc(r.reply) + "\n" : "") + answer(r.query), t:Date.now(), ai:true });
+    if(r.query) msgs.push({ id:uid(), role:"bot", html:(r.reply && !r.items.length ? esc(r.reply) + (r.query.q === "report" ? "" : "\n") : "") + answer(r.query), t:Date.now(), ai:true });
     if(!r.items.length && !r.query) msgs.push({ id:uid(), role:"bot", html:esc(r.reply || "Mình chưa rõ ý bạn, kể lại giúp mình nhé?"), t:Date.now(), ai:true });
     return msgs;
   }
@@ -5569,24 +5824,9 @@ function startNgay50k(){
     document.body.classList.add("kb"); fitTyping(); chatScrollEnd(false);
     setTimeout(() => { if(document.activeElement !== $("chatIn")){ document.body.classList.remove("kb"); dockLast = { b:-1, h:-1 }; placeDock(); } }, 700);
   }
-  /* Chạm ô chat: đợi nhấc ngón tay rồi mới đặt sẵn ô nhập và tự focus.
-     (Dời ô nhập ngay lúc chạm làm cú chạm trượt khỏi ô, bàn phím không hiện.) */
-  let tapAt = null;
-  $("chatIn").addEventListener("touchstart", e => {
-    const t = e.touches[0];
-    tapAt = document.activeElement === $("chatIn") || !t ? null : { x:t.clientX, y:t.clientY };
-  }, { passive:true });
-  $("chatIn").addEventListener("touchmove", e => {
-    const t = e.touches[0]; if(tapAt && t && Math.hypot(t.clientX - tapAt.x, t.clientY - tapAt.y) > 10) tapAt = null;
-  }, { passive:true });
-  $("chatIn").addEventListener("touchend", e => {
-    if(!tapAt || document.activeElement === $("chatIn")) return;
-    tapAt = null;
-    e.preventDefault();                                   /* tự focus, không để iPhone trượt trang */
-    preType();
-    void $("chatDock").offsetHeight;                      /* áp bố cục mới trước khi focus */
-    try{ $("chatIn").focus({ preventScroll:true }); }catch(_){ $("chatIn").focus(); }
-  }, { passive:false });
+  /* Chạm ô chat: để iPhone tự đặt tiêu điểm như bình thường (v91).
+     Trước đây app chặn cú chạm rồi tự gọi focus(); trên iOS 26 cách đó có lúc chỉ hiện thanh ^ v ✓
+     mà không bật bàn phím. Bố cục "đang gõ" được áp ngay khi ô nhận tiêu điểm (sự kiện focus bên dưới). */
   function placeDock(){
     if(document.body.classList.contains("kb") && (document.activeElement === $("chatIn") || Date.now() < preUntil)){ fitTyping(); return; }
     const dock = $("chatDock"), tabs = document.querySelector(".tabs"); if(!dock) return;
@@ -5639,6 +5879,13 @@ function startNgay50k(){
   window.addEventListener("pageshow", redock); window.addEventListener("focus", redock);
   if(window.ResizeObserver) new ResizeObserver(placeDockSoon).observe($("chatDock"));
   $("chatToWallet").onclick = () => showTab("today");
+  $("chatLog").addEventListener("click", e => {
+    const b = e.target.closest(".chat-q"); if(!b) return;
+    let q = null; try{ q = JSON.parse(b.dataset.q); }catch(_){ return; }
+    b.disabled = true;
+    chat.msgs.push({ id:uid(), role:"bot", html:answer(q), t:Date.now() });
+    chatSave(); renderChat(); chatScrollEnd(true);
+  });
   [...$("homeSeg").children].forEach(b => b.onclick = () => { lsSet(HOME_KEY, b.dataset.home); applyHome(); renderSetHome(); });
   /* bấm ô đầu tiên khi đang ở màn hình kia thì về màn hình mở đầu */
   N50K.onRemoteChat = null;
