@@ -1,6 +1,21 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v81, ngày 07/10/2026
+**Phiên bản hiện tại:** v82, ngày 07/10/2026
+
+---
+
+## Có gì mới trong v82 (so với v81)
+
+**Gộp Ví và Tài khoản thành một tab Ví.** Trước đây số dư nằm ở màn hình Ví (mở từ ô Số dư trong Trò chuyện), còn chi tiêu hôm nay nằm ở tab Tài khoản. Giờ tất cả ở tab **Ví** (ô thứ ba trên thanh tab), từ trên xuống:
+1. **Số dư hiện tại**, nợ thẻ, nút **Đối chiếu số dư** và **Trả thẻ** (thu gọn hơn trước).
+2. **Hôm nay còn được tiêu** với thanh tiến độ.
+3. **Quét QR**, Ảnh QR, Nhập tay, Tiền mặt, khoản hay lặp, người hay chuyển.
+4. **Giao dịch theo ngày**, rồi Sắp tới (khoản ghi cho ngày tương lai).
+5. 7 ngày gần nhất, Lịch chi tiêu tháng.
+6. Biến động từ lần đối chiếu, Lịch sử đối chiếu và trả thẻ.
+
+- Ô đầu tiên của thanh tab luôn là **Trò chuyện**. Chạm ô **Số dư ví** trong Trò chuyện thì sang tab Ví.
+- Cài đặt → Màn hình mở đầu vẫn chọn được Trò chuyện hoặc Ví, giờ chỉ quyết định tab nào hiện ra khi mở app.
 
 ---
 
@@ -19,21 +34,6 @@ Bộ câu thử nằm ở `tests-parse-vi-2.js`, chạy bằng `node tests-parse
 
 ---
 
-## Có gì mới trong v80 (so với v79)
-
-**Máy trước, AI sau: chỉ câu khó mới tốn tiền AI.** Khi đã bật Trợ lý AI, mỗi câu bạn gõ được bộ hiểu câu trên máy xem trước:
-- Câu đơn giản ("phở 45k", "grab 28k, trà sữa 35k", "Dũng trả 200k", "hôm nay tiêu bao nhiêu?") → **máy tự xử lý, không gọi AI**.
-- Câu khó → gửi cho AI: chia tiền ("lẩu 600k chia 4 người"), sửa khoản ("ghi nhầm 45k thành 54k"), giảm giá hay phần trăm, nhiều số mà máy không gắn được, quẹt thẻ khi có nhiều thẻ mà không nói thẻ nào, trả nợ không rõ ai, câu xin lời khuyên hay so sánh, câu quá dài.
-- Khoản do máy hiểu có nút **✦ Sai? Nhờ AI hiểu lại** ngay bên dưới, bấm là gửi đúng câu đó cho AI.
-- Tắt được trong Cài đặt → Trợ lý AI → **Chỉ gọi AI cho câu khó**.
-- Trong **Chi phí và ngân sách** có dòng đếm số câu máy tự hiểu và số tiền ước tính đã tiết kiệm.
-
-**Trợ lý AI chuyển xuống nhóm Nâng cao** trong Cài đặt, ghi rõ là không bắt buộc. Phần chi phí, tỉ giá, ngân sách được gập lại.
-
-**Dán khoá API không tự bật AI.** Người mới dán khoá rồi bấm Thử kết nối, sau đó tự bật **Dùng AI khi trò chuyện**. Máy đã có khoá từ bản trước vẫn giữ AI bật như cũ.
-
----
-
 ## Tất cả tính năng của app
 
 ### Tab Trò chuyện (mở mặc định)
@@ -43,24 +43,13 @@ Bộ câu thử nằm ở `tests-parse-vi-2.js`, chạy bằng `node tests-parse
 - Chọn Trò chuyện hay Ví làm màn hình mở đầu trong Cài đặt.
 - **Trợ lý AI** (tuỳ chọn, trong nhóm Nâng cao): dùng khoá API Claude, ChatGPT hoặc Gemini; khoá chỉ lưu trên máy. Mặc định chỉ gọi AI cho câu khó, câu đơn giản máy tự hiểu; có nút Nhờ AI hiểu lại. Xem chi phí và số câu tiết kiệm trong Cài đặt.
 
-### Tab Ví
+### Tab Ví (số dư, hôm nay, giao dịch theo ngày)
 - **Số dư hiện tại** của ví, nợ thẻ và số còn lại sau khi trả thẻ.
 - Nút **Đối chiếu số dư** và **Trả thẻ**.
 - **Biến động từ lần đối chiếu**, mỗi dòng kèm số dư còn lại; chạm để sửa.
 - **Sắp tới:** khoản ghi cho ngày tương lai, kèm số dư dự kiến; tới ngày mới trừ vào số dư.
 - Lịch sử đối chiếu và trả thẻ.
 
-### Tab Tổng quan
-- **Còn lại thực tế** theo tháng, chọn được gồm chi thường, chi thẻ hay cả hai, kèm mức tăng giảm so với tháng trước.
-- Bốn ô tổng: thu vào, chi thường, chi thẻ, khoản vay. Khoản vay để riêng, không tính vào còn lại thực tế.
-- Thêm khoản thu theo nguồn: Lương, Thưởng, Bán hàng, Được cho, Khác. Chạm vào khoản thu để sửa số tiền, ghi chú, ngày nhận, nguồn thu.
-- **Phân tích tháng** (nút biểu đồ cạnh nút Khoản thu): biểu đồ so sánh thu chi theo ngày, tuần, tháng.
-- Thống kê chi theo tag nằm trong Phân tích tháng, ăn theo lựa chọn ở trên. Chạm một nhóm để xem các khoản của nhóm đó theo ngày.
-- Danh sách tất cả thu chi trong tháng. Chạm vào ô tìm là ô tìm lên sát đỉnh màn hình và đứng yên ở đó.
-- **Tìm kiếm xuyên tháng** trên cả khoản chi, khoản thu và chi thẻ.
-- **Sửa ngay tại chỗ:** chạm một dòng trong kết quả tìm kiếm hay trong bảng chi tiết nhóm là mở luôn form sửa của khoản đó, không phải đi tìm lại theo ngày.
-
-### Tab Tài khoản
 - **Thẻ Hôm nay còn được tiêu:** số tiền còn lại, thanh tiến độ, chuyển đỏ khi vượt hạn mức.
 - **Quét QR bằng camera:** mặc định mở camera iPhone để chụp mã (không cần cấp quyền), hoặc quét trực tiếp trong app tự nhận mã (chọn trong Cài đặt).
 - **Chọn ảnh mã QR:** đọc mã QR từ ảnh chụp sẵn trong máy.
@@ -81,6 +70,16 @@ Bộ câu thử nằm ở `tests-parse-vi-2.js`, chạy bằng `node tests-parse
 - **Biểu đồ 7 ngày gần nhất** so với hạn mức, có chi tiêu trung bình mỗi ngày. Chạm vào cột để xem lại giao dịch ngày đó.
 - **Nhắc sao lưu** khi quá 7 ngày, kèm số khoản đang chỉ nằm trên máy này.
 - **Ghi lại khoản hay lặp** bằng một chạm, và nhắc khi hôm qua bỏ ghi.
+
+### Tab Tổng quan
+- **Còn lại thực tế** theo tháng, chọn được gồm chi thường, chi thẻ hay cả hai, kèm mức tăng giảm so với tháng trước.
+- Bốn ô tổng: thu vào, chi thường, chi thẻ, khoản vay. Khoản vay để riêng, không tính vào còn lại thực tế.
+- Thêm khoản thu theo nguồn: Lương, Thưởng, Bán hàng, Được cho, Khác. Chạm vào khoản thu để sửa số tiền, ghi chú, ngày nhận, nguồn thu.
+- **Phân tích tháng** (nút biểu đồ cạnh nút Khoản thu): biểu đồ so sánh thu chi theo ngày, tuần, tháng.
+- Thống kê chi theo tag nằm trong Phân tích tháng, ăn theo lựa chọn ở trên. Chạm một nhóm để xem các khoản của nhóm đó theo ngày.
+- Danh sách tất cả thu chi trong tháng. Chạm vào ô tìm là ô tìm lên sát đỉnh màn hình và đứng yên ở đó.
+- **Tìm kiếm xuyên tháng** trên cả khoản chi, khoản thu và chi thẻ.
+- **Sửa ngay tại chỗ:** chạm một dòng trong kết quả tìm kiếm hay trong bảng chi tiết nhóm là mở luôn form sửa của khoản đó, không phải đi tìm lại theo ngày.
 
 ### Tab Thẻ
 - Quản lý thẻ trong bảng riêng (nút **Thẻ · N** ở hàng chọn tháng): tên thẻ, 6 số đầu, 4 số cuối, ngày sao kê.
@@ -142,6 +141,7 @@ Bộ câu thử nằm ở `tests-parse-vi-2.js`, chạy bằng `node tests-parse
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v82** | Gộp Ví và Tài khoản thành một tab Ví |
 | **v81** | Bộ hiểu câu: không dấu, viết tắt (hnay, hqua, 1k5, 1,5tr), 104 câu thử mới |
 | **v80** | Máy trước, AI sau: chỉ câu khó mới gọi AI; AI xuống nhóm Nâng cao, dán khoá không tự bật |
 | **v79** | Đổi tên app thành Tiêu Gọn |
