@@ -1,6 +1,12 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v95, ngày 07/10/2026
+**Phiên bản hiện tại:** v96, ngày 07/10/2026
+
+---
+
+## Có gì mới trong v96 (so với v95)
+
+**Chạm ô chat không còn làm đầu trang giật.** Trước đây lúc bàn phím bật, iPhone trượt cả màn hình lên để lộ ô nhập, đầu trang và ô Số dư ví bị đẩy lên rồi mới hạ về chỗ cũ. Giờ ô nhập tạm trong suốt trong tích tắc lúc chạm nên iPhone không trượt trang nữa, app tự đặt ô nhập ngay trên bàn phím. Trong lúc bàn phím trượt lên, app bám theo màn hình từng khung hình nên đầu trang đứng yên.
 
 ---
 
@@ -11,14 +17,6 @@
 - **Kiểm tra cập nhật trong Cài đặt:** mục Phiên bản → Kiểm tra cập nhật. Có bản mới thì hiện "Có bản mới vN" và nút **Cập nhật lên vN**, bấm một lần là app tải bản mới rồi tự mở lại. Mở Cài đặt là app tự kiểm tra.
 - **Câu chào chat ngắn gọn:** "Hôm nay bạn cần tôi giúp gì nào?"
 - **Đối chiếu số dư thành màn hình riêng:** bấm Đối chiếu số dư ở tab Ví để mở. Trong đó có ô nhập Số dư thật đang có, Đang nợ thẻ, và các mục Sắp tới (chưa trừ vào số dư), Biến động từ lần đối chiếu, Đối chiếu và trả thẻ. Các mục này không còn nằm dài ở tab Ví nữa. Lưu xong vẫn ở lại màn hình để xem mốc mới.
-
----
-
-## Có gì mới trong v94 (so với v93)
-
-- **Ô chat luôn là một dòng** trên mọi cỡ máy. Chữ gợi ý ngắn lại ("Hôm nay bạn tiêu gì?") và không bao giờ xuống dòng, nên ô không còn nhảy chiều cao. Ô chỉ cao thêm khi bạn gõ câu dài, xoá hết thì về lại một dòng.
-- **Tab Trò chuyện đổi tên thành Chat** cho gọn, cả ở thanh menu và Cài đặt.
-- **Lớp mờ quanh ô Số dư ví:** khi cuộn, nội dung phía sau được làm mờ đều ở cả trên và dưới ô Số dư ví, giống thanh menu, thay cho dải mờ chỉ nằm giữa đầu trang và ô.
 
 ---
 
@@ -131,6 +129,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v96** | Chạm ô chat không làm đầu trang và ô Số dư ví giật lên xuống |
 | **v95** | Giữ màu đầu trang khi chat; sửa đơ sau khi chụp màn hình; nút Kiểm tra cập nhật; màn Đối chiếu số dư riêng |
 | **v94** | Ô chat luôn một dòng; tab Chat; lớp mờ quanh ô Số dư ví |
 | **v93** | Sửa Claude hay báo trả lời quá lâu; mặc định Haiku 4.5 |
