@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v91";
+  var K = "ngay50k:errlog", VER = "v92";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -1584,6 +1584,13 @@ main > header.stuck::after{display:none}
 #tab-chat > #chatToWallet::before{background:transparent; background-image:linear-gradient(color-mix(in srgb, var(--bg) 78%, transparent), color-mix(in srgb, var(--bg) 78%, transparent))}
 .ledger-head{-webkit-backdrop-filter:none!important; backdrop-filter:none!important}
 body.searching .ledger-head{background:var(--top-c)}
+
+/* nhãn nguồn câu trả lời (v92): ✦ AI hoặc ⚡ Máy */
+.src-tag{display:inline-flex; align-items:center; gap:3px; margin:0 6px 0 0; padding:1px 7px; border-radius:999px; font-size:.66rem; font-weight:700; font-style:normal; letter-spacing:.02em; line-height:1.5; vertical-align:2px; white-space:nowrap}
+.src-tag.ai-mark{color:var(--note); background:var(--note-soft)}
+.src-tag.local-mark{color:var(--muted); background:color-mix(in srgb, var(--muted) 12%, transparent)}
+.msg.bot:has(> .rpt) > .src-tag{margin-bottom:6px}
+.msg.by-ai .rpt, .msg.by-local .rpt{margin-top:6px}
 </style>
 </head>
 <body>
@@ -2281,7 +2288,7 @@ body.searching .ledger-head{background:var(--top-c)}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v91</p>
+      <p class="sync" id="appVersion">Phiên bản v92</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -2692,8 +2699,8 @@ body.searching .ledger-head{background:var(--top-c)}
 
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
 <script src="vendor/jsQR.js"></script>
-<script src="parse-vi.js?v=91"></script>
-<script src="lock.js?v=91"></script>
+<script src="parse-vi.js?v=92"></script>
+<script src="lock.js?v=92"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -4901,7 +4908,10 @@ function startNgay50k(){
     const what = tags ? " cho " + esc(q.tag === "an+uong" ? "ăn uống" : tags.map(t => tagOf(t).label.toLowerCase()).join(", ")) : "";
     const kwTxt = q.kw ? " có chữ “" + esc(q.kw) + "”" : "", minTxt = q.minAmt ? " (khoản từ " + fmt(q.minAmt) + ")" : "";
     const Lbl = lbl.charAt(0).toUpperCase() + lbl.slice(1);
-    if(!list.length) return '<div class="rpt"><p class="rpt-h">' + Lbl + ' chưa có khoản ' + verb + srcTxt + what + kwTxt + minTxt + ' nào.</p></div>';
+    if(!list.length){
+      const many = [q.src !== "all" || q.cardId, tags, q.kw, q.minAmt].filter(Boolean).length;
+      return '<div class="rpt"><p class="rpt-h">' + Lbl + ' chưa có khoản ' + verb + srcTxt + what + kwTxt + minTxt + ' nào.</p>' + (many ? '<p class="rpt-tip">Đang lọc theo câu trước. Nói <b>“cả hai”</b> hoặc <b>“bỏ lọc”</b> để tính lại tất cả.</p>' : "") + '</div>';
+    }
     const total = list.reduce((s, x) => s + x.amt, 0);
     let h = '<div class="rpt">';
     h += '<p class="rpt-h">' + Lbl + ' bạn ' + verb + srcTxt + what + kwTxt + minTxt + ' <b>' + fmt(total) + '</b> · ' + list.length + ' khoản</p>';
@@ -4961,7 +4971,10 @@ function startNgay50k(){
   }
   function map2arr(list, q){ const g = q.group === "none" ? "tag" : q.group, m = {}; list.forEach(x => { const k = rptGroupKey(x, g); m[k] = (m[k] || 0) + x.amt; }); return Object.entries(m); }
 
+  /* nhớ câu hỏi chi tiêu gần nhất để hiểu câu nối tiếp ("chỉ tính từ tài khoản", "tháng trước thì sao") */
+  function rememberQ(q){ if(chat && q && (q.q === "report" || q.q === "spent" || q.q === "card")){ chat.lastQ = Object.assign({}, q); } }
   function answer(q){
+    rememberQ(q);
     if(q.q === "report") return report(q);
     if(q.q === "spent"){
       const [a, b, lbl] = qRange(q);
@@ -5166,7 +5179,7 @@ function startNgay50k(){
       const intro = document.createElement("div"); intro.className = "msg bot";
       const pend = m.status.filter(s => s === "pending").length;
       if(m.introHtml) intro.innerHTML = m.intro; else intro.innerHTML = (m.intro ? esc(m.intro) + "\n" : "") + (m.items.length > 1 ? "Mình hiểu là có <b>" + m.items.length + " khoản</b>, bạn xem lại rồi bấm Ghi nhé:" : (m.intro ? "Bạn xem lại rồi bấm Ghi nhé:" : "Mình hiểu vậy, đúng không?"));
-      if(m.ai) markAI(intro);
+      if(m.ai) markAI(intro); else if(m.src === "local") markLocal(intro);
       box.appendChild(intro);
       m.items.forEach((_, i) => box.appendChild(cardEl(m, i)));
       if(pend > 1){
@@ -5181,7 +5194,7 @@ function startNgay50k(){
       return box;
     }
     const d = document.createElement("div"); d.className = "msg bot"; d.innerHTML = m.html;
-    if(m.ai) markAI(d);
+    if(m.ai) markAI(d); else if(m.src === "local") markLocal(d);
     if(!m.retry) return d;
     const wrap = document.createElement("div"); wrap.className = "msg-wrap"; wrap.appendChild(d); retryBtn(m, wrap);
     return wrap;
@@ -5189,7 +5202,13 @@ function startNgay50k(){
   /* dấu ✦ ở đầu câu trả lời do AI làm; câu do máy tự hiểu thì không có dấu */
   function markAI(el){
     el.classList.add("by-ai");
-    const k = document.createElement("span"); k.className = "ai-mark"; k.textContent = "✦"; k.title = "AI trả lời"; k.setAttribute("aria-label", "AI trả lời");
+    const k = document.createElement("span"); k.className = "src-tag ai-mark"; k.textContent = "✦ AI"; k.title = "Trợ lý AI trả lời"; k.setAttribute("aria-label", "Trợ lý AI trả lời");
+    el.insertBefore(k, el.firstChild);
+  }
+  /* câu trả lời do máy tự làm (bộ hiểu câu, đọc ảnh, tính báo cáo trên máy) */
+  function markLocal(el){
+    el.classList.add("by-local");
+    const k = document.createElement("span"); k.className = "src-tag local-mark"; k.textContent = "⚡ Máy"; k.title = "Máy tự trả lời, không dùng AI"; k.setAttribute("aria-label", "Máy tự trả lời, không dùng AI");
     el.insertBefore(k, el.firstChild);
   }
   /* nút chọn nhanh dưới câu trả lời của máy: có AI thì phân tích lại; chưa cài AI thì chỉ hiện ở câu máy chưa hiểu, mở Cài đặt */
@@ -5407,6 +5426,7 @@ function startNgay50k(){
       nguon_thu: INC.map(t => ({ id:t.id, ten:t.label })),
       the_tin_dung: (state.cards || []).map(c => ({ id:c.id, ten:c.name })),
       khoan_vay: state.loans.map(l => ({ id:l.id, loai:l.type === "lend" ? "minh_cho_vay" : "minh_di_vay", nguoi:l.who, con_lai:leftOf(l) })),
+      cau_hoi_truoc: (chat && chat.lastQ) || null,
       noi_dung_quen: (() => { const out = {}; Object.keys(state.days).sort().slice(-60).forEach(k => (state.days[k] || []).forEach(it => { if(it.note && it.cat) out[it.note] = it.cat; })); return Object.entries(out).slice(-40).map(([n, c]) => n + " → " + c); })()
     };
     return [
@@ -5434,6 +5454,7 @@ function startNgay50k(){
       "  group: tag (theo nhóm, mặc định) | day | week | month | place (theo nơi chi/nội dung, \"tiêu ở đâu\") | src (tài khoản hay thẻ) | none (danh sách phẳng). list: true khi muốn liệt kê từng khoản. top: N khi hỏi N khoản lớn nhất (kèm group none). compare: true khi so với kỳ trước, hỏi tăng/giảm, hoặc hỏi vì sao tiêu nhiều.",
       "- left (hôm nay còn tiêu được bao nhiêu), balance (số dư), loans (ai nợ/mình nợ ai, who nếu hỏi một người), card (tổng chi thẻ, nợ thẻ), topday (ngày tiêu nhiều nhất).",
       "Ví dụ: \"tháng rồi tiêu gì\" → report lastmonth group tag. \"tháng này tiêu gì từ tài khoản\" → report month src tk. \"liệt kê các khoản grab tuần này\" → report week kw grab group none list true. \"sao tháng này tiêu nhiều thế\" → report month compare true. \"5 khoản lớn nhất tháng 9\" → report custom from/to tháng 9 top 5 group none.",
+      "CÂU NỐI TIẾP: nếu câu mới chỉ thêm hoặc đổi một điều kiện của câu hỏi trước (cau_hoi_truoc trong ngữ cảnh, hoặc lượt trước trong hội thoại) như \"chỉ tính từ tài khoản\", \"còn thẻ thì sao\", \"tháng trước thì sao\", \"theo ngày\", \"liệt kê ra\", \"nhóm ăn thôi\" thì trả query = cau_hoi_truoc với điều kiện mới thay vào, giữ nguyên các điều kiện còn lại.",
       "Câu chào hỏi, tâm sự, hoặc thiếu số tiền: items rỗng, reply hỏi lại ngắn gọn (vd hỏi số tiền). Không bịa số tiền.",
       "reply: 1 câu ngắn, ấm áp, tự nhiên như bạn bè; KHÔNG nêu số liệu (bạn không xem được dữ liệu, app tự tính và hiện). Với report chỉ cần nói ngắn bạn đang xem gì, vd \"Đây là chi tiêu tháng trước theo nhóm nè\".",
       "",
@@ -5444,15 +5465,16 @@ function startNgay50k(){
     const out = [];
     (chat ? chat.msgs : []).slice(-8).forEach(m => {
       if(m.role === "me") out.push({ role:"user", text:(m.imgs && m.imgs.length ? "(gửi " + m.imgs.length + " ảnh) " : "") + (m.text || "") });
-      else if(m.html && !m.thinking) out.push({ role:"assistant", text:m.html.replace(/<details[\s\S]*?<\/details>/g, "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().slice(0, 300) });
+      else if(m.html && !m.thinking) out.push({ role:"assistant", text:(m.q ? "(đã trả lời câu hỏi " + JSON.stringify(m.q) + ") " : "") + m.html.replace(/<details[\s\S]*?<\/details>/g, "").replace(/<button[\s\S]*?<\/button>/g, "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().slice(0, 300) });
       else if(m.items) out.push({ role:"assistant", text:"(đã đề xuất: " + m.items.map(it => KIND_LABEL[it.kind] + " " + it.amt + (it.note ? " " + it.note : "")).join("; ") + ")" });
     });
     return out;
   }
+  var aiPlainOnly = false;
   async function aiCall(text, cfgOverride, imgs){
     const c = cfgOverride || aiCfg(), model = aiModel(c), key = String(c.key || "").trim();
     imgs = imgs || [];
-    const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), imgs.length ? 60000 : 25000);
+    const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), imgs.length ? 90000 : 50000);
     const hist = aiHistory();
     try{
       let res, data, out;
@@ -5462,17 +5484,27 @@ function startNgay50k(){
         if(msgs.length && msgs[0].role !== "user") msgs.shift();
         if(msgs.length && msgs[msgs.length-1].role === "user") msgs[msgs.length-1].content += "\n" + text; else msgs.push({ role:"user", content:text });
         if(imgs.length){ const last = msgs[msgs.length-1]; last.content = imgs.map(im => ({ type:"image", source:{ type:"base64", media_type:im.mime, data:im.data } })).concat([{ type:"text", text:last.content }]); }
-        const send = async (structured) => {
+        /* mỗi lần gửi có hạn chờ riêng. Kết quả có cấu trúc (schema) lần đầu dùng có thể chậm vì máy chủ phải dựng
+           lại khuôn; quá hạn thì gửi lại kiểu thường và cả phiên này dùng kiểu thường cho nhanh. */
+        const send = async (structured, ms) => {
           const body = { model, max_tokens:1500, system:aiSystem() + (structured ? "" : "\nChỉ trả về đúng một đối tượng JSON có các khoá reply, items, query; không thêm chữ nào khác."), messages:msgs };
           if(structured) body.output_config = { format:{ type:"json_schema", schema:AI_SCHEMA_STRICT } };
-          const r = await fetch("https://api.anthropic.com/v1/messages", { method:"POST", signal:ctl.signal,
-            headers:{ "content-type":"application/json", "x-api-key":key, "anthropic-version":"2023-06-01", "anthropic-dangerous-direct-browser-access":"true" },
-            body:JSON.stringify(body) });
-          return { r, d: await r.json().catch(() => ({})) };
+          const c2 = new AbortController(), t2 = setTimeout(() => c2.abort(), ms), stop = () => c2.abort();
+          ctl.signal.addEventListener("abort", stop);
+          try{
+            const r = await fetch("https://api.anthropic.com/v1/messages", { method:"POST", signal:c2.signal,
+              headers:{ "content-type":"application/json", "x-api-key":key, "anthropic-version":"2023-06-01", "anthropic-dangerous-direct-browser-access":"true" },
+              body:JSON.stringify(body) });
+            return { r, d: await r.json().catch(() => ({})) };
+          } finally { clearTimeout(t2); ctl.signal.removeEventListener("abort", stop); }
         };
-        let x = await send(true);
+        let x = null;
+        if(!aiPlainOnly){
+          try{ x = await send(true, imgs.length ? 50000 : 18000); }
+          catch(e){ if(e && e.name === "AbortError" && !ctl.signal.aborted){ aiPlainOnly = true; x = null; } else throw e; }
+        }
         /* mô hình hoặc tài khoản chưa hỗ trợ kết quả có cấu trúc: gửi lại kiểu thường */
-        if(!x.r.ok && x.r.status === 400 && /output_config|format|schema|structured/i.test((x.d.error && x.d.error.message) || "")) x = await send(false);
+        if(!x || (!x.r.ok && x.r.status === 400 && /output_config|format|schema|structured/i.test((x.d.error && x.d.error.message) || ""))) x = await send(false, imgs.length ? 60000 : 30000);
         res = x.r; data = x.d;
         if(res.ok && data.usage) aiUseAdd("claude", data.model || model, (data.usage.input_tokens || 0) + (data.usage.cache_creation_input_tokens || 0) * 1.25 + (data.usage.cache_read_input_tokens || 0) * 0.1, data.usage.output_tokens);
         if(!res.ok) throw new Error((data.error && data.error.message) || ("HTTP " + res.status));
@@ -5584,9 +5616,14 @@ function startNgay50k(){
     return out;
   }
   function localReply(text, res){
+    const out0 = localReply0(text, res);
+    out0.forEach(m => { if(!m.thinking) m.src = "local"; });
+    return out0;
+  }
+  function localReply0(text, res){
     if(!res) res = localParse(text);
     const out = [];
-    if(res.query) out.push({ id:uid(), role:"bot", html:answer(res.query), t:Date.now() });
+    if(res.query) out.push({ id:uid(), role:"bot", html:answer(res.query), q:res.query, t:Date.now() });
     else if(res.items.length){
       out.push({ id:uid(), role:"bot", items:res.items, status:res.items.map(() => "pending"), refs:res.items.map(() => null), t:Date.now() });
       if(res.unknown.length) out.push({ id:uid(), role:"bot", html:"Phần \"" + esc(res.unknown.join(" ")) + "\" mình chưa thấy số tiền nên bỏ qua.", t:Date.now() });
@@ -5659,7 +5696,7 @@ function startNgay50k(){
         : "Chưa đọc được ảnh này. Thử chụp gần phần thông báo có số tiền, hoặc chép chữ trong ảnh bằng iPhone rồi dán vào ô chat.", t:Date.now() }); }
     else if(r.items.length){
       const intro = "Mình đọc được " + r.items.length + " giao dịch trong ảnh (bằng bộ đọc chữ trên máy), bạn xem lại rồi bấm Ghi nhé:" + dupNote(r.items);
-      msgs.push({ id:uid(), role:"bot", items:r.items, intro, introHtml:true, status:r.items.map(() => "pending"), refs:r.items.map(() => null), t:Date.now() });
+      msgs.push({ id:uid(), role:"bot", items:r.items, intro, introHtml:true, status:r.items.map(() => "pending"), refs:r.items.map(() => null), t:Date.now(), src:"local" });
     } else msgs.push({ id:uid(), role:"bot", html:"Mình không thấy giao dịch trừ tiền nào trong ảnh. Thử chụp gần phần thông báo có số tiền nhé.", t:Date.now() });
     tagRetry(msgs, cap || "(ảnh)"); if(msgs.length) retryImgs[msgs[0].grp] = files;
     aiBusy = false; chatGrow();
@@ -5672,7 +5709,7 @@ function startNgay50k(){
   function aiMsgs(r){
     const msgs = [];
     if(r.items.length) msgs.push({ id:uid(), role:"bot", items:r.items, intro:r.reply || "", status:r.items.map(() => "pending"), refs:r.items.map(() => null), t:Date.now(), ai:true });
-    if(r.query) msgs.push({ id:uid(), role:"bot", html:(r.reply && !r.items.length ? esc(r.reply) + (r.query.q === "report" ? "" : "\n") : "") + answer(r.query), t:Date.now(), ai:true });
+    if(r.query) msgs.push({ id:uid(), role:"bot", html:(r.reply && !r.items.length ? esc(r.reply) + (r.query.q === "report" ? "" : "\n") : "") + answer(r.query), q:r.query, t:Date.now(), ai:true });
     if(!r.items.length && !r.query) msgs.push({ id:uid(), role:"bot", html:esc(r.reply || "Mình chưa rõ ý bạn, kể lại giúp mình nhé?"), t:Date.now(), ai:true });
     return msgs;
   }
@@ -5717,7 +5754,15 @@ function startNgay50k(){
     text = String(text || "").trim(); if(!text || aiBusy) return;
     if(!chat) chatLoad();
     chat.msgs.push({ id:uid(), role:"me", text, t:Date.now() });
-    const res0 = localParse(text);
+    let res0 = localParse(text);
+    /* câu nối tiếp câu hỏi trước: gộp điều kiện mới vào câu hỏi trước, trả lời ngay trên máy */
+    if(!res0.items.length && chat.lastQ){
+      const fresh = res0.query && res0.query.q;
+      /* câu hỏi mới đủ ý (báo cáo mới, số dư, nợ, còn tiêu được) thì giữ; câu ngắn kiểu "còn thẻ thì sao" thì nối vào câu trước */
+      if(!fresh || fresh === "unknown" || (chat.lastQ.q === "report" && (fresh === "spent" || fresh === "card") && /(^|\s)(thì sao|thi sao|còn|con|thôi|thoi|chỉ|chi tinh|vậy|vay)(\s|$)/i.test(text.trim().toLowerCase()) && !/bao nhiêu|bao nhieu|\bbn\b/i.test(text)) || (fresh === "report" && res0.query.noPeriod && text.trim().split(/\s+/).length <= 8)){
+        try{ const rq = window.N50KParse.refine(text, chat.lastQ, chatCtx()); if(rq) res0 = { items:[], query:rq, unknown:[] }; }catch(e){}
+      }
+    }
     if(aiReady() && navigator.onLine !== false && aiCfg().smart && localEnough(text, res0)){
       /* máy hiểu chắc chắn: không gọi AI. Khoản chờ ghi có nút "Nhờ AI hiểu lại" phòng khi máy hiểu sai */
       const out = tagRetry(localReply(text, res0), text);
@@ -5883,7 +5928,7 @@ function startNgay50k(){
     const b = e.target.closest(".chat-q"); if(!b) return;
     let q = null; try{ q = JSON.parse(b.dataset.q); }catch(_){ return; }
     b.disabled = true;
-    chat.msgs.push({ id:uid(), role:"bot", html:answer(q), t:Date.now() });
+    chat.msgs.push({ id:uid(), role:"bot", html:answer(q), q, t:Date.now(), src:"local" });
     chatSave(); renderChat(); chatScrollEnd(true);
   });
   [...$("homeSeg").children].forEach(b => b.onclick = () => { lsSet(HOME_KEY, b.dataset.home); applyHome(); renderSetHome(); });
@@ -5891,11 +5936,11 @@ function startNgay50k(){
   N50K.onRemoteChat = null;
   /* mỗi lần mở app là một cuộc trò chuyện mới cho gọn; khoản đã ghi vẫn nằm trong dữ liệu.
      App nằm nền quá 30 phút rồi mở lại cũng bắt đầu cuộc trò chuyện mới. */
-  chatLoad(); chat.msgs = []; chatSave();
+  chatLoad(); chat.msgs = []; chat.lastQ = null; chatSave();
   var chatHiddenAt = 0;
   document.addEventListener("visibilitychange", () => {
     if(document.hidden){ chatHiddenAt = Date.now(); return; }
-    if(chatHiddenAt && Date.now() - chatHiddenAt > 30 * 60000 && !aiBusy){ chat.msgs = []; chatSave(); renderChat(); }
+    if(chatHiddenAt && Date.now() - chatHiddenAt > 30 * 60000 && !aiBusy){ chat.msgs = []; chat.lastQ = null; chatSave(); renderChat(); }
   });
   applyHome(); renderChat(); chatGrow();
   if(homeTab() === "wallet") showTab("today");

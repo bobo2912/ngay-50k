@@ -409,6 +409,7 @@
     if(/ (ngay nao|hom nao) .*(nhieu nhat|tieu nhieu)/.test(n)) return { q:"topday", period: period || "month" };
     if(wantsReport){
       const q = { q:"report", period: period || "month", src, cardId, tag, group:"tag", list:false, top:0, minAmt:0, kind:"out", compare:false };
+      if(!period) q.noPeriod = true;                        /* không nói kỳ: có thể là câu nối tiếp câu trước */
       if(pr.from){ q.from = pr.from; q.to = pr.to; }
       if(/ (thu nhap|thu vao|thu duoc|khoan thu|kiem duoc|tien ve|nhan duoc) /.test(n)) q.kind = "in";
       if(/ theo ngay /.test(n)) q.group = "day";
@@ -432,6 +433,52 @@
       return q;
     }
     return { q:"unknown" };
+  }
+
+  /* ---------------- câu nối tiếp ----------------
+     Sau một câu hỏi về chi tiêu, người dùng hay nói tiếp ngắn gọn: "chỉ tính từ tài khoản", "còn thẻ thì sao",
+     "tháng trước thì sao", "theo ngày", "liệt kê ra", "nhóm ăn thôi", "so với tháng trước".
+     refine(text, prev, ctx) → câu hỏi trước với điều kiện mới thay vào, hoặc null nếu không phải câu nối tiếp. */
+  function refine(text, prev, ctx){
+    if(!prev || !(prev.q === "report" || prev.q === "spent" || prev.q === "card")) return null;
+    ctx = ctx || {}; const now = ctx.now || new Date();
+    const n = " " + norm(text).replace(/[?!.,:;]/g, " ").replace(/\s+/g, " ") + " ";
+    const { N } = tokenize(text);
+    if(N.length > 16) return null;
+    for(let i = 0; i < N.length; i++){ const a = amountAt(N, i); if(a && !["tren","hon","tu","top","duoi"].includes(N[i-1])) return null; if(a) i += a.n - 1; }
+    const q = Object.assign({}, prev); let changed = false;
+    if(q.q === "card"){ q.q = "spent"; q.src = "card"; }
+    const cmpAt = n.search(/ (so voi|so sanh) /);
+    const pr = cmpAt >= 0 ? periodOf(n.slice(0, cmpAt + 1), now) : periodOf(n, now);   /* "so với tháng trước": giữ kỳ đang xem */
+    if(pr.period){ q.period = pr.period; delete q.from; delete q.to; if(pr.from){ q.from = pr.from; q.to = pr.to; } changed = true; }
+    const card = findCard(ctx, N);
+    if(card){ q.src = "card"; q.cardId = card.id; changed = true; }
+    else if(/ (ca hai|tat ca|ca the lan|ca tai khoan lan|gop het|tong het|bo loc) /.test(n)){ q.src = "all"; q.cardId = null; q.tag = null; q.tags = []; changed = true; }
+    else if(/ (tai khoan|tk|chuyen khoan|ck|tien mat|tm) /.test(n)){ q.src = "tk"; q.cardId = null; changed = true; }
+    else if(/ (the|quet the|ca the|the tin dung) /.test(n)){ q.src = "card"; q.cardId = null; changed = true; }
+    if(/ theo ngay /.test(n)){ q.group = "day"; changed = true; }
+    else if(/ theo tuan /.test(n)){ q.group = "week"; changed = true; }
+    else if(/ theo thang /.test(n)){ q.group = "month"; changed = true; }
+    else if(/ (theo nhom|theo loai|gom nhom|gom lai) /.test(n)){ q.group = "tag"; changed = true; }
+    else if(/ (o dau|noi nao|cho ai) /.test(n)){ q.group = "place"; changed = true; }
+    if(/ (liet ke|chi tiet|tung khoan|cu the|cac khoan|nhung khoan|ke ra|ke het) /.test(n)){ q.list = true; if(!/ (nhom|loai) /.test(n) && q.group === "tag" && !q.tag) q.group = "none"; changed = true; }
+    const tm = n.match(/ top (\d{1,2}) | (\d{1,2}) khoan (lon|to) /);
+    if(tm || / (lon nhat|nhieu tien nhat|khoan to) /.test(n)){ q.top = tm ? +(tm[1] || tm[2]) : 5; q.group = "none"; q.list = true; changed = true; }
+    for(let i = 0; i < N.length; i++){ if(["tren","hon","tu"].includes(N[i]) && N[i+1]){ const a = amountAt(N, i + 1); if(a && a.v >= 1000){ q.minAmt = a.v; changed = true; break; } } }
+    if(/ (so voi|so sanh|tang hay giam|nhieu hon khong|it hon khong) /.test(n)){ q.compare = true; changed = true; }
+    if(/ (thu nhap|khoan thu|thu vao|tien ve) /.test(n)){ q.kind = "in"; changed = true; }
+    else if(q.kind === "in" && / (chi|tieu|xai) /.test(n)){ q.kind = "out"; changed = true; }
+    if(/ an uong /.test(n)){ q.tag = "an+uong"; changed = true; }
+    else {
+      const g = guessTag(text.replace(/\b(chi tiết|chỉ tính|chỉ|tính|tiêu|chi|thôi|thì sao|còn)\b/gi, " "), null);
+      if(g !== "khac" && !/ (tat ca|bo loc) /.test(n)){ q.tag = g; changed = true; }
+    }
+    /* phải có dấu hiệu nối tiếp, tránh bắt nhầm câu kể chuyện */
+    const cue = / (chi|chi tinh|chi xem|chi lay|con|thi sao|the con|vay con|xem|loc|bo|them|nua|thoi|tinh|lay ra|ke ra|liet ke|so voi|theo) /.test(n) || N.length <= 6;
+    if(!changed || !cue) return null;
+    if(q.q === "spent" && (q.group && q.group !== "tag" || q.list || q.top || q.compare)) q.q = "report";
+    if(q.q === "report") q.group = q.group || "tag";
+    return q;
   }
 
   /* ---------------- đầu vào chính ---------------- */
@@ -508,7 +555,7 @@
   /* đọc số tiền người dùng gõ trong ô sửa ("45k", "1tr2", "45.000") */
   function amountText(s){ const { N } = tokenize(s); const a = amountAt(N, 0); return a ? a.v : (parseInt(String(s).replace(/\D/g, ""), 10) || 0); }
 
-  const api = { parse, assess, amountText, guessTag, norm, _amountAt:amountAt, _clauses:clauses };
+  const api = { parse, assess, refine, amountText, guessTag, norm, _amountAt:amountAt, _clauses:clauses };
   if(typeof module !== "undefined" && module.exports) module.exports = api;
   else root.N50KParse = api;
 })(typeof window !== "undefined" ? window : this);
