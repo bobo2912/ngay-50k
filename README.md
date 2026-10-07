@@ -28,7 +28,7 @@ Phải mở qua một máy chủ web, không mở thẳng bằng `file://`, vì 
 
 ## Làm được gì
 
-**Trò chuyện** (tab đầu, mở mặc định) — Kể chi tiêu bằng lời như nhắn tin. `parse-vi.js` (chạy trên máy, không gửi dữ liệu đi) tách câu thành các khoản, mỗi khoản là một thẻ xác nhận sửa được; bấm Ghi mới lưu, có Hoàn tác. Trả lời câu hỏi nhanh từ dữ liệu trên máy. Đổi màn hình mở đầu sang Ví trong Cài đặt. Tuỳ chọn **Trợ lý AI**: người dùng dán khoá API (Claude, ChatGPT, Gemini) trong Cài đặt, khoá lưu ở `localStorage["ngay50k:ai"]` trên máy, không bao giờ nằm trong kho này; app gọi thẳng API từ trình duyệt, AI chỉ trả JSON các khoản/câu hỏi, app kiểm tra lại rồi hiện thẻ xác nhận; lỗi thì quay về `parse-vi.js`.
+**Chat** (tab đầu, mở mặc định) — Kể chi tiêu bằng lời như nhắn tin. `parse-vi.js` (chạy trên máy, không gửi dữ liệu đi) tách câu thành các khoản, mỗi khoản là một thẻ xác nhận sửa được; bấm Ghi mới lưu, có Hoàn tác. Trả lời câu hỏi nhanh từ dữ liệu trên máy. Đổi màn hình mở đầu sang Ví trong Cài đặt. Tuỳ chọn **Trợ lý AI**: người dùng dán khoá API (Claude, ChatGPT, Gemini) trong Cài đặt, khoá lưu ở `localStorage["ngay50k:ai"]` trên máy, không bao giờ nằm trong kho này; app gọi thẳng API từ trình duyệt, AI chỉ trả JSON các khoản/câu hỏi, app kiểm tra lại rồi hiện thẻ xác nhận; lỗi thì quay về `parse-vi.js`.
 
 **Ví** — Số dư hiện tại: số bạn nhập ở lần đối chiếu gần nhất, cộng trừ tiếp mọi khoản ghi sau lúc đó (quẹt thẻ chỉ cộng vào nợ thẻ, tới khi ghi Trả thẻ). Danh sách biến động kèm số dư sau từng khoản, lịch sử đối chiếu và trả thẻ.
 

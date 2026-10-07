@@ -1,6 +1,14 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v93, ngày 07/10/2026
+**Phiên bản hiện tại:** v94, ngày 07/10/2026
+
+---
+
+## Có gì mới trong v94 (so với v93)
+
+- **Ô chat luôn là một dòng** trên mọi cỡ máy. Chữ gợi ý ngắn lại ("Hôm nay bạn tiêu gì?") và không bao giờ xuống dòng, nên ô không còn nhảy chiều cao. Ô chỉ cao thêm khi bạn gõ câu dài, xoá hết thì về lại một dòng.
+- **Tab Trò chuyện đổi tên thành Chat** cho gọn, cả ở thanh menu và Cài đặt.
+- **Lớp mờ quanh ô Số dư ví:** khi cuộn, nội dung phía sau được làm mờ đều ở cả trên và dưới ô Số dư ví, giống thanh menu, thay cho dải mờ chỉ nằm giữa đầu trang và ô.
 
 ---
 
@@ -14,29 +22,14 @@
 
 ---
 
-## Có gì mới trong v92 (so với v91)
-
-**Trò chuyện hiểu câu nối tiếp.** App nhớ câu hỏi chi tiêu vừa hỏi, nên nói tiếp ngắn gọn là được:
-- "Tháng này tiêu gì" → "chỉ tính từ tài khoản" → "còn thẻ thì sao" → "theo ngày đi" → "tháng trước thì sao" → "liệt kê ra", "nhóm ăn thôi", "top 3", "trên 500k thôi", "so với tháng trước", "thẻ VIB thôi".
-- Điều kiện được cộng dồn theo câu chuyện; nói **"cả hai"** hoặc **"bỏ lọc"** để tính lại tất cả. Báo cáo trống do lọc quá hẹp sẽ nhắc cách bỏ lọc.
-- Câu nối tiếp do máy tự hiểu, không tốn AI. Khi câu được gửi cho AI, app gửi kèm câu hỏi trước để AI hiểu đúng ý nối tiếp (vẫn không gửi dữ liệu chi tiêu).
-- Câu hỏi đủ ý (vd "hôm nay tiêu bao nhiêu") vẫn là câu hỏi mới.
-- Trò chuyện mới (mở lại app, hoặc để app nghỉ hơn 30 phút) thì quên câu hỏi cũ.
-
-**Nhãn nguồn cho mọi kết quả:** **✦ AI** cho câu do Trợ lý AI trả lời, **⚡ Máy** cho câu máy tự trả lời (bộ hiểu câu, đọc ảnh, báo cáo tính trên máy).
-
-**AI ít bị "trả lời quá lâu" hơn:** chờ lâu hơn (tối đa 50 giây). Lần gửi dùng kết quả có cấu trúc mà quá 18 giây thì tự gửi lại kiểu thường, và cả phiên đó dùng kiểu thường cho nhanh.
-
----
-
 ## Tất cả tính năng của app
 
-### Tab Trò chuyện (mở mặc định)
+### Tab Chat (mở mặc định)
 - Kể chi tiêu, vay mượn, khoản thu bằng lời; app tách thành các thẻ xác nhận, bấm Ghi mới lưu, có Hoàn tác.
 - Gửi ảnh thông báo trừ tiền: đọc bằng bộ đọc chữ trên máy, không tốn token AI.
 - Hỏi nhanh: hôm nay tiêu bao nhiêu, ai còn nợ mình, số dư còn bao nhiêu…
 - Hỏi chi tiết: tháng rồi tiêu gì, liệt kê khoản thẻ, top khoản lớn, tiêu ở đâu, so với tháng trước… → báo cáo gom nhóm, chạm để xem từng giao dịch, tính trên máy.
-- Chọn Trò chuyện hay Ví làm màn hình mở đầu trong Cài đặt.
+- Chọn Chat hay Ví làm màn hình mở đầu trong Cài đặt.
 - **Trợ lý AI** (tuỳ chọn, trong nhóm Nâng cao): dùng khoá API Claude, ChatGPT hoặc Gemini; khoá chỉ lưu trên máy. Mặc định chỉ gọi AI cho câu khó, câu đơn giản máy tự hiểu; có nút Nhờ AI hiểu lại. Xem chi phí và số câu tiết kiệm trong Cài đặt.
 
 ### Tab Ví (số dư, hôm nay, giao dịch theo ngày)
@@ -137,6 +130,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v94** | Ô chat luôn một dòng; tab Chat; lớp mờ quanh ô Số dư ví |
 | **v93** | Sửa Claude hay báo trả lời quá lâu; mặc định Haiku 4.5 |
 | **v92** | Hiểu câu nối tiếp trong chat; nhãn ✦ AI / ⚡ Máy; AI ít quá thời gian |
 | **v91** | Báo cáo chi tiêu trong chat (liệt kê, gom nhóm, so sánh); sửa bàn phím không hiện; sửa thanh màu trên iOS 26 |

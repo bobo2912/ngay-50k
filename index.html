@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v93";
+  var K = "ngay50k:errlog", VER = "v94";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -1591,6 +1591,20 @@ body.searching .ledger-head{background:var(--top-c)}
 .src-tag.local-mark{color:var(--muted); background:color-mix(in srgb, var(--muted) 12%, transparent)}
 .msg.bot:has(> .rpt) > .src-tag{margin-bottom:6px}
 .msg.by-ai .rpt, .msg.by-local .rpt{margin-top:6px}
+
+/* ô chat một dòng (v94) */
+#chatIn{height:38px; min-height:38px; line-height:24px; padding:7px 0; box-sizing:border-box}
+#chatIn.empty{overflow:hidden; white-space:nowrap}
+#chatIn::placeholder{white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+/* lớp mờ quanh ô Số dư ví khi cuộn (v94): phủ hết bề ngang, từ đáy đầu trang xuống quá ô số dư, mép dưới mờ dần,
+   giống lớp mờ phía trên thanh menu. Là phần tử riêng nằm dưới ô số dư nên không làm đổi màu ô. */
+#tab-chat > #chatToWallet::before{display:none!important}
+#tab-chat > .chip-veil{position:sticky; top:var(--head-h, 100px); z-index:28; display:none; height:78px; margin:0 -16px -78px; pointer-events:none;
+  background:linear-gradient(to bottom, color-mix(in srgb, var(--bg) 62%, transparent), color-mix(in srgb, var(--bg) 40%, transparent));
+  -webkit-backdrop-filter:blur(14px) saturate(140%); backdrop-filter:blur(14px) saturate(140%);
+  -webkit-mask-image:linear-gradient(to bottom, #000 calc(100% - 18px), transparent); mask-image:linear-gradient(to bottom, #000 calc(100% - 18px), transparent)}
+body.head-stuck #tab-chat > .chip-veil{display:block}
+body.kb #tab-chat > .chip-veil{display:none}
 </style>
 </head>
 <body>
@@ -1611,7 +1625,7 @@ body.searching .ledger-head{background:var(--top-c)}
 
   <div class="tab-veil" aria-hidden="true"></div>
   <nav class="tabs" role="tablist" aria-label="Menu">
-    <button role="tab" data-tab="chat" aria-selected="true" id="tabFirst"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-4.9A8 8 0 1 1 21 12z"/><path d="M8.5 11h.01M12 11h.01M15.5 11h.01"/></svg><span>Trò chuyện</span></button>
+    <button role="tab" data-tab="chat" aria-selected="true" id="tabFirst"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-4.9A8 8 0 1 1 21 12z"/><path d="M8.5 11h.01M12 11h.01M15.5 11h.01"/></svg><span>Chat</span></button>
     <button role="tab" data-tab="money" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9h-9z"/><path d="M14 3.3A9 9 0 0 1 20.7 10H14z"/></svg><span>Tổng quan</span></button>
     <button role="tab" data-tab="today" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h15a3 3 0 0 1 3 3v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M3 7l12-4v4"/><circle cx="16.5" cy="13.5" r="1.2"/></svg><span>Ví</span></button>
     <button role="tab" data-tab="cards" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="8" width="14" height="11" rx="2"/><path d="M2 12h14"/><path d="M7 5h13a2 2 0 0 1 2 2v8"/></svg><span>Thẻ</span></button>
@@ -1621,13 +1635,14 @@ body.searching .ledger-head{background:var(--top-c)}
   <!-- ================= TAB: HÔM NAY ================= -->
   <!-- ================= TAB: TRÒ CHUYỆN ================= -->
   <div id="tab-chat" role="tabpanel">
+    <div class="chip-veil" aria-hidden="true"></div>
     <button type="button" class="chat-chip" id="chatToWallet"><span>Số dư ví</span><b class="num" id="chatBal">–</b><span class="ai-badge" id="chatAI" hidden></span><span class="ch" aria-hidden="true">›</span></button>
     <div class="chat-log" id="chatLog" aria-live="polite"></div>
     <div class="chat-dock" id="chatDock">
       <div class="chat-sugg" id="chatSugg"></div>
       <form class="chat-bar" id="chatForm" autocomplete="off">
         <label class="chat-img" id="chatImgBtn" aria-label="Gửi ảnh"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><circle cx="9" cy="10" r="1.6"/><path d="m21 16-5-5-8 8"/></svg><input type="file" accept="image/*" multiple id="chatImg" hidden></label>
-        <textarea id="chatIn" rows="1" placeholder="Hôm nay bạn tiêu gì? (🎤 để nói)" aria-label="Tin nhắn"></textarea>
+        <textarea id="chatIn" rows="1" placeholder="Hôm nay bạn tiêu gì?" aria-label="Tin nhắn"></textarea>
         <button type="submit" id="chatSend" aria-label="Gửi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
       </form>
     </div>
@@ -2040,7 +2055,7 @@ body.searching .ledger-head{background:var(--top-c)}
 <section class="set-group">
       <p class="set-now">Màn hình hiện ra khi mở app. Cả hai luôn có trên thanh tab.</p>
       <div class="seg seg2h" id="homeSeg" role="group" aria-label="Màn hình mở đầu" style="margin-top:12px">
-        <button data-home="chat" aria-pressed="true">Trò chuyện</button>
+        <button data-home="chat" aria-pressed="true">Chat</button>
         <button data-home="wallet" aria-pressed="false">Ví</button>
       </div>
     </section>
@@ -2288,7 +2303,7 @@ body.searching .ledger-head{background:var(--top-c)}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v93</p>
+      <p class="sync" id="appVersion">Phiên bản v94</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -2699,8 +2714,8 @@ body.searching .ledger-head{background:var(--top-c)}
 
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
 <script src="vendor/jsQR.js"></script>
-<script src="parse-vi.js?v=93"></script>
-<script src="lock.js?v=93"></script>
+<script src="parse-vi.js?v=94"></script>
+<script src="lock.js?v=94"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -5847,7 +5862,14 @@ function startNgay50k(){
     }
     msg.hidden = false; b.disabled = false; b.textContent = "Thử kết nối";
   };
-  function chatGrow(){ const ta = $("chatIn"); ta.style.height = "auto"; ta.style.height = Math.min(ta.scrollHeight, 140) + "px"; $("chatSend").disabled = !ta.value.trim(); }
+  /* ô chat: trống thì luôn đúng một dòng (chữ gợi ý dài trên máy màn hẹp không làm ô cao lên); có chữ thì cao theo nội dung */
+  function chatGrow(){
+    const ta = $("chatIn");
+    ta.classList.toggle("empty", !ta.value);
+    if(!ta.value){ ta.style.height = ""; }
+    else { ta.style.height = "auto"; ta.style.height = Math.min(Math.max(ta.scrollHeight, 38), 140) + "px"; }
+    $("chatSend").disabled = !ta.value.trim();
+  }
   $("chatForm").addEventListener("submit", e => { e.preventDefault(); const ta = $("chatIn"); const v = ta.value; ta.value = ""; chatGrow(); chatSend(v); });
   $("chatIn").addEventListener("input", chatGrow);
   $("chatIn").addEventListener("keydown", e => { if(e.key === "Enter" && !e.shiftKey && !e.isComposing){ e.preventDefault(); $("chatForm").requestSubmit ? $("chatForm").requestSubmit() : $("chatSend").click(); } });
@@ -7670,7 +7692,7 @@ function startNgay50k(){
   function renderSetHome(){
     $("navLock").textContent = N50KLock.isOn() ? (N50KLock.meta().pk ? "PIN, Face ID" : "Mã PIN") : "Tắt";
     $("navTheme").textContent = { auto:"Tự động", light:"Sáng", dark:"Tối", pastel:"Pastel" }[curTheme] || "Tự động";
-    $("navStart").textContent = homeTab() === "chat" ? "Trò chuyện" : "Ví";
+    $("navStart").textContent = homeTab() === "chat" ? "Chat" : "Ví";
     $("navAI").textContent = aiNav();
     $("navScan").textContent = scanMode === "live" ? "Quét trực tiếp" : "Camera iPhone";
     $("navBank").textContent = myBank() ? myBank().name : (lsGet(BANK_KEY) === "none" ? "Không dùng" : "chưa chọn");
