@@ -1,15 +1,19 @@
 /* Tiêu Gọn – bộ nhớ đệm để app mở được khi không có mạng.
    Mỗi lần sửa app, hãy tăng số phiên bản dưới đây (v1 -> v2 ...) để máy nhận bản mới. */
-const VERSION = "ngay50k-v82";
+const V = "83";                                   /* tăng cùng lúc với ?v= trong index.html (xem README) */
+const VERSION = "ngay50k-v" + V;
 
+/* Trang chính và các file script luôn đi cùng một bản: script có đuôi ?v=<số bản>, và chỉ lấy từ đúng bộ nhớ đệm
+   của bản đó. Trước v83, trang chính và script được cập nhật lệch nhau, iPhone có lúc chạy trang mới với script cũ
+   (hoặc thiếu hẳn lock.js) nên app đơ ngay khi mở. */
 const ASSETS = [
   "./",
   "./index.html",
   "./scan.html",
   "./manifest.webmanifest",
   "./vendor/jsQR.js",
-  "./parse-vi.js",
-  "./lock.js",
+  "./parse-vi.js?v=" + V,
+  "./lock.js?v=" + V,
   "./icons/icon-192.png",
   "./icons/icon-512.png",
   "./icons/apple-touch-icon.png",
@@ -43,6 +47,15 @@ self.addEventListener("activate", event => {
   );
 });
 
+/* chờ mạng tối đa ms mili giây; quá thì dùng bản đã lưu (mạng yếu không làm app treo lúc mở) */
+function netWithin(req, ms){
+  return new Promise((resolve, reject) => {
+    const t = setTimeout(() => reject(new Error("slow")), ms);
+    fetch(req, { cache: "no-store" }).then(r => { clearTimeout(t); r.ok ? resolve(r) : reject(new Error("HTTP " + r.status)); },
+      e => { clearTimeout(t); reject(e); });
+  });
+}
+
 self.addEventListener("fetch", event => {
   const req = event.request;
   if (req.method !== "GET") return;
@@ -51,26 +64,20 @@ self.addEventListener("fetch", event => {
 
   const isAppPage = url.pathname.endsWith("/") || url.pathname.endsWith("/index.html");
   if (req.mode === "navigate" && isAppPage) {
+    /* trang chính: lấy bản mới trên mạng (tối đa 3,5 giây), không được thì dùng bản cài cùng service worker này.
+       Không ghi đè bản đã lưu: bộ nhớ đệm chỉ đổi khi cả bộ file của bản mới đã tải xong (bước install). */
     event.respondWith(
-      caches.match("./index.html").then(hit => {
-        const net = fetch(req).then(res => {
-          if (res.ok) { const copy = res.clone(); caches.open(VERSION).then(c => c.put("./index.html", copy)); }
-          return res;
-        }).catch(() => hit);
-        return hit || net;
-      })
+      netWithin(req, 3500).catch(() => caches.open(VERSION).then(c => c.match("./index.html")).then(hit => hit || fetch(req)))
     );
     return;
   }
 
+  /* file khác: đúng địa chỉ (kể cả ?v=) trong bộ nhớ đệm của bản này; không có thì lên mạng */
   event.respondWith(
-    caches.match(req, { ignoreSearch: true }).then(hit => {
-      const net = fetch(req).then(res => {
-        if (res.ok) { const copy = res.clone(); caches.open(VERSION).then(c => c.put(req, copy)); }
-        return res;
-      }).catch(() => hit);
-      return hit || net;
-    })
+    caches.open(VERSION).then(c => c.match(req)).then(hit => hit || fetch(req).then(res => {
+      if (res.ok && !url.search) { const copy = res.clone(); caches.open(VERSION).then(c => c.put(req, copy)); }
+      return res;
+    }))
   );
 });
 

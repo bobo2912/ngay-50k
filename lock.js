@@ -72,9 +72,9 @@ window.N50KLock = (function(){
     if(!(window.PublicKeyCredential && navigator.credentials && PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable)) return Promise.resolve(false);
     return PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().catch(function(){ return false; });
   }
-  async function pkSecret(idB64, saltB64){
-    var cred = await navigator.credentials.get({ publicKey:{
-      challenge:rand(32), timeout:60000, userVerification:"required",
+  async function pkSecret(idB64, saltB64, signal){
+    var cred = await navigator.credentials.get({ signal:signal, publicKey:{
+      challenge:rand(32), timeout:30000, userVerification:"required",
       allowCredentials:[{ type:"public-key", id:unb64(idB64) }],
       extensions:{ prf:{ eval:{ first:unb64(saltB64) } } }
     }});
@@ -83,9 +83,9 @@ window.N50KLock = (function(){
     if(!first) throw new Error("noprf");
     return new Uint8Array(first);
   }
-  async function pkUnlock(){
+  async function pkUnlock(signal){
     if(!meta || !meta.pk) throw new Error("nopk");
-    var secret = await pkSecret(meta.pk.id, meta.pk.salt);
+    var secret = await pkSecret(meta.pk.id, meta.pk.salt, signal);
     return unwrap(await prfKey(secret), meta.pk.wp);
   }
 
@@ -156,7 +156,9 @@ window.N50KLock = (function(){
     opts = opts || {};
     build(); show();
     return new Promise(function(resolve, reject){
-      var pin = "", busy = false, len = meta.len || 6, timer = null;
+      /* busy: đang kiểm mã PIN. Face ID chạy riêng (bioCtl) và KHÔNG chặn bàn phím: trên iPhone, Face ID gọi lúc
+         vừa mở app có thể không hiện gì và treo tới khi hết hạn; trước v83 bàn phím đứng im suốt lúc đó. */
+      var pin = "", busy = false, len = meta.len || 6, timer = null, bioCtl = null, finished = false;
       ui.title.textContent = opts.title || "Nhập mã PIN";
       ui.sub.textContent = opts.sub || "";
       ui.forgot.hidden = true; ui.pad.hidden = false; ui.dots.hidden = false;
@@ -172,15 +174,20 @@ window.N50KLock = (function(){
         return true;
       }
       lockedOut();
-      function done(raw){ if(timer) clearInterval(timer); ui.handler = null; resolve(raw); }
-      async function bio(){
-        if(busy) return; busy = true; setErr("");
-        try{ var raw = await pkUnlock(); noteOk(); done(raw); }
-        catch(e){ busy = false; if(e && e.name !== "NotAllowedError" && e.name !== "AbortError") setErr("Không mở được bằng Face ID. Hãy nhập mã PIN."); }
+      function stopBio(){ if(bioCtl){ try{ bioCtl.abort(); }catch(e){} bioCtl = null; } }
+      function done(raw){ if(finished) return; finished = true; stopBio(); if(timer) clearInterval(timer); ui.handler = null; resolve(raw); }
+      async function bio(auto){
+        if(busy || bioCtl || finished) return;
+        var ctl = window.AbortController ? new AbortController() : null; bioCtl = ctl || {}; setErr("");
+        /* tự gọi lúc mở app mà 6 giây không có gì thì thôi, để người dùng nhập mã PIN */
+        var guard = auto && ctl ? setTimeout(function(){ if(bioCtl === ctl) stopBio(); }, 6000) : null;
+        try{ var raw = await pkUnlock(ctl ? ctl.signal : undefined); if(guard) clearTimeout(guard); if(bioCtl === ctl || !finished){ bioCtl = null; noteOk(); done(raw); } }
+        catch(e){ if(guard) clearTimeout(guard); if(bioCtl === ctl) bioCtl = null; if(!auto && e && e.name !== "NotAllowedError" && e.name !== "AbortError") setErr("Không mở được bằng Face ID. Hãy nhập mã PIN."); }
       }
       ui.handler = async function(k){
-        if(busy) return;
-        if(k === "bio"){ bio(); return; }
+        if(busy || finished) return;
+        if(k === "bio"){ stopBio(); bio(false); return; }
+        stopBio();                                        /* bấm số: thôi chờ Face ID */
         if(lockedOut()) return;
         if(k === "del"){ pin = pin.slice(0, -1); dots(pin.length, len); return; }
         if(pin.length >= len) return;
@@ -193,14 +200,14 @@ window.N50KLock = (function(){
         pin = ""; noteFail(); shake(); dots(0, len);
         if(!lockedOut()) setErr("Mã PIN chưa đúng." + (meta.fails >= 3 ? " Còn " + Math.max(0, 5 - meta.fails) + " lần thử trước khi phải chờ." : ""));
       };
-      ui.cancel.onclick = function(){ if(timer) clearInterval(timer); ui.handler = null; hide(); reject(new Error("cancel")); };
-      ui.alt.onclick = function(){ ui.title.textContent = "Quên mã PIN?"; ui.sub.textContent = ""; ui.err.hidden = true; ui.forgot.hidden = false; ui.pad.hidden = true; ui.dots.hidden = true; ui.alt.hidden = true; delete ui.wipe.dataset.armed; ui.wipe.textContent = "Xoá dữ liệu trên máy và bắt đầu lại"; };
+      ui.cancel.onclick = function(){ stopBio(); finished = true; if(timer) clearInterval(timer); ui.handler = null; hide(); reject(new Error("cancel")); };
+      ui.alt.onclick = function(){ stopBio(); ui.title.textContent = "Quên mã PIN?"; ui.sub.textContent = ""; ui.err.hidden = true; ui.forgot.hidden = false; ui.pad.hidden = true; ui.dots.hidden = true; ui.alt.hidden = true; delete ui.wipe.dataset.armed; ui.wipe.textContent = "Xoá dữ liệu trên máy và bắt đầu lại"; };
       ui.forgotBack.onclick = function(){ ui.title.textContent = opts.title || "Nhập mã PIN"; ui.sub.textContent = opts.sub || ""; ui.err.hidden = false; ui.forgot.hidden = true; ui.pad.hidden = false; ui.dots.hidden = false; ui.alt.hidden = false; };
       ui.wipe.onclick = function(){
         if(ui.wipe.dataset.armed !== "1"){ ui.wipe.dataset.armed = "1"; ui.wipe.textContent = "Bấm lần nữa để xoá vĩnh viễn"; return; }
         wipeAll();
       };
-      if(meta.pk && !opts.noBio && opts.autoBio) setTimeout(bio, 250);
+      if(meta.pk && !opts.noBio && opts.autoBio && document.visibilityState === "visible") setTimeout(function(){ bio(true); }, 300);
     });
   }
 
@@ -245,6 +252,8 @@ window.N50KLock = (function(){
     return N50K.encKeys().some(function(k){ var v = N50K.get(k); return typeof v === "string" && v.indexOf(ENC) === 0; });
   }
   function broken(){
+    if(window.__bootStage) window.__bootStage("lock");
+    if(window.__n50kLog) window.__n50kLog("khoá", "dữ liệu mã hoá nhưng không mở được");
     build(); show();
     ui.title.textContent = "Không mở được dữ liệu";
     ui.sub.textContent = "Dữ liệu trên máy đang được mã hoá nhưng thiếu thông tin mở khoá. App sẽ không ghi gì để khỏi làm mất dữ liệu.";
@@ -294,6 +303,7 @@ window.N50KLock = (function(){
       N50K.unlockPlain(); unlocked = true; return;
     }
     if(!api.supported()) return broken();
+    if(window.__bootStage) window.__bootStage("lock");     /* đang chờ người dùng nhập mã: lưới an toàn không báo kẹt */
     var raw = await askUnlock({ autoBio:true });
     try{ await N50K.unlock(await useDek(raw)); }
     catch(e){ return broken(); }

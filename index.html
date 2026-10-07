@@ -19,6 +19,49 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="format-detection" content="telephone=no">
 <link rel="manifest" href="manifest.webmanifest">
+<script>
+/* ---------- lưới an toàn khi khởi động (v83) ----------
+   Ghi mọi lỗi vào nhật ký "ngay50k:errlog" (30 dòng gần nhất, xem ở Cài đặt → Dung lượng).
+   Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
+   thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
+(function(){
+  var K = "ngay50k:errlog", VER = "v83";
+  window.__boot = { stage:"html", t:Date.now() };
+  function log(kind, msg){
+    try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
+  }
+  window.__n50kLog = log;
+  window.__bootStage = function(st){ window.__boot.stage = st; };
+  addEventListener("error", function(e){ if(e && e.message) log("lỗi", e.message + " @ " + String(e.filename || "").split("/").pop() + ":" + (e.lineno || "")); else if(e && e.target && e.target.src) log("tải", "không tải được " + String(e.target.src).split("/").pop()); }, true);
+  addEventListener("unhandledrejection", function(e){ var r = e && e.reason; log("promise", r && (r.stack || r.message) || r); });
+  function rescue(why){
+    if(document.getElementById("bootRescue")) return;
+    log("kẹt", why);
+    var d = document.createElement("div"); d.id = "bootRescue";
+    d.setAttribute("role", "alertdialog");
+    d.style.cssText = "position:fixed;left:16px;right:16px;bottom:calc(24px + env(safe-area-inset-bottom,0px));z-index:400;max-width:420px;margin:0 auto;padding:16px;border-radius:18px;background:#0E1B3D;color:#fff;font:15px/1.45 system-ui,-apple-system,sans-serif;box-shadow:0 12px 36px rgba(0,0,0,.35)";
+    d.innerHTML = '<b style="display:block;margin-bottom:4px">App mở chưa xong</b><span style="opacity:.85">Dữ liệu của bạn vẫn an toàn. Thử tải lại; nếu vẫn đơ, chọn Tải bản mới nhất.</span>' +
+      '<div style="display:flex;gap:8px;margin-top:12px"><button id="brReload" style="flex:1;border:0;border-radius:999px;padding:11px;font:inherit;font-weight:700;background:#fff;color:#0E1B3D">Tải lại</button>' +
+      '<button id="brFresh" style="flex:1;border:1px solid rgba(255,255,255,.5);border-radius:999px;padding:11px;font:inherit;font-weight:700;background:transparent;color:#fff">Tải bản mới nhất</button></div>';
+    (document.body || document.documentElement).appendChild(d);
+    document.getElementById("brReload").onclick = function(){ location.reload(); };
+    document.getElementById("brFresh").onclick = function(){
+      this.textContent = "Đang tải…";
+      var jobs = [];
+      try{ if(navigator.serviceWorker) jobs.push(navigator.serviceWorker.getRegistrations().then(function(rs){ return Promise.all(rs.map(function(r){ return r.unregister(); })); })); }catch(e){}
+      try{ if(window.caches) jobs.push(caches.keys().then(function(ks){ return Promise.all(ks.filter(function(k){ return k.indexOf("ngay50k-") === 0; }).map(function(k){ return caches.delete(k); })); })); }catch(e){}
+      Promise.all(jobs).catch(function(){}).then(function(){ location.replace(location.pathname + "?fresh=" + Date.now()); });
+    };
+  }
+  window.__bootRescue = rescue;
+  setTimeout(function(){
+    var b = window.__boot, lk = document.getElementById("lockScr");
+    if(b.stage === "started" || b.stage === "lock") return;
+    if(lk && !lk.hidden) return;
+    rescue("quá 9 giây, dừng ở bước " + b.stage);
+  }, 9000);
+})();
+</script>
 <script>try{var t=localStorage.getItem("ngay50k-theme");if(t==="light"||t==="dark"||t==="pastel")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -1373,6 +1416,8 @@ html.locked, html.locked body{overflow:hidden}
 .balbox.compact .ov-sub{margin-top:2px; font-size:.85rem}
 .balbox.compact .chero-foot{margin-top:10px}
 .wallet-part section{margin-top:16px}
+
+.errlog{margin:8px 0 0; padding:10px; border-radius:12px; background:var(--field); border:1px solid var(--line); font:12px/1.45 ui-monospace,Menlo,monospace; white-space:pre-wrap; word-break:break-word; max-height:240px; overflow:auto; -webkit-user-select:text; user-select:text}
 </style>
 </head>
 <body>
@@ -2070,8 +2115,13 @@ html.locked, html.locked body{overflow:hidden}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v82</p>
+      <p class="sync" id="appVersion">Phiên bản v83</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
+
+      <h4 class="sub">Nhật ký lỗi</h4>
+      <p class="set-now" id="errLogState"></p>
+      <pre class="errlog" id="errLogBox" hidden></pre>
+      <div class="set-row" id="errLogRow" hidden style="margin-top:8px"><button class="ghost grow" id="errLogCopy">Sao chép để gửi</button><button class="ghost grow" id="errLogShow">Xem</button><button class="ghost danger" id="errLogClear">Xoá</button></div>
 
       <h4 class="sub">Xoá dữ liệu</h4>
       <div class="set-row"><button class="ghost danger grow" id="clearToday">Xoá hết khoản chi hôm nay</button></div>
@@ -2476,8 +2526,8 @@ html.locked, html.locked body{overflow:hidden}
 
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
 <script src="vendor/jsQR.js"></script>
-<script src="parse-vi.js"></script>
-<script src="lock.js"></script>
+<script src="parse-vi.js?v=83"></script>
+<script src="lock.js?v=83"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -7165,7 +7215,7 @@ function startNgay50k(){
     const h = el.querySelector("h2"); if(h) h.focus({ preventScroll:true });
     if(id === "setHome") renderSetHome();
     if(id === "setAI") renderAISet();
-    if(id === "setStore"){ renderStorage(); measureCache(); }
+    if(id === "setStore"){ renderStorage(); measureCache(); renderErrLog(); }
     if(id === "setTags") renderTagList();
     if(id === "setPeople"){ closeContactForm(); renderPeople(); }
     if(id === "setRecur") renderRecur();
@@ -7789,13 +7839,42 @@ function startNgay50k(){
   if(!hasData() && lsGet(WELCOME_KEY) !== "1") openWelcome(0);
   if(rcMade) flash("scanMsg", "✓ Đã ghi " + rcMade + " khoản định kỳ của kỳ này");
 
+
+  /* ---------- nhật ký lỗi (ghi từ lưới an toàn khi khởi động, v83) ---------- */
+  function errLog(){ try{ const a = JSON.parse(lsGet("ngay50k:errlog") || "[]"); return Array.isArray(a) ? a : []; }catch(e){ return []; } }
+  function errLogText(){
+    const a = errLog(), d = t => { const x = new Date(t); return pad(x.getDate()) + "/" + pad(x.getMonth()+1) + " " + pad(x.getHours()) + ":" + pad(x.getMinutes()) + ":" + pad(x.getSeconds()); };
+    return "Tiêu Gọn " + ($("appVersion").textContent || "") + " · " + navigator.userAgent + "\n" + a.map(e => d(e.t) + " [" + e.v + "/" + e.s + "] " + e.k + ": " + e.m).join("\n");
+  }
+  function renderErrLog(){
+    const a = errLog();
+    $("errLogState").textContent = a.length ? "Có " + a.length + " dòng, gần nhất lúc " + new Date(a[a.length-1].t).toLocaleString("vi-VN") + ". Nếu app hay đơ, bấm Sao chép rồi gửi cho người làm app." : "Chưa ghi nhận lỗi nào.";
+    $("errLogRow").hidden = !a.length;
+    if(!a.length) $("errLogBox").hidden = true;
+    if(!$("errLogBox").hidden) $("errLogBox").textContent = errLogText();
+  }
+  $("errLogShow").onclick = () => { const b = $("errLogBox"); b.hidden = !b.hidden; $("errLogShow").textContent = b.hidden ? "Xem" : "Ẩn"; renderErrLog(); };
+  $("errLogCopy").onclick = async () => {
+    const t = errLogText(); let ok = false;
+    try{ await navigator.clipboard.writeText(t); ok = true; }catch(e){}
+    if(!ok){ const b = $("errLogBox"); b.hidden = false; b.textContent = t; const r = document.createRange(); r.selectNodeContents(b); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); }
+    $("errLogCopy").textContent = ok ? "✓ Đã sao chép" : "Chọn sẵn, bấm Sao chép";
+    setTimeout(() => { $("errLogCopy").textContent = "Sao chép để gửi"; }, 2500);
+  };
+  $("errLogClear").onclick = e => { if(!armed(e.currentTarget)) return; lsSet("ngay50k:errlog", "[]"); $("errLogBox").hidden = true; renderErrLog(); };
+
   /* ---------- offline app shell & updates ---------- */
   if("serviceWorker" in navigator && /^https?:$/.test(location.protocol)){
     navigator.serviceWorker.register("sw.js").then(reg => {
       reg.addEventListener("updatefound", () => {
         const w = reg.installing; if(!w) return;
         w.addEventListener("statechange", () => {
-          if(w.state === "activated" && hadController) $("updateBar").hidden = false;
+          if(w.state === "activated" && hadController){
+            /* trang lấy từ mạng nên thường đã là bản mới; chỉ mời tải lại khi service worker mới khác bản đang chạy */
+            const mine = ((document.querySelector('script[src*="lock.js?v="]') || {}).src || "").split("v=")[1] || "";
+            fetch("sw.js", { cache:"no-store" }).then(r => r.text()).then(t => { const m = t.match(/const V = "(\d+)"/); if(!m || m[1] !== mine) $("updateBar").hidden = false; })
+              .catch(() => { $("updateBar").hidden = false; });
+          }
         });
       });
       document.addEventListener("visibilitychange", () => { if(!document.hidden) reg.update().catch(()=>{}); });
@@ -7817,7 +7896,28 @@ function startNgay50k(){
     window.addEventListener("scroll", onScroll, { passive:true }); onScroll();
   })();
 }
-N50K.ready.then(N50KLock.gate).then(startNgay50k);
+/* khởi động: kho dữ liệu → khoá app (nếu bật) → app. Thiếu file nào thì ghi nhật ký và hiện nút cứu hộ, không đơ im lặng. */
+N50K.ready.then(function(){
+  __bootStage("store");
+  if(!window.N50KLock){
+    /* lock.js không tải được (mạng chập chờn lúc vừa cập nhật). Máy chưa bật khoá thì vẫn chạy được;
+       đã bật khoá thì không giải mã được, phải tải lại cho đủ file. */
+    var locked = !!N50K.get("ngay50k:lock") || N50K.encKeys().some(function(k){ var v = N50K.get(k); return typeof v === "string" && v.indexOf("enc1:") === 0; });
+    if(locked) throw new Error("thiếu lock.js mà dữ liệu đang khoá");
+    window.__n50kLog("tải", "thiếu lock.js, chạy không khoá");
+    window.N50KLock = { gate:function(){}, isOn:function(){ return false; }, supported:function(){ return false; }, meta:function(){ return null; }, pkAvailable:function(){ return Promise.resolve(false); }, forget:function(){}, prepBackup:function(){ return Promise.reject(new Error("thiếu lock.js")); }, encBackup:function(){ return Promise.reject(new Error("Chưa tải đủ app, hãy tải lại")); }, decBackup:function(){ return Promise.reject(new Error("Chưa tải đủ app, hãy tải lại")); } };
+    N50K.unlockPlain();
+    return;
+  }
+  return N50KLock.gate();
+}).then(function(){
+  __bootStage("app");
+  startNgay50k();
+  __bootStage("started");
+}).catch(function(e){
+  window.__n50kLog("khởi động", e && (e.stack || e.message) || e);
+  window.__bootRescue("khởi động lỗi: " + (e && e.message || e));
+});
 </script>
 </body>
 </html>
