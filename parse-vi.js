@@ -3,8 +3,9 @@
    Mỗi item: { kind, amt, note, cat, date:"yyyy-mm-dd", t, cardId, who, loanId, src }
      kind: "out" (chi tài khoản/tiền mặt) | "card" (quẹt thẻ) | "in" (khoản thu)
            | "lend" (cho vay) | "borrow" (đi vay) | "repay" (mình trả nợ) | "collect" (người ta trả mình)
-           | "cardpay" (trả thẻ) | "bal" (số dư thật)
-   ctx: { now:Date, cards:[{id,name}], loans:[{id,type,who,settled}], tags:[{id,label}], history:(note)=>tagId|"" }
+           | "cardpay" (trả thẻ) | "bal" (số dư thật) | "xfer" (chuyển giữa các ví của mình: from, to)
+   Có nhiều ví (v98): out/in/bal/cardpay có thể kèm w = mã ví nói trong câu ("cafe 30k momo").
+   ctx: { now:Date, cards:[{id,name}], wallets:[{id,name}], loans:[{id,type,who,settled}], tags:[{id,label}], history:(note)=>tagId|"" }
    Dùng chung cho app (window.N50KParse) và cho bài thử chạy bằng Node (module.exports). */
 (function(root){
   "use strict";
@@ -226,6 +227,25 @@
     return null;
   }
 
+  /* ví nhắc tới trong câu (v98): [{id, i, n}] theo thứ tự xuất hiện. "main" là ví mặc định (tài khoản, tiền mặt).
+     Ví thêm khớp theo tên đầy đủ, hoặc chữ đầu của tên nếu đủ dài ("Momo cá nhân" → "momo"). */
+  function walletsIn(ctx, N){
+    const ws = (ctx && ctx.wallets) || [], out = [], used = new Set();
+    const take = (id, i, n) => { for(let k = 0; k < n; k++) if(used.has(i + k)) return; for(let k = 0; k < n; k++) used.add(i + k); out.push({ id, i, n }); };
+    ws.forEach(w => {
+      const full = norm(w.name).split(/\s+/).map(clean).filter(Boolean); if(!full.length) return;
+      let j = has(N, full);
+      if(j >= 0){ take(w.id, j, full.length); return; }
+      if(full[0].length >= 3 && !["the","vi","tai","tien","ngan","hang"].includes(full[0])){ j = N.indexOf(full[0]); if(j >= 0) take(w.id, j, 1); }
+    });
+    if(ws.length){
+      [["tai","khoan"],["tien","mat"],["tk"],["tm"]].forEach(seq => { const j = has(N, seq); if(j >= 0 && !(seq[0] === "tai" && N[j-1] === "chuyen")) take("main", j, seq.length); });
+    }
+    return out.sort((a, b) => a.i - b.i);
+  }
+  const TO_W = ["sang","vao","qua","ve"], PAY_W = ["bang","qua","tu","trong","o"];
+  const TOPUP_NOT = / (dien thoai|dt|3g|4g|5g|data|game|the cao|sim|dien|nuoc|hoc phi) /;
+
   /* ---------------- hiểu một đoạn ---------------- */
   const INC_RULES = [
     ["luong", [["luong"]]],
@@ -258,8 +278,33 @@
     const markDrop = seq => { const i = has(N, seq); if(i >= 0) for(let k = 0; k < seq.length; k++) drop.add(i+k); return i; };
     let kind = null;
 
+    /* chuyển tiền giữa các ví của mình (v98): "nạp momo 500k", "chuyển 1tr sang momo", "rút 300k từ momo về tài khoản" */
+    const WS = walletsIn(ctx, N), WX = WS.filter(m => m.id !== "main");
+    if(WX.length){
+      const verb = hasW("nap") ? "nap" : hasW("rut") ? "rut" : hasW("chuyen") ? "chuyen" : null;
+      let from = null, to = null, payBy = false;
+      WS.forEach(m => {
+        const p = N[m.i - 1], p2 = N[m.i - 2];
+        if(p === "tu"){ if(!from) from = m.id; }
+        else if(TO_W.includes(p) || (p === "tien" && TO_W.includes(p2))){ if(!to) to = m.id; }
+        else if(p === "nap" || (p === "tien" && p2 === "nap")){ if(!to) to = m.id; }
+        else if(p === "rut" || (p === "tien" && p2 === "rut")){ if(!from) from = m.id; }
+        else if(p === "bang") payBy = true;
+      });
+      const free = WX.find(m => m.id !== from && m.id !== to);
+      if(verb === "nap" && !payBy && !TOPUP_NOT.test(txt)){ if(!to && free) to = free.id; if(!from) from = "main"; }
+      else if(verb === "rut"){ if(!from && free) from = free.id; if(!to) to = "main"; }
+      else if(verb === "chuyen"){ if(to && !from) from = "main"; else if(!to) from = null; }
+      else { from = to = null; }
+      if(from && to && from !== to){
+        kind = "xfer"; item.from = from; item.to = to;
+        WS.forEach(m => { for(let k = 0; k < m.n; k++) drop.add(m.i + k); });
+      }
+    }
+
     /* số dư thật */
-    if(hasW("so du") || (hasW("tai khoan") && hasW("con")) || (hasW("tk") && hasW("con")) || (hasW("vi") && hasW("con") && !hasW("tieu"))){
+    if(!kind && WX.length && hasW("con") && !hasW("tieu") && !hasW("chi")) kind = "bal";
+    if(!kind && (hasW("so du") || (hasW("tai khoan") && hasW("con")) || (hasW("tk") && hasW("con")) || (hasW("vi") && hasW("con") && !hasW("tieu")))){
       kind = "bal";
     }
     /* trả thẻ */
@@ -333,6 +378,13 @@
       }
     }
     item.kind = kind;
+    /* khoản chi/thu/số dư/trả thẻ nói rõ ví nào ("cafe 30k momo", "lương về techcombank") */
+    if(WX.length && (kind === "out" || kind === "in" || kind === "bal" || kind === "cardpay")){
+      const m = WX[0]; item.w = m.id;
+      for(let k = 0; k < m.n; k++) drop.add(m.i + k);
+      if(PAY_W.includes(N[m.i - 1]) || TO_W.includes(N[m.i - 1])) drop.add(m.i - 1);
+      if(kind === "out"){ delete item.src; }
+    }
 
     /* nội dung: phần chữ còn lại, bỏ từ thừa */
     const SKIP = new Set(["het","mat","ton","la","tieu","chi","bang","qua","luc","vao","o","tai","duoc","da","vua","moi","roi","xong","thi"]);
@@ -341,7 +393,7 @@
     O.forEach((w, i) => { if(drop.has(i)) return; const n = N[i]; if(!n) return; if(PARTICLE.has(clean(w).toLowerCase())) return; if(SKIP.has(n) && (words.length === 0 || i === O.length - 1 || ["het","mat","ton"].includes(n))) return; words.push(clean(w) || w); });
     while(words.length && (SKIP.has(norm(words[words.length-1])) || PARTICLE.has(words[words.length-1].toLowerCase()))) words.pop();
     let note = words.join(" ").replace(/\s+/g, " ").trim();
-    if(kind === "lend" || kind === "borrow" || kind === "repay" || kind === "collect" || kind === "bal" || kind === "cardpay") note = "";
+    if(kind === "lend" || kind === "borrow" || kind === "repay" || kind === "collect" || kind === "bal" || kind === "cardpay" || kind === "xfer") note = "";
     if(kind === "in" && /^(nhận|nhan|được|duoc)$/i.test(note)) note = "";
     if(kind === "in" && item.cat === "cho" && item.who && !note) note = item.who + " cho";
     item.note = note ? note.charAt(0).toUpperCase() + note.slice(1) : "";
@@ -398,6 +450,10 @@
     if(card){ src = "card"; cardId = card.id; }
     else if(/ (the|quet the|ca the|the tin dung|credit) /.test(n)) src = "card";
     else if(/ (tai khoan|tk|chuyen khoan|ck|tien mat|tm|vi) /.test(n) && !/ so du /.test(n)) src = "tk";
+    /* v98: hỏi về một ví ("momo còn bao nhiêu", "tháng này chi gì bằng momo") */
+    const qw = walletsIn(ctx || {}, N).find(m => m.id !== "main");
+    if(qw && !wantsReport && / (so du|con) /.test(n) && !/ (tieu|chi|xai) /.test(n)) return { q:"balance", wid:qw.id };
+    if(qw){ src = "tk"; cardId = null; }
     if(/ so du | (tai khoan|tk|vi) con /.test(n) && !wantsReport) return { q:"balance" };
     if(/ (no|vay) /.test(n) && !/ the /.test(n)){
       const m = n.match(/ (?:minh|toi) no (.+?) bao/) ; const m2 = n.match(/ (.+?) (?:con )?no (?:minh|toi)/);
@@ -409,6 +465,7 @@
     if(/ (ngay nao|hom nao) .*(nhieu nhat|tieu nhieu)/.test(n)) return { q:"topday", period: period || "month" };
     if(wantsReport){
       const q = { q:"report", period: period || "month", src, cardId, tag, group:"tag", list:false, top:0, minAmt:0, kind:"out", compare:false };
+      if(qw) q.wid = qw.id;
       if(!period) q.noPeriod = true;                        /* không nói kỳ: có thể là câu nối tiếp câu trước */
       if(pr.from){ q.from = pr.from; q.to = pr.to; }
       if(/ (thu nhap|thu vao|thu duoc|khoan thu|kiem duoc|tien ve|nhan duoc) /.test(n)) q.kind = "in";
@@ -429,6 +486,7 @@
     if(/ con (bao nhieu|bn|duoc) | con lai /.test(n) && (!period || (period === "today" && !/ (tieu|chi|xai|het|ton|an|uong|mua) /.test(n)))) return { q:"left" };
     if(/ (tieu|chi|xai|het|ton|an|uong|mua) /.test(n) || tag || period){
       const q = { q:"spent", period: period || "today", tag, src };
+      if(qw) q.wid = qw.id;
       if(pr.from){ q.period = "custom"; q.from = pr.from; q.to = pr.to; }
       return q;
     }
@@ -451,11 +509,12 @@
     const cmpAt = n.search(/ (so voi|so sanh) /);
     const pr = cmpAt >= 0 ? periodOf(n.slice(0, cmpAt + 1), now) : periodOf(n, now);   /* "so với tháng trước": giữ kỳ đang xem */
     if(pr.period){ q.period = pr.period; delete q.from; delete q.to; if(pr.from){ q.from = pr.from; q.to = pr.to; } changed = true; }
-    const card = findCard(ctx, N);
-    if(card){ q.src = "card"; q.cardId = card.id; changed = true; }
-    else if(/ (ca hai|tat ca|ca the lan|ca tai khoan lan|gop het|tong het|bo loc) /.test(n)){ q.src = "all"; q.cardId = null; q.tag = null; q.tags = []; changed = true; }
-    else if(/ (tai khoan|tk|chuyen khoan|ck|tien mat|tm) /.test(n)){ q.src = "tk"; q.cardId = null; changed = true; }
-    else if(/ (the|quet the|ca the|the tin dung) /.test(n)){ q.src = "card"; q.cardId = null; changed = true; }
+    const card = findCard(ctx, N), rw = walletsIn(ctx, N).find(m => m.id !== "main");
+    if(rw){ q.src = "tk"; q.cardId = null; q.wid = rw.id; changed = true; }
+    else if(card){ q.src = "card"; q.cardId = card.id; delete q.wid; changed = true; }
+    else if(/ (ca hai|tat ca|ca the lan|ca tai khoan lan|gop het|tong het|bo loc|cac vi|moi vi) /.test(n)){ q.src = "all"; q.cardId = null; q.tag = null; q.tags = []; delete q.wid; changed = true; }
+    else if(/ (tai khoan|tk|chuyen khoan|ck|tien mat|tm) /.test(n)){ q.src = "tk"; q.cardId = null; delete q.wid; changed = true; }
+    else if(/ (the|quet the|ca the|the tin dung) /.test(n)){ q.src = "card"; q.cardId = null; delete q.wid; changed = true; }
     if(/ theo ngay /.test(n)){ q.group = "day"; changed = true; }
     else if(/ theo tuan /.test(n)){ q.group = "week"; changed = true; }
     else if(/ theo thang /.test(n)){ q.group = "month"; changed = true; }

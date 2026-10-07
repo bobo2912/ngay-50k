@@ -1,6 +1,24 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v97, ngày 07/10/2026
+**Phiên bản hiện tại:** v98, ngày 07/10/2026
+
+---
+
+## Có gì mới trong v98 (so với v97)
+
+**Nhiều ví (bước 2 của mục 2.2): chọn ví khi ghi, chuyển tiền giữa các ví.**
+- Có từ hai ví trở lên thì form chi, form thu, màn sửa khoản và thẻ xác nhận trong chat có thêm ô **chọn ví**. Chi tiền mặt mặc định là ví Tài khoản; chuyển khoản nhớ ví bạn dùng lần trước.
+- **Chuyển tiền giữa các ví**: nút "Chuyển tiền giữa các ví" trong màn từng ví. Không tính là chi tiêu, hiện trong biến động của cả hai ví và xoá được ở mục lịch sử.
+- Chat hiểu tên ví:
+  - "cafe 30k momo", "grab 28k qua zalopay" → chi từ ví đó;
+  - "nạp momo 500k", "chuyển 1tr sang momo", "rút 300k từ momo về tài khoản" → chuyển giữa ví;
+  - "momo còn 350k" → đối chiếu ví Momo; "momo còn bao nhiêu" → số dư ví Momo;
+  - "tháng này chi gì bằng momo" → báo cáo chỉ ví Momo; nói tiếp "còn momo thì sao", "tất cả các ví" cũng được.
+- Trợ lý AI cũng biết danh sách ví và kiểu chuyển giữa ví.
+- Báo cáo gom "theo nguồn" tách riêng từng ví; dòng giao dịch ghi tên ví.
+- Ghi xong, chat báo số dư của đúng ví vừa đổi.
+- Hạn mức mỗi ngày vẫn tính chi từ mọi ví.
+- Câu thử mới: `tests-wallet-vi.js` (23 câu).
 
 ---
 
@@ -16,12 +34,6 @@
 - Dữ liệu mẫu có thêm ví "Momo (mẫu)".
 
 Chọn ví khi ghi khoản và chuyển tiền giữa các ví sẽ có ở v98.
-
----
-
-## Có gì mới trong v96 (so với v95)
-
-**Chạm ô chat không còn làm đầu trang giật.** Trước đây lúc bàn phím bật, iPhone trượt cả màn hình lên để lộ ô nhập, đầu trang và ô Số dư ví bị đẩy lên rồi mới hạ về chỗ cũ. Giờ ô nhập tạm trong suốt trong tích tắc lúc chạm nên iPhone không trượt trang nữa, app tự đặt ô nhập ngay trên bàn phím. Trong lúc bàn phím trượt lên, app bám theo màn hình từng khung hình nên đầu trang đứng yên.
 
 ---
 
@@ -134,6 +146,7 @@ Chọn ví khi ghi khoản và chuyển tiền giữa các ví sẽ có ở v98.
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v98** | Chọn ví khi ghi; chuyển tiền giữa các ví; chat hiểu tên ví |
 | **v97** | Nhiều ví: thêm ví, hàng ví, tổng các ví trừ nợ thẻ, màn riêng từng ví |
 | **v96** | Chạm ô chat không làm đầu trang và ô Số dư ví giật lên xuống |
 | **v95** | Giữ màu đầu trang khi chat; sửa đơ sau khi chụp màn hình; nút Kiểm tra cập nhật; màn Đối chiếu số dư riêng |
