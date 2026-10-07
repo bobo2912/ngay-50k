@@ -118,7 +118,7 @@ python3 -m http.server 8765 &
 # rồi bấm qua từng tab và chụp màn hình so sánh
 ```
 
-Bộ hiểu câu có hai bài thử chạy bằng Node: `node tests-parse-vi.js` và `node tests-parse-vi-2.js` (hiểu câu, 104 câu gõ không dấu, viết tắt, nhiều khoản) và `node tests-assess-vi.js` (câu nào máy tự xử lý, câu nào gửi AI, dùng `N50KParse.assess`).
+Bộ hiểu câu có các bài thử chạy bằng Node: `node tests-parse-vi.js` và `node tests-parse-vi-2.js` (hiểu câu, 104 câu gõ không dấu, viết tắt, nhiều khoản), `node tests-assess-vi.js` (câu nào máy tự xử lý, câu nào gửi AI, dùng `N50KParse.assess`) và `node tests-wallet-vi.js` (nhiều ví: chi theo ví, chuyển giữa ví, hỏi số dư ví).
 
 Vài chỗ dễ vỡ, sửa xong nên thử lại:
 

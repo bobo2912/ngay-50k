@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v97";
+  var K = "ngay50k:errlog", VER = "v98";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -1622,6 +1622,9 @@ body.kb #tab-chat > .chip-veil{display:none}
 .recon section > h2{font-size:.95rem; margin:0 2px 8px}
 .recon .settings-head .w-edit{justify-self:end}
 .recon-hero{margin:12px 2px 12px}
+.xfer-btn{width:100%; margin-top:10px}
+#xWarn{color:var(--danger, #d33); font-size:.85rem; margin:4px 2px 0}
+.pcard .parrow{align-self:center; color:var(--muted); font-weight:700; flex:none}
 .recon-hero #reconBig{margin:0; font-size:1.7rem; font-weight:800; letter-spacing:-.01em}
 .recon-hero #reconBig.neg{color:var(--danger, #d33)}
 .recon-hero .ov-sub{margin:2px 0 0}
@@ -1821,6 +1824,10 @@ body.kb #tab-chat > .chip-veil{display:none}
         <div class="field">
           <label for="incDate"><span>Ngày nhận</span></label>
           <input id="incDate" class="inp" type="date">
+        </div>
+        <div class="field" id="iWField" hidden>
+          <label><span>Vào ví</span></label>
+          <div class="chips wchips" id="iWChips" style="margin-top:0"></div>
         </div>
         <button class="primary green" id="saveIncome" disabled>Lưu khoản thu</button>
       </div>
@@ -2326,7 +2333,7 @@ body.kb #tab-chat > .chip-veil{display:none}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v97</p>
+      <p class="sync" id="appVersion">Phiên bản v98</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -2494,6 +2501,7 @@ body.kb #tab-chat > .chip-veil{display:none}
       <p class="inline-ok" id="balDiff" hidden></p>
       <button class="primary" id="balSave" type="button" disabled>Lưu số dư</button>
     </section>
+    <button class="ghost xfer-btn" id="xferOpen" type="button" hidden>🔁 Chuyển tiền giữa các ví</button>
     <section id="soonSec" hidden>
       <h2>Sắp tới, chưa trừ vào số dư</h2>
       <ul class="flow" id="soonList"></ul>
@@ -2531,6 +2539,29 @@ body.kb #tab-chat > .chip-veil{display:none}
   <div class="sheet-foot">
     <button class="ghost" id="wCancel" type="button">Huỷ</button>
     <button class="primary" id="wSave" type="button" style="margin:0" disabled>Lưu</button>
+  </div>
+</div>
+
+<div class="sheet-back top2" id="xBack" hidden></div>
+<div class="sheet top2" id="xSheet" role="dialog" aria-modal="true" aria-labelledby="xTitle" hidden>
+  <div class="grab" aria-hidden="true"></div>
+  <div class="sheet-head"><h2 id="xTitle">Chuyển giữa các ví</h2><button class="x" id="closeX" aria-label="Đóng">✕</button></div>
+  <p class="ov-sub" style="margin:0 2px 6px">Tiền chuyển giữa các ví của bạn không tính là chi tiêu.</p>
+  <div class="field"><label><span>Từ ví</span></label><div class="chips wchips" id="xFrom" style="margin-top:0"></div></div>
+  <div class="field"><label><span>Sang ví</span></label><div class="chips wchips" id="xTo" style="margin-top:0"></div></div>
+  <div class="field">
+    <label for="xAmt"><span>Số tiền</span></label>
+    <div class="amt-row">
+      <input id="xAmt" class="inp amount-inp num" inputmode="numeric" autocomplete="off" placeholder="0đ">
+      <button type="button" class="k000 num" id="xAmt000" aria-label="Thêm 000 vào số tiền">000</button>
+    </div>
+  </div>
+  <div class="field"><label for="xDate"><span>Ngày</span></label><input id="xDate" class="inp" type="date"></div>
+  <div class="field"><label for="xNote"><span>Ghi chú <span class="opt">(không bắt buộc)</span></span></label><input id="xNote" class="inp" maxlength="40" autocomplete="off" placeholder="vd: nạp Momo"></div>
+  <p class="pwarn" id="xWarn" hidden></p>
+  <div class="sheet-foot">
+    <button class="ghost" id="xCancel" type="button">Huỷ</button>
+    <button class="primary" id="xSave" type="button" style="margin:0" disabled>Lưu</button>
   </div>
 </div>
 
@@ -2666,6 +2697,10 @@ body.kb #tab-chat > .chip-veil{display:none}
           <label><span>Tag</span></label>
           <div class="chips" id="catChips" role="group" aria-label="Loại chi tiêu" style="margin-top:0"></div>
         </div>
+        <div class="field" id="fWField" hidden>
+          <label><span>Trả từ ví</span></label>
+          <div class="chips wchips" id="fWChips" style="margin-top:0"></div>
+        </div>
 
         <div class="save-contact" id="saveContactBox" hidden>
           <label class="check"><input type="checkbox" id="saveContact"> Lưu vào danh sách người hay chuyển</label>
@@ -2721,6 +2756,10 @@ body.kb #tab-chat > .chip-veil{display:none}
   <div class="field" id="eIncField" hidden>
     <label><span>Nguồn thu</span></label>
     <div class="chips" id="eIncChips" style="margin-top:0"></div>
+  </div>
+  <div class="field" id="eWField" hidden>
+    <label><span id="eWLabel">Ví</span></label>
+    <div class="chips wchips" id="eWChips" style="margin-top:0"></div>
   </div>
   <p class="edit-hint" id="editHint" hidden>Chỉ sửa trong sổ chi tiêu, không thay đổi giao dịch đã chuyển ở ngân hàng.</p>
   <div class="sheet-foot">
@@ -2783,8 +2822,8 @@ body.kb #tab-chat > .chip-veil{display:none}
 
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
 <script src="vendor/jsQR.js"></script>
-<script src="parse-vi.js?v=97"></script>
-<script src="lock.js?v=97"></script>
+<script src="parse-vi.js?v=98"></script>
+<script src="lock.js?v=98"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -3216,6 +3255,22 @@ function startNgay50k(){
     out.net = out.cash - out.debt;
     return out;
   }
+  /* hàng chọn ví trong các form (v98): chỉ hiện khi có từ hai ví */
+  const LASTW_KEY = "ngay50k:lastW";
+  function wPicker(fieldId, boxId, sel){
+    const f = $(fieldId), box = $(boxId); if(!f || !box) return;
+    sel = sel && walletById(sel) ? sel : MAIN_W;
+    f.hidden = !multiW(); box.innerHTML = ""; box.dataset.w = sel;
+    if(f.hidden) return;
+    walletList().forEach(w => {
+      const b = document.createElement("button"); b.type = "button"; b.className = "chip";
+      b.textContent = w.icon + " " + w.name; b.setAttribute("aria-pressed", sel === w.id ? "true" : "false");
+      b.onclick = () => wPicker(fieldId, boxId, w.id);
+      box.appendChild(b);
+    });
+  }
+  function pickedW(boxId){ const v = $(boxId) && $(boxId).dataset.w; return v && v !== MAIN_W && walletById(v) ? v : null; }
+  function lastW(){ const v = lsGet(LASTW_KEY); return v && walletById(v) ? v : MAIN_W; }
   const todays = () => state.days[todayKey()] || [];
   const sumOf = items => (items||[]).reduce((a,b)=>a+(Number(b.amt)||0),0);
   function fmtShort(n){
@@ -3283,6 +3338,7 @@ function startNgay50k(){
     $("saveContact").checked = false; $("contactNameField").hidden = true;
     $("txDate").max = todayKey(); $("txDate").value = curDay(); updateTxHint();
     selectCat("an");
+    wPicker("fWField", "fWChips", m === "cash" ? MAIN_W : lastW());   /* tiền mặt nằm trong ví mặc định */
 
     if(data){
       if(data.amount){ setAmt(data.amount); setSrc("amtSrc","qr"); } else setSrc("amtSrc","need");
@@ -3398,6 +3454,8 @@ function startNgay50k(){
     const k = txDay(), now = new Date();
     const when = k === todayKey() ? now.getTime() : new Date(k + "T" + pad(now.getHours()) + ":" + pad(now.getMinutes()) + ":00").getTime();
     const it = { id:uid(), amt:amtValue(), cat:selectedCat, note:$("desc").value.trim(), t:when };
+    const fw = pickedW("fWChips"); if(fw) it.w = fw;
+    if(multiW()) lsSet(LASTW_KEY, fw || MAIN_W);
     if(mode !== "cash"){
       it.acct = acctOf($("acct").value); it.bank = $("bank").value.trim(); it.memo = $("memo").value.trim();
       const holder = $("holder").value.trim(); if(holder) it.holder = holder;
@@ -4063,6 +4121,7 @@ function startNgay50k(){
   function openIncome(){
     $("incomeForm").hidden = false; $("addIncomeBtn").hidden = true;
     $("incAmt").value = ""; $("incNote").value = ""; $("incDate").value = todayKey();
+    wPicker("iWField", "iWChips", MAIN_W);
     selectInc("luong"); refreshIncome();
   }
   function closeIncome(){ $("incomeForm").hidden = true; $("addIncomeBtn").hidden = false; }
@@ -4075,7 +4134,8 @@ function startNgay50k(){
     const a = incAmt(); if(!a) return;
     const k = /^\d{4}-\d{2}-\d{2}$/.test($("incDate").value) ? $("incDate").value : todayKey();
     const t = k === todayKey() ? Date.now() : new Date(k + "T12:00:00").getTime();
-    (state.income[k] = state.income[k] || []).push({ id:uid(), amt:a, cat:incCat, note:$("incNote").value.trim(), t });
+    const rec = { id:uid(), amt:a, cat:incCat, note:$("incNote").value.trim(), t }, iw = pickedW("iWChips"); if(iw) rec.w = iw;
+    (state.income[k] = state.income[k] || []).push(rec);
     const [yy,mm] = k.split("-").map(Number); viewMonth = new Date(yy, mm-1, 1);
     persist(true); closeIncome(); renderAll();
     flash("incomeMsg", "✓ Đã lưu khoản thu " + fmt(a));
@@ -4898,10 +4958,11 @@ function startNgay50k(){
     days.forEach(k => (state.days[k] || []).forEach(it => { if(it.note && it.cat) recent[it.note.trim().toLowerCase()] = it.cat; }));
     for(const k in state.cardTx) (state.cardTx[k] || []).forEach(it => { if(it.where && it.cat) recent[it.where.trim().toLowerCase()] = it.cat; });
     return { now:new Date(), cards:(state.cards || []).map(c => ({ id:c.id, name:c.name || "" })), loans,
+      wallets:(state.wallets || []).filter(w => !w.off).map(w => ({ id:w.id, name:w.name || "" })),
       history: text => { const k = String(text).trim().toLowerCase(); return recent[k] || ""; } };
   }
-  const KIND_LABEL = { out:"Chi tài khoản", card:"Quẹt thẻ", "in":"Khoản thu", lend:"Cho vay", borrow:"Đi vay", repay:"Trả nợ", collect:"Được trả nợ", cardpay:"Trả thẻ", bal:"Số dư thật" };
-  const KIND_ICON = { out:"💸", card:"💳", "in":"💰", lend:"🤝", borrow:"🤝", repay:"🤝", collect:"🤝", cardpay:"💳", bal:"🏦" };
+  const KIND_LABEL = { out:"Chi tài khoản", card:"Quẹt thẻ", "in":"Khoản thu", lend:"Cho vay", borrow:"Đi vay", repay:"Trả nợ", collect:"Được trả nợ", cardpay:"Trả thẻ", bal:"Số dư thật", xfer:"Chuyển giữa ví" };
+  const KIND_ICON = { out:"💸", card:"💳", "in":"💰", lend:"🤝", borrow:"🤝", repay:"🤝", collect:"🤝", cardpay:"💳", bal:"🏦", xfer:"🔁" };
   const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c]));
   const sMoney = n => (n < 0 ? "−" : "") + fmt(Math.abs(n));
 
@@ -4972,14 +5033,15 @@ function startNgay50k(){
       if(tags && !tags.includes(it.cat || "")) return;
       if(q.minAmt && amt < q.minAmt) return;
       if(!okKw(name, it.cat)) return;
-      out.push({ k, t:it.t || 0, amt, cat:it.cat || "", note:name || "", src, cardId:it.cardId || null, cash:it.src === "cash" });
+      if(q.wid && (src === "card" || wOf(it) !== q.wid)) return;      /* v98: lọc theo ví */
+      out.push({ k, t:it.t || 0, amt, cat:it.cat || "", note:name || "", src, cardId:it.cardId || null, cash:it.src === "cash", w:wOf(it) });
     };
     if(q.kind === "in"){
       for(const k in state.income) if(k >= a && k <= b) (state.income[k] || []).forEach(it => push(k, it, "in", it.note || (INC.find(x => x.id === it.cat) || {}).label || "Khoản thu"));
       return out;
     }
     if(q.src !== "card") for(const k in state.days) if(k >= a && k <= b) (state.days[k] || []).forEach(it => push(k, it, "tk", it.note || it.who || tagOf(it.cat).label));
-    if(q.src !== "tk") for(const k in state.cardTx) if(k >= a && k <= b) (state.cardTx[k] || []).forEach(it => { if(q.cardId && it.cardId !== q.cardId) return; push(k, it, "card", it.where || tagOf(it.cat).label); });
+    if(q.src !== "tk" && !q.wid) for(const k in state.cardTx) if(k >= a && k <= b) (state.cardTx[k] || []).forEach(it => { if(q.cardId && it.cardId !== q.cardId) return; push(k, it, "card", it.where || tagOf(it.cat).label); });
     return out;
   }
   function rptGroupKey(x, g){
@@ -4987,7 +5049,7 @@ function startNgay50k(){
     if(g === "week"){ const d = new Date(x.k + "T12:00:00"); d.setDate(d.getDate() - (d.getDay() + 6) % 7); return keyOf(d); }
     if(g === "month") return x.k.slice(0, 7);
     if(g === "place") return window.N50KParse.norm(x.note).trim() || "-";
-    if(g === "src") return x.src === "card" ? "card:" + (x.cardId || "") : (x.cash ? "cash" : "tk");
+    if(g === "src") return x.src === "card" ? "card:" + (x.cardId || "") : x.w && x.w !== MAIN_W ? "w:" + x.w : (x.cash ? "cash" : "tk");
     return x.cat || "khac";
   }
   function rptGroupLabel(key, g, sample, kind){
@@ -4995,6 +5057,7 @@ function startNgay50k(){
     if(g === "week"){ const d = new Date(key + "T12:00:00"), e = new Date(d); e.setDate(e.getDate() + 6); return { icon:"🗓️", label:"Tuần " + dm(key) + " – " + dm(keyOf(e)) }; }
     if(g === "month"){ const [y, m] = key.split("-"); return { icon:"🗓️", label:"Tháng " + (+m) + "/" + y }; }
     if(g === "place") return { icon:(kind === "in" ? "💰" : tagOf(sample.cat).icon), label:sample.note || "(không ghi chú)" };
+    if(g === "src" && key.indexOf("w:") === 0){ const w = walletById(key.slice(2)); return { icon:w ? w.icon : "👛", label:walletName(key.slice(2)) }; }
     if(g === "src") return key === "tk" ? { icon:"🏦", label:"Tài khoản" } : key === "cash" ? { icon:"💵", label:"Tiền mặt" } : { icon:"💳", label:cardName(key.slice(5)) ? cardLbl(key.slice(5)) : "Thẻ tín dụng" };
     if(kind === "in"){ const c = INC.find(x => x.id === key) || { icon:"💰", label:"Khác" }; return { icon:c.icon, label:c.label }; }
     const t = tagOf(key); return { icon:t.icon, label:t.label };
@@ -5003,7 +5066,7 @@ function startNgay50k(){
   let rptHideSrc = false;
   function rptLine(x, kind){
     const tg = kind === "in" ? (INC.find(c => c.id === x.cat) || { icon:"💰" }) : tagOf(x.cat);
-    const badge = rptHideSrc ? "" : x.src === "card" ? '<em>' + esc(cardLbl(x.cardId)) + '</em>' : x.cash ? "<em>Tiền mặt</em>" : "";
+    const badge = rptHideSrc ? "" : x.src === "card" ? '<em>' + esc(cardLbl(x.cardId)) + '</em>' : x.w && x.w !== MAIN_W ? '<em>' + esc(walletName(x.w)) + '</em>' : x.cash ? "<em>Tiền mặt</em>" : "";
     return '<li><span class="d">' + dm(x.k) + '</span><span class="i">' + tg.icon + '</span><span class="n">' + esc(x.note) + badge + '</span><b>' + fmt(x.amt) + '</b></li>';
   }
   function rptList(list, kind, cap){
@@ -5018,8 +5081,8 @@ function startNgay50k(){
     const [a, b, lbl] = qRange(q), kind = q.kind === "in" ? "in" : "out";
     const list = rptTx(a, b, q).sort((x, y) => q.top ? y.amt - x.amt : (y.k < x.k ? -1 : y.k > x.k ? 1 : (y.t || 0) - (x.t || 0)));
     const verb = kind === "in" ? "thu" : "chi";
-    const srcTxt = kind === "in" ? "" : q.cardId ? " bằng " + esc(cardLbl(q.cardId).replace(/^Thẻ/, "thẻ")) : q.src === "card" ? " bằng thẻ" : q.src === "tk" ? " từ tài khoản" : "";
-    rptHideSrc = q.src === "card" && (!!q.cardId || (state.cards || []).length <= 1);
+    const srcTxt = q.wid ? (kind === "in" ? " vào " : " từ ") + esc(walletName(q.wid)) : kind === "in" ? "" : q.cardId ? " bằng " + esc(cardLbl(q.cardId).replace(/^Thẻ/, "thẻ")) : q.src === "card" ? " bằng thẻ" : q.src === "tk" ? " từ tài khoản" : "";
+    rptHideSrc = !!q.wid || (q.src === "card" && (!!q.cardId || (state.cards || []).length <= 1));
     const tags = rptTags(q);
     const what = tags ? " cho " + esc(q.tag === "an+uong" ? "ăn uống" : tags.map(t => tagOf(t).label.toLowerCase()).join(", ")) : "";
     const kwTxt = q.kw ? " có chữ “" + esc(q.kw) + "”" : "", minTxt = q.minAmt ? " (khoản từ " + fmt(q.minAmt) + ")" : "";
@@ -5095,6 +5158,7 @@ function startNgay50k(){
     if(q.q === "spent"){
       const [a, b, lbl] = qRange(q);
       const tags = q.tag === "an+uong" ? ["an","uong"] : q.tag ? [q.tag] : null;
+      if(q.wid) return report(Object.assign({}, q, { q:"report", group:"tag" }));   /* v98: hỏi chi theo ví → báo cáo lọc ví */
       const r = spentIn(a, b, tags), src = q.src || "all";
       const tot = src === "tk" ? r.acc : src === "card" ? r.card : r.acc + r.card;
       const what = (q.tag === "an+uong" ? " cho ăn uống" : q.tag ? " cho " + tagOf(q.tag).label.toLowerCase() : "") + (src === "tk" ? " từ tài khoản" : src === "card" ? " bằng thẻ" : "");
@@ -5106,6 +5170,10 @@ function startNgay50k(){
       return t;
     }
     if(q.q === "left"){ const T = walletsTotal(); return todayLeftText() + (T.any ? " Số dư " + (multiW() ? "các ví" : "ví") + ": <b>" + sMoney(T.cash) + "</b>." : ""); }
+    if(q.q === "balance" && q.wid && walletById(q.wid)){
+      const r = balCalc(null, q.wid), w = walletById(q.wid);
+      return r ? "Số dư " + esc(w.name) + " hiện là <b>" + sMoney(r.bal) + "</b>." : "Mình chưa biết số dư " + esc(w.name) + ". Nói kiểu \"" + esc(w.name) + " còn 500k\" là mình ghi lại làm mốc.";
+    }
     if(q.q === "balance"){
       const T = walletsTotal();
       if(!T.any) return "Mình chưa biết số dư của bạn. Nói kiểu \"tài khoản còn 5 triệu 8\" là mình ghi lại làm mốc.";
@@ -5152,15 +5220,22 @@ function startNgay50k(){
     if((it.kind === "repay" || it.kind === "collect") && !it.loanId) return it.kind === "collect" ? "Chọn khoản cho vay được trả" : "Chọn khoản vay để trả";
     if((it.kind === "lend" || it.kind === "borrow") && !it.loanId && !String(it.who || "").trim()) return "Ghi tên người";
     if(it.kind === "card" && !(state.cards || []).length) return "Chưa có thẻ nào, thêm thẻ ở tab Thẻ trước";
+    if(it.kind === "xfer"){
+      if(!multiW()) return "Chưa có ví thứ hai, thêm ví ở tab Ví trước";
+      if(!walletById(it.from) || !walletById(it.to)) return "Chọn ví chuyển đi và ví nhận";
+      if((it.from || MAIN_W) === (it.to || MAIN_W)) return "Ví chuyển đi và ví nhận phải khác nhau";
+    }
     return "";
   }
   function commit(it){
     const k = /^\d{4}-\d{2}-\d{2}$/.test(it.date) ? it.date : todayKey();
     const t = it.t || Date.now(), id = uid();
     let ref = { kind:it.kind, id, day:k };
-    if(it.kind === "out"){ (state.days[k] = state.days[k] || []).push({ id, amt:it.amt, cat:it.cat || "khac", note:it.note || "", t }); }
+    const wv = it.w && it.w !== MAIN_W && walletById(it.w) ? { w:it.w } : {};     /* v98: ví của khoản */
+    if(it.kind === "out"){ (state.days[k] = state.days[k] || []).push(Object.assign({ id, amt:it.amt, cat:it.cat || "khac", note:it.note || "", t }, wv)); }
     else if(it.kind === "card"){ (state.cardTx[k] = state.cardTx[k] || []).push({ id, amt:it.amt, where:it.note || "Chi thẻ", cardId:it.cardId || null, cat:it.cat || "", t }); }
-    else if(it.kind === "in"){ (state.income[k] = state.income[k] || []).push({ id, amt:it.amt, cat:it.cat || "khac", note:it.note || "", t }); }
+    else if(it.kind === "in"){ (state.income[k] = state.income[k] || []).push(Object.assign({ id, amt:it.amt, cat:it.cat || "khac", note:it.note || "", t }, wv)); }
+    else if(it.kind === "xfer"){ (state.xfer = state.xfer || []).push({ id, amt:it.amt, from:it.from || MAIN_W, to:it.to || MAIN_W, date:k, t, note:it.note || "" }); }
     else if(it.kind === "lend" || it.kind === "borrow"){
       const l = it.loanId ? getLoan(it.loanId) : null;
       if(l){ (l.draws = l.draws || []).push({ id, amt:it.amt, date:k, note:"", t }); ref.loanId = l.id; ref.sub = "draw"; }
@@ -5169,10 +5244,10 @@ function startNgay50k(){
     else if(it.kind === "repay" || it.kind === "collect"){
       const l = getLoan(it.loanId); (l.payments = l.payments || []).push({ id, amt:it.amt, date:k, note:"", t }); ref.loanId = l.id; ref.sub = "pay";
     }
-    else if(it.kind === "cardpay"){ const rec = { id, amt:it.amt, date:k, t }; if(it.cardId) rec.cardId = it.cardId; (state.cardPay = state.cardPay || []).push(rec); }
+    else if(it.kind === "cardpay"){ const rec = { id, amt:it.amt, date:k, t }; if(it.cardId) rec.cardId = it.cardId; if(wv.w) rec.from = wv.w; (state.cardPay = state.cardPay || []).push(rec); }
     else if(it.kind === "bal"){
-      const r = balCalc(), rec = { id, amt:it.amt, t:Date.now() };
-      if(r){ rec.book = Math.round(r.bal); rec.card = r.debt; } else rec.card = 0;
+      const r = balCalc(null, wv.w || MAIN_W), rec = Object.assign({ id, amt:it.amt, t:Date.now() }, wv);
+      if(r){ rec.book = Math.round(r.bal); if(!wv.w) rec.card = r.debt; } else if(!wv.w) rec.card = 0;
       (state.bals = state.bals || []).push(rec); ref.book = rec.book;
     }
     return ref;
@@ -5187,16 +5262,24 @@ function startNgay50k(){
     else if(ref.sub === "pay"){ const l = getLoan(ref.loanId); if(l) l.payments = (l.payments || []).filter(x => x.id !== ref.id); }
     else if(ref.kind === "cardpay") state.cardPay = (state.cardPay || []).filter(x => x.id !== ref.id);
     else if(ref.kind === "bal") state.bals = (state.bals || []).filter(x => x.id !== ref.id);
+    else if(ref.kind === "xfer") state.xfer = (state.xfer || []).filter(x => x.id !== ref.id);
+  }
+  /* số dư của một ví, để nói sau khi ghi (nhiều ví thì nêu tên ví) */
+  function balLine(wid){
+    wid = wid && walletById(wid) ? wid : MAIN_W;
+    const r = balCalc(null, wid); if(!r) return "";
+    return " Số dư " + (multiW() ? esc(walletName(wid)) : "ví") + ": <b>" + sMoney(r.bal) + "</b>.";
   }
   function afterText(it, ref){
-    const r = balCalc(), bal = r ? " Số dư ví: <b>" + sMoney(r.bal) + "</b>." : "";
+    const r = balCalc(), bal = balLine(it.kind === "out" || it.kind === "in" || it.kind === "bal" || it.kind === "cardpay" ? it.w : MAIN_W);
+    if(it.kind === "xfer") return "Đã chuyển " + fmt(it.amt) + " từ " + esc(walletName(it.from)) + " sang " + esc(walletName(it.to)) + "." + balLine(it.from) + balLine(it.to);
     if(it.kind === "out") return todayLeftText() + bal;
     if(it.kind === "card"){ const [a, b] = rangeOf("month"); const nm = cardName(it.cardId); return "Tháng này " + (nm ? "thẻ " + esc(nm) : "thẻ") + " đã chi " + fmt(spentIn(a, b, null).card) + "." + (r && r.debt ? " Nợ thẻ " + fmt(r.debt) + "." : ""); }
     if(it.kind === "in") return "Tuyệt 🎉" + bal;
     if(it.kind === "lend" || it.kind === "collect"){ const l = getLoan(ref.loanId || ref.id); return l ? esc(l.who) + " còn nợ bạn <b>" + fmt(leftOf(l)) + "</b>." + bal : bal; }
     if(it.kind === "borrow" || it.kind === "repay"){ const l = getLoan(ref.loanId || ref.id); return l ? (leftOf(l) > 0 ? "Bạn còn nợ " + esc(l.who) + " <b>" + fmt(leftOf(l)) + "</b>." : "Đã trả hết cho " + esc(l.who) + " 👏") + bal : bal; }
     if(it.kind === "cardpay") return r ? "Nợ thẻ còn <b>" + fmt(r.debt) + "</b>." + bal : "";
-    if(it.kind === "bal"){ const d = ref.book == null ? null : it.amt - ref.book; return "Đã lấy " + fmt(it.amt) + " làm mốc số dư." + (d ? " Lệch " + (d > 0 ? "+" : "−") + fmt(Math.abs(d)) + " so với sổ." : d === 0 ? " Khớp sổ 👌" : ""); }
+    if(it.kind === "bal"){ const d = ref.book == null ? null : it.amt - ref.book; return "Đã lấy " + fmt(it.amt) + " làm mốc số dư" + (it.w && it.w !== MAIN_W && multiW() ? " " + esc(walletName(it.w)) : "") + "." + (d ? " Lệch " + (d > 0 ? "+" : "−") + fmt(Math.abs(d)) + " so với sổ." : d === 0 ? " Khớp sổ 👌" : ""); }
     return "";
   }
 
@@ -5212,6 +5295,8 @@ function startNgay50k(){
     if(it.kind === "card"){ const nm = cardName(it.cardId); what = (what || "Chi thẻ") + (nm ? " · thẻ " + nm : ""); }
     if(it.kind === "lend" || it.kind === "borrow" || it.kind === "repay" || it.kind === "collect"){ const l = it.loanId ? getLoan(it.loanId) : null; what = (l ? l.who : it.who) || ""; }
     if(it.kind === "cardpay"){ const nm = cardName(it.cardId); what = nm ? "thẻ " + nm : ""; }
+    if(it.kind === "xfer") what = walletName(it.from) + " → " + walletName(it.to);
+    if((it.kind === "out" || it.kind === "in" || it.kind === "bal") && it.w && it.w !== MAIN_W && multiW()) what = (what ? what + " · " : "") + walletName(it.w);
     const icon = it.kind === "out" || it.kind === "card" ? tagOf(it.cat).icon : it.kind === "in" ? (INC.find(x => x.id === it.cat) || INC[INC.length-1]).icon : KIND_ICON[it.kind];
     return icon + " " + KIND_LABEL[it.kind] + (what ? ": " + what : "") + " · " + fmt(it.amt) + (it.kind !== "bal" && it.date !== todayKey() ? " · " + dateLabel(it.date) : "");
   }
@@ -5245,7 +5330,11 @@ function startNgay50k(){
     if(it.kind === "out" || it.kind === "card") row3.push('<select class="pt" aria-label="Nhóm">' + optionList(allTags().map(t => [t.id, t.icon + " " + t.label]), it.cat || "khac") + "</select>");
     if(it.kind === "in") row3.push('<select class="pt" aria-label="Nguồn thu">' + optionList(INC.map(t => [t.id, t.icon + " " + t.label]), it.cat || "khac") + "</select>");
     if(it.kind === "card" || it.kind === "cardpay") row3.push('<select class="pc" aria-label="Thẻ">' + optionList([["", "— thẻ —"]].concat((state.cards || []).map(c => [c.id, c.name])), it.cardId || "") + "</select>");
+    /* v98: chọn ví (chỉ khi có từ hai ví) */
+    const wOpts = walletList().map(w => [w.id, w.icon + " " + w.name]);
+    if(multiW() && (it.kind === "out" || it.kind === "in" || it.kind === "bal" || it.kind === "cardpay")) row3.push('<select class="pwv" aria-label="Ví">' + optionList(wOpts, it.w || MAIN_W) + "</select>");
     if(it.kind !== "bal") row3.push('<input class="pd" type="date" aria-label="Ngày" value="' + esc(it.date) + '">');
+    if(it.kind === "xfer") html += '<div class="prow"><select class="pwf" aria-label="Từ ví">' + optionList(wOpts, it.from || MAIN_W) + '</select><span class="parrow" aria-hidden="true">→</span><select class="pwt" aria-label="Sang ví">' + optionList(wOpts, it.to || MAIN_W) + "</select></div>";
     if(row3.length) html += '<div class="prow">' + row3.join("") + "</div>";
     html += '<p class="pwarn" hidden></p><div class="pbtns"><button type="button" class="no">Bỏ</button><button type="button" class="ok">Ghi</button></div>';
     el.innerHTML = html;
@@ -5254,6 +5343,7 @@ function startNgay50k(){
     q(".pk").onchange = e => {
       it.kind = e.target.value; it.loanId = null;
       if(it.kind === "in" && !INC.find(x => x.id === it.cat)) it.cat = "khac";
+      if(it.kind === "xfer" && !it.from && !it.to){ it.from = MAIN_W; it.to = ((state.wallets || [])[0] || {}).id || MAIN_W; }
       if((it.kind === "out" || it.kind === "card") && !allTags().some(t => t.id === it.cat)) it.cat = window.N50KParse.guessTag(it.note || "", chatCtx());
       if(it.kind === "lend" || it.kind === "borrow" || it.kind === "repay" || it.kind === "collect"){ const l = window.N50KParse && it.who ? loansFor(it.kind).find(x => window.N50KParse.norm(x.who).includes(window.N50KParse.norm(it.who))) : null; if(l) it.loanId = l.id; }
       chatSave(); renderChat(true);
@@ -5265,6 +5355,9 @@ function startNgay50k(){
     if(q(".pl")) q(".pl").onchange = e => { it.loanId = e.target.value || null; if(it.loanId){ const l = getLoan(it.loanId); if(l) it.who = l.who; } chatSave(); renderChat(true); };
     if(q(".pt")) q(".pt").onchange = e => { it.cat = e.target.value; chatSave(); };
     if(q(".pc")) q(".pc").onchange = e => { it.cardId = e.target.value || null; chatSave(); };
+    if(q(".pwv")) q(".pwv").onchange = e => { it.w = e.target.value === MAIN_W ? null : e.target.value; chatSave(); };
+    if(q(".pwf")) q(".pwf").onchange = e => { it.from = e.target.value; chatSave(); check(); };
+    if(q(".pwt")) q(".pwt").onchange = e => { it.to = e.target.value; chatSave(); check(); };
     if(q(".pd")) q(".pd").onchange = e => { if(/^\d{4}-\d{2}-\d{2}$/.test(e.target.value)){ it.date = e.target.value; const now = new Date(); it.t = it.date === todayKey() ? now.getTime() : new Date(it.date + "T" + pad(now.getHours()) + ":" + pad(now.getMinutes()) + ":00").getTime(); chatSave(); } };
     q(".no").onclick = () => { m.status[idx] = "skipped"; chatSave(); renderChat(true); };
     okB.onclick = () => saveItems(m, [idx]);
@@ -5278,9 +5371,10 @@ function startNgay50k(){
     persist(true); renderAll();
     /* mỗi loại khoản chỉ nói một lần: chi tài khoản -> hạn mức hôm nay, thẻ -> chi thẻ tháng này, vay -> còn nợ... */
     const seen = new Set(), parts = [];
-    done.slice().reverse().forEach(i => { const it = m.items[i], key = it.kind === "out" ? "out" : it.kind + ":" + (it.loanId || it.cardId || ""); if(seen.has(key)) return; seen.add(key); parts.unshift(afterText(it, m.refs[i]).replace(/ Số dư ví: <b>[^<]*<\/b>\./, "")); });
-    const rb = balCalc();
-    const txt = (done.length > 1 ? "Ghi xong " + done.length + " khoản rồi nhé. " : "Ghi rồi nhé. ") + parts.join(" ") + (rb ? " Số dư ví: <b>" + sMoney(rb.bal) + "</b>." : "");
+    const ws = [];   /* các ví bị đổi số dư, nói số dư từng ví một lần ở cuối */
+    done.forEach(i => { const it = m.items[i]; (it.kind === "xfer" ? [it.from, it.to] : it.kind === "card" ? [] : [it.w]).forEach(w => { w = w && walletById(w) ? w : MAIN_W; if(!ws.includes(w)) ws.push(w); }); });
+    done.slice().reverse().forEach(i => { const it = m.items[i], key = it.kind === "out" ? "out" : it.kind + ":" + (it.loanId || it.cardId || ""); if(seen.has(key)) return; seen.add(key); parts.unshift(afterText(it, m.refs[i]).replace(/ Số dư [^:<]*: <b>[^<]*<\/b>\./g, "")); });
+    const txt = (done.length > 1 ? "Ghi xong " + done.length + " khoản rồi nhé. " : "Ghi rồi nhé. ") + parts.join(" ") + ws.map(balLine).join("");
     chat.msgs.push({ id:uid(), role:"bot", html:txt, t:Date.now() });
     chatSave(); renderChat(true); chatScrollEnd(true);
   }
@@ -5512,18 +5606,19 @@ function startNgay50k(){
     properties:{
       reply:{ type:"string", description:"Câu đáp ngắn, thân thiện, tiếng Việt, như một người bạn. Không lặp lại danh sách khoản." },
       items:{ type:"array", items:{ type:"object", properties:{
-        kind:{ type:"string", enum:["out","card","in","lend","borrow","repay","collect","cardpay","bal"] },
+        kind:{ type:"string", enum:["out","card","in","lend","borrow","repay","collect","cardpay","bal","xfer"] },
         amt:{ type:"integer", description:"Số tiền VND, số nguyên dương" },
         note:{ type:"string" }, cat:{ type:"string" },
         date:{ type:"string", description:"yyyy-mm-dd" }, time:{ type:"string", description:"HH:MM hoặc rỗng" },
-        cardId:{ type:"string" }, loanId:{ type:"string" }, who:{ type:"string" }
+        cardId:{ type:"string" }, loanId:{ type:"string" }, who:{ type:"string" },
+        wallet:{ type:"string" }, from:{ type:"string" }, to:{ type:"string" }
       }, required:["kind","amt"] } },
       query:{ type:"object", properties:{
         q:{ type:"string", enum:["spent","left","balance","loans","card","topday","report"] },
         period:{ type:"string", enum:["today","yesterday","week","lastweek","month","lastmonth","year","custom"] },
         from:{ type:"string", description:"yyyy-mm-dd, khi period=custom" }, to:{ type:"string", description:"yyyy-mm-dd, khi period=custom" },
         tag:{ type:"string" }, tags:{ type:"array", items:{ type:"string" } }, who:{ type:"string" },
-        src:{ type:"string", enum:["all","tk","card"] }, cardId:{ type:"string" },
+        src:{ type:"string", enum:["all","tk","card"] }, cardId:{ type:"string" }, wallet:{ type:"string" },
         kind:{ type:"string", enum:["out","in"] },
         group:{ type:"string", enum:["tag","day","week","month","place","src","none"] },
         list:{ type:"boolean" }, top:{ type:"integer" }, minAmt:{ type:"integer" }, kw:{ type:"string" }, compare:{ type:"boolean" }
@@ -5546,6 +5641,7 @@ function startNgay50k(){
       nhom_chi: allTags().map(t => ({ id:t.id, ten:t.label })),
       nguon_thu: INC.map(t => ({ id:t.id, ten:t.label })),
       the_tin_dung: (state.cards || []).map(c => ({ id:c.id, ten:c.name })),
+      vi: walletList().map(w => ({ id:w.id, ten:w.name + (w.id === MAIN_W ? " (mặc định: tài khoản chính và tiền mặt)" : "") })),
       khoan_vay: state.loans.map(l => ({ id:l.id, loai:l.type === "lend" ? "minh_cho_vay" : "minh_di_vay", nguoi:l.who, con_lai:leftOf(l) })),
       cau_hoi_truoc: (chat && chat.lastQ) || null,
       noi_dung_quen: (() => { const out = {}; Object.keys(state.days).sort().slice(-60).forEach(k => (state.days[k] || []).forEach(it => { if(it.note && it.cat) out[it.note] = it.cat; })); return Object.entries(out).slice(-40).map(([n, c]) => n + " → " + c); })()
@@ -5561,6 +5657,8 @@ function startNgay50k(){
       "- repay: mình trả nợ cho người mình đã vay. collect: người khác trả lại tiền mình đã cho vay.",
       "- cardpay: trả nợ/thanh toán thẻ tín dụng (không phải chi tiêu).",
       "- bal: người dùng nói số dư thật hiện có trong tài khoản/ví (\"tài khoản còn 5tr8\").",
+      "- xfer: chuyển tiền giữa hai ví của chính người dùng (nạp Momo, rút từ Momo về tài khoản, chuyển sang ví khác). Không phải chi tiêu. from, to là id trong vi (\"main\" là ví mặc định).",
+      "Ví (vi): với out, in, bal, cardpay, nếu người dùng nói trả bằng / nhận vào / số dư của một ví trong vi thì đặt wallet = id ví đó; không nói thì để rỗng (ví mặc định). Câu hỏi về một ví (\"Momo còn bao nhiêu\", \"tháng này chi gì bằng Momo\") thì đặt query.wallet.",
       "Với lend/borrow/repay/collect: nếu tên người khớp một khoản trong khoan_vay đúng chiều (lend/collect ↔ minh_cho_vay; borrow/repay ↔ minh_di_vay) thì đặt loanId; nếu không có thì để loanId rỗng và ghi who (tên người, giữ cách xưng hô như \"chú Dũng\").",
       "",
       "Số tiền: k/nghìn/ngàn = ×1.000; tr/triệu/củ/m = ×1.000.000; \"1tr2\" = 1.200.000; \"1 triệu 250\" = 1.250.000; \"2 trăm\" (tiền) = 200.000; \"rưỡi\" = thêm nửa đơn vị; số trần nhỏ hơn 1000 khi nói về tiền là nghìn (\"phở 45\" = 45.000). Số lượng (2 ly, 3 cái, 2 người) KHÔNG phải tiền. Nếu nhiều món có giá riêng thì tách thành nhiều khoản; \"2 ly cà phê 25k mỗi ly\" = 50.000.",
@@ -5675,6 +5773,9 @@ function startNgay50k(){
       if(it.kind === "out" || it.kind === "card") it.cat = tagIds.includes(x.cat) ? x.cat : window.N50KParse.guessTag(it.note || "", chatCtx());
       if(it.kind === "in") it.cat = incIds.includes(x.cat) ? x.cat : "khac";
       if(it.kind === "card" || it.kind === "cardpay"){ const cards = state.cards || []; it.cardId = cards.some(c => c.id === x.cardId) ? x.cardId : (cards.length === 1 && it.kind === "card" ? cards[0].id : null); }
+      const wOk = v => v && walletById(v) ? v : null;
+      if(["out","in","bal","cardpay"].includes(it.kind) && wOk(x.wallet) && x.wallet !== MAIN_W) it.w = x.wallet;
+      if(it.kind === "xfer"){ it.from = wOk(x.from) || MAIN_W; it.to = wOk(x.to) || MAIN_W; it.note = ""; }
       if(["lend","borrow","repay","collect"].includes(it.kind)){
         const type = (it.kind === "lend" || it.kind === "collect") ? "lend" : "borrow", l = state.loans.find(z => z.id === x.loanId && z.type === type);
         if(l){ it.loanId = l.id; it.who = l.who; }
@@ -5699,6 +5800,7 @@ function startNgay50k(){
         query.minAmt = Math.max(0, parseInt(Q.minAmt, 10) || 0);
         query.kw = String(Q.kw || "").trim().slice(0, 40);
       }
+      if(Q.wallet && Q.wallet !== MAIN_W && walletById(Q.wallet)){ query.wid = Q.wallet; if(query.src === "card") query.src = "tk"; query.cardId = null; }
     }
     return { reply:String(o.reply || "").trim().slice(0, 400), items, query };
   }
@@ -6338,6 +6440,7 @@ function startNgay50k(){
     const r = balCalc(null, reconW), w = walletById(reconW), many = multiW();
     $("balTitle").textContent = many ? w.name : (r ? "Đối chiếu số dư" : "Nhập số dư hiện tại");
     $("wEdit").hidden = reconW === MAIN_W;
+    $("xferOpen").hidden = !many;
     $("reconBig").textContent = r ? sMon(r.bal) : "Chưa có";
     $("reconBig").classList.toggle("neg", !!r && r.bal < 0);
     $("reconSub").textContent = r ? "Theo sổ, đối chiếu " + stampText(r.anchor.t) + (reconW === MAIN_W && r.debt > 0 ? " · đang nợ thẻ " + fmt(r.debt) : "")
@@ -6495,6 +6598,48 @@ function startNgay50k(){
     persist(true); closeWSheet(); if(balEditing && reconW === wEditId) closeBalance(); reconW = MAIN_W; renderAll();
   };
   $("wAddBtn").onclick = () => openWSheet(null);
+  /* ---------- chuyển tiền giữa các ví (v98) ---------- */
+  function xCheck(){
+    const f = $("xFrom").dataset.w || MAIN_W, t = $("xTo").dataset.w || MAIN_W, v = balVal("xAmt");
+    const bad = f === t ? "Ví chuyển đi và ví nhận phải khác nhau" : "";
+    $("xWarn").textContent = bad; $("xWarn").hidden = !bad;
+    $("xSave").disabled = !!bad || !v;
+    $("xSave").textContent = v && !bad ? "Lưu chuyển " + fmt(v) : "Lưu";
+  }
+  function xPick(boxId, sel){
+    const box = $(boxId); box.innerHTML = ""; box.dataset.w = sel;
+    walletList().forEach(w => {
+      const b = el("button", "chip", w.icon + " " + w.name); b.type = "button";
+      b.setAttribute("aria-pressed", w.id === sel ? "true" : "false");
+      b.onclick = () => { xPick(boxId, w.id); xCheck(); };
+      box.appendChild(b);
+    });
+  }
+  function openXfer(from){
+    from = from && walletById(from) ? from : MAIN_W;
+    const other = walletList().find(w => w.id !== from);
+    xPick("xFrom", from); xPick("xTo", other ? other.id : MAIN_W);
+    $("xAmt").value = ""; $("xNote").value = ""; $("xDate").value = todayKey(); $("xDate").max = todayKey();
+    xCheck(); showSheet("xSheet", "xBack");
+    setTimeout(() => $("xAmt").focus({ preventScroll:true }), 260);
+  }
+  function closeXfer(){ hideSheet("xSheet", "xBack"); }
+  function saveXfer(){
+    const v = balVal("xAmt"), f = $("xFrom").dataset.w || MAIN_W, t = $("xTo").dataset.w || MAIN_W;
+    if(!v || f === t) return;
+    const date = /^\d{4}-\d{2}-\d{2}$/.test($("xDate").value) ? $("xDate").value : todayKey();
+    const rec = { id:uid(), amt:v, from:f, to:t, date, t: date === todayKey() ? Date.now() : new Date(date + "T12:00:00").getTime() };
+    const note = $("xNote").value.trim(); if(note) rec.note = note;
+    (state.xfer = state.xfer || []).push(rec);
+    persist(true); closeXfer(); renderAll();
+    if(balEditing) $("balBook").textContent = "✓ Đã chuyển " + fmt(v) + " từ " + walletName(f) + " sang " + walletName(t) + ".";
+  }
+  $("xferOpen").onclick = () => openXfer(reconW);
+  $("xSave").onclick = saveXfer;
+  $("xCancel").onclick = closeXfer; $("xBack").onclick = closeXfer; $("closeX").onclick = closeXfer;
+  $("xAmt").addEventListener("input", () => { fmtInput("xAmt"); xCheck(); });
+  $("xAmt000").addEventListener("pointerdown", e => e.preventDefault());
+  $("xAmt000").onclick = () => { const v = balVal("xAmt"); if(!v) return; $("xAmt").value = (v * 1000).toLocaleString("vi-VN"); xCheck(); };
   $("wEdit").onclick = () => openWSheet(reconW);
   $("balOpen").onclick = () => openBalance(MAIN_W);
   $("walletPay").onclick = () => openPayCard();
@@ -6666,8 +6811,10 @@ function startNgay50k(){
     $("eDateField").querySelector("label span").textContent = kind === "in" ? "Ngày nhận" : "Ngày giao dịch";
     $("eTagField").hidden = kind === "in"; $("eIncField").hidden = kind !== "in";
     if(kind === "in") selectEInc(it.cat || "luong"); else selectECat(it.cat);
+    $("eWLabel").textContent = kind === "in" ? "Vào ví" : "Trả từ ví";
+    wPicker("eWField", "eWChips", it.w);
     const parts = [pad(d.getHours()) + ":" + pad(d.getMinutes()) + " ngày " + fmtDate(f.day)];
-    if(kind === "out") parts.push(it.bank ? "chuyển khoản " + it.bank + (it.acct ? " · " + it.acct : "") : "tiền mặt");
+    if(kind === "out") parts.push(it.bank ? "chuyển khoản " + it.bank + (it.acct ? " · " + it.acct : "") : it.w && it.w !== MAIN_W ? walletName(it.w) : "tiền mặt");
     else parts.push("khoản thu");
     $("editMeta").textContent = parts.join(" · ");
     $("editHint").hidden = !(kind === "out" && it.bank);
@@ -6689,6 +6836,7 @@ function startNgay50k(){
     const it = f.it;
     it.amt = v; it.note = $("eNote").value.trim();
     it.cat = kind === "in" ? eInc : eCat;
+    if(!$("eWField").hidden){ const ew = pickedW("eWChips"); if(ew) it.w = ew; else delete it.w; }
     if(kind === "out" && it.contactId){ const c = state.contacts.find(x => x.id === it.contactId); if(c) c.cat = eCat; }
     const newDay = $("eDate").value || f.day;
     if(newDay !== f.day){
