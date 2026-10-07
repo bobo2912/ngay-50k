@@ -1,4 +1,4 @@
-# Ngày 50k – bản PWA cài trên điện thoại
+# Tiêu Gọn – bản PWA cài trên điện thoại
 
 Thư mục này là toàn bộ app. Bạn đưa nó lên một trang web miễn phí (GitHub Pages), rồi thêm vào màn hình chính iPhone.
 

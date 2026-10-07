@@ -1,4 +1,4 @@
-/* Ngày 50k – bộ hiểu câu tiếng Việt chạy ngay trên máy (không cần mạng, không gửi dữ liệu đi đâu).
+/* Tiêu Gọn – bộ hiểu câu tiếng Việt chạy ngay trên máy (không cần mạng, không gửi dữ liệu đi đâu).
    parse(text, ctx) -> { items:[...], query:{...}|null, unknown:[đoạn không hiểu] }
    Mỗi item: { kind, amt, note, cat, date:"yyyy-mm-dd", t, cardId, who, loanId, src }
      kind: "out" (chi tài khoản/tiền mặt) | "card" (quẹt thẻ) | "in" (khoản thu)
