@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v86";
+  var K = "ngay50k:errlog", VER = "v87";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -1232,13 +1232,13 @@ body.kb #tab-chat{position:fixed; z-index:45; left:0; right:0; top:var(--vv-top,
 body.kb main > header{position:fixed; top:var(--vv-top, 0px); left:0; right:0; z-index:46; margin:0 auto; max-width:460px;
   background:var(--glass-strong); background:color-mix(in srgb, var(--bg) 96%, transparent); box-shadow:0 1px 0 var(--line)}
 body.kb #tab-chat::before{content:""; position:fixed; inset:0; z-index:-1; background:var(--bg)}
-/* che khe giữa đầu trang và ô số dư khi cuộn: chỉ hiện lúc đầu trang đã thành lớp kính, và dùng đúng lớp kính đó
-   (trước v86 là màu nền phẳng nên hiện thành dải trắng trên nền loang, nhất là giao diện Pastel) */
-#tab-chat > #chatToWallet::before{content:""; position:absolute; left:-17px; right:-17px; top:-15px; height:16px; pointer-events:none; display:none;
-  background:var(--glass-strong); background:color-mix(in srgb, var(--bg) 96%, transparent);
-  -webkit-backdrop-filter:blur(24px) saturate(160%); backdrop-filter:blur(24px) saturate(160%); box-shadow:0 1px 0 var(--line)}
+/* khe giữa đầu trang và ô Số dư ví khi cuộn (v87): một dải kính mờ NHẠT phủ từ dưới đầu trang tới dưới ô số dư,
+   khác màu đầu trang (đầu trang giữ đường kẻ mảnh ở đáy) để ô số dư trông như nổi trên nền app, không dính vào đầu trang;
+   tin nhắn cuộn phía sau bị làm mờ nên không lộ chữ qua khe. */
+#tab-chat > #chatToWallet::before{content:""; position:absolute; left:-17px; right:-17px; top:-10px; height:10px; pointer-events:none; display:none;
+  background:color-mix(in srgb, var(--bg) 78%, transparent);
+  -webkit-backdrop-filter:blur(28px) saturate(140%); backdrop-filter:blur(28px) saturate(140%)}
 body.head-stuck #tab-chat > #chatToWallet::before{display:block}
-body.head-stuck:has(#tab-chat:not([hidden])) main > header.stuck{box-shadow:none}
 /* giao diện Tối: nền ô Số dư ví vốn gần như trong suốt, khi dính trên đầu thì nhìn xuyên được tin nhắn bên dưới */
 :root[data-theme="dark"] #tab-chat > #chatToWallet{background:color-mix(in srgb, var(--bg), white 7%)}
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]):not([data-theme="pastel"]) #tab-chat > #chatToWallet{background:color-mix(in srgb, var(--bg), white 7%)} }
@@ -1416,7 +1416,11 @@ html.locked, html.locked body{overflow:hidden}
 .set-more > summary::after{content:"›"; transform:rotate(90deg); transition:transform .15s; color:var(--muted); font-size:1.2rem}
 .set-more[open] > summary::after{transform:rotate(-90deg)}
 .ai-saved{margin-top:10px; padding:10px 12px; border-radius:12px; background:var(--ok-soft); color:var(--ink)}
-.ai-retry{display:block; margin:6px 0 0 auto; border:0; background:none; color:var(--note); font-weight:600; font-size:.85rem; padding:6px 4px}
+.ai-retry{display:inline-flex; align-items:center; margin:6px 0 0; border:1px solid var(--note-soft); background:var(--note-soft); color:var(--note); font-weight:600; font-size:.78rem; padding:5px 11px; border-radius:999px}
+.ai-retry:disabled{opacity:.45}
+.msg-wrap{display:flex; flex-direction:column; align-items:flex-start; align-self:flex-start; max-width:86%}
+.msg-wrap > .msg{max-width:100%}
+.prop > .ai-retry{align-self:flex-start}
 
 /* Tab Ví (v82): số dư gọn ở trên, "Hôm nay còn được tiêu" là thẻ chính */
 .balbox.compact{padding:14px 16px 10px; margin-bottom:12px}
@@ -2186,7 +2190,7 @@ header .date{font-size:1.25rem}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v86</p>
+      <p class="sync" id="appVersion">Phiên bản v87</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -2597,8 +2601,8 @@ header .date{font-size:1.25rem}
 
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
 <script src="vendor/jsQR.js"></script>
-<script src="parse-vi.js?v=86"></script>
-<script src="lock.js?v=86"></script>
+<script src="parse-vi.js?v=87"></script>
+<script src="lock.js?v=87"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -4920,13 +4924,22 @@ function startNgay50k(){
         all.querySelector("button").onclick = () => saveItems(m, m.items.map((_, i) => i));
         box.appendChild(all);
       }
-      if(m.retry && pend === m.items.length && aiReady()){
-        const rb = document.createElement("button"); rb.type = "button"; rb.className = "ai-retry"; rb.textContent = "✦ Sai? Nhờ AI hiểu lại";
-        rb.onclick = () => aiRetry(m); box.appendChild(rb);
-      }
+      if(m.retry && pend === m.items.length) retryBtn(m, box);
       return box;
     }
-    const d = document.createElement("div"); d.className = "msg bot"; d.innerHTML = m.html; return d;
+    const d = document.createElement("div"); d.className = "msg bot"; d.innerHTML = m.html;
+    if(!m.retry) return d;
+    const wrap = document.createElement("div"); wrap.className = "msg-wrap"; wrap.appendChild(d); retryBtn(m, wrap);
+    return wrap;
+  }
+  /* nút chọn nhanh dưới câu trả lời của máy: có AI thì phân tích lại; chưa cài AI thì chỉ hiện ở câu máy chưa hiểu, mở Cài đặt */
+  function retryBtn(m, box){
+    const rb = document.createElement("button"); rb.type = "button"; rb.className = "ai-retry";
+    if(aiReady()){ rb.textContent = "✦ Chưa đúng? Phân tích lại bằng AI"; rb.onclick = () => aiRetry(m); }
+    else if(m.html === HELP){ rb.textContent = "✦ Dùng Trợ lý AI để hiểu câu này"; rb.onclick = () => { openSettings(); showSetPage("setAI"); }; }
+    else return;
+    if(navigator.onLine === false) rb.disabled = true;
+    box.appendChild(rb);
   }
   function renderChat(keepScroll){
     if(!chat) chatLoad();
@@ -5276,6 +5289,14 @@ function startNgay50k(){
   const AI_SAVED_KEY = "ngay50k:aiSaved";
   function aiSavedGet(){ try{ const v = JSON.parse(lsGet(AI_SAVED_KEY) || "null"); return v && typeof v === "object" ? v : {}; }catch(e){ return {}; } }
   function aiSavedAdd(){ const v = aiSavedGet(), mk = todayKey().slice(0, 7); v[mk] = (v[mk] || 0) + 1; lsSet(AI_SAVED_KEY, JSON.stringify(v)); }
+  /* đánh dấu một nhóm câu trả lời do máy tự xử lý: nút "Phân tích lại bằng AI" nằm dưới tin cuối của nhóm,
+     bấm thì cả nhóm được thay bằng kết quả của AI */
+  function tagRetry(out, text){
+    const g = uid();
+    out.forEach(m => { m.grp = g; });
+    if(out.length) out[out.length - 1].retry = text;
+    return out;
+  }
   function localReply(text, res){
     if(!res) res = localParse(text);
     const out = [];
@@ -5363,8 +5384,13 @@ function startNgay50k(){
   async function aiRetry(m){
     if(aiBusy || !m.retry) return;
     const text = m.retry, wait = { id:uid(), role:"bot", html:'<span class="typing"><i></i><i></i><i></i></span>', thinking:true, t:Date.now() };
-    const at = chat.msgs.indexOf(m); if(at < 0) return;
-    chat.msgs.splice(at, 1, wait); aiBusy = true; renderChat(true);
+    const group = m.grp ? chat.msgs.filter(x => x.grp === m.grp) : [m];
+    const at = chat.msgs.indexOf(group[0]); if(at < 0) return;
+    /* khoản đã bấm Ghi trong nhóm thì giữ lại, chỉ thay phần chưa ghi */
+    const keep = group.filter(x => x.items && x.status.some(st => st === "saved"));
+    chat.msgs = chat.msgs.filter(x => group.indexOf(x) < 0 || keep.indexOf(x) >= 0);
+    chat.msgs.splice(Math.min(at + keep.length, chat.msgs.length), 0, wait); keep.forEach(x => { delete x.retry; });
+    aiBusy = true; renderChat(true);
     let msgs = [];
     try{
       const r = await aiCall(text);
@@ -5373,7 +5399,8 @@ function startNgay50k(){
       if(!r.items.length && !r.query) msgs.push({ id:uid(), role:"bot", html:esc(r.reply || "Mình chưa rõ ý bạn, kể lại giúp mình nhé?"), t:Date.now(), ai:true });
       const v = aiSavedGet(), mk = todayKey().slice(0, 7); if(v[mk] > 0){ v[mk]--; lsSet(AI_SAVED_KEY, JSON.stringify(v)); }
     }catch(e){
-      delete m.retry; msgs = [m, { id:uid(), role:"bot", html:"<i>(" + esc(aiErrText(e)) + ". Bạn sửa trực tiếp trên thẻ nhé.)</i>", t:Date.now() }];
+      group.forEach(x => { delete x.retry; });
+      msgs = group.filter(x => keep.indexOf(x) < 0).concat([{ id:uid(), role:"bot", html:"<i>(" + esc(aiErrText(e)) + ". Bạn sửa trực tiếp trên thẻ hoặc kể lại nhé.)</i>", t:Date.now() }]);
     }
     aiBusy = false;
     if(aiBudNote){ msgs.push({ id:uid(), role:"bot", html:aiBudNote, t:Date.now() }); aiBudNote = ""; }
@@ -5387,13 +5414,12 @@ function startNgay50k(){
     const res0 = localParse(text);
     if(aiReady() && navigator.onLine !== false && aiCfg().smart && localEnough(text, res0)){
       /* máy hiểu chắc chắn: không gọi AI. Khoản chờ ghi có nút "Nhờ AI hiểu lại" phòng khi máy hiểu sai */
-      const out = localReply(text, res0);
-      out.forEach(m => { if(m.items) m.retry = text; });
+      const out = tagRetry(localReply(text, res0), text);
       chat.msgs.push(...out); aiSavedAdd();
       chatSave(); renderChat(); chatScrollEnd(true); return;
     }
     if(!aiReady() || (navigator.onLine === false)){
-      chat.msgs.push(...localReply(text, res0));
+      chat.msgs.push(...tagRetry(localReply(text, res0), text));
       if(aiReady()) chat.msgs.push({ id:uid(), role:"bot", html:"<i>(Đang không có mạng, mình dùng bộ hiểu câu trên máy.)</i>", t:Date.now() });
       chatSave(); renderChat(); chatScrollEnd(true); return;
     }
@@ -5408,7 +5434,7 @@ function startNgay50k(){
       if(r.query) msgs.push({ id:uid(), role:"bot", html:(r.reply && !r.items.length ? esc(r.reply) + "\n" : "") + answer(r.query), t:Date.now(), ai:true });
       if(!r.items.length && !r.query) msgs.push({ id:uid(), role:"bot", html:esc(r.reply || "Mình chưa rõ ý bạn, kể lại giúp mình nhé?"), t:Date.now(), ai:true });
     }catch(e){
-      msgs = localReply(text, res0);
+      msgs = tagRetry(localReply(text, res0), text);
       msgs.push({ id:uid(), role:"bot", html:"<i>(" + esc(aiErrText(e)) + ", mình dùng bộ hiểu câu trên máy. Kiểm tra ở Cài đặt → Trợ lý AI.)</i>", t:Date.now() });
     }
     aiBusy = false; chatGrow();
