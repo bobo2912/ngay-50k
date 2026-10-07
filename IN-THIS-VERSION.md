@@ -1,6 +1,18 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v98, ngày 07/10/2026
+**Phiên bản hiện tại:** v99, ngày 07/10/2026
+
+---
+
+## Có gì mới trong v99 (so với v98)
+
+**Thẻ tín dụng thành một loại ví, bỏ ô Thẻ trên thanh tab (bước 3, xong mục 2.2).**
+- Thanh tab còn 4 ô: **Chat, Tổng quan, Ví, Khoản vay**.
+- Thẻ tín dụng hiện trong hàng ví ở tab Ví, kèm số đang nợ. Bấm vào thẻ để mở màn thẻ như tab Thẻ trước đây (kỳ sao kê, chi theo tháng, Từ ảnh, Ghi tay, Trả thẻ), có nút **‹ Ví** để quay lại (vuốt phải cũng được).
+- Có thẻ tín dụng là hàng ví hiện, kể cả khi chỉ có ví Tài khoản.
+- **Thêm ví → Thẻ tín dụng** để thêm thẻ mới (mở tiếp màn điền kỳ sao kê, 4 số cuối).
+- **Trả thẻ** có thêm ô **Trả từ ví**: tiền trả thẻ trừ vào đúng ví đó và hiện trong lịch sử của ví.
+- Vuốt phải trong màn từng ví cũng đóng màn đó.
 
 ---
 
@@ -22,21 +34,6 @@
 
 ---
 
-## Có gì mới trong v97 (so với v96)
-
-**Nhiều ví (bước 1 của mục 2.2).** ⚠️ Nên xuất file sao lưu trước khi cập nhật.
-- Ví mặc định **Tài khoản** gồm tài khoản ngân hàng chính và tiền mặt, như trước giờ. Dữ liệu cũ không phải chuyển đổi.
-- Nút **Thêm ví** ở tab Ví: thêm tài khoản ngân hàng khác hoặc ví điện tử (Momo, ZaloPay…), nhập số dư đang có nếu muốn.
-- Có từ hai ví trở lên thì tab Ví hiện **hàng ví** với số dư từng ví. Số lớn phía trên là **tổng các ví đã trừ nợ thẻ**, dòng dưới ghi rõ tiền trong các ví và số đang nợ thẻ.
-- Bấm vào một ví để mở màn riêng của ví đó: số dư, đối chiếu, biến động, lịch sử. Ví thêm có nút **Sửa ví** (đổi tên, loại, xoá).
-- Xoá ví: các khoản đã ghi vẫn nằm trong thống kê chi tiêu, chỉ bỏ số dư ví đó khỏi tổng.
-- Hỏi chat "số dư bao nhiêu" sẽ liệt kê từng ví và tổng.
-- Dữ liệu mẫu có thêm ví "Momo (mẫu)".
-
-Chọn ví khi ghi khoản và chuyển tiền giữa các ví sẽ có ở v98.
-
----
-
 ## Tất cả tính năng của app
 
 ### Tab Chat (mở mặc định)
@@ -47,13 +44,16 @@ Chọn ví khi ghi khoản và chuyển tiền giữa các ví sẽ có ở v98.
 - Chọn Chat hay Ví làm màn hình mở đầu trong Cài đặt.
 - **Trợ lý AI** (tuỳ chọn, trong nhóm Nâng cao): dùng khoá API Claude, ChatGPT hoặc Gemini; khoá chỉ lưu trên máy. Mặc định chỉ gọi AI cho câu khó, câu đơn giản máy tự hiểu; có nút Nhờ AI hiểu lại. Xem chi phí và số câu tiết kiệm trong Cài đặt.
 
-### Tab Ví (số dư, hôm nay, giao dịch theo ngày)
-- **Số dư hiện tại** của ví, nợ thẻ và số còn lại sau khi trả thẻ.
-- Nút **Trả thẻ** và nút **Đối chiếu số dư**, mở màn hình riêng gồm:
-  - ô nhập số dư thật và nợ thẻ;
+### Tab Ví (các ví, thẻ tín dụng, hôm nay, giao dịch theo ngày)
+- **Số tổng:** tổng tiền các ví đã trừ nợ thẻ; dòng dưới ghi tiền trong các ví và số đang nợ thẻ.
+- **Hàng ví:** ví Tài khoản (gồm tiền mặt), các ví thêm (ngân hàng khác, ví điện tử) và thẻ tín dụng. Nút **Thêm ví**.
+- Bấm một ví (hoặc nút **Đối chiếu số dư** cho ví Tài khoản) để mở màn riêng của ví:
+  - số dư theo sổ, ô nhập số dư thật (ví Tài khoản có thêm ô nợ thẻ);
+  - **Chuyển tiền giữa các ví**;
   - **Sắp tới:** khoản ghi cho ngày tương lai, kèm số dư dự kiến; tới ngày mới trừ vào số dư;
   - **Biến động từ lần đối chiếu**, mỗi dòng kèm số dư còn lại; chạm để sửa;
-  - lịch sử đối chiếu và trả thẻ.
+  - lịch sử đối chiếu, trả thẻ và chuyển ví; ví thêm có nút **Sửa ví**.
+- Bấm một thẻ tín dụng để mở màn thẻ. Nút **Trả thẻ** chọn được ví trả.
 
 - **Thẻ Hôm nay còn được tiêu:** số tiền còn lại, thanh tiến độ, chuyển đỏ khi vượt hạn mức.
 - **Quét QR bằng camera:** mặc định mở camera iPhone để chụp mã (không cần cấp quyền), hoặc quét trực tiếp trong app tự nhận mã (chọn trong Cài đặt).
@@ -86,7 +86,7 @@ Chọn ví khi ghi khoản và chuyển tiền giữa các ví sẽ có ở v98.
 - **Tìm kiếm xuyên tháng** trên cả khoản chi, khoản thu và chi thẻ.
 - **Sửa ngay tại chỗ:** chạm một dòng trong kết quả tìm kiếm hay trong bảng chi tiết nhóm là mở luôn form sửa của khoản đó, không phải đi tìm lại theo ngày.
 
-### Tab Thẻ
+### Màn thẻ tín dụng (mở từ hàng ví ở tab Ví)
 - Quản lý thẻ trong bảng riêng (nút **Thẻ · N** ở hàng chọn tháng): tên thẻ, 6 số đầu, 4 số cuối, ngày sao kê.
 - Khoản chi thẻ gắn được nhóm để vào thống kê theo tag, app tự đoán theo nơi chi đã gặp.
 - Dải chọn thẻ ngang, chạm để xem riêng từng thẻ; khoản chi thẻ không tính vào hạn mức mỗi ngày.
@@ -146,6 +146,7 @@ Chọn ví khi ghi khoản và chuyển tiền giữa các ví sẽ có ở v98.
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v99** | Thẻ tín dụng là một loại ví; bỏ ô Thẻ, thanh tab còn 4 ô; trả thẻ chọn ví |
 | **v98** | Chọn ví khi ghi; chuyển tiền giữa các ví; chat hiểu tên ví |
 | **v97** | Nhiều ví: thêm ví, hàng ví, tổng các ví trừ nợ thẻ, màn riêng từng ví |
 | **v96** | Chạm ô chat không làm đầu trang và ô Số dư ví giật lên xuống |

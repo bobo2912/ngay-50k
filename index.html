@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v98";
+  var K = "ngay50k:errlog", VER = "v99";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -1638,6 +1638,13 @@ body.kb #tab-chat > .chip-veil{display:none}
 .wcard b{font-size:.95rem; font-weight:700}
 .wcard b.neg{color:var(--danger, #d33)}
 .wcard .mute{font-size:.82rem; font-weight:600; color:var(--note)}
+.wcard b.debt{color:var(--danger, #d33)}
+.wcard.credit{background:color-mix(in srgb, var(--glass-strong, var(--surface)) 88%, var(--note) 12%)}
+/* v99: thanh tab còn 4 ô (Chat, Tổng quan, Ví, Khoản vay) */
+.tabs{grid-template-columns:repeat(4,minmax(0,1fr))}
+.cards-top{display:flex; align-items:center; gap:10px; margin:0 2px 8px}
+.cards-top .set-back{padding:4px 0}
+.cards-top-t{font-weight:700; font-size:.95rem; color:var(--muted)}
 .wcard.wadd{min-width:84px; justify-content:center; align-items:center; border-style:dashed; background:transparent; box-shadow:none}
 .wcard.wadd .wn{color:var(--note); font-weight:600}
 #wDel{width:100%; margin-top:8px}
@@ -1664,7 +1671,6 @@ body.kb #tab-chat > .chip-veil{display:none}
     <button role="tab" data-tab="chat" aria-selected="true" id="tabFirst"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-4.9A8 8 0 1 1 21 12z"/><path d="M8.5 11h.01M12 11h.01M15.5 11h.01"/></svg><span>Chat</span></button>
     <button role="tab" data-tab="money" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9h-9z"/><path d="M14 3.3A9 9 0 0 1 20.7 10H14z"/></svg><span>Tổng quan</span></button>
     <button role="tab" data-tab="today" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h15a3 3 0 0 1 3 3v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M3 7l12-4v4"/><circle cx="16.5" cy="13.5" r="1.2"/></svg><span>Ví</span></button>
-    <button role="tab" data-tab="cards" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="8" width="14" height="11" rx="2"/><path d="M2 12h14"/><path d="M7 5h13a2 2 0 0 1 2 2v8"/></svg><span>Thẻ</span></button>
     <button role="tab" data-tab="loans" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 3l4 4-4 4"/><path d="M3 7h18"/><path d="M7 21l-4-4 4-4"/><path d="M21 17H3"/></svg><span>Khoản vay</span></button>
   </nav>
 
@@ -1897,6 +1903,8 @@ body.kb #tab-chat > .chip-veil{display:none}
   <!-- ================= TAB: NGƯỜI NHẬN ================= -->
   <!-- ================= TAB: THẺ TÍN DỤNG ================= -->
   <div id="tab-cards" role="tabpanel" hidden>
+    <!-- v99: thẻ tín dụng là một loại ví, mở từ hàng ví ở tab Ví (không còn ô Thẻ trên thanh tab) -->
+    <div class="cards-top"><button type="button" class="set-back" id="cardsHome">‹ Ví</button><span class="cards-top-t">Thẻ tín dụng</span></div>
     <div class="month cardmonth">
       <button id="prevCardMonth" aria-label="Tháng trước">‹</button>
       <strong id="cardMonthLabel"></strong>
@@ -1999,7 +2007,7 @@ body.kb #tab-chat > .chip-veil{display:none}
           <div class="field" style="flex:1; min-width:0"><label for="wCardLast4"><span>4 số cuối</span></label><input id="wCardLast4" class="inp num" inputmode="numeric" maxlength="4" autocomplete="off"></div>
           <div class="field" style="flex:1; min-width:0"><label for="wCardStmt"><span>Ngày sao kê <span class="opt">(tuỳ chọn)</span></span></label><input id="wCardStmt" class="inp num" inputmode="numeric" maxlength="2" autocomplete="off" placeholder="vd: 25"></div>
         </div>
-        <p class="w-note" style="text-align:left">Thêm thẻ khác hoặc 6 số đầu sau, ở tab Thẻ.</p>
+        <p class="w-note" style="text-align:left">Thêm thẻ khác hoặc 6 số đầu sau, ở tab Ví (bấm vào thẻ trong hàng ví).</p>
       </div>
       <p class="sync-err" id="wCardErr" hidden></p>
       <button class="primary" id="wNext3">Tiếp</button>
@@ -2333,7 +2341,7 @@ body.kb #tab-chat > .chip-veil{display:none}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v98</p>
+      <p class="sync" id="appVersion">Phiên bản v99</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -2531,6 +2539,7 @@ body.kb #tab-chat > .chip-veil{display:none}
     <label><span>Loại ví</span></label>
     <div class="chips" id="wKinds"></div>
   </div>
+  <p class="ov-sub" id="wCreditHint" style="margin:0 2px 8px" hidden>Bấm Lưu để điền thêm kỳ sao kê và 4 số cuối của thẻ. Quẹt thẻ cộng vào nợ thẻ, tới khi bạn ghi Trả thẻ.</p>
   <div class="field" id="wBalField">
     <label for="wBal"><span>Số dư đang có <span class="opt">(không bắt buộc)</span></span></label>
     <input id="wBal" class="inp amount-inp num" inputmode="numeric" autocomplete="off" placeholder="0đ">
@@ -2584,6 +2593,10 @@ body.kb #tab-chat > .chip-veil{display:none}
   <div class="field" id="payCardField" hidden>
     <label><span>Thẻ</span></label>
     <div class="chips" id="payCardChips" style="margin-top:0"></div>
+  </div>
+  <div class="field" id="pWField" hidden>
+    <label><span>Trả từ ví</span></label>
+    <div class="chips wchips" id="pWChips" style="margin-top:0"></div>
   </div>
   <div class="sheet-foot">
     <button class="ghost" id="payCancel">Huỷ</button>
@@ -2822,8 +2835,8 @@ body.kb #tab-chat > .chip-veil{display:none}
 
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
 <script src="vendor/jsQR.js"></script>
-<script src="parse-vi.js?v=98"></script>
-<script src="lock.js?v=98"></script>
+<script src="parse-vi.js?v=99"></script>
+<script src="lock.js?v=99"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -3212,7 +3225,7 @@ function startNgay50k(){
      Ví mặc định "Tài khoản" (mã main) gồm tài khoản ngân hàng chính và tiền mặt; nợ thẻ tính theo mốc của ví này.
      Các ví thêm chỉ có số dư riêng: khoản chi/thu gắn w = mã ví, chuyển tiền giữa ví nằm ở state.xfer. */
   const MAIN_W = "main";
-  const WKINDS = { bank:{ label:"Ngân hàng", icon:"🏦" }, ewallet:{ label:"Ví điện tử", icon:"📱" }, other:{ label:"Khác", icon:"👛" } };
+  const WKINDS = { bank:{ label:"Ngân hàng", icon:"🏦" }, ewallet:{ label:"Ví điện tử", icon:"📱" }, credit:{ label:"Thẻ tín dụng", icon:"💳" }, other:{ label:"Khác", icon:"👛" } };
   const wOf = o => (o && o.w) || MAIN_W;
   function walletList(){ return [{ id:MAIN_W, name:"Tài khoản", kind:"main", icon:"🏦" }].concat((state.wallets || []).filter(w => !w.off)); }
   function walletById(id){ return walletList().find(w => w.id === (id || MAIN_W)) || (state.wallets || []).find(w => w.id === id) || null; }
@@ -4616,7 +4629,7 @@ function startNgay50k(){
     if(name !== currentTab){ clearSearch(); resetTab(name); }
     if(name !== "chat" && document.activeElement === $("chatIn")){ $("chatIn").blur(); document.body.classList.remove("kb"); }
     currentTab = name;
-    const slot = name === "chat" ? "first" : name;
+    const slot = name === "chat" ? "first" : name === "cards" ? "today" : name;
     document.querySelectorAll(".tabs button").forEach(b => b.setAttribute("aria-selected", (b.id === "tabFirst" ? "first" : b.dataset.tab) === slot ? "true":"false"));
     ["chat","wallet","today","money","loans","cards"].forEach(n => $("tab-"+n).hidden = n !== name);
     window.scrollTo(0,0);
@@ -5219,7 +5232,7 @@ function startNgay50k(){
     if(!(it.amt > 0)) return "Thiếu số tiền";
     if((it.kind === "repay" || it.kind === "collect") && !it.loanId) return it.kind === "collect" ? "Chọn khoản cho vay được trả" : "Chọn khoản vay để trả";
     if((it.kind === "lend" || it.kind === "borrow") && !it.loanId && !String(it.who || "").trim()) return "Ghi tên người";
-    if(it.kind === "card" && !(state.cards || []).length) return "Chưa có thẻ nào, thêm thẻ ở tab Thẻ trước";
+    if(it.kind === "card" && !(state.cards || []).length) return "Chưa có thẻ nào, thêm thẻ ở tab Ví → Thêm ví → Thẻ tín dụng";
     if(it.kind === "xfer"){
       if(!multiW()) return "Chưa có ví thứ hai, thêm ví ở tab Ví trước";
       if(!walletById(it.from) || !walletById(it.to)) return "Chọn ví chuyển đi và ví nhận";
@@ -6319,7 +6332,7 @@ function startNgay50k(){
     $("balLabel").textContent = many ? "Tổng các ví" : "Số dư hiện tại";
     if($("chatBal")) $("chatBal").textContent = T.any ? sMon(T.cash) : "chưa có";
     renderWStrip(T);
-    $("wAddBtn").hidden = many;
+    $("wAddBtn").hidden = stripOn();
     if(!T.any){
       big.textContent = "Chưa có"; big.parentNode.classList.remove("neg");
       sub.textContent = "Nhập số dư đang có trong tài khoản, app sẽ tự tính tiếp theo từng khoản bạn ghi."; sub.hidden = false;
@@ -6343,9 +6356,11 @@ function startNgay50k(){
     renderRecon();
   }
   /* hàng ví dưới số tổng: chỉ hiện khi có từ hai ví trở lên */
+  /* hàng ví hiện khi có từ hai ví, hoặc có thẻ tín dụng (thẻ là ví tín dụng, v99) */
+  function stripOn(){ return multiW() || (state.cards || []).length > 0; }
   function renderWStrip(T){
     const box = $("wStrip"); box.innerHTML = "";
-    box.hidden = !multiW();
+    box.hidden = !stripOn();
     if(box.hidden) return;
     T.rows.forEach(({ w, r }) => {
       const b = el("button", "wcard"); b.type = "button";
@@ -6355,6 +6370,15 @@ function startNgay50k(){
       const v = b.querySelector("b");
       if(r){ v.textContent = sMon(r.bal); if(r.bal < 0) v.classList.add("neg"); } else { v.textContent = "Nhập số dư"; v.className = "mute"; }
       b.onclick = () => openBalance(w.id);
+      box.appendChild(b);
+    });
+    (state.cards || []).forEach(c => {
+      const b = el("button", "wcard credit"); b.type = "button";
+      b.innerHTML = '<span class="wi" aria-hidden="true">💳</span><span class="wn"></span><b class="num"></b>';
+      b.querySelector(".wn").textContent = c.name || "Thẻ";
+      const d = payDebtOf(c.id), v = b.querySelector("b");
+      if(T.rows[0].r){ v.textContent = d > 0 ? "nợ " + fmt(d) : "không nợ"; if(d > 0) v.classList.add("debt"); } else { v.textContent = "thẻ tín dụng"; v.className = "mute"; }
+      b.onclick = () => openCardWallet(c.id);
       box.appendChild(b);
     });
     const add = el("button", "wcard wadd"); add.type = "button";
@@ -6549,7 +6573,10 @@ function startNgay50k(){
   var wEditId = null, wKind = "ewallet";
   function wKindChips(){
     const box = $("wKinds"); box.innerHTML = "";
+    $("wBalField").hidden = !!wEditId || wKind === "credit";
+    $("wCreditHint").hidden = wKind !== "credit";
     Object.keys(WKINDS).forEach(k => {
+      if(k === "credit" && wEditId) return;          /* ví thường không đổi thành thẻ */
       const b = el("button", "chip", WKINDS[k].icon + " " + WKINDS[k].label); b.type = "button";
       b.setAttribute("aria-pressed", wKind === k ? "true" : "false");
       b.onclick = () => { wKind = k; wKindChips(); };
@@ -6562,7 +6589,7 @@ function startNgay50k(){
     wEditId = w ? w.id : null; wKind = w ? (w.kind || "other") : "ewallet";
     $("wTitle").textContent = w ? "Sửa ví" : "Thêm ví";
     $("wName").value = w ? w.name : "";
-    $("wBalField").hidden = !!w; $("wBal").value = "";
+    $("wBal").value = "";
     $("wDel").hidden = !w; $("wDel").textContent = "Xoá ví"; delete $("wDel").dataset.armed;
     $("wHint").hidden = !!w;
     wKindChips(); wCheck();
@@ -6572,6 +6599,10 @@ function startNgay50k(){
   function closeWSheet(){ hideSheet("wSheet", "wBack"); }
   function saveWSheet(){
     const name = $("wName").value.trim(); if(!name) return;
+    if(wKind === "credit" && !wEditId){
+      /* thẻ tín dụng: dùng màn thêm thẻ sẵn có (kỳ sao kê, 4 số cuối…) */
+      closeWSheet(); openCardEdit(null); $("cdName").value = name; return;
+    }
     const icon = (WKINDS[wKind] || WKINDS.other).icon;
     state.wallets = state.wallets || [];
     if(wEditId){
@@ -6598,6 +6629,12 @@ function startNgay50k(){
     persist(true); closeWSheet(); if(balEditing && reconW === wEditId) closeBalance(); reconW = MAIN_W; renderAll();
   };
   $("wAddBtn").onclick = () => openWSheet(null);
+  /* mở màn thẻ tín dụng (tab Thẻ cũ) cho đúng thẻ được chọn */
+  function openCardWallet(cardId){
+    showTab("cards");
+    cardFilterId = cardId || null; renderCards();
+  }
+  $("cardsHome").onclick = () => { navDir = "back"; showTab("today"); };
   /* ---------- chuyển tiền giữa các ví (v98) ---------- */
   function xCheck(){
     const f = $("xFrom").dataset.w || MAIN_W, t = $("xTo").dataset.w || MAIN_W, v = balVal("xAmt");
@@ -6686,6 +6723,7 @@ function startNgay50k(){
     $("payAmt").value = debt > 0 ? debt.toLocaleString("vi-VN") : "";
     $("payDate").value = todayKey(); $("payDate").max = todayKey();
     renderPayChips(); payCheck();
+    wPicker("pWField", "pWChips", balEditing ? reconW : MAIN_W);
     showSheet("paySheet", "payBack");
   }
   function closePayCard(){ hideSheet("paySheet", "payBack"); }
@@ -6694,6 +6732,7 @@ function startNgay50k(){
     const date = /^\d{4}-\d{2}-\d{2}$/.test($("payDate").value) ? $("payDate").value : todayKey();
     const rec = { id:uid(), amt:v, date, t: date === todayKey() ? Date.now() : new Date(date + "T12:00:00").getTime() };
     if(payCardId) rec.cardId = payCardId;
+    const pw = pickedW("pWChips"); if(pw) rec.from = pw;    /* v99: trả thẻ = chuyển tiền từ một ví sang thẻ */
     (state.cardPay = state.cardPay || []).push(rec);
     persist(true); renderAll(); closePayCard();
   }
@@ -6979,6 +7018,8 @@ function startNgay50k(){
     /* bottom-up popups close with their own ✕ button, not with a swipe */
     if(!$("tagSheet").hidden || !$("editSheet").hidden || !$("filterSheet").hidden || !$("formSheet").hidden
        || !$("cardSheet").hidden || !$("pasteSheet").hidden || !$("cardEditSheet").hidden) return null;
+    if(balEditing && !settingsOpen) return closeBalance;
+    if(currentTab === "cards") return () => showTab("today");
     if(settingsOpenNow()) return setPage === "setHome" ? closeSettings : () => showSetPage(setPage === "setTagOne" ? "setTags" : "setHome", true);
     if(!$("incomeForm").hidden) return () => $("cancelIncome").click();
     if(!$("contactForm").hidden) return () => $("cancelContact").click();
@@ -7011,7 +7052,7 @@ function startNgay50k(){
       if(!(dx > 0 && Math.abs(dx) > Math.abs(dy) * 1.2) || !e.cancelable){ sw = null; return; }
       sw.fn = backTarget(); if(!sw.fn){ sw = null; return; }
       sw.active = true;
-      sw.panel = settingsOpenNow() && sw.fn === closeSettings ? $("settings") : null;
+      sw.panel = sw.fn === closeSettings && settingsOpen ? $("settings") : sw.fn === closeBalance ? $("recon") : null;
       sw.view = sw.panel ? null : backViewEl();
       if(sw.panel) sw.panel.style.transition = "none";
       if(sw.view){ sw.view.style.transition = "none"; sw.view.style.willChange = "transform, opacity"; }
@@ -7479,14 +7520,14 @@ function startNgay50k(){
       stmt: (stmtN > 0 && stmtN <= 31) ? stmtN : 0 };
     if(cdEditing){ const c = cardOf(cdEditing); if(c) Object.assign(c, data); }
     else state.cards.push(Object.assign({ id:uid() }, data));
-    persist(); renderCards(); hideSheet("cardEditSheet", "cardEditBack");
+    persist(); renderCards(); renderBalance(); hideSheet("cardEditSheet", "cardEditBack");
   };
   $("cdDel").onclick = () => {
     const b = $("cdDel");
     if(b.dataset.armed !== "1"){ b.dataset.armed = "1"; b.textContent = "Bấm lần nữa để xoá"; return; }
     state.cards = (state.cards || []).filter(c => c.id !== cdEditing);
     for(const k in state.cardTx) (state.cardTx[k] || []).forEach(it => { if(it.cardId === cdEditing) it.cardId = null; });
-    persist(); renderCards(); hideSheet("cardEditSheet", "cardEditBack");
+    persist(); renderCards(); renderBalance(); hideSheet("cardEditSheet", "cardEditBack");
   };
   $("closeCardEdit").onclick = () => hideSheet("cardEditSheet", "cardEditBack");
 
