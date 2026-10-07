@@ -350,20 +350,55 @@
   }
 
   /* ---------------- câu hỏi ---------------- */
+  /* câu hỏi muốn xem chi tiết, liệt kê, gom nhóm, phân tích → báo cáo (q:"report") thay vì một con số tổng */
+  const REPORT = / (gi|nhung gi|cai gi|khoan gi|khoan nao|nhung khoan|cac khoan|tung khoan|liet ke|chi tiet|cu the|phan tich|thong ke|tong hop|bao cao|gom nhom|gom lai|theo nhom|theo loai|theo danh muc|theo ngay|theo tuan|theo thang|vao dau|vao viec gi|cho viec gi|vao nhung gi|o dau|top|lon nhat|nhieu tien nhat|khoan to|so voi|so sanh|co nhieu hon|co it hon|tang hay giam) /;
+  function periodOf(n, now){
+    const pad2 = x => String(x).padStart(2, "0"), k = d => d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate());
+    let m;
+    if((m = n.match(/ tu (?:ngay )?(\d{1,2})(?:[\/\-](\d{1,2}))? (?:den|toi|-) (?:ngay )?(\d{1,2})(?:[\/\-](\d{1,2}))? /))){
+      const mo1 = m[2] ? +m[2] - 1 : now.getMonth(), mo2 = m[4] ? +m[4] - 1 : (m[2] ? +m[2] - 1 : now.getMonth());
+      const a = new Date(now.getFullYear(), mo1, +m[1]), b = new Date(now.getFullYear(), mo2, +m[3]);
+      if(a <= b) return { period:"custom", from:k(a), to:k(b) };
+    }
+    if((m = n.match(/ (\d{1,3}) ngay (qua|gan day|gan nhat|vua roi|truoc) /))){ const b = new Date(now), a = new Date(now); a.setDate(a.getDate() - (+m[1]) + 1); return { period:"custom", from:k(a), to:k(b) }; }
+    if((m = n.match(/ thang (\d{1,2})(?:[\/\-](\d{4}))? /)) && +m[1] >= 1 && +m[1] <= 12){
+      let y = m[2] ? +m[2] : now.getFullYear(); if(!m[2] && +m[1] - 1 > now.getMonth()) y--;
+      const a = new Date(y, +m[1] - 1, 1), b = new Date(y, +m[1], 0); return { period:"custom", from:k(a), to:k(b) };
+    }
+    if(/ nam nay /.test(n)) return { period:"year" };
+    if(/ nam (ngoai|truoc|roi) /.test(n)){ const y = now.getFullYear() - 1; return { period:"custom", from:y + "-01-01", to:y + "-12-31" }; }
+    if(/ thang (truoc|roi) /.test(n)) return { period:"lastmonth" };
+    if(/ thang nay /.test(n)) return { period:"month" };
+    if(/ tuan (truoc|roi) /.test(n)) return { period:"lastweek" };
+    if(/ tuan nay /.test(n)) return { period:"week" };
+    if(/ hom qua | hqua /.test(n)) return { period:"yesterday" };
+    if(/ hom nay | hnay | nay /.test(n)) return { period:"today" };
+    return { period:null };
+  }
   function asQuery(text, ctx){
-    const n = " " + norm(text).replace(/[?!.,]/g, " ").replace(/\s+/g, " ") + " ";
-    const isQ = /\?\s*$/.test(text) || / (bao nhieu|bn|may|nhieu khong|the nao|sao) /.test(n) || /^ (xem|cho xem|tong) /.test(n) || / (ai|nhung ai) (con |dang |van )?no | no (ai|nhung ai) /.test(n);
+    const n = " " + norm(text).replace(/[?!.,:;]/g, " ").replace(/\s+/g, " ") + " ";
+    const now = (ctx && ctx.now) || new Date();
+    const nq = n.replace(/ gi (do|day|ay|ca) /g, " ");                 /* "200k gì đó" là lời kể, không phải câu hỏi */
+    let wantsReport = REPORT.test(nq) || /^ (cho (toi|minh|em|tao) (biet|xem)|liet ke|thong ke|phan tich|bao cao|xem) /.test(nq);
+    const isQ = /\?\s*$/.test(text) || / (bao nhieu|bn|may|nhieu khong|the nao|sao) /.test(n) || /^ (xem|cho xem|tong) /.test(n) || / (ai|nhung ai) (con |dang |van )?no | no (ai|nhung ai) /.test(n) || wantsReport;
     if(!isQ) return null;
-    const { N } = tokenize(text); for(let i = 0; i < N.length; i++){ const a = amountAt(N, i); if(a && !/ (bao nhieu|bn) /.test(n)) return null; }
-    let period = null;
-    if(/ hom nay | nay /.test(n) && !/ thang nay | tuan nay /.test(n)) period = "today";
-    if(/ hom qua /.test(n)) period = "yesterday";
-    if(/ tuan nay /.test(n)) period = "week";
-    if(/ tuan truoc /.test(n)) period = "lastweek";
-    if(/ thang nay /.test(n)) period = "month";
-    if(/ thang truoc /.test(n)) period = "lastmonth";
-    const tag = (() => { if(/ an uong /.test(n)) return "an+uong"; const g = guessTag(text, null); return g !== "khac" ? g : null; })();
-    if(/ so du | (tai khoan|tk|vi) con /.test(n)) return { q:"balance" };
+    const { N } = tokenize(text);
+    if(wantsReport && !/\?\s*$/.test(text)){
+      /* có số tiền mà không đứng sau "trên/hơn/từ/top" thì là kể chi tiêu, không phải hỏi */
+      for(let i = 0; i < N.length; i++){ const a = amountAt(N, i); if(a && !["tren","hon","tu","top","duoi"].includes(N[i-1])) return null; if(a) i += a.n - 1; }
+    }
+    if(!wantsReport){ for(let i = 0; i < N.length; i++){ const a = amountAt(N, i); if(a && !/ (bao nhieu|bn) /.test(n)) return null; } }
+    /* "tháng này so với tháng trước": kỳ chính là kỳ nói trước, kỳ so sánh tự lấy kỳ liền trước */
+    const cmpAt = n.search(/ (so voi|so sanh) /);
+    const pr = periodOf(cmpAt > 0 && periodOf(n.slice(0, cmpAt + 1), now).period ? n.slice(0, cmpAt + 1) : n, now), period = pr.period;
+    const tag = (() => { if(/ an uong /.test(n)) return "an+uong"; const g = guessTag(text.replace(/\b(chi tiết|chi tiêu|tiêu|chi)\b/gi, " "), null); return g !== "khac" ? g : null; })();
+    /* nguồn tiền: tài khoản/tiền mặt hay thẻ tín dụng */
+    let src = "all", cardId = null;
+    const card = findCard(ctx || {}, N);
+    if(card){ src = "card"; cardId = card.id; }
+    else if(/ (the|quet the|ca the|the tin dung|credit) /.test(n)) src = "card";
+    else if(/ (tai khoan|tk|chuyen khoan|ck|tien mat|tm|vi) /.test(n) && !/ so du /.test(n)) src = "tk";
+    if(/ so du | (tai khoan|tk|vi) con /.test(n) && !wantsReport) return { q:"balance" };
     if(/ (no|vay) /.test(n) && !/ the /.test(n)){
       const m = n.match(/ (?:minh|toi) no (.+?) bao/) ; const m2 = n.match(/ (.+?) (?:con )?no (?:minh|toi)/);
       let who = m ? m[1] : m2 ? m2[1].replace(/^(con|da) /, "") : "";
@@ -371,10 +406,31 @@
       if(/^(ai|nhung ai|may nguoi|bao nhieu nguoi|ai ma)$/.test(who)) who = "";
       return { q:"loans", who: who.trim(), dir: m ? "borrow" : m2 ? "lend" : null };
     }
+    if(/ (ngay nao|hom nao) .*(nhieu nhat|tieu nhieu)/.test(n)) return { q:"topday", period: period || "month" };
+    if(wantsReport){
+      const q = { q:"report", period: period || "month", src, cardId, tag, group:"tag", list:false, top:0, minAmt:0, kind:"out", compare:false };
+      if(pr.from){ q.from = pr.from; q.to = pr.to; }
+      if(/ (thu nhap|thu vao|thu duoc|khoan thu|kiem duoc|tien ve|nhan duoc) /.test(n)) q.kind = "in";
+      if(/ theo ngay /.test(n)) q.group = "day";
+      else if(/ theo tuan /.test(n)) q.group = "week";
+      else if(/ theo thang /.test(n)) q.group = "month";
+      else if(/ (o dau|cho ai|noi nao|cua hang nao|cho nhung ai) /.test(n)) q.group = "place";
+      else if(/ (tai khoan hay the|the hay tai khoan|theo nguon) /.test(n)){ q.group = "src"; q.src = "all"; q.cardId = null; }
+      if(/ (liet ke|tung khoan|cac khoan|nhung khoan|chi tiet tung|cu the tung) /.test(n) && !/ (nhom|loai|danh muc) /.test(n) && q.group === "tag") q.group = "none";
+      if(/ (liet ke|chi tiet|cu the|tung khoan|cac khoan|nhung khoan) /.test(n)) q.list = true;
+      const tm = n.match(/ top (\d{1,2}) | (\d{1,2}) khoan (lon|to) /);
+      if(tm || / (lon nhat|nhieu tien nhat|khoan to) /.test(n)){ q.top = tm ? +(tm[1] || tm[2]) : 5; q.group = "none"; q.list = true; }
+      for(let i = 0; i < N.length; i++){ if(["tren","hon","tu"].includes(N[i]) && N[i+1]){ const a = amountAt(N, i + 1); if(a && a.v >= 1000){ q.minAmt = a.v; break; } } }
+      if(/ (so voi|so sanh|co nhieu hon|co it hon|tang hay giam|tang khong|giam khong) /.test(n)) q.compare = true;
+      return q;
+    }
     if(/ the /.test(n) && !/ (an|uong) /.test(n)) return { q:"card", period: period || "month" };
     if(/ con (bao nhieu|bn|duoc) | con lai /.test(n) && (!period || (period === "today" && !/ (tieu|chi|xai|het|ton|an|uong|mua) /.test(n)))) return { q:"left" };
-    if(/ (ngay nao|hom nao) .*(nhieu nhat|tieu nhieu)/.test(n)) return { q:"topday", period: period || "month" };
-    if(/ (tieu|chi|xai|het|ton|an|uong|mua) /.test(n) || tag || period) return { q:"spent", period: period || "today", tag };
+    if(/ (tieu|chi|xai|het|ton|an|uong|mua) /.test(n) || tag || period){
+      const q = { q:"spent", period: period || "today", tag, src };
+      if(pr.from){ q.period = "custom"; q.from = pr.from; q.to = pr.to; }
+      return q;
+    }
     return { q:"unknown" };
   }
 
@@ -423,7 +479,7 @@
      Mọi khoản vẫn hiện thẻ xác nhận trước khi ghi, nên máy hiểu sai thì người dùng sửa được hoặc bấm "Nhờ AI hiểu lại". */
   const HARD = / (chia|chia deu|moi nguoi|moi dua|tru di|tru ra|tru vao|cong them|cong vao|nham|sua lai|sua thanh|doi thanh|xoa|huy|khong phai|chu khong|tra gop|lai suat|phan tram|giam gia|hoan tien mot phan|tong cong|tat ca la|ca thay|moi cai|moi ly|moi phan|neu|thi sao|bao gio) /;
   /* câu hỏi mà bộ trả lời trên máy chỉ đoán bừa: xin lời khuyên, hỏi tương lai, hỏi lý do */
-  const ASK = / (nen|co nen|tu van|goi y|lam sao|lam the nao|tai sao|vi sao|du doan|du kien|tuan sau|thang sau|nam sau|ke hoach|so sanh|so voi|trung binh|xu huong) |^ sao /;
+  const ASK = / (nen|co nen|tu van|goi y|lam sao|lam the nao|tai sao|vi sao|du doan|du kien|tuan sau|thang sau|nam sau|ke hoach|xu huong) |^ sao /;
   const EDIT = / (sua|doi|chinh) (khoan|cai|lai|thanh|so|tien) | thanh \d| ghi (nham|sai|lon|thieu|thua) /;
   function assess(text, res, ctx){
     ctx = ctx || {};

@@ -1,6 +1,25 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v90, ngày 07/10/2026
+**Phiên bản hiện tại:** v91, ngày 07/10/2026
+
+---
+
+## Có gì mới trong v91 (so với v90)
+
+**Hỏi chi tiêu trong Trò chuyện giờ trả lời chi tiết, liệt kê và gom nhóm.**
+- Hỏi kiểu *"tháng rồi tiêu gì"*, *"tháng này tiêu gì từ tài khoản"*, *"liệt kê các khoản quẹt thẻ VIB tuần này"*, *"7 ngày qua tiêu gì theo ngày"*, *"top 5 khoản lớn nhất tháng 9"*, *"các khoản trên 500k tháng trước"*, *"tháng này tiêu ở đâu"*, *"tháng này thu nhập những gì"*, *"tháng này so với tháng trước"* → app trả về **báo cáo**:
+  - Tổng tiền, số khoản, tách tài khoản / thẻ, trung bình mỗi ngày, so với kỳ trước.
+  - Gom theo nhóm (hoặc theo ngày, tuần, tháng, nơi chi, nguồn tiền), mỗi nhóm có thanh %, mức tăng giảm so với kỳ trước; **chạm vào nhóm để xem từng giao dịch**.
+  - Danh sách phẳng khi hỏi liệt kê hoặc top khoản lớn.
+  - Nhận xét ngắn: khoản lớn nhất, nhóm tốn nhất, số ngày vượt hạn mức, nhóm tăng nhiều nhất.
+- Bóc tách câu hỏi thông minh hơn: kỳ (hôm nay, tuần, tháng rồi, tháng 9, năm nay, 7 ngày qua, từ ngày 1 đến 15), nguồn tiền (tài khoản, tiền mặt, thẻ, tên thẻ), nhóm, từ khoá nơi chi, khoản từ X trở lên, top N, thu hay chi, có so sánh hay không.
+- Bộ hiểu câu trên máy làm được hầu hết các câu này (không tốn AI). Câu khó hơn thì AI bóc tách, nhưng **số liệu luôn tính trên máy**: AI không nhận dữ liệu chi tiêu của bạn.
+- Câu trả lời "đã chi bao nhiêu" có thêm nút **Xem chi tiết từng khoản ›**.
+- Sửa: hỏi "từ tài khoản" trước đây vẫn cộng cả tiền thẻ.
+
+**Sửa bàn phím không hiện khi chạm ô chat.** App không tự chặn cú chạm để đặt tiêu điểm nữa (trên iOS 26 cách đó có lúc chỉ hiện thanh ^ v ✓ mà không có bàn phím); để iPhone tự mở bàn phím như ô nhập bình thường.
+
+**Sửa thanh màu ở vùng giờ/pin trên iOS 26.** iOS 26 bỏ qua thẻ theme-color (cách v90 dùng) và lấy màu từ nền trang hoặc phần tử dính ở mép trên; trước đây đầu trang trong suốt nên iPhone tô màu xám nhạt. Giờ đầu trang, nền trang, thanh Cài đặt, màn khoá và màn chào đều có màu nền đặc đúng màu đỉnh của từng giao diện (Sáng, Tối, Pastel).
 
 ---
 
@@ -13,21 +32,13 @@
 
 ---
 
-## Có gì mới trong v89 (so với v88)
-
-**Nhận biết câu trả lời của AI** (tab Trò chuyện).
-- Câu trả lời do AI làm có dấu **✦** ở đầu và viền nhạt màu nhấn.
-- Câu do máy tự hiểu (bộ hiểu câu trên máy, đọc ảnh trên máy) không có dấu.
-- Nút phân tích lại đổi biểu tượng thành **↻ Chưa đúng? Phân tích lại bằng AI**, để dấu ✦ chỉ dùng cho câu của AI.
-
----
-
 ## Tất cả tính năng của app
 
 ### Tab Trò chuyện (mở mặc định)
 - Kể chi tiêu, vay mượn, khoản thu bằng lời; app tách thành các thẻ xác nhận, bấm Ghi mới lưu, có Hoàn tác.
 - Gửi ảnh thông báo trừ tiền: đọc bằng bộ đọc chữ trên máy, không tốn token AI.
 - Hỏi nhanh: hôm nay tiêu bao nhiêu, ai còn nợ mình, số dư còn bao nhiêu…
+- Hỏi chi tiết: tháng rồi tiêu gì, liệt kê khoản thẻ, top khoản lớn, tiêu ở đâu, so với tháng trước… → báo cáo gom nhóm, chạm để xem từng giao dịch, tính trên máy.
 - Chọn Trò chuyện hay Ví làm màn hình mở đầu trong Cài đặt.
 - **Trợ lý AI** (tuỳ chọn, trong nhóm Nâng cao): dùng khoá API Claude, ChatGPT hoặc Gemini; khoá chỉ lưu trên máy. Mặc định chỉ gọi AI cho câu khó, câu đơn giản máy tự hiểu; có nút Nhờ AI hiểu lại. Xem chi phí và số câu tiết kiệm trong Cài đặt.
 
@@ -129,6 +140,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v91** | Báo cáo chi tiêu trong chat (liệt kê, gom nhóm, so sánh); sửa bàn phím không hiện; sửa thanh màu trên iOS 26 |
 | **v90** | Thanh trạng thái iPhone cùng màu với app ở mọi giao diện |
 | **v89** | Dấu ✦ ở câu trả lời của AI; nút phân tích lại dùng ↻ |
 | **v88** | Nút Phân tích lại bằng AI dưới mọi câu trả lời, kể cả câu của AI và kết quả đọc ảnh |

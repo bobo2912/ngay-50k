@@ -22,7 +22,7 @@ const CASES = [
   ["trả góp điện thoại 1tr5 tháng này", "ai"], ["đi siêu thị hết 450k nhưng được giảm 10%", "ai"],
   ["hôm qua với mấy đứa bạn đi ăn uống linh tinh tốn khoảng 200k gì đó rồi về nhà", "ai"],
   ["mua đồ ăn sáng cho cả nhà", "ai"], ["tuần sau có nên mua laptop không?", "ai"],
-  ["tháng này so với tháng trước tiêu nhiều hơn không?", "ai"], ["sao tháng này tiêu nhiều thế?", "ai"],
+  ["tháng này so với tháng trước tiêu nhiều hơn không?", "may"], ["sao tháng này tiêu nhiều thế?", "ai"],
   ["con trả tiền học 2tr", "ai"]
 ];
 let fail = 0;
