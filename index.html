@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v92";
+  var K = "ngay50k:errlog", VER = "v93";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -2288,7 +2288,7 @@ body.searching .ledger-head{background:var(--top-c)}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v92</p>
+      <p class="sync" id="appVersion">Phiên bản v93</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -2699,8 +2699,8 @@ body.searching .ledger-head{background:var(--top-c)}
 
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
 <script src="vendor/jsQR.js"></script>
-<script src="parse-vi.js?v=92"></script>
-<script src="lock.js?v=92"></script>
+<script src="parse-vi.js?v=93"></script>
+<script src="lock.js?v=93"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -5256,7 +5256,7 @@ function startNgay50k(){
      Lỗi, hết hạn chờ hoặc mất mạng thì dùng bộ hiểu câu trên máy (parse-vi.js). */
   var AI_KEY = "ngay50k:ai";
   const AI_PROVIDERS = {
-    claude: { name:"Claude", model:"claude-sonnet-5-5", models:["claude-sonnet-5-5","claude-haiku-4-5-20251001","claude-opus-5-5"], keyHint:"sk-ant-…", where:"console.anthropic.com → API Keys" },
+    claude: { name:"Claude", model:"claude-haiku-4-5-20251001", models:["claude-haiku-4-5-20251001","claude-sonnet-5-5","claude-opus-5-5"], keyHint:"sk-ant-…", where:"console.anthropic.com → API Keys" },
     openai: { name:"ChatGPT", model:"gpt-5-mini", models:["gpt-5-mini","gpt-5"], keyHint:"sk-…", where:"platform.openai.com → API keys" },
     gemini: { name:"Gemini", model:"gemini-flash-latest", models:["gemini-flash-latest","gemini-pro-latest"], keyHint:"AIza…", where:"aistudio.google.com → Get API key" }
   };
@@ -5458,6 +5458,8 @@ function startNgay50k(){
       "Câu chào hỏi, tâm sự, hoặc thiếu số tiền: items rỗng, reply hỏi lại ngắn gọn (vd hỏi số tiền). Không bịa số tiền.",
       "reply: 1 câu ngắn, ấm áp, tự nhiên như bạn bè; KHÔNG nêu số liệu (bạn không xem được dữ liệu, app tự tính và hiện). Với report chỉ cần nói ngắn bạn đang xem gì, vd \"Đây là chi tiêu tháng trước theo nhóm nè\".",
       "",
+      "Dạng JSON phải trả (bỏ trường không dùng): {\"reply\":\"...\", \"items\":[{\"kind\":\"out\",\"amt\":45000,\"note\":\"Ăn phở\",\"cat\":\"an\",\"date\":\"yyyy-mm-dd\",\"time\":\"\",\"cardId\":\"\",\"loanId\":\"\",\"who\":\"\"}], \"query\":null hoặc {\"q\":\"report\",\"period\":\"month\",\"from\":\"\",\"to\":\"\",\"src\":\"all\",\"cardId\":\"\",\"tag\":\"\",\"tags\":[],\"kind\":\"out\",\"group\":\"tag\",\"list\":false,\"top\":0,\"minAmt\":0,\"kw\":\"\",\"compare\":false,\"who\":\"\"}}",
+      "",
       "Ngữ cảnh hiện tại (JSON): " + JSON.stringify(ctx)
     ].join("\n");
   }
@@ -5470,11 +5472,11 @@ function startNgay50k(){
     });
     return out;
   }
-  var aiPlainOnly = false;
+  var aiNoLean = false;
   async function aiCall(text, cfgOverride, imgs){
     const c = cfgOverride || aiCfg(), model = aiModel(c), key = String(c.key || "").trim();
     imgs = imgs || [];
-    const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), imgs.length ? 90000 : 50000);
+    const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), imgs.length ? 90000 : 45000);
     const hist = aiHistory();
     try{
       let res, data, out;
@@ -5484,11 +5486,15 @@ function startNgay50k(){
         if(msgs.length && msgs[0].role !== "user") msgs.shift();
         if(msgs.length && msgs[msgs.length-1].role === "user") msgs[msgs.length-1].content += "\n" + text; else msgs.push({ role:"user", content:text });
         if(imgs.length){ const last = msgs[msgs.length-1]; last.content = imgs.map(im => ({ type:"image", source:{ type:"base64", media_type:im.mime, data:im.data } })).concat([{ type:"text", text:last.content }]); }
-        /* mỗi lần gửi có hạn chờ riêng. Kết quả có cấu trúc (schema) lần đầu dùng có thể chậm vì máy chủ phải dựng
-           lại khuôn; quá hạn thì gửi lại kiểu thường và cả phiên này dùng kiểu thường cho nhanh. */
-        const send = async (structured, ms) => {
-          const body = { model, max_tokens:1500, system:aiSystem() + (structured ? "" : "\nChỉ trả về đúng một đối tượng JSON có các khoá reply, items, query; không thêm chữ nào khác."), messages:msgs };
-          if(structured) body.output_config = { format:{ type:"json_schema", schema:AI_SCHEMA_STRICT } };
+        /* v93: KHÔNG dùng kết quả có cấu trúc (output_config.format): khuôn của app có hơn 24 trường tuỳ chọn, vượt giới hạn
+           của API, máy chủ dựng khuôn rất lâu nên hay báo "AI trả lời quá lâu". Thay vào đó dặn AI trả JSON rồi app tự đọc.
+           Sonnet/Opus/Fable mặc định suy nghĩ ở mức cao (chậm): đặt effort thấp; Sonnet 5.5 thì chỉ suy nghĩ giữa các lần
+           gọi công cụ (app không dùng công cụ nên coi như không suy nghĩ). Haiku 4.5 không nhận effort nên không gửi. */
+        const effortOK = /sonnet-(4-6|5)|opus-(4-[5-9]|5)|fable|mythos/.test(model);
+        const send = async (lean, ms) => {
+          const body = { model, max_tokens:2000, system:aiSystem() + "\nChỉ trả về đúng một đối tượng JSON có các khoá reply, items, query; không thêm chữ nào khác, không bọc trong ```.", messages:msgs };
+          if(lean && effortOK) body.output_config = { effort:"low" };
+          if(lean && /sonnet-5-5/.test(model)) body.thinking = { type:"between_tools" };
           const c2 = new AbortController(), t2 = setTimeout(() => c2.abort(), ms), stop = () => c2.abort();
           ctl.signal.addEventListener("abort", stop);
           try{
@@ -5498,13 +5504,10 @@ function startNgay50k(){
             return { r, d: await r.json().catch(() => ({})) };
           } finally { clearTimeout(t2); ctl.signal.removeEventListener("abort", stop); }
         };
-        let x = null;
-        if(!aiPlainOnly){
-          try{ x = await send(true, imgs.length ? 50000 : 18000); }
-          catch(e){ if(e && e.name === "AbortError" && !ctl.signal.aborted){ aiPlainOnly = true; x = null; } else throw e; }
-        }
-        /* mô hình hoặc tài khoản chưa hỗ trợ kết quả có cấu trúc: gửi lại kiểu thường */
-        if(!x || (!x.r.ok && x.r.status === 400 && /output_config|format|schema|structured/i.test((x.d.error && x.d.error.message) || ""))) x = await send(false, imgs.length ? 60000 : 30000);
+        let x = await send(!aiNoLean, imgs.length ? 80000 : 40000);
+        /* mô hình không nhận effort/thinking: gửi lại không kèm, và cả phiên dùng kiểu đó */
+        if(!x.r.ok && x.r.status === 400 && /effort|thinking|output_config/i.test((x.d.error && x.d.error.message) || "")){ aiNoLean = true; x = await send(false, imgs.length ? 80000 : 40000); }
+        if(x.r.ok && x.d.stop_reason === "max_tokens" && !(x.d.content || []).some(b => b.type === "text" && b.text.trim())) throw new Error("AI nghĩ quá lâu, hết lượt trả lời (max_tokens). Thử mô hình Haiku 4.5.");
         res = x.r; data = x.d;
         if(res.ok && data.usage) aiUseAdd("claude", data.model || model, (data.usage.input_tokens || 0) + (data.usage.cache_creation_input_tokens || 0) * 1.25 + (data.usage.cache_read_input_tokens || 0) * 0.1, data.usage.output_tokens);
         if(!res.ok) throw new Error((data.error && data.error.message) || ("HTTP " + res.status));
@@ -5828,11 +5831,20 @@ function startNgay50k(){
     const c = aiCfg(), b = $("aiTest"), msg = $("aiMsg");
     if(!c.key){ msg.textContent = "Dán khoá API vào trước đã."; msg.className = "inline-ok warn"; msg.hidden = false; return; }
     b.disabled = true; b.textContent = "Đang thử…"; msg.hidden = true;
+    const t0 = Date.now(), tick = setInterval(() => { b.textContent = "Đang thử… " + Math.round((Date.now() - t0) / 1000) + " giây"; }, 1000);
     try{
       const r = await aiCall("trưa nay ăn phở 45k", c);
+      clearInterval(tick);
+      const sec = ((Date.now() - t0) / 1000).toFixed(1).replace(".", ",");
       const it = r.items[0];
-      msg.className = "inline-ok"; msg.textContent = it ? "✓ Kết nối được với " + AI_PROVIDERS[c.provider].name + " (" + aiModel(c) + "). Thử câu \"trưa nay ăn phở 45k\" → " + KIND_LABEL[it.kind] + " " + fmt(it.amt) + (it.note ? " · " + it.note : "") + "." + (c.on ? "" : " Bật \"Dùng AI khi trò chuyện\" để bắt đầu dùng.") : "✓ Kết nối được, nhưng AI chưa trả về khoản nào. Thử đổi mô hình khác.";
-    }catch(e){ msg.className = "inline-ok warn"; msg.textContent = "Chưa được: " + aiErrText(e) + "."; }
+      msg.className = "inline-ok"; msg.textContent = it ? "✓ Kết nối được với " + AI_PROVIDERS[c.provider].name + " (" + aiModel(c) + ", trả lời sau " + sec + " giây). Thử câu \"trưa nay ăn phở 45k\" → " + KIND_LABEL[it.kind] + " " + fmt(it.amt) + (it.note ? " · " + it.note : "") + "." + (c.on ? "" : " Bật \"Dùng AI khi trò chuyện\" để bắt đầu dùng.") : "✓ Kết nối được, nhưng AI chưa trả về khoản nào. Thử đổi mô hình khác.";
+    }catch(e){
+      clearInterval(tick);
+      const t = aiErrText(e);
+      if(e && window.__n50kLog) window.__n50kLog("AI", (c.provider + " " + aiModel(c) + ": " + (e.name || "") + " " + (e.message || "")).slice(0, 300));
+      msg.className = "inline-ok warn";
+      msg.textContent = "Chưa được: " + t + "." + (/quá lâu/.test(t) ? " Thử chọn mô hình " + AI_PROVIDERS[c.provider].models[0] + " (nhanh nhất), hoặc kiểm tra mạng." : "");
+    }
     msg.hidden = false; b.disabled = false; b.textContent = "Thử kết nối";
   };
   function chatGrow(){ const ta = $("chatIn"); ta.style.height = "auto"; ta.style.height = Math.min(ta.scrollHeight, 140) + "px"; $("chatSend").disabled = !ta.value.trim(); }
