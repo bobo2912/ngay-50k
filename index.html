@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v94";
+  var K = "ngay50k:errlog", VER = "v95";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -1240,7 +1240,7 @@ body.kb #tab-chat{position:fixed; z-index:45; left:0; right:0; top:var(--vv-top,
   display:flex; flex-direction:column; padding:calc(var(--head-h, 100px) + 8px) 16px 8px; margin:0 auto; max-width:460px; background:var(--bg); overflow:hidden}
 /* đang gõ: thanh đầu trang vẫn nằm trên cùng phần nhìn thấy */
 body.kb main > header{position:fixed; top:var(--vv-top, 0px); left:0; right:0; z-index:46; margin:0 auto; max-width:460px;
-  background:var(--glass-strong); background:color-mix(in srgb, var(--bg) 96%, transparent); box-shadow:0 1px 0 var(--line)}
+  background-color:var(--top-c); box-shadow:0 1px 0 var(--line)}
 body.kb #tab-chat::before{content:""; position:fixed; inset:0; z-index:-1; background:var(--bg)}
 /* khe giữa đầu trang và ô Số dư ví khi cuộn (v87): một dải kính mờ NHẠT phủ từ dưới đầu trang tới dưới ô số dư,
    khác màu đầu trang (đầu trang giữ đường kẻ mảnh ở đáy) để ô số dư trông như nổi trên nền app, không dính vào đầu trang;
@@ -1605,6 +1605,19 @@ body.searching .ledger-head{background:var(--top-c)}
   -webkit-mask-image:linear-gradient(to bottom, #000 calc(100% - 18px), transparent); mask-image:linear-gradient(to bottom, #000 calc(100% - 18px), transparent)}
 body.head-stuck #tab-chat > .chip-veil{display:block}
 body.kb #tab-chat > .chip-veil{display:none}
+/* v95: nút cập nhật bản mới trong Cài đặt */
+.upd-go{width:100%; margin-top:10px}
+#navUpd.new{color:var(--note); font-weight:700}
+/* v95: màn con Đối chiếu số dư */
+.recon .settings-head{display:grid; grid-template-columns:1fr auto 1fr; align-items:center}
+.recon .settings-head .set-back{justify-self:start; padding:8px 0}
+.recon .settings-head h2{font-size:1.05rem}
+.recon .recon-form{display:flex; flex-direction:column; gap:10px}
+.recon .recon-form .ov-sub{margin:0 2px}
+.recon .recon-form .field{margin:0}
+.recon .recon-form .primary{margin:4px 0 0; width:100%}
+.recon section{margin-top:18px}
+.recon section > h2{font-size:.95rem; margin:0 2px 8px}
 </style>
 </head>
 <body>
@@ -1712,12 +1725,6 @@ body.kb #tab-chat > .chip-veil{display:none}
       <p class="day-sum" id="daySum"></p>
       <ul id="list"></ul>
     </section>
-    <div class="wallet-part">
-    <section id="soonSec" hidden>
-      <h2>Sắp tới, chưa trừ vào số dư</h2>
-      <ul class="flow" id="soonList"></ul>
-    </section>
-    </div>
 
     <section>
       <h2>7 ngày gần nhất</h2>
@@ -1738,17 +1745,6 @@ body.kb #tab-chat > .chip-veil{display:none}
       <div class="cal" id="calGrid" role="grid"></div>
       <div class="cal-legend" aria-hidden="true"><span>Ít</span><i class="h1"></i><i class="h2"></i><i class="h3"></i><i class="h4"></i><i class="h5"></i><span>Nhiều</span></div>
     </section>
-    <div class="wallet-part">
-    <section id="flowSec" hidden>
-      <h2>Biến động từ lần đối chiếu</h2>
-      <ul class="flow" id="flowList"></ul>
-      <button type="button" class="linkbtn" id="flowMore" hidden>Xem thêm</button>
-    </section>
-    <section id="balHistSec" hidden>
-      <h2>Đối chiếu và trả thẻ</h2>
-      <div id="balHist"></div>
-    </section>
-    </div>
 
   </div>
 
@@ -2016,6 +2012,11 @@ body.kb #tab-chat > .chip-veil{display:none}
       <div class="set-list">
         <button class="set-nav" data-go="setAI"><span class="nav-t">Trợ lý AI <span class="opt">(không bắt buộc)</span></span><span class="nav-v" id="navAI"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
       </div>
+      <h3 class="set-label">Phiên bản</h3>
+      <div class="set-list">
+        <button class="set-nav" id="updCheck" type="button"><span class="nav-t">Kiểm tra cập nhật</span><span class="nav-v" id="navUpd"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.6-6.4M21 4v5h-5"/></svg></button>
+      </div>
+      <button class="primary upd-go" id="updGo" type="button" hidden>Cập nhật</button>
       <p class="set-ver" id="appVersionHome"></p>
     </div>
 
@@ -2303,7 +2304,7 @@ body.kb #tab-chat > .chip-veil{display:none}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v94</p>
+      <p class="sync" id="appVersion">Phiên bản v95</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -2439,29 +2440,47 @@ body.kb #tab-chat > .chip-veil{display:none}
   <div id="catList"></div>
 </div>
 
-<div class="sheet-back top" id="balBack" hidden></div>
-<div class="sheet top" id="balSheet" role="dialog" aria-modal="true" aria-labelledby="balTitle" hidden>
-  <div class="grab" aria-hidden="true"></div>
-  <div class="sheet-head"><h2 id="balTitle">Đối chiếu số dư</h2><button class="x" id="closeBal" aria-label="Đóng">✕</button></div>
-  <p class="ov-sub" id="balBook" style="margin:0 2px 6px"></p>
-  <div class="field">
-    <label for="balAmt"><span>Số dư thật đang có</span></label>
-    <div class="amt-row">
-      <input id="balAmt" class="inp amount-inp num" inputmode="numeric" autocomplete="off" placeholder="0đ">
-      <button type="button" class="k000 num" id="balAmt000" aria-label="Thêm 000 vào số tiền">000</button>
+<!-- v95: Đối chiếu số dư là một màn hình con (trước là bảng trượt): nhập số dư thật, nợ thẻ,
+     và các mục Sắp tới / Biến động / Đối chiếu và trả thẻ chuyển từ tab Ví vào đây cho tab Ví gọn hơn -->
+<div class="settings recon" id="recon" role="dialog" aria-modal="true" aria-labelledby="balTitle" hidden>
+  <div class="settings-in">
+    <div class="settings-head">
+      <button class="set-back" id="closeBal" type="button">‹ Ví</button>
+      <h2 id="balTitle" tabindex="-1">Đối chiếu số dư</h2>
+      <span class="head-sp" aria-hidden="true"></span>
     </div>
-  </div>
-  <div class="field" id="balCardField" hidden>
-    <label for="balCard"><span>Đang nợ thẻ <span class="opt">(tổng các thẻ, chưa trả)</span></span></label>
-    <div class="amt-row">
-      <input id="balCard" class="inp amount-inp num" inputmode="numeric" autocomplete="off" placeholder="0đ">
-      <button type="button" class="k000 num" id="balCard000" aria-label="Thêm 000 vào số tiền">000</button>
-    </div>
-  </div>
-  <p class="inline-ok" id="balDiff" hidden></p>
-  <div class="sheet-foot">
-    <button class="ghost" id="balCancel">Huỷ</button>
-    <button class="primary" id="balSave" style="margin:0" disabled>Lưu số dư</button>
+    <section class="set-group recon-form">
+      <p class="ov-sub" id="balBook"></p>
+      <div class="field">
+        <label for="balAmt"><span>Số dư thật đang có</span></label>
+        <div class="amt-row">
+          <input id="balAmt" class="inp amount-inp num" inputmode="numeric" autocomplete="off" placeholder="0đ">
+          <button type="button" class="k000 num" id="balAmt000" aria-label="Thêm 000 vào số tiền">000</button>
+        </div>
+      </div>
+      <div class="field" id="balCardField" hidden>
+        <label for="balCard"><span>Đang nợ thẻ <span class="opt">(tổng các thẻ, chưa trả)</span></span></label>
+        <div class="amt-row">
+          <input id="balCard" class="inp amount-inp num" inputmode="numeric" autocomplete="off" placeholder="0đ">
+          <button type="button" class="k000 num" id="balCard000" aria-label="Thêm 000 vào số tiền">000</button>
+        </div>
+      </div>
+      <p class="inline-ok" id="balDiff" hidden></p>
+      <button class="primary" id="balSave" type="button" disabled>Lưu số dư</button>
+    </section>
+    <section id="soonSec" hidden>
+      <h2>Sắp tới, chưa trừ vào số dư</h2>
+      <ul class="flow" id="soonList"></ul>
+    </section>
+    <section id="flowSec" hidden>
+      <h2>Biến động từ lần đối chiếu</h2>
+      <ul class="flow" id="flowList"></ul>
+      <button type="button" class="linkbtn" id="flowMore" hidden>Xem thêm</button>
+    </section>
+    <section id="balHistSec" hidden>
+      <h2>Đối chiếu và trả thẻ</h2>
+      <div id="balHist"></div>
+    </section>
   </div>
 </div>
 
@@ -2714,8 +2733,8 @@ body.kb #tab-chat > .chip-veil{display:none}
 
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
 <script src="vendor/jsQR.js"></script>
-<script src="parse-vi.js?v=94"></script>
-<script src="lock.js?v=94"></script>
+<script src="parse-vi.js?v=95"></script>
+<script src="lock.js?v=95"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -4770,7 +4789,7 @@ function startNgay50k(){
       }
     }, 250);
   }
-  function settingsOpenNow(){ const el = $("settings"); return el && !el.hidden && el.classList.contains("show"); }
+  function settingsOpenNow(){ const el = $("settings"), rc = $("recon"); return (el && !el.hidden && el.classList.contains("show")) || (rc && !rc.hidden); }
 
   /* =================== TRÒ CHUYỆN ===================
      Người dùng kể bằng lời, bộ hiểu câu (parse-vi.js) tách thành các khoản; mỗi khoản hiện thẻ xác nhận sửa được,
@@ -5241,7 +5260,7 @@ function startNgay50k(){
     log.innerHTML = "";
     if(!chat.msgs.length){
       const d = document.createElement("div"); d.className = "msg bot";
-      d.innerHTML = "Chào bạn 👋 Mình là bạn chi tiêu của bạn.\nCứ kể mình nghe như nhắn tin: <b>trưa ăn phở 45k</b>, <b>quẹt thẻ VIB 1tr2 mua giày</b>, <b>cho chú Dũng vay 500k</b>… Mình sẽ hỏi lại trước khi ghi.\nBạn cũng có thể hỏi: <b>hôm nay tiêu bao nhiêu?</b>";
+      d.textContent = "Hôm nay bạn cần tôi giúp gì nào?";
       log.appendChild(d);
     }
     let lastDay = "";
@@ -5879,9 +5898,30 @@ function startNgay50k(){
   var dockLast = { b:-1, h:-1 }, dockRaf = 0;
   var KBH_KEY = "ngay50k:kbh";
   function kbEstimate(){ const v = parseInt(lsGet(KBH_KEY), 10); return v > 150 && v < window.innerHeight * 0.7 ? v : Math.round(window.innerHeight * 0.42); }
+  /* Bàn phím tự tắt mà ô nhập không mất tiêu điểm (vd khi chụp màn hình trên iPhone): trước đây bố cục "đang gõ"
+     vẫn giữ nguyên, ô chat lơ lửng giữa màn hình và lớp nền phủ kín phần dưới nên chạm đâu cũng không ăn (v95).
+     Giờ: đã thấy bàn phím mở mà khung nhìn trở lại cao như cũ thì coi như bàn phím đã tắt, bỏ tiêu điểm và hạ ô chat. */
+  var kbSeen = false, kbGoneAt = 0;
+  function kbDropped(){
+    kbSeen = false; kbGoneAt = 0;
+    try{ $("chatIn").blur(); }catch(_){}
+    document.body.classList.remove("kb"); dockLast = { b:-1, h:-1 }; placeDock(); chatScrollEnd(false);
+  }
+  function kbWatch(){
+    const vv = window.visualViewport;
+    if(!vv || !document.body.classList.contains("kb") || !kbSeen) return false;
+    if(vv.height >= window.innerHeight * 0.85){
+      if(!kbGoneAt){ kbGoneAt = Date.now(); setTimeout(kbWatch, 450); return false; }
+      if(Date.now() - kbGoneAt >= 400){ kbDropped(); return true; }
+      return false;
+    }
+    kbGoneAt = 0; return false;
+  }
   function fitTyping(){
     const vv = window.visualViewport, root = document.documentElement.style;
     if(!document.body.classList.contains("kb")) return;
+    if(vv && vv.height < window.innerHeight * 0.85) kbSeen = true;
+    if(kbWatch()) return;
     if(vv && vv.height < window.innerHeight * 0.85){
       /* bàn phím đã mở thật: theo đúng khung nhìn, và nhớ chiều cao bàn phím cho lần sau */
       const kbh = Math.round(window.innerHeight - vv.height - Math.max(0, vv.offsetTop));
@@ -5933,6 +5973,7 @@ function startNgay50k(){
   }
   function placeDockSoon(){ if(dockRaf) return; dockRaf = requestAnimationFrame(() => { dockRaf = 0; placeDock(); }); }
   $("chatIn").addEventListener("focus", () => {
+    kbSeen = false; kbGoneAt = 0;
     document.body.classList.add("kb"); fitTyping(); chatScrollEnd(false);
     /* iPhone mở bàn phím xong mới báo khung nhìn mới: đo lại vài lần */
     [120, 300, 600].forEach(ms => setTimeout(() => { fitTyping(); chatScrollEnd(false); }, ms));
@@ -5951,9 +5992,9 @@ function startNgay50k(){
   }
   window.addEventListener("resize", placeDockSoon);
   document.addEventListener("focusout", () => setTimeout(() => { if(document.activeElement !== $("chatIn") && document.body.classList.contains("kb")){ document.body.classList.remove("kb"); dockLast = { b:-1, h:-1 }; placeDock(); } }, 80));
-  document.addEventListener("touchstart", e => { if(e.target === $("chatIn")) return; if(document.body.classList.contains("kb") && document.activeElement !== $("chatIn")){ document.body.classList.remove("kb"); dockLast = { b:-1, h:-1 }; placeDockSoon(); } }, { passive:true });
-  setInterval(() => { if(document.body.classList.contains("kb") && document.activeElement !== $("chatIn")){ document.body.classList.remove("kb"); dockLast = { b:-1, h:-1 }; placeDock(); } }, 1500);
-  const redock = () => { if(document.activeElement !== $("chatIn")) document.body.classList.remove("kb"); dockLast = { b:-1, h:-1 }; placeDockSoon(); };
+  document.addEventListener("touchstart", e => { if(e.target === $("chatIn")) return; if(kbWatch()) return; if(document.body.classList.contains("kb") && document.activeElement !== $("chatIn")){ document.body.classList.remove("kb"); dockLast = { b:-1, h:-1 }; placeDockSoon(); } }, { passive:true });
+  setInterval(() => { if(kbWatch()) return; if(document.body.classList.contains("kb") && document.activeElement !== $("chatIn")){ document.body.classList.remove("kb"); dockLast = { b:-1, h:-1 }; placeDock(); } }, 1500);
+  const redock = () => { if(kbWatch()) return; if(document.activeElement !== $("chatIn")) document.body.classList.remove("kb"); dockLast = { b:-1, h:-1 }; placeDockSoon(); };
   document.addEventListener("visibilitychange", () => { if(!document.hidden) setTimeout(redock, 120); });
   window.addEventListener("pageshow", redock); window.addEventListener("focus", redock);
   if(window.ResizeObserver) new ResizeObserver(placeDockSoon).observe($("chatDock"));
@@ -6168,10 +6209,21 @@ function startNgay50k(){
     $("balCard").value = r && r.debt > 0 ? r.debt.toLocaleString("vi-VN") : "";
     $("balDiff").hidden = true; $("balSave").disabled = true;
     renderBalHist();
-    showSheet("balSheet", "balBack");
-    setTimeout(() => $("balAmt").focus({ preventScroll:true }), 260);
+    const el = $("recon"); el.hidden = false; el.scrollTop = 0;
+    document.querySelector("main").setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "hidden";
+    requestAnimationFrame(() => { el.classList.add("show"); $("balTitle").focus({ preventScroll:true }); });
+    /* lần đầu nhập số dư: mở sẵn bàn phím. Đã có mốc thì để người dùng xem các mục bên dưới trước */
+    if(!r) setTimeout(() => $("balAmt").focus({ preventScroll:true }), 300);
   }
-  function closeBalance(){ balEditing = false; hideSheet("balSheet", "balBack"); }
+  function closeBalance(){
+    if(!balEditing) return; balEditing = false;
+    const el = $("recon"); el.classList.remove("show");
+    try{ document.activeElement && document.activeElement.blur(); }catch(_){}
+    document.querySelector("main").removeAttribute("aria-hidden");
+    if(!settingsOpen) document.body.style.overflow = "";
+    setTimeout(() => { if(!balEditing) el.hidden = true; }, 260);
+  }
   function saveBalance(){
     const v = balVal("balAmt"); if(v == null) return;
     const r = balCalc(), now = Date.now();
@@ -6180,7 +6232,13 @@ function startNgay50k(){
     else if(r) rec.card = r.debt;
     if(r) rec.book = Math.round(r.bal);
     (state.bals = state.bals || []).push(rec);
-    persist(true); renderAll(); closeBalance();
+    persist(true); renderAll();
+    /* ở lại màn đối chiếu để xem mốc mới; xoá ô nhập */
+    $("balAmt").value = ""; $("balDiff").hidden = true; $("balSave").disabled = true;
+    try{ $("balAmt").blur(); $("balCard").blur(); }catch(_){}
+    const r2 = balCalc();
+    $("balBook").textContent = "✓ Đã lưu. Số dư mới là " + (r2.bal < 0 ? "−" : "") + fmt(Math.abs(r2.bal)) + ".";
+    $("recon").scrollTop = 0;
   }
   function cardName(id){ const c = (state.cards || []).find(x => x.id === id); return c ? c.name : ""; }
   function renderBalHist(){
@@ -6222,7 +6280,9 @@ function startNgay50k(){
   $("walletPay").onclick = () => openPayCard();
   $("flowMore").onclick = () => { flowLimit = (flowLimit || 30) + 30; renderBalance(); };
 
-  $("closeBal").onclick = closeBalance; $("balCancel").onclick = closeBalance; $("balBack").onclick = closeBalance;
+  $("closeBal").onclick = closeBalance;
+  (function(){ const st = $("recon"), sh = st.querySelector(".settings-head");
+    st.addEventListener("scroll", () => sh.classList.toggle("stuck", st.scrollTop > 4), { passive:true }); })();
   $("balSave").onclick = saveBalance;
   ["balAmt", "balCard"].forEach(id => {
     $(id).addEventListener("input", () => { fmtInput(id); balCheck(); });
@@ -7641,7 +7701,7 @@ function startNgay50k(){
   let settingsOpen = false;
   function openSettings(){
     if(settingsOpen) return; settingsOpen = true;
-    renderAll(); measureCache(); showSetPage("setHome");
+    updChecked = false; renderAll(); measureCache(); showSetPage("setHome");
     const el = $("settings"); el.hidden = false; el.scrollTop = 0;
     document.querySelector("main").setAttribute("aria-hidden", "true");
     document.body.style.overflow = "hidden";
@@ -7704,7 +7764,54 @@ function startNgay50k(){
     $("navSync").textContent = last ? agoText(last) : "chưa sao lưu";
     $("navStore").textContent = $("storData").textContent === "–" ? "" : $("storData").textContent;
     $("appVersionHome").textContent = $("appVersion").textContent;
+    if(!updChecked){ updChecked = true; checkUpdate(true); }
   }
+  /* ---- kiểm tra và cập nhật bản mới (v95) ----
+     Đọc số bản trong sw.js trên mạng (không qua bộ nhớ đệm), so với bản đang chạy. Có bản mới thì hiện nút
+     "Cập nhật lên vN": bấm một lần là tải bộ file mới, chờ cài xong rồi mở lại app. */
+  var updChecked = false, updNew = 0;
+  function curVer(){ const m = ($("appVersion").textContent || "").match(/v(\d+)/); return m ? +m[1] : 0; }
+  async function checkUpdate(quiet){
+    const nv = $("navUpd"), go = $("updGo");
+    nv.classList.remove("new");
+    nv.textContent = "Đang kiểm tra…";
+    try{
+      const r = await fetch("sw.js?check=" + Date.now(), { cache:"no-store" });
+      if(!r.ok) throw new Error("HTTP " + r.status);
+      const m = (await r.text()).match(/const V = "(\d+)"/);
+      if(!m) throw new Error("không đọc được số bản");
+      updNew = +m[1];
+      if(updNew > curVer()){
+        nv.textContent = "Có bản mới v" + updNew; nv.classList.add("new");
+        go.hidden = false; go.disabled = false; go.textContent = "Cập nhật lên v" + updNew;
+      } else {
+        nv.textContent = "v" + curVer() + " · mới nhất"; go.hidden = true;
+      }
+    }catch(e){
+      nv.textContent = quiet ? "v" + curVer() : "Không kết nối được, thử lại sau";
+      go.hidden = true;
+    }
+  }
+  async function applyUpdate(){
+    const go = $("updGo");
+    go.disabled = true; go.textContent = "Đang tải bản mới…";
+    try{
+      const reg = navigator.serviceWorker && await navigator.serviceWorker.getRegistration();
+      if(reg){
+        await reg.update();
+        await new Promise(res => {
+          const w = reg.installing || reg.waiting; if(!w) return res();
+          const to = setTimeout(res, 15000);
+          const done = () => { if(w.state === "activated" || w.state === "redundant"){ clearTimeout(to); res(); } };
+          w.addEventListener("statechange", done); done();
+        });
+      }
+    }catch(e){ window.__n50kLog && window.__n50kLog("cập nhật", e && e.message || e); }
+    go.textContent = "Đang mở lại…";
+    location.reload();
+  }
+  $("updCheck").onclick = () => checkUpdate(false);
+  $("updGo").onclick = applyUpdate;
   document.querySelectorAll("[data-go]").forEach(b => b.onclick = () => showSetPage(b.dataset.go));
   document.querySelectorAll("[data-back]").forEach(b => b.onclick = () => showSetPage(b.dataset.back || "setHome", true));
   /* ---- khoá app (lock.js) ---- */

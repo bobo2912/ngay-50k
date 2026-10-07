@@ -1,6 +1,16 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v94, ngày 07/10/2026
+**Phiên bản hiện tại:** v95, ngày 07/10/2026
+
+---
+
+## Có gì mới trong v95 (so với v94)
+
+- **Đầu trang giữ đúng màu khi đang chat:** lúc bàn phím mở, đầu trang không còn chuyển sang màu trắng nhạt mà giữ cùng màu với vùng giờ, pin ở mọi giao diện.
+- **Sửa lỗi đơ sau khi chụp màn hình lúc đang gõ:** iPhone tắt bàn phím mà ô chat vẫn nằm lơ lửng giữa màn hình, chạm đâu cũng không ăn. Giờ app nhận ra bàn phím đã tắt, hạ ô chat về chỗ cũ và mọi nút bấm được bình thường.
+- **Kiểm tra cập nhật trong Cài đặt:** mục Phiên bản → Kiểm tra cập nhật. Có bản mới thì hiện "Có bản mới vN" và nút **Cập nhật lên vN**, bấm một lần là app tải bản mới rồi tự mở lại. Mở Cài đặt là app tự kiểm tra.
+- **Câu chào chat ngắn gọn:** "Hôm nay bạn cần tôi giúp gì nào?"
+- **Đối chiếu số dư thành màn hình riêng:** bấm Đối chiếu số dư ở tab Ví để mở. Trong đó có ô nhập Số dư thật đang có, Đang nợ thẻ, và các mục Sắp tới (chưa trừ vào số dư), Biến động từ lần đối chiếu, Đối chiếu và trả thẻ. Các mục này không còn nằm dài ở tab Ví nữa. Lưu xong vẫn ở lại màn hình để xem mốc mới.
 
 ---
 
@@ -9,16 +19,6 @@
 - **Ô chat luôn là một dòng** trên mọi cỡ máy. Chữ gợi ý ngắn lại ("Hôm nay bạn tiêu gì?") và không bao giờ xuống dòng, nên ô không còn nhảy chiều cao. Ô chỉ cao thêm khi bạn gõ câu dài, xoá hết thì về lại một dòng.
 - **Tab Trò chuyện đổi tên thành Chat** cho gọn, cả ở thanh menu và Cài đặt.
 - **Lớp mờ quanh ô Số dư ví:** khi cuộn, nội dung phía sau được làm mờ đều ở cả trên và dưới ô Số dư ví, giống thanh menu, thay cho dải mờ chỉ nằm giữa đầu trang và ô.
-
----
-
-## Có gì mới trong v93 (so với v92)
-
-**Sửa lỗi Claude hay báo "AI trả lời quá lâu", kể cả khi Thử kết nối.** Khoá API không có vấn đề; nguyên nhân nằm ở cách app gọi:
-- App yêu cầu Claude trả về theo **khuôn có cấu trúc**. Từ v91 khuôn này có hơn 24 trường tuỳ chọn, vượt giới hạn của API, nên máy chủ phải dựng khuôn rất lâu (tối đa 180 giây) trước khi trả lời. Giờ app không dùng khuôn nữa: dặn AI trả JSON rồi tự đọc, giống cách gọi ChatGPT và Gemini.
-- **Sonnet 5.5 mặc định suy nghĩ ở mức cao** nên chậm. Giờ app đặt mức suy nghĩ thấp cho Sonnet, Opus (Haiku 4.5 vốn không suy nghĩ thêm).
-- **Mô hình mặc định đổi sang Claude Haiku 4.5**, nhanh và rẻ nhất, đủ tốt cho việc hiểu câu. Ai đã tự chọn mô hình khác thì giữ nguyên.
-- **Thử kết nối** hiện số giây đang chờ, báo thời gian trả lời khi thành công. Lỗi được ghi vào Nhật ký lỗi (Cài đặt → Dung lượng).
 
 ---
 
@@ -34,10 +34,11 @@
 
 ### Tab Ví (số dư, hôm nay, giao dịch theo ngày)
 - **Số dư hiện tại** của ví, nợ thẻ và số còn lại sau khi trả thẻ.
-- Nút **Đối chiếu số dư** và **Trả thẻ**.
-- **Biến động từ lần đối chiếu**, mỗi dòng kèm số dư còn lại; chạm để sửa.
-- **Sắp tới:** khoản ghi cho ngày tương lai, kèm số dư dự kiến; tới ngày mới trừ vào số dư.
-- Lịch sử đối chiếu và trả thẻ.
+- Nút **Trả thẻ** và nút **Đối chiếu số dư**, mở màn hình riêng gồm:
+  - ô nhập số dư thật và nợ thẻ;
+  - **Sắp tới:** khoản ghi cho ngày tương lai, kèm số dư dự kiến; tới ngày mới trừ vào số dư;
+  - **Biến động từ lần đối chiếu**, mỗi dòng kèm số dư còn lại; chạm để sửa;
+  - lịch sử đối chiếu và trả thẻ.
 
 - **Thẻ Hôm nay còn được tiêu:** số tiền còn lại, thanh tiến độ, chuyển đỏ khi vượt hạn mức.
 - **Quét QR bằng camera:** mặc định mở camera iPhone để chụp mã (không cần cấp quyền), hoặc quét trực tiếp trong app tự nhận mã (chọn trong Cài đặt).
@@ -130,6 +131,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v95** | Giữ màu đầu trang khi chat; sửa đơ sau khi chụp màn hình; nút Kiểm tra cập nhật; màn Đối chiếu số dư riêng |
 | **v94** | Ô chat luôn một dòng; tab Chat; lớp mờ quanh ô Số dư ví |
 | **v93** | Sửa Claude hay báo trả lời quá lâu; mặc định Haiku 4.5 |
 | **v92** | Hiểu câu nối tiếp trong chat; nhãn ✦ AI / ⚡ Máy; AI ít quá thời gian |
