@@ -1,6 +1,21 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v91, ngày 07/10/2026
+**Phiên bản hiện tại:** v92, ngày 07/10/2026
+
+---
+
+## Có gì mới trong v92 (so với v91)
+
+**Trò chuyện hiểu câu nối tiếp.** App nhớ câu hỏi chi tiêu vừa hỏi, nên nói tiếp ngắn gọn là được:
+- "Tháng này tiêu gì" → "chỉ tính từ tài khoản" → "còn thẻ thì sao" → "theo ngày đi" → "tháng trước thì sao" → "liệt kê ra", "nhóm ăn thôi", "top 3", "trên 500k thôi", "so với tháng trước", "thẻ VIB thôi".
+- Điều kiện được cộng dồn theo câu chuyện; nói **"cả hai"** hoặc **"bỏ lọc"** để tính lại tất cả. Báo cáo trống do lọc quá hẹp sẽ nhắc cách bỏ lọc.
+- Câu nối tiếp do máy tự hiểu, không tốn AI. Khi câu được gửi cho AI, app gửi kèm câu hỏi trước để AI hiểu đúng ý nối tiếp (vẫn không gửi dữ liệu chi tiêu).
+- Câu hỏi đủ ý (vd "hôm nay tiêu bao nhiêu") vẫn là câu hỏi mới.
+- Trò chuyện mới (mở lại app, hoặc để app nghỉ hơn 30 phút) thì quên câu hỏi cũ.
+
+**Nhãn nguồn cho mọi kết quả:** **✦ AI** cho câu do Trợ lý AI trả lời, **⚡ Máy** cho câu máy tự trả lời (bộ hiểu câu, đọc ảnh, báo cáo tính trên máy).
+
+**AI ít bị "trả lời quá lâu" hơn:** chờ lâu hơn (tối đa 50 giây). Lần gửi dùng kết quả có cấu trúc mà quá 18 giây thì tự gửi lại kiểu thường, và cả phiên đó dùng kiểu thường cho nhanh.
 
 ---
 
@@ -20,15 +35,6 @@
 **Sửa bàn phím không hiện khi chạm ô chat.** App không tự chặn cú chạm để đặt tiêu điểm nữa (trên iOS 26 cách đó có lúc chỉ hiện thanh ^ v ✓ mà không có bàn phím); để iPhone tự mở bàn phím như ô nhập bình thường.
 
 **Sửa thanh màu ở vùng giờ/pin trên iOS 26.** iOS 26 bỏ qua thẻ theme-color (cách v90 dùng) và lấy màu từ nền trang hoặc phần tử dính ở mép trên; trước đây đầu trang trong suốt nên iPhone tô màu xám nhạt. Giờ đầu trang, nền trang, thanh Cài đặt, màn khoá và màn chào đều có màu nền đặc đúng màu đỉnh của từng giao diện (Sáng, Tối, Pastel).
-
----
-
-## Có gì mới trong v90 (so với v89)
-
-**Thanh trạng thái iPhone (giờ, sóng, pin) cùng màu với app ở mọi giao diện.**
-- Trước đây màu thanh trạng thái được đặt muộn, sau khi app mở xong. iPhone lại lấy màu lúc mở app, nên hay giữ màu của giao diện cũ (ví dụ màu kem của Pastel khi đang dùng Sáng). Màu đó cũng là màu nền phẳng, lệch với đỉnh trang loang màu.
-- Giờ màu được đặt ngay khi trang bắt đầu tải, theo giao diện đang chọn (Sáng, Tối, Pastel, hoặc theo máy nếu chọn Tự động).
-- Thanh trạng thái, dải mép trên và đầu trang khi cuộn dùng chung một màu đỉnh của từng giao diện; bên dưới là dải chuyển màu mượt xuống nền loang. Trang Cài đặt cũng vậy.
 
 ---
 
@@ -140,6 +146,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v92** | Hiểu câu nối tiếp trong chat; nhãn ✦ AI / ⚡ Máy; AI ít quá thời gian |
 | **v91** | Báo cáo chi tiêu trong chat (liệt kê, gom nhóm, so sánh); sửa bàn phím không hiện; sửa thanh màu trên iOS 26 |
 | **v90** | Thanh trạng thái iPhone cùng màu với app ở mọi giao diện |
 | **v89** | Dấu ✦ ở câu trả lời của AI; nút phân tích lại dùng ↻ |
