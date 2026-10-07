@@ -40,6 +40,8 @@ Phải mở qua một máy chủ web, không mở thẳng bằng `file://`, vì 
 
 **Người nhận** (trong Cài đặt) — Lưu người hay chuyển tiền để lần sau điền sẵn.
 
+**Lần đầu mở** (máy chưa có dữ liệu): màn hình chào 4 bước (hạn mức, ngân hàng hay dùng, thẻ tín dụng, mã PIN) và nút xem thử với dữ liệu mẫu. Mọi khoản mẫu có mã bắt đầu bằng `demo_` để xoá sạch; cờ ở `localStorage` là `ngay50k:welcome`, `ngay50k:demo`, ngân hàng chọn ở `ngay50k:bank`.
+
 Chữ giải thích trên giao diện được giữ ở mức tối thiểu; phần dài hơn nằm sau nút **ⓘ** cạnh tiêu đề.
 
 **Cài đặt** — Giao diện tự động/sáng/tối/pastel, hạn mức mỗi ngày, quản lý tag, sao lưu và đồng bộ, dung lượng đang dùng.

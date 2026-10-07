@@ -1,6 +1,27 @@
 # Ngày 50k – In this version
 
-**Phiên bản hiện tại:** v77, ngày 07/10/2026
+**Phiên bản hiện tại:** v78, ngày 07/10/2026
+
+---
+
+## Có gì mới trong v78 (so với v77)
+
+**Màn hình chào cho người mới.** Lần đầu mở app (máy chưa có dữ liệu), app hướng dẫn 4 bước:
+
+1. **Hạn mức mỗi ngày:** chọn nhanh 50k, 80k, 100k, 150k, 200k, 300k hoặc nhập số khác.
+2. **Ngân hàng hay dùng:** 18 ngân hàng phổ biến, hoặc Không dùng.
+3. **Thẻ tín dụng:** có thì nhập tên thẻ, 4 số cuối, ngày sao kê.
+4. **Khoá app bằng mã PIN:** đặt luôn hoặc để sau.
+
+Màn hình đầu còn có **Xem thử với dữ liệu mẫu** (10 ngày chi tiêu, lương, một thẻ, một khoản cho vay) và **Tôi đã có file sao lưu** (mở thẳng trang Sao lưu). Đang xem mẫu thì đầu trang có thanh **Xoá mẫu, bắt đầu thật**: xoá đúng các khoản mẫu, khoản bạn tự ghi vẫn giữ, rồi vào bước thiết lập.
+
+**Không còn gắn cứng MB Bank.** Nút sau khi ghi chuyển khoản giờ là **Sao chép và mở** ngân hàng bạn chọn (Cài đặt → **Ngân hàng hay dùng**).
+- MB Bank vẫn như cũ: đoạn chép dán thẳng vào ô trợ lý của MB Bank.
+- Ngân hàng khác mở qua liên kết của VietQR, chỉ gửi mã app ngân hàng, không gửi số tài khoản hay số tiền.
+- Chọn Không dùng thì chỉ còn nút sao chép.
+- Máy đã có dữ liệu từ bản trước tự giữ MB Bank, không phải chọn lại.
+
+Đang xem dữ liệu mẫu thì app không nhắc sao lưu.
 
 ---
 
@@ -17,22 +38,6 @@
 - **Quên mã PIN:** không lấy lại được dữ liệu trên máy. Màn hình khoá có nút xoá dữ liệu để bắt đầu lại rồi nhập từ file sao lưu.
 
 **File sao lưu có mật khẩu.** Trong Sao lưu và đồng bộ, tick **Khoá file sao lưu bằng mật khẩu** (ít nhất 8 ký tự). Áp dụng cho Xuất file và Sao lưu nhanh bằng Phím tắt. Nhập file có mật khẩu thì app hỏi mật khẩu trước khi gộp.
-
----
-
-## Có gì mới trong v76 (so với v75)
-
-**Gửi ảnh thông báo trừ tiền trong Trò chuyện, app tự đọc bằng bộ đọc chữ trên máy.**
-
-- Bấm nút ảnh cạnh ô chat, chọn một hay nhiều ảnh chụp thông báo ngân hàng (tối đa 4 ảnh). App tách từng giao dịch thành thẻ xác nhận, bấm Ghi mới lưu.
-- Ảnh **luôn đọc trên máy**, không gửi cho Trợ lý AI, không tốn token, kể cả khi đã bật AI.
-- Trong lúc đọc, bong bóng chờ hiện tiến trình (đang làm rõ chữ, đang đọc ảnh …%).
-- Lần đầu đọc ảnh cần mạng để tải bộ đọc chữ (một lần), sau đó dùng lại.
-- Bộ tách thông báo đọc tốt hơn (dùng chung cho Dán thông báo ở tab Thẻ):
-  - Kiểu Vietcombank "SD TK … -120,000VND lúc …": lấy đúng số trừ, không lấy số dư.
-  - Lấy đúng nội dung chuyển khoản (ND, Ref) làm ghi chú, không dính sang thông báo kế tiếp.
-  - Không nhầm hạn mức còn lại / available limit thành một khoản chi.
-  - Đọc được nơi chi kiểu "at CIRCLE K", "tại GRAB lúc …".
 
 ---
 
@@ -77,7 +82,7 @@
   - Ghi chú, kèm chọn nhanh nội dung gần đây.
   - Lưu người nhận vào danh sách ngay khi ghi.
   - Báo trước nếu khoản chi làm vượt hạn mức.
-- **Đoạn chuyển tiền cho MB Bank:** sao chép và mở MB Bank bằng một lần chạm.
+- **Sao chép và mở app ngân hàng** bạn hay dùng bằng một lần chạm (MB Bank dán thẳng vào ô trợ lý).
 - **Xem theo ngày:** lùi, tiến hoặc chọn ngày bất kỳ. Chạm khoản chi để sửa số tiền, ghi chú, ngày và tag. Xoá bằng hai lần chạm.
 - **Lịch chi tiêu tháng:** mỗi ngày ghi số đã chi, tô màu đậm nhạt theo mức chi, ★ ngày chi nhiều nhất; chạm để xem ngày đó.
 - **Biểu đồ 7 ngày gần nhất** so với hạn mức, có chi tiêu trung bình mỗi ngày. Chạm vào cột để xem lại giao dịch ngày đó.
@@ -107,6 +112,7 @@
 - Bấm **Chuyển** để mở form đã điền sẵn thông tin.
 
 ### Cài đặt (bánh răng góc trên bên phải)
+- **Ngân hàng hay dùng:** app ngân hàng mở bằng nút Sao chép và mở.
 - **Khoá app:** mã PIN 4 hoặc 6 số, mã hoá dữ liệu trên máy, tự khoá khi rời app, mở bằng Face ID, đổi và tắt mã PIN.
 - **Giao diện:** Tự động, Sáng, Tối hoặc Pastel.
 - **Quét mã QR:** Camera iPhone hoặc Quét trực tiếp, kèm thời gian tự tắt camera.
@@ -126,6 +132,7 @@
   - Xoá toàn bộ dữ liệu trên máy.
 
 ### Nền tảng
+- Màn hình chào lần đầu: hạn mức, ngân hàng, thẻ tín dụng, mã PIN; có dữ liệu mẫu để xem thử.
 - Cài lên màn hình chính như app, chạy **offline hoàn toàn**.
 - Thanh đầu trang (ngày, nút Cài đặt) luôn dính trên cùng khi cuộn.
 - Vuốt từ trái sang phải để từ trang con quay về trang trước trong cùng menu.
@@ -142,6 +149,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v78** | Màn hình chào và dữ liệu mẫu, chọn ngân hàng hay dùng thay cho MB Bank cố định |
 | **v77** | Khoá app bằng mã PIN, mã hoá dữ liệu, Face ID, sao lưu có mật khẩu |
 | **v76** | Gửi ảnh thông báo trong chat, đọc trên máy không tốn token |
 | **v75** | Làm mờ nội dung phía dưới thanh menu |
