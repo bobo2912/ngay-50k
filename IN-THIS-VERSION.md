@@ -1,6 +1,13 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v84, ngày 07/10/2026
+**Phiên bản hiện tại:** v85, ngày 07/10/2026
+
+---
+
+## Có gì mới trong v85 (so với v84)
+
+- **"Còn lại thực tế" đổi tên thành "Dòng tiền ròng tháng này"** (tab Tổng quan), đúng với cách tính: tổng thu trong tháng trừ tổng chi. Dương là tháng này để ra được tiền, âm là tiêu nhiều hơn thu. Nút ⓘ giải thích thêm rằng đây không phải số dư trong ví. Khi chọn một loại chi: "Dòng tiền ròng (chỉ tính chi thường)" hoặc "(chỉ tính chi thẻ)".
+- **Thẻ Hôm nay còn được tiêu** (tab Ví): thu khoảng cách giữa nhãn, số tiền, thanh tiến độ và dòng giải thích.
 
 ---
 
@@ -8,20 +15,8 @@
 
 **Chữ gọn hơn, chỉ nhấn số quan trọng.**
 - Tab Ví: thẻ **Hôm nay còn được tiêu** thu gọn, số tiền cỡ vừa nằm ngay trên thanh tiến độ. Số to nhất của tab là **Số dư hiện tại**.
-- Mỗi tab chỉ còn một con số to và đậm: Ví là số dư, Tổng quan là còn lại thực tế, Thẻ là chi bằng thẻ tháng này, Khoản vay là hai dòng tổng nợ.
+- Mỗi tab chỉ còn một con số to và đậm: Ví là số dư, Tổng quan là dòng tiền ròng, Thẻ là chi bằng thẻ tháng này, Khoản vay là hai dòng tổng nợ.
 - Chữ thường, danh sách, nút, chip, tin nhắn trò chuyện, thẻ xác nhận trong chat và Cài đặt đều nhỏ lại một chút, vẫn đủ đọc.
-
----
-
-## Có gì mới trong v83 (so với v82)
-
-**Sửa lỗi app đơ ngay khi mở, phải thoát ra bật lại.**
-- **Nguyên nhân chính:** bộ nhớ đệm offline cập nhật trang chính và các file phụ (lock.js, parse-vi.js) lệch nhau. Có lúc iPhone chạy trang bản mới với file phụ bản cũ, hoặc thiếu hẳn lock.js, nên app dừng giữa chừng lúc khởi động. Hôm 07/10 đẩy nhiều bản liên tiếp nên dễ gặp.
-- **Cách sửa:** file phụ gắn số phiên bản (`lock.js?v=83`). Trang chính lấy bản mới trên mạng, chờ tối đa 3,5 giây; mạng yếu thì dùng bản đã lưu. Trang và file phụ giờ luôn cùng một bản.
-- **Màn hình khoá:** lúc app tự gọi Face ID khi vừa mở, bàn phím mã PIN bị khoá tới khi Face ID trả lời (có thể tới 60 giây). Giờ Face ID chạy riêng; bấm số là thôi chờ Face ID, tự gọi mà 6 giây không có gì thì dừng.
-- **Lưới an toàn:** mở app sau 9 giây mà chưa xong (không phải đang chờ nhập mã PIN) thì hiện hộp **App mở chưa xong** với nút **Tải lại** và **Tải bản mới nhất**. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng dữ liệu.
-- **Nhật ký lỗi:** Cài đặt → Dung lượng → **Nhật ký lỗi**. App ghi lại lỗi và chỗ bị kẹt khi khởi động; bấm **Sao chép để gửi** rồi gửi khi gặp lỗi.
-- Thanh **Đã có bản mới** chỉ hiện khi thật sự có bản mới hơn bản đang chạy.
 
 ---
 
@@ -63,8 +58,8 @@
 - **Ghi lại khoản hay lặp** bằng một chạm, và nhắc khi hôm qua bỏ ghi.
 
 ### Tab Tổng quan
-- **Còn lại thực tế** theo tháng, chọn được gồm chi thường, chi thẻ hay cả hai, kèm mức tăng giảm so với tháng trước.
-- Bốn ô tổng: thu vào, chi thường, chi thẻ, khoản vay. Khoản vay để riêng, không tính vào còn lại thực tế.
+- **Dòng tiền ròng** theo tháng (thu trừ chi), chọn được gồm chi thường, chi thẻ hay cả hai, kèm mức tăng giảm so với tháng trước.
+- Bốn ô tổng: thu vào, chi thường, chi thẻ, khoản vay. Khoản vay để riêng, không tính vào dòng tiền ròng.
 - Thêm khoản thu theo nguồn: Lương, Thưởng, Bán hàng, Được cho, Khác. Chạm vào khoản thu để sửa số tiền, ghi chú, ngày nhận, nguồn thu.
 - **Phân tích tháng** (nút biểu đồ cạnh nút Khoản thu): biểu đồ so sánh thu chi theo ngày, tuần, tháng.
 - Thống kê chi theo tag nằm trong Phân tích tháng, ăn theo lựa chọn ở trên. Chạm một nhóm để xem các khoản của nhóm đó theo ngày.
@@ -132,6 +127,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v85** | "Còn lại thực tế" đổi thành "Dòng tiền ròng tháng này"; thẻ hạn mức hôm nay gọn hơn |
 | **v84** | Chữ gọn hơn, thẻ hạn mức hôm nay thu nhỏ, chỉ nhấn số chính mỗi tab |
 | **v83** | Sửa lỗi đơ khi mở app (trang và file phụ lệch bản, Face ID chặn bàn phím), thêm lưới an toàn và nhật ký lỗi |
 | **v82** | Gộp Ví và Tài khoản thành một tab Ví |

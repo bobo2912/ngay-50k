@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v84";
+  var K = "ngay50k:errlog", VER = "v85";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -1421,7 +1421,7 @@ html.locked, html.locked body{overflow:hidden}
 
 /* ================= CỠ CHỮ GỌN (v84) =================
    Chữ thường nhỏ lại, vừa đủ đọc. Mỗi tab chỉ một con số được to và đậm:
-   Ví → số dư hiện tại · Tổng quan → còn lại thực tế · Thẻ → chi bằng thẻ tháng này · Khoản vay → hai dòng tổng nợ.
+   Ví → số dư hiện tại · Tổng quan → dòng tiền ròng · Thẻ → chi bằng thẻ tháng này · Khoản vay → hai dòng tổng nợ.
    Thẻ "Hôm nay còn được tiêu" thành một thẻ gọn: số tiền cỡ vừa nằm ngay trên thanh tiến độ. */
 body{font-size:14px; line-height:1.42}
 h2{font-size:.92rem}
@@ -1436,13 +1436,13 @@ header .date{font-size:1.25rem}
 .balbox.compact .ov-sub{font-size:.76rem}
 
 /* Ví: hạn mức hôm nay, gọn */
-#tab-today .note{padding:12px 16px 12px}
+#tab-today .note{padding:11px 16px 11px; gap:0}
 #tab-today .note .hero-top{gap:8px}
 #tab-today .note .remain-label{font-size:.68rem; letter-spacing:.06em}
 #tab-today .note .badge{font-size:.62rem; padding:3px 8px}
-#tab-today .note .remain{font-size:1.2rem; font-weight:800; letter-spacing:-.01em; margin:6px 0 6px; line-height:1.2}
+#tab-today .note .remain{font-size:1.2rem; font-weight:800; letter-spacing:-.01em; margin:2px 0 5px; line-height:1.15}
 #tab-today .note .hero-bar{height:5px}
-#tab-today .note .status{font-size:.74rem; margin-top:6px; min-height:0}
+#tab-today .note .status{font-size:.74rem; line-height:1.35; margin:5px 0 0; min-height:0}
 
 /* ô số phụ, danh sách */
 .kpi small{font-size:.72rem}
@@ -1641,11 +1641,11 @@ header .date{font-size:1.25rem}
       </button>
     </div>
     <div class="ledger chero">
-      <p class="chero-lb"><span id="netLabel">Còn lại thực tế tháng này</span><span class="lb-r"><span class="chero-trend" id="netTrend" hidden></span><button class="ib" type="button" data-info="infoNet" aria-expanded="false" aria-label="Giải thích">i</button></span></p>
+      <p class="chero-lb"><span id="netLabel">Dòng tiền ròng tháng này</span><span class="lb-r"><span class="chero-trend" id="netTrend" hidden></span><button class="ib" type="button" data-info="infoNet" aria-expanded="false" aria-label="Giải thích">i</button></span></p>
       <p class="chero-big"><span class="num" id="sumNet">0đ</span></p>
       <p class="ov-sub" id="netSub"></p>
-      <p class="set-now info" id="infoNet" hidden>Ba nút dưới chọn phép tính gồm chi thường, chi thẻ hay cả hai. Khoản vay luôn để ngoài: tiền vay được không phải thu nhập, tiền trả nợ không phải chi tiêu.</p>
-      <div class="chero-foot seg3" id="netSeg" role="group" aria-label="Tính còn lại thực tế gồm">
+      <p class="set-now info" id="infoNet" hidden>Dòng tiền ròng = tổng thu trong tháng trừ tổng chi. Dương là tháng này bạn để ra được tiền, âm là tiêu nhiều hơn thu. Đây không phải số dư trong ví: số dư xem ở tab Ví. Ba nút dưới chọn phép tính gồm chi thường, chi thẻ hay cả hai. Khoản vay luôn để ngoài: tiền vay được không phải thu nhập, tiền trả nợ không phải chi tiêu.</p>
+      <div class="chero-foot seg3" id="netSeg" role="group" aria-label="Tính dòng tiền ròng gồm">
         <button type="button" data-nf="all" aria-pressed="true">Cả hai</button>
         <button type="button" data-nf="cash" aria-pressed="false">Chi thường</button>
         <button type="button" data-nf="card" aria-pressed="false">Chi thẻ</button>
@@ -2177,7 +2177,7 @@ header .date{font-size:1.25rem}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v84</p>
+      <p class="sync" id="appVersion">Phiên bản v85</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -2588,8 +2588,8 @@ header .date{font-size:1.25rem}
 
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
 <script src="vendor/jsQR.js"></script>
-<script src="parse-vi.js?v=84"></script>
-<script src="lock.js?v=84"></script>
+<script src="parse-vi.js?v=85"></script>
+<script src="lock.js?v=85"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -3502,8 +3502,8 @@ function startNgay50k(){
     const net = tin - spend, ne = $("sumNet");
     ne.textContent = (net<0 ? "−" : net>0 ? "+" : "") + fmt(Math.abs(net));
     ne.style.color = net<0 ? "var(--over)" : net>0 ? "var(--ok)" : "var(--ink)";
-    $("netLabel").textContent = netFilter === "cash" ? "Còn lại nếu chỉ tính chi thường"
-      : netFilter === "card" ? "Còn lại nếu chỉ tính chi thẻ" : "Còn lại thực tế tháng này";
+    $("netLabel").textContent = netFilter === "cash" ? "Dòng tiền ròng (chỉ tính chi thường)"
+      : netFilter === "card" ? "Dòng tiền ròng (chỉ tính chi thẻ)" : "Dòng tiền ròng tháng này";
     $("netSub").textContent = "Thu " + fmt(tin) + " · " +
       (netFilter === "cash" ? "chi thường " : netFilter === "card" ? "chi thẻ " : "chi tất cả ") + fmt(spend) +
       " · chưa kể vay mượn";
