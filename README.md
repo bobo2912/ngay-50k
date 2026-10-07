@@ -94,16 +94,17 @@ App không tải gì từ bên ngoài khi chạy. Riêng chức năng đọc ch�
 
 ## Sửa và phát hành bản mới
 
-1. Sửa `index.html`.
-2. Tăng số phiên bản ở **hai chỗ**:
-   - `sw.js` → `const VERSION = "ngay50k-vNN";`
-   - `index.html` → dòng `Phiên bản vNN` trong phần Cài đặt.
+1. Sửa code.
+2. Tăng số phiên bản ở **ba chỗ**, cùng một số:
+   - `sw.js` → `const V = "NN";`
+   - `index.html` → hai thẻ `<script src="parse-vi.js?v=NN">`, `<script src="lock.js?v=NN">`, và dòng `Phiên bản vNN` trong phần Cài đặt (cùng `VER` trong đoạn lưới an toàn đầu trang).
+   - Lệnh gợi ý: `sed -i 's/const V = "OLD"/const V = "NN"/' sw.js && sed -i 's/?v=OLD/?v=NN/g; s/Phiên bản vOLD/Phiên bản vNN/; s/VER = "vOLD"/VER = "vNN"/' index.html`
 3. Ghi lại thay đổi vào `IN-THIS-VERSION.md`.
-4. Đẩy lên GitHub. Lần sau mở app khi có mạng, app hiện **Đã có bản mới** → bấm **Tải lại**.
+4. Đẩy lên GitHub.
 
-Không tăng `VERSION` trong `sw.js` thì máy vẫn dùng bản cũ trong bộ nhớ đệm.
+**Vì sao phải gắn số phiên bản cho script:** từ v83, service worker chỉ lấy script đúng địa chỉ có `?v=` trong bộ nhớ đệm của chính bản đó, và lấy trang chính từ mạng (chờ tối đa 3,5 giây) rồi mới tới bản đã lưu. Nhờ vậy trang và script luôn cùng một bản. Trước v83, trang và script được cập nhật lệch nhau nên app có lúc đơ ngay khi mở. Quên tăng `?v=` thì máy vẫn có thể dùng script cũ.
 
-Service worker lấy `index.html` theo kiểu *network-first* (có mạng thì lấy bản mới, mất mạng thì lấy bản đã lưu), còn font, icon và thư viện thì *cache-first*.
+**Lưới an toàn khi khởi động** (đoạn script đầu `index.html`): mọi lỗi được ghi vào `localStorage["ngay50k:errlog"]` (30 dòng gần nhất), xem và sao chép ở Cài đặt → Dung lượng. Các bước khởi động được đánh dấu (`html` → `store` → `lock` → `app` → `started`); quá 9 giây chưa tới `started` (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất.
 
 ---
 

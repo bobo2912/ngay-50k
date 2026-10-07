@@ -1,6 +1,18 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v82, ngày 07/10/2026
+**Phiên bản hiện tại:** v83, ngày 07/10/2026
+
+---
+
+## Có gì mới trong v83 (so với v82)
+
+**Sửa lỗi app đơ ngay khi mở, phải thoát ra bật lại.**
+- **Nguyên nhân chính:** bộ nhớ đệm offline cập nhật trang chính và các file phụ (lock.js, parse-vi.js) lệch nhau. Có lúc iPhone chạy trang bản mới với file phụ bản cũ, hoặc thiếu hẳn lock.js, nên app dừng giữa chừng lúc khởi động. Hôm 07/10 đẩy nhiều bản liên tiếp nên dễ gặp.
+- **Cách sửa:** file phụ gắn số phiên bản (`lock.js?v=83`). Trang chính lấy bản mới trên mạng, chờ tối đa 3,5 giây; mạng yếu thì dùng bản đã lưu. Trang và file phụ giờ luôn cùng một bản.
+- **Màn hình khoá:** lúc app tự gọi Face ID khi vừa mở, bàn phím mã PIN bị khoá tới khi Face ID trả lời (có thể tới 60 giây). Giờ Face ID chạy riêng; bấm số là thôi chờ Face ID, tự gọi mà 6 giây không có gì thì dừng.
+- **Lưới an toàn:** mở app sau 9 giây mà chưa xong (không phải đang chờ nhập mã PIN) thì hiện hộp **App mở chưa xong** với nút **Tải lại** và **Tải bản mới nhất**. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng dữ liệu.
+- **Nhật ký lỗi:** Cài đặt → Dung lượng → **Nhật ký lỗi**. App ghi lại lỗi và chỗ bị kẹt khi khởi động; bấm **Sao chép để gửi** rồi gửi khi gặp lỗi.
+- Thanh **Đã có bản mới** chỉ hiện khi thật sự có bản mới hơn bản đang chạy.
 
 ---
 
@@ -16,21 +28,6 @@
 
 - Ô đầu tiên của thanh tab luôn là **Trò chuyện**. Chạm ô **Số dư ví** trong Trò chuyện thì sang tab Ví.
 - Cài đặt → Màn hình mở đầu vẫn chọn được Trò chuyện hoặc Ví, giờ chỉ quyết định tab nào hiện ra khi mở app.
-
----
-
-## Có gì mới trong v81 (so với v80)
-
-**Bộ hiểu câu trên máy hiểu thêm nhiều cách gõ.** Thử với 104 câu mới (gõ không dấu, viết tắt, nhiều khoản, ngày giờ, thẻ, vay mượn), giờ đúng cả 104:
-- Viết tắt ngày: **hnay**, **hqua**, **hkia**, "hum qua".
-- Số tiền: **1,5tr**, **1k5** (1.500đ), "2 triệu rưỡi", "1 củ 2", "45 k", "45.000đ".
-- Không dấu: "di cho 150k" là đi chợ (trước bị hiểu thành "dì cho" là khoản thu), "bia", "rau" được gắn đúng nhóm.
-- **tm 50k mua rau**: hiểu là tiền mặt, ghi chú gọn "Mua rau".
-- Nhóm mới: "trà đá", "trà" vào Uống; "tiền mạng", "cước mạng" vào Điện thoại, mạng.
-- Câu hỏi không có dấu hỏi: "ai còn nợ mình", "mình còn nợ ai".
-- "hôm nay còn bao nhiêu" trả lời số còn được tiêu (trước trả lời số đã tiêu).
-
-Bộ câu thử nằm ở `tests-parse-vi-2.js`, chạy bằng `node tests-parse-vi-2.js`.
 
 ---
 
@@ -141,6 +138,7 @@ Bộ câu thử nằm ở `tests-parse-vi-2.js`, chạy bằng `node tests-parse
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v83** | Sửa lỗi đơ khi mở app (trang và file phụ lệch bản, Face ID chặn bàn phím), thêm lưới an toàn và nhật ký lỗi |
 | **v82** | Gộp Ví và Tài khoản thành một tab Ví |
 | **v81** | Bộ hiểu câu: không dấu, viết tắt (hnay, hqua, 1k5, 1,5tr), 104 câu thử mới |
 | **v80** | Máy trước, AI sau: chỉ câu khó mới gọi AI; AI xuống nhóm Nâng cao, dán khoá không tự bật |
