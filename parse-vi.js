@@ -48,7 +48,7 @@
       else if(nx === "d" || nx === "dong" || nx === "vnd"){ unit = "d"; used = 2; }
       else if(COUNTERS.has(nx)) return null;                     /* "2 ly", "3 cái" là số lượng */
     }
-    if(unit === "k" || unit === "ng" || unit === "ngh" || unit === "nghin" || unit === "ngan") v *= 1000;
+    if(unit === "k" || unit === "ng" || unit === "ngh" || unit === "nghin" || unit === "ngan"){ v *= 1000; if(tail && unit === "k") v += parseInt(tail, 10) * Math.pow(10, 3 - tail.length); }
     else if(unit === "tr" || unit === "trieu" || unit === "cu" || unit === "m" || unit === "t"){
       v *= 1000000;
       if(tail) v += parseInt(tail, 10) * Math.pow(10, 6 - tail.length);
@@ -80,7 +80,10 @@
     const at = (i, words) => words.every((w, k) => N[i+k] === w);
     for(let i = 0; i < N.length; i++){
       const w = N[i];
-      if(at(i, ["hom","nay"])){ date = keyOf(now); drop.add(i).add(i+1); }
+      if(w === "hnay" || w === "homnay" || at(i, ["hum","nay"])){ date = keyOf(now); drop.add(i); if(w === "hum") drop.add(i+1); }
+      else if(w === "hqua" || w === "homqua" || at(i, ["hum","qua"])){ date = keyOf(addDays(now, -1)); drop.add(i); if(w === "hum") drop.add(i+1); }
+      else if(w === "hkia" || w === "homkia"){ date = keyOf(addDays(now, -2)); drop.add(i); }
+      else if(at(i, ["hom","nay"])){ date = keyOf(now); drop.add(i).add(i+1); }
       else if(at(i, ["hom","qua"])){ date = keyOf(addDays(now, -1)); drop.add(i).add(i+1); }
       else if(at(i, ["hom","kia"])){ date = keyOf(addDays(now, -2)); drop.add(i).add(i+1); }
       else if(at(i, ["bua","nay"]) || at(i, ["bua","qua"])){ date = keyOf(addDays(now, N[i+1] === "qua" ? -1 : 0)); drop.add(i).add(i+1); }
@@ -130,10 +133,10 @@
   const TAG_RULES = [
     ["xang",     ["đổ xăng","xăng","petrolimex","nhớt"]],
     ["dilai",    ["grab bike","grabbike","grab car","grab","xanh sm","taxi","xe ôm","gửi xe","vé xe","xe buýt","bus","metro","phí đường","cầu đường","be bike","gojek","đi lại","giữ xe","vé tàu"]],
-    ["dienthoai",["nạp thẻ","nạp tiền điện thoại","nạp 3g","nạp 4g","3g","4g","5g","data","cước","internet","wifi","viettel","vinaphone","mobifone","fpt","điện thoại"]],
+    ["dienthoai",["tiền mạng","cước mạng","mạng","nạp thẻ","nạp tiền điện thoại","nạp 3g","nạp 4g","3g","4g","5g","data","cước","internet","wifi","viettel","vinaphone","mobifone","fpt","điện thoại"]],
     ["diennuoc", ["tiền điện","tiền nước","điện nước","hoá đơn điện","hóa đơn điện","gas"]],
     ["nha",      ["tiền nhà","thuê nhà","tiền phòng","tiền trọ","phí quản lý","chung cư"]],
-    ["uong",     ["cà phê","cafe","coffee","cf","trà sữa","sinh tố","nước mía","nước ép","bia","rượu","highlands","starbucks","phúc long","katinat","cộng cà phê","trà chanh","nước ngọt","nước uống","milo","đồ uống"]],
+    ["uong",     ["trà đá","trà","cà phê","cafe","coffee","cf","trà sữa","sinh tố","nước mía","nước ép","bia","rượu","highlands","starbucks","phúc long","katinat","cộng cà phê","trà chanh","nước ngọt","nước uống","milo","đồ uống"]],
     ["cho",      ["đi chợ","chợ","siêu thị","winmart","coopmart","co.op","bách hoá xanh","bách hóa xanh","bhx","lotte mart","aeon","rau","thịt","trứng","gạo","mắm","dầu ăn"]],
     ["an",       ["ăn","cơm","phở","bún","miến","mì","hủ tiếu","cháo","bánh mì","bánh cuốn","bánh","xôi","lẩu","nướng","bbq","kfc","lotteria","jollibee","mcdonald","pizza","sushi","gà rán","đồ ăn","grabfood","shopeefood","befood","baemin","gs25","circle k","7-eleven","snack","trưa","sáng","tối","bữa"]],
     ["muasam",   ["shopee","lazada","tiki","tiktok","sendo","quần áo","áo","quần","giày","dép","túi","uniqlo","zara","mua sắm","đồ gia dụng","mỹ phẩm online"]],
@@ -148,7 +151,7 @@
     ["tuthien",  ["từ thiện","ủng hộ","công đức","cúng dường","chùa"]],
     ["suachua",  ["sửa xe","sửa","thay nhớt","rửa xe","bảo dưỡng","thay lốp","vá xe"]]
   ];
-  const AMBIG = new Set(["cho","cho con","cha","con","ca","sua","ao","quan","but","vo","the","tra","an","son","rau","bia","chó","chợ"]);
+  const AMBIG = new Set(["cho","cho con","cha","con","ca","sua","ao","quan","but","vo","the","tra","an","son","chó","chợ","nuoc"]);
   function guessTag(text, ctx){
     const low = String(text).toLowerCase(), marks = hasMarks(text), n = " " + norm(text) + " ";
     if(ctx && ctx.history){ const h = ctx.history(text); if(h) return h; }
@@ -169,7 +172,7 @@
   }
   /* chia thành các đoạn, mỗi đoạn tối đa một số tiền (trừ khi là câu vay/trả có một số) */
   function clauses(text){
-    const parts = String(text).split(/[\n;]+|,(?!\d{3})|\.(?=\s+[^\d])|\s\+\s/).map(s => s.trim()).filter(Boolean);
+    const parts = String(text).split(/[\n;]+|,(?!\d)|(?<!\d),|\.(?=\s+[^\d])|\s\+\s/).map(s => s.trim()).filter(Boolean);
     const out = [];
     parts.forEach(p => {
       const { O, N } = tokenize(p);
@@ -302,7 +305,8 @@
     const GIVERS = new Set(["me","bo","ba","cha","ong","ba","co","chu","bac","di","cau","mo","anh","chi","vo","chong","sep","ngoai","noi","bo_me"]);
     if(!kind){
       const ic = N.indexOf("cho");
-      if(ic > 0 && ic <= 3 && N.indexOf("vay") < 0 && N.indexOf("muon") < 0 && (GIVERS.has(N[0]) || /^[A-ZĐÀ-Ỹ]/.test(O[0])) && N.slice(0, ic).every(w => !["mua","tra","chi","tieu","an","nap","gui"].includes(w))){
+      const diNotAunt = N[0] === "di" && !/^dì$/i.test(clean(O[0]));
+      if(ic > 0 && ic <= 3 && !diNotAunt && N.indexOf("vay") < 0 && N.indexOf("muon") < 0 && (GIVERS.has(N[0]) || /^[A-ZĐÀ-Ỹ]/.test(O[0])) && N.slice(0, ic).every(w => !["mua","tra","chi","tieu","an","nap","gui"].includes(w))){
         kind = "in"; item.cat = "cho"; item.who = nameFrom(O, N, 0, ic, drop);
       }
     }
@@ -324,7 +328,7 @@
         if(card){ const cn = norm(card.name).split(" "); const j = has(N, cn); if(j >= 0) for(let k = 0; k < cn.length; k++) drop.add(j+k); else { const j2 = N.indexOf(cn[0]); if(j2 >= 0) drop.add(j2); } }
       } else {
         kind = "out";
-        if(hasW("tien mat") || hasW("tm")){ item.src = "cash"; markDrop(["tien","mat"]); }
+        if(hasW("tien mat") || hasW("tm")){ item.src = "cash"; markDrop(["tien","mat"]); const tm = N.indexOf("tm"); if(tm >= 0) drop.add(tm); }
         markDrop(["chuyen","khoan"]); const ck = N.indexOf("ck"); if(ck >= 0) drop.add(ck);
       }
     }
@@ -348,7 +352,7 @@
   /* ---------------- câu hỏi ---------------- */
   function asQuery(text, ctx){
     const n = " " + norm(text).replace(/[?!.,]/g, " ").replace(/\s+/g, " ") + " ";
-    const isQ = /\?\s*$/.test(text) || / (bao nhieu|bn|may|nhieu khong|the nao|sao) /.test(n) || /^ (xem|cho xem|tong) /.test(n);
+    const isQ = /\?\s*$/.test(text) || / (bao nhieu|bn|may|nhieu khong|the nao|sao) /.test(n) || /^ (xem|cho xem|tong) /.test(n) || / (ai|nhung ai) (con |dang |van )?no | no (ai|nhung ai) /.test(n);
     if(!isQ) return null;
     const { N } = tokenize(text); for(let i = 0; i < N.length; i++){ const a = amountAt(N, i); if(a && !/ (bao nhieu|bn) /.test(n)) return null; }
     let period = null;
@@ -368,7 +372,7 @@
       return { q:"loans", who: who.trim(), dir: m ? "borrow" : m2 ? "lend" : null };
     }
     if(/ the /.test(n) && !/ (an|uong) /.test(n)) return { q:"card", period: period || "month" };
-    if(/ con (bao nhieu|bn|duoc) | con lai /.test(n) && !period) return { q:"left" };
+    if(/ con (bao nhieu|bn|duoc) | con lai /.test(n) && (!period || (period === "today" && !/ (tieu|chi|xai|het|ton|an|uong|mua) /.test(n)))) return { q:"left" };
     if(/ (ngay nao|hom nao) .*(nhieu nhat|tieu nhieu)/.test(n)) return { q:"topday", period: period || "month" };
     if(/ (tieu|chi|xai|het|ton|an|uong|mua) /.test(n) || tag || period) return { q:"spent", period: period || "today", tag };
     return { q:"unknown" };

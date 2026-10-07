@@ -1,6 +1,21 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v80, ngày 07/10/2026
+**Phiên bản hiện tại:** v81, ngày 07/10/2026
+
+---
+
+## Có gì mới trong v81 (so với v80)
+
+**Bộ hiểu câu trên máy hiểu thêm nhiều cách gõ.** Thử với 104 câu mới (gõ không dấu, viết tắt, nhiều khoản, ngày giờ, thẻ, vay mượn), giờ đúng cả 104:
+- Viết tắt ngày: **hnay**, **hqua**, **hkia**, "hum qua".
+- Số tiền: **1,5tr**, **1k5** (1.500đ), "2 triệu rưỡi", "1 củ 2", "45 k", "45.000đ".
+- Không dấu: "di cho 150k" là đi chợ (trước bị hiểu thành "dì cho" là khoản thu), "bia", "rau" được gắn đúng nhóm.
+- **tm 50k mua rau**: hiểu là tiền mặt, ghi chú gọn "Mua rau".
+- Nhóm mới: "trà đá", "trà" vào Uống; "tiền mạng", "cước mạng" vào Điện thoại, mạng.
+- Câu hỏi không có dấu hỏi: "ai còn nợ mình", "mình còn nợ ai".
+- "hôm nay còn bao nhiêu" trả lời số còn được tiêu (trước trả lời số đã tiêu).
+
+Bộ câu thử nằm ở `tests-parse-vi-2.js`, chạy bằng `node tests-parse-vi-2.js`.
 
 ---
 
@@ -16,16 +31,6 @@
 **Trợ lý AI chuyển xuống nhóm Nâng cao** trong Cài đặt, ghi rõ là không bắt buộc. Phần chi phí, tỉ giá, ngân sách được gập lại.
 
 **Dán khoá API không tự bật AI.** Người mới dán khoá rồi bấm Thử kết nối, sau đó tự bật **Dùng AI khi trò chuyện**. Máy đã có khoá từ bản trước vẫn giữ AI bật như cũ.
-
----
-
-## Có gì mới trong v79 (so với v78)
-
-**App đổi tên thành Tiêu Gọn** (tên cũ: Ngày 50k).
-- Tên dưới icon trên màn hình chính, tiêu đề, bảng chia sẻ và thông báo đều là **Tiêu Gọn**.
-- File sao lưu mới tên `tieugon-saoluu-….json`, sao lưu nhanh bằng Phím tắt là `tieugon-<ngày>.json`, CSV là `tieugon-….csv`. File cũ tên `ngay50k-…` vẫn nhập được bình thường.
-- Dữ liệu, mã PIN, Face ID giữ nguyên; các khoá lưu bên trong không đổi.
-- Thêm mô tả và dữ liệu có cấu trúc (schema.org) cho trang web để Google và các công cụ AI đọc đúng tên và chức năng của app.
 
 ---
 
@@ -137,6 +142,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v81** | Bộ hiểu câu: không dấu, viết tắt (hnay, hqua, 1k5, 1,5tr), 104 câu thử mới |
 | **v80** | Máy trước, AI sau: chỉ câu khó mới gọi AI; AI xuống nhóm Nâng cao, dán khoá không tự bật |
 | **v79** | Đổi tên app thành Tiêu Gọn |
 | **v78** | Màn hình chào và dữ liệu mẫu, chọn ngân hàng hay dùng thay cho MB Bank cố định |
