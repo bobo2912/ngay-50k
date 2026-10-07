@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v95";
+  var K = "ngay50k:errlog", VER = "v96";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -1605,6 +1605,8 @@ body.searching .ledger-head{background:var(--top-c)}
   -webkit-mask-image:linear-gradient(to bottom, #000 calc(100% - 18px), transparent); mask-image:linear-gradient(to bottom, #000 calc(100% - 18px), transparent)}
 body.head-stuck #tab-chat > .chip-veil{display:block}
 body.kb #tab-chat > .chip-veil{display:none}
+/* v96: ô chat trong suốt trong tích tắc lúc chạm, để iPhone không trượt cả trang khi bật bàn phím */
+#chatIn.nf{opacity:0!important}
 /* v95: nút cập nhật bản mới trong Cài đặt */
 .upd-go{width:100%; margin-top:10px}
 #navUpd.new{color:var(--note); font-weight:700}
@@ -2304,7 +2306,7 @@ body.kb #tab-chat > .chip-veil{display:none}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v95</p>
+      <p class="sync" id="appVersion">Phiên bản v96</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -2733,8 +2735,8 @@ body.kb #tab-chat > .chip-veil{display:none}
 
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
 <script src="vendor/jsQR.js"></script>
-<script src="parse-vi.js?v=95"></script>
-<script src="lock.js?v=95"></script>
+<script src="parse-vi.js?v=96"></script>
+<script src="lock.js?v=96"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -5901,7 +5903,7 @@ function startNgay50k(){
   /* Bàn phím tự tắt mà ô nhập không mất tiêu điểm (vd khi chụp màn hình trên iPhone): trước đây bố cục "đang gõ"
      vẫn giữ nguyên, ô chat lơ lửng giữa màn hình và lớp nền phủ kín phần dưới nên chạm đâu cũng không ăn (v95).
      Giờ: đã thấy bàn phím mở mà khung nhìn trở lại cao như cũ thì coi như bàn phím đã tắt, bỏ tiêu điểm và hạ ô chat. */
-  var kbSeen = false, kbGoneAt = 0;
+  var kbSeen = false, kbGoneAt = 0, kbLast = "";
   function kbDropped(){
     kbSeen = false; kbGoneAt = 0;
     try{ $("chatIn").blur(); }catch(_){}
@@ -5925,9 +5927,11 @@ function startNgay50k(){
     if(vv && vv.height < window.innerHeight * 0.85){
       /* bàn phím đã mở thật: theo đúng khung nhìn, và nhớ chiều cao bàn phím cho lần sau */
       const kbh = Math.round(window.innerHeight - vv.height - Math.max(0, vv.offsetTop));
-      if(kbh > 150) lsSet(KBH_KEY, String(Math.round(window.innerHeight - vv.height)));
-      root.setProperty("--vv-top", Math.max(0, vv.offsetTop) + "px");
-      root.setProperty("--vv-h", vv.height + "px");
+      const kv = String(Math.round(window.innerHeight - vv.height));
+      if(kbh > 150 && kv !== kbLast){ kbLast = kv; lsSet(KBH_KEY, kv); }
+      const vt = Math.max(0, vv.offsetTop) + "px", vh = vv.height + "px";
+      if(root.getPropertyValue("--vv-top") !== vt) root.setProperty("--vv-top", vt);
+      if(root.getPropertyValue("--vv-h") !== vh) root.setProperty("--vv-h", vh);
     } else {
       /* bàn phím chưa kịp mở: đặt sẵn theo chiều cao đã nhớ */
       root.setProperty("--vv-top", "0px");
@@ -5972,11 +5976,33 @@ function startNgay50k(){
     if(atEnd) requestAnimationFrame(() => window.scrollTo(0, document.documentElement.scrollHeight));
   }
   function placeDockSoon(){ if(dockRaf) return; dockRaf = requestAnimationFrame(() => { dockRaf = 0; placeDock(); }); }
+  /* v96: chạm ô chat làm đầu trang và ô Số dư ví bị đẩy lên rồi mới hạ xuống.
+     Nguyên nhân: lúc ô nhận tiêu điểm, iPhone thấy ô còn nằm ở đáy (dưới chỗ bàn phím sắp hiện) nên trượt cả khung nhìn lên;
+     app chỉ kéo đầu trang về sau khi iPhone báo khung nhìn mới. Cách sửa:
+     - ngay lúc chạm, ô nhập tạm trong suốt: WebKit không trượt trang để lộ ô nhập trong suốt (vẫn bật bàn phím bình thường),
+       khi đã nhận tiêu điểm thì app tự đặt ô ngay trên bàn phím rồi hiện lại ô;
+     - trong lúc bàn phím trượt lên, bám theo khung nhìn từng khung hình (trước đây chỉ đo lại ở 120/300/600 ms),
+       nên nếu iPhone vẫn trượt thì đầu trang cũng không bị lệch thấy được. */
+  const ciEl = $("chatIn"); let ciT = 0, kbRaf = 0;
+  ciEl.addEventListener("touchstart", () => {
+    if(document.activeElement === ciEl) return;
+    ciEl.classList.add("nf");
+    clearTimeout(ciT); ciT = setTimeout(() => { if(document.activeElement !== ciEl) ciEl.classList.remove("nf"); }, 900);
+  }, { passive:true });
+  ciEl.addEventListener("touchcancel", () => { if(document.activeElement !== ciEl) ciEl.classList.remove("nf"); }, { passive:true });
+  function kbFollow(ms){
+    cancelAnimationFrame(kbRaf);
+    const end = performance.now() + ms;
+    const step = () => { if(!document.body.classList.contains("kb")) return; fitTyping(); if(performance.now() < end) kbRaf = requestAnimationFrame(step); else chatScrollEnd(false); };
+    kbRaf = requestAnimationFrame(step);
+  }
   $("chatIn").addEventListener("focus", () => {
     kbSeen = false; kbGoneAt = 0;
     document.body.classList.add("kb"); fitTyping(); chatScrollEnd(false);
-    /* iPhone mở bàn phím xong mới báo khung nhìn mới: đo lại vài lần */
-    [120, 300, 600].forEach(ms => setTimeout(() => { fitTyping(); chatScrollEnd(false); }, ms));
+    clearTimeout(ciT); ciT = setTimeout(() => ciEl.classList.remove("nf"), 280);
+    /* iPhone mở bàn phím xong mới báo khung nhìn mới: bám theo từng khung hình trong lúc bàn phím trượt lên */
+    kbFollow(900);
+    [300, 600].forEach(ms => setTimeout(() => chatScrollEnd(false), ms));
   });
   $("chatIn").addEventListener("blur", () => {
     /* bấm Ghi/Bỏ trên thẻ ngay lúc đang gõ: đợi thao tác xong rồi mới đổi bố cục */
