@@ -1,6 +1,13 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v85, ngày 07/10/2026
+**Phiên bản hiện tại:** v86, ngày 07/10/2026
+
+---
+
+## Có gì mới trong v86 (so với v85)
+
+- **Bỏ dải trắng giữa đầu trang và ô Số dư ví** (tab Trò chuyện). Miếng che khe hở trước đây dùng màu nền phẳng nên lệch với nền loang của app, rõ nhất ở giao diện Pastel. Giờ nó chỉ hiện khi đang cuộn, và dùng cùng lớp kính mờ với đầu trang, khớp cả giao diện Sáng, Tối, Pastel.
+- Giao diện Tối: ô Số dư ví có nền đặc hơn, khi cuộn không còn nhìn xuyên thấy tin nhắn bên dưới.
 
 ---
 
@@ -8,15 +15,6 @@
 
 - **"Còn lại thực tế" đổi tên thành "Dòng tiền ròng tháng này"** (tab Tổng quan), đúng với cách tính: tổng thu trong tháng trừ tổng chi. Dương là tháng này để ra được tiền, âm là tiêu nhiều hơn thu. Nút ⓘ giải thích thêm rằng đây không phải số dư trong ví. Khi chọn một loại chi: "Dòng tiền ròng (chỉ tính chi thường)" hoặc "(chỉ tính chi thẻ)".
 - **Thẻ Hôm nay còn được tiêu** (tab Ví): thu khoảng cách giữa nhãn, số tiền, thanh tiến độ và dòng giải thích.
-
----
-
-## Có gì mới trong v84 (so với v83)
-
-**Chữ gọn hơn, chỉ nhấn số quan trọng.**
-- Tab Ví: thẻ **Hôm nay còn được tiêu** thu gọn, số tiền cỡ vừa nằm ngay trên thanh tiến độ. Số to nhất của tab là **Số dư hiện tại**.
-- Mỗi tab chỉ còn một con số to và đậm: Ví là số dư, Tổng quan là dòng tiền ròng, Thẻ là chi bằng thẻ tháng này, Khoản vay là hai dòng tổng nợ.
-- Chữ thường, danh sách, nút, chip, tin nhắn trò chuyện, thẻ xác nhận trong chat và Cài đặt đều nhỏ lại một chút, vẫn đủ đọc.
 
 ---
 
@@ -127,6 +125,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v86** | Bỏ dải trắng dưới đầu trang ở tab Trò chuyện, khớp mọi giao diện |
 | **v85** | "Còn lại thực tế" đổi thành "Dòng tiền ròng tháng này"; thẻ hạn mức hôm nay gọn hơn |
 | **v84** | Chữ gọn hơn, thẻ hạn mức hôm nay thu nhỏ, chỉ nhấn số chính mỗi tab |
 | **v83** | Sửa lỗi đơ khi mở app (trang và file phụ lệch bản, Face ID chặn bàn phím), thêm lưới an toàn và nhật ký lỗi |

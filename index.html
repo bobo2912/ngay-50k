@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v85";
+  var K = "ngay50k:errlog", VER = "v86";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -1232,7 +1232,16 @@ body.kb #tab-chat{position:fixed; z-index:45; left:0; right:0; top:var(--vv-top,
 body.kb main > header{position:fixed; top:var(--vv-top, 0px); left:0; right:0; z-index:46; margin:0 auto; max-width:460px;
   background:var(--glass-strong); background:color-mix(in srgb, var(--bg) 96%, transparent); box-shadow:0 1px 0 var(--line)}
 body.kb #tab-chat::before{content:""; position:fixed; inset:0; z-index:-1; background:var(--bg)}
-#tab-chat > #chatToWallet::before{content:""; position:absolute; left:-16px; right:-16px; top:-14px; height:14px; background:var(--bg); pointer-events:none}   /* che khe giữa đầu trang và ô số dư khi cuộn */
+/* che khe giữa đầu trang và ô số dư khi cuộn: chỉ hiện lúc đầu trang đã thành lớp kính, và dùng đúng lớp kính đó
+   (trước v86 là màu nền phẳng nên hiện thành dải trắng trên nền loang, nhất là giao diện Pastel) */
+#tab-chat > #chatToWallet::before{content:""; position:absolute; left:-17px; right:-17px; top:-15px; height:16px; pointer-events:none; display:none;
+  background:var(--glass-strong); background:color-mix(in srgb, var(--bg) 96%, transparent);
+  -webkit-backdrop-filter:blur(24px) saturate(160%); backdrop-filter:blur(24px) saturate(160%); box-shadow:0 1px 0 var(--line)}
+body.head-stuck #tab-chat > #chatToWallet::before{display:block}
+body.head-stuck:has(#tab-chat:not([hidden])) main > header.stuck{box-shadow:none}
+/* giao diện Tối: nền ô Số dư ví vốn gần như trong suốt, khi dính trên đầu thì nhìn xuyên được tin nhắn bên dưới */
+:root[data-theme="dark"] #tab-chat > #chatToWallet{background:color-mix(in srgb, var(--bg), white 7%)}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]):not([data-theme="pastel"]) #tab-chat > #chatToWallet{background:color-mix(in srgb, var(--bg), white 7%)} }
 body.kb #tab-chat > #chatToWallet{position:static; flex:none; margin-bottom:8px}
 body.kb #tab-chat > #chatToWallet::before{display:none}
 body.kb #tab-chat .chat-log{flex:1 1 auto; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior:contain; padding-bottom:8px}
@@ -2177,7 +2186,7 @@ header .date{font-size:1.25rem}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v85</p>
+      <p class="sync" id="appVersion">Phiên bản v86</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -2588,8 +2597,8 @@ header .date{font-size:1.25rem}
 
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
 <script src="vendor/jsQR.js"></script>
-<script src="parse-vi.js?v=85"></script>
-<script src="lock.js?v=85"></script>
+<script src="parse-vi.js?v=86"></script>
+<script src="lock.js?v=86"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
