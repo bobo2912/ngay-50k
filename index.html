@@ -3,13 +3,19 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>Ngày 50k</title>
-<meta name="description" content="Giữ mỗi ngày chi tiêu trong 50.000đ. Dữ liệu chỉ lưu trên máy của bạn.">
+<title>Tiêu Gọn – Quản lý chi tiêu</title>
+<meta name="description" content="Tiêu Gọn – app quản lý chi tiêu, sổ thu chi cho iPhone và Android: ghi bằng lời, quét VietQR, đặt hạn mức mỗi ngày. Không cần tài khoản, dữ liệu chỉ nằm trên máy của bạn.">
+<meta name="application-name" content="Tiêu Gọn">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Tiêu Gọn – Quản lý chi tiêu">
+<meta property="og:description" content="Tiêu Gọn – app quản lý chi tiêu, sổ thu chi cho iPhone và Android: ghi bằng lời, quét VietQR, đặt hạn mức mỗi ngày. Không cần tài khoản, dữ liệu chỉ nằm trên máy của bạn.">
+<meta property="og:locale" content="vi_VN">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Tiêu Gọn","alternateName":"Tieu Gon","applicationCategory":"FinanceApplication","operatingSystem":"iOS, Android, Web","inLanguage":"vi","description":"Tiêu Gọn – app quản lý chi tiêu, sổ thu chi cho iPhone và Android: ghi bằng lời, quét VietQR, đặt hạn mức mỗi ngày. Không cần tài khoản, dữ liệu chỉ nằm trên máy của bạn.","offers":{"@type":"Offer","price":"0","priceCurrency":"VND"}}</script>
 <meta name="theme-color" content="#EEF3FF" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0B1026" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Ngày 50k">
+<meta name="apple-mobile-web-app-title" content="Tiêu Gọn">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="format-detection" content="telephone=no">
 <link rel="manifest" href="manifest.webmanifest">
@@ -1353,7 +1359,7 @@ html.locked, html.locked body{overflow:hidden}
 <body>
 <main>
   <header>
-    <h1 class="vh">Ngày 50k</h1>
+    <h1 class="vh">Tiêu Gọn</h1>
     <div class="date-wrap"><span class="date-small" id="dateSmall"></span><span class="date" id="dateLabel"></span></div>
     <div class="head-right">
       <button class="gear" id="openSettings" aria-label="Cài đặt" aria-haspopup="dialog">
@@ -2030,7 +2036,7 @@ html.locked, html.locked body{overflow:hidden}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v78</p>
+      <p class="sync" id="appVersion">Phiên bản v79</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Xoá dữ liệu</h4>
@@ -4905,7 +4911,7 @@ function startNgay50k(){
     const n = "Notification" in window ? Notification.permission : "none";
     $("aiNotif").hidden = n !== "default";
     $("aiNotifMsg").textContent = n === "granted" ? "✓ Thông báo đẩy đã bật. Luôn có thêm lời nhắc ngay trong Trò chuyện."
-      : n === "denied" ? "Thông báo đang bị chặn. Bật lại ở Cài đặt iPhone → Thông báo → Ngày 50k. Lời nhắc vẫn hiện trong Trò chuyện."
+      : n === "denied" ? "Thông báo đang bị chặn. Bật lại ở Cài đặt iPhone → Thông báo → Tiêu Gọn. Lời nhắc vẫn hiện trong Trò chuyện."
       : n === "none" ? "Máy này chỉ cho thông báo khi app đã được thêm vào Màn hình chính (iOS 16.4 trở lên). Lời nhắc vẫn hiện trong Trò chuyện."
       : "Bật để nhận thông báo khi ngân sách sắp hết. Lời nhắc cũng hiện trong Trò chuyện.";
   }
@@ -4972,7 +4978,7 @@ function startNgay50k(){
       noi_dung_quen: (() => { const out = {}; Object.keys(state.days).sort().slice(-60).forEach(k => (state.days[k] || []).forEach(it => { if(it.note && it.cat) out[it.note] = it.cat; })); return Object.entries(out).slice(-40).map(([n, c]) => n + " → " + c); })()
     };
     return [
-      "Bạn là bộ phận hiểu câu của app ghi chi tiêu cá nhân tiếng Việt \"Ngày 50k\". Người dùng kể bằng lời tự nhiên (có thể gõ không dấu, viết tắt, đọc bằng giọng nói). Nhiệm vụ: chuyển thành các khoản cần ghi và/hoặc một câu hỏi. Trả lời đúng dạng JSON theo schema, không thêm chữ nào ngoài JSON.",
+      "Bạn là bộ phận hiểu câu của app ghi chi tiêu cá nhân tiếng Việt \"Tiêu Gọn\". Người dùng kể bằng lời tự nhiên (có thể gõ không dấu, viết tắt, đọc bằng giọng nói). Nhiệm vụ: chuyển thành các khoản cần ghi và/hoặc một câu hỏi. Trả lời đúng dạng JSON theo schema, không thêm chữ nào ngoài JSON.",
       "",
       "Loại khoản (kind):",
       "- out: chi tiêu từ tài khoản ngân hàng hoặc tiền mặt (chuyển khoản, quét QR, trả tiền mặt, mua gì đó không nói thẻ). Đây là mặc định cho chi tiêu.",
@@ -7060,7 +7066,7 @@ function startNgay50k(){
   }
 
   function offerImport(obj, label){
-    if(!obj || obj.app !== "ngay50k" || !obj.data || typeof obj.data !== "object"){ showSyncErr("Đây không phải bản sao lưu của Ngày 50k."); return; }
+    if(!obj || obj.app !== "ngay50k" || !obj.data || typeof obj.data !== "object"){ showSyncErr("Đây không phải bản sao lưu của Tiêu Gọn."); return; }
     const incoming = normalize(obj.data);
     pending = { incoming, merged: mergeStates(state, incoming) };
     const when = obj.exportedAt ? fmtStamp(obj.exportedAt) : "";
@@ -7291,13 +7297,13 @@ function startNgay50k(){
     $("syncErr").hidden = true;
     const n = countAll(state);
     if(!n){ showSyncErr("Chưa có khoản nào để xuất."); return; }
-    const name = "ngay50k-" + fileStamp() + ".csv";
+    const name = "tieugon-" + fileStamp() + ".csv";
     const text = buildCSV();
     const coarse = window.matchMedia && matchMedia("(pointer:coarse)").matches;
     if(coarse && navigator.canShare && typeof File === "function"){
       try{
         const file = new File([text], name, { type:"text/csv" });
-        if(navigator.canShare({ files:[file] })){ await navigator.share({ files:[file], title:"Ngày 50k" }); return; }
+        if(navigator.canShare({ files:[file] })){ await navigator.share({ files:[file], title:"Tiêu Gọn" }); return; }
       }catch(e){ if(e && e.name === "AbortError") return; }
     }
     try{
@@ -7321,14 +7327,14 @@ function startNgay50k(){
   $("bkPwOn").addEventListener("change", () => { $("bkPwBox").hidden = !$("bkPwOn").checked; if(!$("bkPwOn").checked){ $("bkPw").value = $("bkPw2").value = ""; } });
   async function exportData(){
     $("syncErr").hidden = true;
-    const name = "ngay50k-saoluu-" + fileStamp() + ".json";
+    const name = "tieugon-saoluu-" + fileStamp() + ".json";
     const text = await backupText(); if(text == null) return;
     const coarse = window.matchMedia && matchMedia("(pointer:coarse)").matches;
     if(coarse && navigator.canShare && typeof File === "function"){
       try{
         const file = new File([text], name, { type:"application/json" });
         if(navigator.canShare({ files:[file] })){
-          await navigator.share({ files:[file], title:"Sao lưu Ngày 50k" });
+          await navigator.share({ files:[file], title:"Sao lưu Tiêu Gọn" });
           doneExport(); return;
         }
       }catch(e){ if(e && e.name === "AbortError") return; }
@@ -7429,13 +7435,13 @@ function startNgay50k(){
     r.onerror = () => showSyncErr("Không đọc được file này.");
     r.onload = () => {
       let obj;
-      try{ obj = JSON.parse(r.result); }catch(err){ showSyncErr("File này không phải file sao lưu của Ngày 50k."); return; }
+      try{ obj = JSON.parse(r.result); }catch(err){ showSyncErr("File này không phải file sao lưu của Tiêu Gọn."); return; }
       if(obj && obj.app === "ngay50k" && obj.enc && typeof obj.data === "string"){
         encPending = obj; $("importCard").hidden = true; $("impPw").value = ""; $("impPwCard").hidden = false;
         $("impPwCard").scrollIntoView({ behavior:"smooth", block:"nearest" }); setTimeout(() => $("impPw").focus(), 300);
         return;
       }
-      if(!obj || obj.app !== "ngay50k" || !obj.data || typeof obj.data !== "object"){ showSyncErr("File này không phải file sao lưu của Ngày 50k."); return; }
+      if(!obj || obj.app !== "ngay50k" || !obj.data || typeof obj.data !== "object"){ showSyncErr("File này không phải file sao lưu của Tiêu Gọn."); return; }
       offerImport(obj, "File");
     };
     r.readAsText(f);
@@ -7488,7 +7494,7 @@ function startNgay50k(){
   try{ localStorage.removeItem("ngay50k:scMode"); localStorage.removeItem("ngay50k:scName"); }catch(e){}
   async function quickBackup(){
     $("syncErr").hidden = true;
-    const name = "ngay50k-" + todayKey() + ".json";
+    const name = "tieugon-" + todayKey() + ".json";
     const text = await backupText(); if(text == null) return false;
     if(!(navigator.canShare && typeof File === "function")){ showSyncErr("Máy này không mở được bảng chia sẻ. Hãy dùng nút Xuất file sao lưu."); return false; }
     try{

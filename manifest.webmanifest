@@ -1,7 +1,9 @@
 {
-  "name": "Ngày 50k",
-  "short_name": "Ngày 50k",
-  "description": "Giữ mỗi ngày chi tiêu trong hạn mức. Dữ liệu chỉ lưu trên máy của bạn.",
+  "name": "Tiêu Gọn – Quản lý chi tiêu",
+  "short_name": "Tiêu Gọn",
+  "description": "Tiêu Gọn – app quản lý chi tiêu, sổ thu chi cho iPhone và Android: ghi bằng lời, quét VietQR, đặt hạn mức mỗi ngày. Không cần tài khoản, dữ liệu chỉ nằm trên máy của bạn.",
+  "id": "./",
+  "categories": ["finance", "productivity"],
   "lang": "vi",
   "start_url": "./",
   "scope": "./",

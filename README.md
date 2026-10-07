@@ -1,4 +1,6 @@
-# Ngày 50k
+# Tiêu Gọn
+
+*Tên cũ: Ngày 50k. Kho mã vẫn tên `ngay-50k` và các khoá lưu dữ liệu vẫn bắt đầu bằng `ngay50k:` để máy đang dùng không mất dữ liệu.*
 
 Ứng dụng web ghi chi tiêu hằng ngày, đặt một hạn mức cho mỗi ngày và theo dõi xem hôm nay còn tiêu được bao nhiêu. Cài lên màn hình chính của iPhone hay Android là chạy như một app bình thường, dùng được cả khi không có mạng.
 

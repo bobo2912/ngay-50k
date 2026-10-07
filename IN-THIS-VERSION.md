@@ -1,6 +1,16 @@
-# Ngày 50k – In this version
+# Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v78, ngày 07/10/2026
+**Phiên bản hiện tại:** v79, ngày 07/10/2026
+
+---
+
+## Có gì mới trong v79 (so với v78)
+
+**App đổi tên thành Tiêu Gọn** (tên cũ: Ngày 50k).
+- Tên dưới icon trên màn hình chính, tiêu đề, bảng chia sẻ và thông báo đều là **Tiêu Gọn**.
+- File sao lưu mới tên `tieugon-saoluu-….json`, sao lưu nhanh bằng Phím tắt là `tieugon-<ngày>.json`, CSV là `tieugon-….csv`. File cũ tên `ngay50k-…` vẫn nhập được bình thường.
+- Dữ liệu, mã PIN, Face ID giữ nguyên; các khoá lưu bên trong không đổi.
+- Thêm mô tả và dữ liệu có cấu trúc (schema.org) cho trang web để Google và các công cụ AI đọc đúng tên và chức năng của app.
 
 ---
 
@@ -22,22 +32,6 @@ Màn hình đầu còn có **Xem thử với dữ liệu mẫu** (10 ngày chi t
 - Máy đã có dữ liệu từ bản trước tự giữ MB Bank, không phải chọn lại.
 
 Đang xem dữ liệu mẫu thì app không nhắc sao lưu.
-
----
-
-## Có gì mới trong v77 (so với v76)
-
-**Khoá app bằng mã PIN, dữ liệu trên máy được mã hoá.** Cài đặt → **Khoá app** → **Đặt mã PIN**.
-
-- Mã PIN 6 số (hoặc 4 số), nhập hai lần. App không cho đặt mã dễ đoán như 111111, 123456.
-- Khi bật, toàn bộ dữ liệu trên máy được mã hoá AES-256: khoản chi, lịch sử trò chuyện, khoá API của Trợ lý AI. App không lưu mã PIN ở đâu cả.
-- Mở app phải nhập mã PIN. Sai 5 lần thì phải chờ 30 giây, sai tiếp thì thời gian chờ tăng gấp đôi.
-- **Tự khoá khi rời app:** Ngay, 1 phút, 5 phút hoặc 15 phút. Chọn Ngay thì màn hình được che luôn trong trình chuyển app.
-- **Mở bằng Face ID:** bật trong cùng trang. Face ID mở khoá thật bằng passkey trên máy (cần iOS 18 trở lên). Máy không hỗ trợ thì app báo, mã PIN vẫn dùng bình thường.
-- Đổi mã PIN, Khoá ngay, Tắt khoá (tắt thì dữ liệu trở lại dạng thường).
-- **Quên mã PIN:** không lấy lại được dữ liệu trên máy. Màn hình khoá có nút xoá dữ liệu để bắt đầu lại rồi nhập từ file sao lưu.
-
-**File sao lưu có mật khẩu.** Trong Sao lưu và đồng bộ, tick **Khoá file sao lưu bằng mật khẩu** (ít nhất 8 ký tự). Áp dụng cho Xuất file và Sao lưu nhanh bằng Phím tắt. Nhập file có mật khẩu thì app hỏi mật khẩu trước khi gộp.
 
 ---
 
@@ -149,6 +143,7 @@ Màn hình đầu còn có **Xem thử với dữ liệu mẫu** (10 ngày chi t
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v79** | Đổi tên app thành Tiêu Gọn |
 | **v78** | Màn hình chào và dữ liệu mẫu, chọn ngân hàng hay dùng thay cho MB Bank cố định |
 | **v77** | Khoá app bằng mã PIN, mã hoá dữ liệu, Face ID, sao lưu có mật khẩu |
 | **v76** | Gửi ảnh thông báo trong chat, đọc trên máy không tốn token |

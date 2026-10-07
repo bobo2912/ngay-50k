@@ -1,4 +1,4 @@
-/* Ngày 50k – khoá app bằng mã PIN và mã hoá dữ liệu trên máy.
+/* Tiêu Gọn – khoá app bằng mã PIN và mã hoá dữ liệu trên máy.
 
    Cách hoạt động
    - Dữ liệu được mã hoá bằng một khoá dữ liệu ngẫu nhiên (AES-GCM 256 bit).
@@ -342,8 +342,8 @@ window.N50KLock = (function(){
     if(!(await pkAvailable())) throw new Error("Máy này không có Face ID hoặc Touch ID cho web app.");
     var salt = rand(32);
     var cred = await navigator.credentials.create({ publicKey:{
-      rp:{ name:"Ngày 50k" },
-      user:{ id:rand(16), name:"ngay50k-" + new Date().toISOString().slice(0, 10), displayName:"Ngày 50k" },
+      rp:{ name:"Tiêu Gọn" },
+      user:{ id:rand(16), name:"ngay50k-" + new Date().toISOString().slice(0, 10), displayName:"Tiêu Gọn" },
       challenge:rand(32), timeout:60000,
       pubKeyCredParams:[{ type:"public-key", alg:-7 }, { type:"public-key", alg:-257 }],
       authenticatorSelection:{ authenticatorAttachment:"platform", residentKey:"preferred", userVerification:"required" },
