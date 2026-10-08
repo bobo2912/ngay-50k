@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v108";
+  var K = "ngay50k:errlog", VER = "v109";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -1685,8 +1685,19 @@ body.kb #tab-chat > .chip-veil{display:none}
 .so-seg{display:flex; background:var(--field, rgba(0,0,0,.05)); border-radius:999px; padding:3px; margin:0 0 12px}
 .so-seg button{flex:1; border:0; background:transparent; border-radius:999px; padding:7px 0; font:inherit; font-size:.86rem; font-weight:600; color:var(--muted)}
 .so-seg button[aria-pressed="true"]{background:var(--glass-strong, var(--surface)); color:var(--note); box-shadow:var(--shadow-s)}
-#list .item.inc-it .amt{color:#23955f}
-body.searching #wTabsBox, #tab-wal.searching > #walBox, #tab-wal.searching > #walSoonSec{display:none}
+#list .item.inc-it .amt, #ledgerList .item.inc-it .amt{color:#23955f}
+.srcic{margin-left:5px; font-size:.82em; font-style:normal; filter:saturate(.9)}
+.item.move .amt{color:var(--muted); font-weight:600}
+.item.move .desc div:last-child{font-style:italic}
+/* v109: tab thẻ gọn như tab ví */
+#tab-cards #cardTotalBox, #tab-cards #cardChartBox, #tab-cards #openCardsBtn{display:none!important}
+#tab-cards .card-acts{margin:8px 0 10px}
+.wh-acts.col{flex-direction:column; align-items:stretch; gap:6px}
+.wh-btn.ghost{background:transparent; border:1px solid var(--line); color:var(--ink)}
+/* v109: lúc tìm, khối chứa ô tìm không còn nền trắng thừa phía trên */
+#tab-money.searching > section, #tab-wal.searching > section{background:transparent!important; border:0!important; box-shadow:none!important; padding-top:0!important}
+body.searching .ledger-head{margin-top:0}
+body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #tab-wal.searching > #walSoonSec{display:none}
 #tab-wal.searching > section{margin-top:0}
 #tab-wal.searching .ledger-head{padding-top:0}
 #tab-wal .ledger-head h2{font-size:.95rem}
@@ -2025,15 +2036,16 @@ body.searching #wTabsBox, #tab-wal.searching > #walBox, #tab-wal.searching > #wa
     </div>
 
     <div class="cardstrip" id="cardFilter"></div>
+    <!-- v109: tab thẻ giống tab ví: số dư âm (tổng chi tháng) ở đầu, bên dưới là nút ghi và lịch sử giao dịch -->
+    <div class="quick3 quick4 quick2 card-acts">
+      <button type="button" class="q-btn q-out" id="addCardTxBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Ghi tay</span></button>
+      <button type="button" class="q-btn q-out" id="pasteCardBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="14" rx="2.5"/><circle cx="12" cy="13" r="3.4"/><path d="M8.5 6l1.2-2h4.6l1.2 2"/></svg><span>Từ ảnh</span></button>
+    </div>
 
     <div class="ledger chero" id="cardTotalBox">
       <p class="chero-lb"><span id="cardSumLabel">Chi bằng thẻ tháng này</span><span class="chero-n" id="cardCount"></span></p>
       <p class="chero-big"><span class="num" id="cardMonthSum">0đ</span><span class="chero-trend" id="cardTrend" hidden></span></p>
       <div class="chero-foot">
-        <button type="button" id="pasteCardBtn">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="14" rx="2.5"/><circle cx="12" cy="13" r="3.4"/><path d="M8.5 6l1.2-2h4.6l1.2 2"/></svg>Từ ảnh</button>
-        <button type="button" id="addCardTxBtn">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Ghi tay</button>
         <button type="button" id="payCardBtn">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Trả thẻ</button>
       </div>
@@ -2057,7 +2069,7 @@ body.searching #wTabsBox, #tab-wal.searching > #walBox, #tab-wal.searching > #wa
     <p class="inline-ok" id="cardMsg" hidden></p>
 
     <section>
-      <h2 id="cardListTitle">Khoản chi trong tháng</h2>
+      <h2 id="cardListTitle">Lịch sử giao dịch</h2>
       <div id="cardList"></div>
     </section>
   </div>
@@ -2429,7 +2441,7 @@ body.searching #wTabsBox, #tab-wal.searching > #walBox, #tab-wal.searching > #wa
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v108</p>
+      <p class="sync" id="appVersion">Phiên bản v109</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -2917,8 +2929,8 @@ body.searching #wTabsBox, #tab-wal.searching > #walBox, #tab-wal.searching > #wa
 <datalist id="bankList"></datalist>
 
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
-<script src="parse-vi.js?v=108"></script>
-<script src="lock.js?v=108"></script>
+<script src="parse-vi.js?v=109"></script>
+<script src="lock.js?v=109"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -3582,7 +3594,8 @@ function startNgay50k(){
     li.querySelector(".cat").textContent = c.icon;
     li.querySelector(".desc div:first-child").textContent = it.note || it.who || it.holder || (it.bank ? "Chuyển khoản " + it.bank : c.label);
     li.querySelector(".desc div:last-child").textContent = pad(t.getHours())+":"+pad(t.getMinutes()) + " · " + (it.bank ? (it.who && it.note && it.note !== it.who ? it.who + " · " : "") + it.bank : c.label)
-      + (srcLabels() ? " · " + walletName(it.w || MAIN_W) : "");
+;
+    if(srcLabels()) addSrc(li, it.w || MAIN_W);
     li.querySelector(".amt").textContent = (opts && opts.sign ? "−" : "") + fmt(it.amt);
     const dk = opts && opts.day ? opts.day : (viewDay || todayKey());
     li.classList.add("tap"); li.tabIndex = 0; li.setAttribute("role","button"); li.setAttribute("aria-label", "Sửa khoản " + (it.note || c.label) + " " + fmt(it.amt));
@@ -3598,17 +3611,68 @@ function startNgay50k(){
     };
     return li;
   }
+  /* v109: nguồn tiền ghi bằng biểu tượng nhỏ cuối dòng phụ (🏦 tài khoản, 📱 ví điện tử, 💳 thẻ…), tên đầy đủ trong nhãn */
+  function addSrc(li, src, name){
+    const d = li.querySelector(".desc div:last-child"); if(!d) return;
+    const w = src === "card" ? null : walletById(src);
+    const sp = document.createElement("span"); sp.className = "srcic";
+    sp.textContent = src === "card" ? "💳" : (w ? w.icon : "👛");
+    const nm = name || (w ? w.name : "Ví đã xoá");
+    sp.title = nm; sp.setAttribute("aria-label", nm); sp.setAttribute("role", "img");
+    d.appendChild(sp);
+  }
+  /* các khoản tiền di chuyển nhưng không phải thu chi: trả thẻ, chuyển giữa ví, vay / cho vay / trả nợ */
+  function dayMoves(k){
+    const out = [];
+    (state.cardPay || []).forEach(p => { if(p.date === k) out.push({ t:recTime(p.date, p.t), icon:"💳", name:"Trả thẻ" + (cardName(p.cardId) ? " " + cardName(p.cardId) : ""), amt:-(Number(p.amt)||0), src:p.from || MAIN_W, o:p, kind:"pay" }); });
+    (state.xfer || []).forEach(x => { if(x.date === k) out.push({ t:recTime(x.date, x.t), icon:"🔁", name:walletName(x.from) + " → " + walletName(x.to), amt:Number(x.amt)||0, neutral:true, o:x, kind:"xfer" }); });
+    state.loans.forEach(l => {
+      const b = l.type === "borrow", who = l.who || "?", sg = b ? 1 : -1;
+      if(l.date === k) out.push({ t:recTime(l.date, l.t), icon:"🤝", name: b ? "Vay của " + who : "Cho " + who + " vay", amt:sg * (Number(l.amt)||0), kind:"loan" });
+      (l.draws || []).forEach(d => { if(d.date === k) out.push({ t:recTime(d.date, d.t), icon:"🤝", name: b ? "Vay thêm của " + who : "Cho " + who + " vay thêm", amt:sg * (Number(d.amt)||0), kind:"loan" }); });
+      (l.payments || []).forEach(pm => { if(pm.date === k) out.push({ t:recTime(pm.date, pm.t), icon:"🤝", name: b ? "Trả nợ " + who : who + " trả nợ", amt:-sg * (Number(pm.amt)||0), kind:"loan" }); });
+    });
+    return out;
+  }
+  function moveDayRow(mv){
+    const li = document.createElement("li"); li.className = "item move";
+    li.innerHTML = '<span class="cat" aria-hidden="true"></span><div class="desc"><div></div><div></div></div><span class="amt num"></span>' + (mv.kind === "loan" ? "" : '<button class="del" aria-label="Xoá mục này">✕</button>');
+    const d = new Date(mv.t);
+    li.querySelector(".cat").textContent = mv.icon;
+    li.querySelector(".desc div:first-child").textContent = mv.name;
+    li.querySelector(".desc div:last-child").textContent = (untimed(mv.t) ? "" : pad(d.getHours()) + ":" + pad(d.getMinutes()) + " · ") + "không tính thu chi";
+    if(mv.src && srcLabels()) addSrc(li, mv.src);
+    li.querySelector(".amt").textContent = mv.neutral ? fmt(Math.abs(mv.amt)) : (mv.amt < 0 ? "−" : "+") + fmt(Math.abs(mv.amt));
+    const go = mv.kind === "pay" && cardOf(mv.o.cardId) ? () => selectWallet("card:" + mv.o.cardId) : mv.kind === "loan" ? () => showTab("loans") : null;
+    if(go){ li.classList.add("tap"); li.tabIndex = 0; li.setAttribute("role", "button"); li.addEventListener("click", e => { if(e.target.closest(".del")) return; go(); }); }
+    const del = li.querySelector(".del");
+    if(del) del.onclick = e => {
+      e.stopPropagation(); if(!armed(e.currentTarget)) return;
+      if(mv.kind === "pay") state.cardPay = state.cardPay.filter(y => y.id !== mv.o.id); else state.xfer = state.xfer.filter(y => y.id !== mv.o.id);
+      persist(true); renderAll();
+    };
+    return li;
+  }
+  /* v109: mọi giao dịch của một ngày cho Sổ (Ngày và Tháng): chi tài khoản/ví, quẹt thẻ, thu, và các khoản không tính thu chi */
+  function soDayRows(k, sign){
+    return (state.days[k] || []).map(it => ({ t:it.t || 0, el:() => itemRow(it, { day:k, sign }) }))
+      .concat(((state.cardTx || {})[k] || []).map(it => ({ t:it.t || 0, el:() => cardDayRow(it, k, sign) })))
+      .concat((state.income[k] || []).map(it => ({ t:it.t || 0, el:() => incDayRow(it, k) })))
+      .concat(dayMoves(k).map(mv => ({ t:mv.t, el:() => moveDayRow(mv) })))
+      .sort((a, b) => b.t - a.t);
+  }
   /* nguồn tiền chỉ cần ghi khi có từ hai ví hoặc có thẻ */
   function srcLabels(){ return multiW() || (state.cards || []).length > 0; }
   /* dòng quẹt thẻ trong Sổ theo ngày */
-  function cardDayRow(it, dk){
+  function cardDayRow(it, dk, sign){
     const c = tagOf(it.cat), t = new Date(it.t || 0), nm = cardName(it.cardId);
     const li = document.createElement("li"); li.className = "item card-it";
     li.innerHTML = '<span class="cat" aria-hidden="true"></span><div class="desc"><div></div><div></div></div><span class="amt num"></span><button class="del" aria-label="Xoá khoản này">✕</button>';
     li.querySelector(".cat").textContent = c.icon;
     li.querySelector(".desc div:first-child").textContent = it.where || c.label;
-    li.querySelector(".desc div:last-child").textContent = pad(t.getHours()) + ":" + pad(t.getMinutes()) + " · " + c.label + " · " + (nm ? "Thẻ " + nm.replace(/^thẻ\s*/i, "") : "Thẻ tín dụng");
-    li.querySelector(".amt").textContent = fmt(it.amt);
+    li.querySelector(".desc div:last-child").textContent = pad(t.getHours()) + ":" + pad(t.getMinutes()) + " · " + c.label;
+    addSrc(li, "card", nm ? "Thẻ " + nm.replace(/^thẻ\s*/i, "") : "Thẻ tín dụng");
+    li.querySelector(".amt").textContent = (sign ? "−" : "") + fmt(it.amt);
     li.classList.add("tap"); li.tabIndex = 0; li.setAttribute("role", "button");
     li.addEventListener("click", e => { if(e.target.closest(".del")) return; openCardTx(it.id, dk); });
     li.querySelector(".del").onclick = e => {
@@ -3625,7 +3689,8 @@ function startNgay50k(){
     li.innerHTML = '<span class="cat" aria-hidden="true"></span><div class="desc"><div></div><div></div></div><span class="amt num"></span><button class="del" aria-label="Xoá khoản này">✕</button>';
     li.querySelector(".cat").textContent = c.icon;
     li.querySelector(".desc div:first-child").textContent = it.note || c.label;
-    li.querySelector(".desc div:last-child").textContent = (untimed(it.t || 0) ? "" : pad(t.getHours()) + ":" + pad(t.getMinutes()) + " · ") + c.label + (srcLabels() ? " · vào " + walletName(it.w || MAIN_W) : "");
+    li.querySelector(".desc div:last-child").textContent = (untimed(it.t || 0) ? "" : pad(t.getHours()) + ":" + pad(t.getMinutes()) + " · ") + c.label;
+    if(srcLabels()) addSrc(li, it.w || MAIN_W);
     li.querySelector(".amt").textContent = "+" + fmt(it.amt);
     li.classList.add("tap"); li.tabIndex = 0; li.setAttribute("role", "button");
     li.addEventListener("click", e => { if(e.target.closest(".del")) return; openEdit(it.id, dk, "in"); });
@@ -3764,15 +3829,13 @@ function startNgay50k(){
         + (dfx ? " · định kỳ <strong>" + fmt(dfx) + "</strong>" : "")
         + (dIn ? " · thu <strong style='color:var(--in-c, #23955f)'>" + fmt(dIn) + "</strong>" : "")
       : "";
-    if(!items.length && !cards.length && !incs.length){
+    const rowsD = soDayRows(dk, false);
+    if(!rowsD.length){
       const li = document.createElement("li"); li.className = "empty";
       li.textContent = dk === todayKey() ? "Chưa có khoản nào hôm nay. Bấm Ghi chi, Ghi thu hoặc kể trong Chat." : "Không có giao dịch ngày này. Có thể ghi bù bằng cách chọn ngày trong form.";
       list.appendChild(li);
     }
-    items.map(it => ({ t:it.t || 0, el:() => itemRow(it, {day:dk}) }))
-      .concat(cards.map(it => ({ t:it.t || 0, el:() => cardDayRow(it, dk) })))
-      .concat(incs.map(it => ({ t:it.t || 0, el:() => incDayRow(it, dk) })))
-      .sort((a, b) => b.t - a.t).forEach(x => list.appendChild(x.el()));
+    rowsD.forEach(x => list.appendChild(x.el()));
 
     const week = $("week"), labels = $("weekLabels"); week.innerHTML = ""; labels.innerHTML = "";
     const days = []; for(let i=6;i>=0;i--){ const d = new Date(); d.setDate(d.getDate()-i); days.push(d); }
@@ -3908,22 +3971,24 @@ function startNgay50k(){
     if(searchQ){ renderSearch(); return; }
     $("ledgerTitle").textContent = "Tất cả thu chi trong tháng";
     const box = $("ledgerList"); box.innerHTML = "";
-    const keys = [...dayKeys].sort().reverse();
+    /* v109: danh sách tháng gồm cả quẹt thẻ và các khoản không tính thu chi (trả thẻ, chuyển ví, vay), giống Sổ theo ngày */
+    const allKeys = new Set(dayKeys);
+    Object.keys(state.cardTx || {}).forEach(k => { if(k.startsWith(prefix) && state.cardTx[k].length) allKeys.add(k); });
+    (state.cardPay || []).forEach(p => { if(String(p.date).startsWith(prefix)) allKeys.add(p.date); });
+    (state.xfer || []).forEach(x => { if(String(x.date).startsWith(prefix)) allKeys.add(x.date); });
+    state.loans.forEach(l => { [l].concat(l.draws || [], l.payments || []).forEach(e => { if(String(e.date).startsWith(prefix)) allKeys.add(e.date); }); });
+    const keys = [...allKeys].sort().reverse();
     if(!keys.length){ box.innerHTML = '<p class="empty">Chưa có khoản thu chi nào trong tháng này.</p>'; return; }
     keys.forEach(k => {
       const d = new Date(k + "T00:00:00");
-      const din = sumOf(state.income[k]), dout = sumOf(state.days[k]);
+      const din = sumOf(state.income[k]), dout = sumOf(state.days[k]) + sumOf((state.cardTx || {})[k]);
       const head = document.createElement("div"); head.className = "day-head";
       head.innerHTML = "<span></span><span class='num'></span>";
       head.children[0].textContent = WD[d.getDay()] + ", " + d.getDate() + "/" + (d.getMonth()+1);
       head.children[1].textContent = (din ? "+" + fmt(din) + "  " : "") + (dout ? "−" + fmt(dout) : "");
       box.appendChild(head);
       const ul = document.createElement("ul");
-      const rows = [
-        ...(state.income[k]||[]).map(it => ({t:it.t, el:incomeRow(it, k)})),
-        ...(state.days[k]||[]).map(it => ({t:it.t, el:itemRow(it, {sign:true, day:k})}))
-      ].sort((a,b)=>b.t-a.t);
-      rows.forEach(r => ul.appendChild(r.el));
+      soDayRows(k, true).forEach(r => ul.appendChild(r.el()));
       box.appendChild(ul);
     });
   }
@@ -6363,13 +6428,17 @@ function startNgay50k(){
     const btn = (txt, title, fn, cls) => { const b = el("button", "wh-btn" + (cls ? " " + cls : ""), txt); b.type = "button"; if(title) b.setAttribute("aria-label", title); b.onclick = fn; acts.appendChild(b); };
     const nameEl = $("whName"), num = $("whNum"), sub = $("whSub"), tot = $("whTot");
     num.classList.remove("neg", "debt"); tot.hidden = true;
+    acts.classList.toggle("col", sel.indexOf("card:") === 0);
     if(sel.indexOf("card:") === 0){
-      const c = cardOf(sel.slice(5)), d = c ? payDebtOf(c.id) : 0;
+      /* v109: thẻ coi như ví có số dư âm = tổng chi bằng thẻ trong tháng đang xem */
+      const c = cardOf(sel.slice(5)), cm = cardMonth || new Date(), mk = monthKeyOf(cm);
+      const rows = c ? cardTxOfMonth(mk).filter(r => r.it.cardId === c.id) : [];
+      const tot = rows.reduce((a, r) => a + (Number(r.it.amt) || 0), 0);
       nameEl.textContent = c ? c.name : "Thẻ tín dụng";
-      num.textContent = T.rows[0].r ? (d > 0 ? fmt(d) : "0đ") : "–";
-      if(d > 0) num.classList.add("debt");
-      sub.textContent = T.rows[0].r ? (d > 0 ? "Đang nợ thẻ, chưa trả" : "Không nợ") : "Nhập số dư tài khoản để app tính nợ thẻ";
-      if(c) btn("Trả thẻ", "", () => openPayCard());
+      num.textContent = tot ? "−" + fmt(tot) : "0đ";
+      if(tot) num.classList.add("debt");
+      sub.textContent = "Chi tháng " + (cm.getMonth() + 1) + "/" + cm.getFullYear() + (rows.length ? " · " + rows.length + " khoản" : "");
+      if(c){ btn("Trả thẻ", "", () => openPayCard()); btn("Sửa thẻ", "", () => openCardEdit(c.id), "ghost"); }
       return;
     }
     const wid = sel === MAIN_W ? MAIN_W : sel, w = walletById(wid), r = balCalc(null, wid);
@@ -7222,6 +7291,7 @@ function startNgay50k(){
   }
   function renderCards(){
     if(!$("tab-cards")) return;
+    if(currentTab === "cards") setTimeout(() => renderWTabs(), 0);
     if(!cardMonth){ cardMonth = new Date(); cardMonth.setDate(1); }
     const mk = monthKeyOf(cardMonth), now = new Date();
     $("cardMonthLabel").textContent = "Tháng " + (cardMonth.getMonth()+1) + "/" + cardMonth.getFullYear();
@@ -7235,7 +7305,7 @@ function startNgay50k(){
     $("cardMonthSum").textContent = fmt(total);
     $("cardSumLabel").textContent = cardFilterId === "__none" ? "Khoản chưa gán thẻ"
       : cardFilterId ? cardLabel(cardOf(cardFilterId)) : "Chi bằng thẻ tháng này";
-    $("cardListTitle").textContent = cardFilterId ? "Khoản chi của thẻ này" : "Khoản chi trong tháng";
+    $("cardListTitle").textContent = "Lịch sử giao dịch";
 
     /* so với tháng trước */
     const prevM = new Date(cardMonth); prevM.setMonth(prevM.getMonth() - 1);
