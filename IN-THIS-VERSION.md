@@ -1,6 +1,12 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v120, ngày 09/10/2026
+**Phiên bản hiện tại:** v121, ngày 09/10/2026
+
+---
+
+## Có gì mới trong v121 (so với v120)
+
+- **Chạm vào ô nhập Chat, ô tìm kiếm hay bất kỳ nút nào không còn nháy ô xám chữ nhật.** Đó là lớp tô xám mặc định của iPhone khi chạm; giờ tắt cho toàn app (trước chỉ tắt cho vài nút). Nút vẫn có hiệu ứng nhấn riêng của app.
 
 ---
 
