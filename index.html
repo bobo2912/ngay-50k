@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v121";
+  var K = "ngay50k:errlog", VER = "v122";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -2499,7 +2499,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v121</p>
+      <p class="sync" id="appVersion">Phiên bản v122</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -2997,9 +2997,9 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
 <datalist id="bankList"></datalist>
 
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
-<script src="parse-vi.js?v=121"></script>
-<script src="thu-vien-cau.js?v=121"></script>
-<script src="lock.js?v=121"></script>
+<script src="parse-vi.js?v=122"></script>
+<script src="thu-vien-cau.js?v=122"></script>
+<script src="lock.js?v=122"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -5096,7 +5096,7 @@ function startNgay50k(){
     const use = {}, last = {}, from = keyOf(new Date(Date.now() - 60 * 86400000));
     for(const k in state.cardTx){ if(k < from) continue; (state.cardTx[k] || []).forEach(it => { const c = it.cardId; if(!c) return; use[c] = (use[c] || 0) + 1; last[c] = Math.max(last[c] || 0, it.t || 0); }); }
     const defaultCard = Object.keys(use).filter(id => (state.cards || []).some(c => c.id === id)).sort((a, b) => use[b] - use[a] || last[b] - last[a])[0] || (((state.cards || [])[0]) || {}).id || null;
-    return { now:new Date(), defaultCard, cards:(state.cards || []).map(c => ({ id:c.id, name:c.name || "" })), loans,
+    return { now:new Date(), defaultCard, tags:(state.tags || []).filter(t => t && t.id && t.label).map(t => ({ id:t.id, label:t.label })), cards:(state.cards || []).map(c => ({ id:c.id, name:c.name || "" })), loans,
       wallets:(state.wallets || []).filter(w => !w.off).map(w => ({ id:w.id, name:w.name || "" })),
       history: text => { const k = String(text).trim().toLowerCase(); return recent[k] || ""; } };
   }
@@ -5979,7 +5979,7 @@ function startNgay50k(){
   /* AI đang bật: câu này máy tự xử lý được không (máy trước, AI sau) */
   /* v117: thư viện câu (thu-vien-cau.js): chào hỏi, cảm ơn, hỏi cách dùng app, than thở, thiếu số tiền… */
   function libTalk(text, res){
-    try{ return window.N50KLib ? window.N50KLib.talk(text, res, { now:new Date(), hasAI:aiReady() && navigator.onLine !== false, guessTag:t => window.N50KParse.guessTag(t, chatCtx()) }) : null; }catch(e){ return null; }
+    try{ return window.N50KLib ? window.N50KLib.talk(text, res, { now:new Date(), budget:state.budget, hasAI:aiReady() && navigator.onLine !== false, guessTag:t => window.N50KParse.guessTag(t, chatCtx()) }) : null; }catch(e){ return null; }
   }
   /* ---- v118: thư viện riêng (state.learn, state.miss) ---- */
   const LEARN_MAX = 500, MISS_MAX = 200;
@@ -6042,6 +6042,62 @@ function startNgay50k(){
     if(out.length) out[out.length - 1].retry = text;
     return out;
   }
+  /* v122: lời dặn kèm thẻ xác nhận + nút trả lời nhanh (bấm là gửi như gõ, nhánh hội thoại xử lý trên máy) */
+  function itemHints(items){
+    const say = t => '<button type="button" class="chat-q" data-say="' + esc(t) + '">' + esc(t) + ' ›</button>';
+    const parts = [];
+    items.forEach(it => {
+      if(it.split && it.total) parts.push("Chia " + it.split + ": mình ghi phần của bạn <b>" + fmt(it.amt) + "</b>. Bạn trả cả bill " + fmt(it.total) + " thì bấm:" + say("mình trả hết"));
+      if(it.cardGuess && (state.cards || []).length > 1){ const others = (state.cards || []).filter(c => c.id !== it.cardId).slice(0, 3); parts.push("Mình chọn thẻ <b>" + esc(cardName(it.cardId)) + "</b> (bạn hay quẹt nhất). Thẻ khác:" + others.map(c => say("thẻ " + c.name)).join("")); }
+      if(["lend","borrow"].includes(it.kind) && !it.loanId && !String(it.who || "").trim()) parts.push(it.kind === "lend" ? "Cho ai vay vậy? Nhắn tên là được." : "Vay của ai vậy? Nhắn tên là được.");
+      if(it.calc && /qty|disc/.test(it.calc)) parts.push("Mình đã tính ra <b>" + fmt(it.amt) + "</b>" + (/qty/.test(it.calc) ? " (theo số lượng × đơn giá)" : "") + (/disc/.test(it.calc) ? " (đã trừ giảm giá)" : "") + ".");
+    });
+    if(!parts.length) return "";
+    return parts.join("\n") + "\n" + (items.length > 1 ? "Mình hiểu là có <b>" + items.length + " khoản</b>, bạn xem lại rồi bấm Ghi nhé:" : "Bạn xem lại rồi bấm Ghi nhé:");
+  }
+  /* v122: câu nối vào thẻ đang chờ Ghi ("ok ghi", "50k chứ", "thẻ VIB", "hôm qua", "mình trả hết"…) hoặc vào câu hỏi số tiền */
+  function dlgState(){
+    if(!chat) return null;
+    const msgs = chat.msgs;
+    for(let i = msgs.length - 2; i >= 0 && i >= msgs.length - 8; i--){
+      const m = msgs[i];
+      if(m.role === "me") break;
+      if(m.items && m.status && m.status.some(s => s === "pending")){
+        const idxs = m.items.map((_, j) => j).filter(j => m.status[j] === "pending");
+        return { m, idxs, items:idxs.map(j => m.items[j]) };
+      }
+    }
+    if(chat.waitAmt && Date.now() - chat.waitAmt.t < 15 * 60000) return { waitAmt:chat.waitAmt.text, items:[] };
+    return null;
+  }
+  function applyBranch(br, st){
+    const m = st.m;
+    if(br.act === "save"){ saveItems(m, st.idxs); chatSave(); renderChat(); chatScrollEnd(true); return; }
+    if(br.act === "skip"){
+      st.idxs.forEach(j => { m.status[j] = "skipped"; });
+      chat.msgs.push({ id:uid(), role:"bot", html:"Ok, mình bỏ, không ghi" + (st.idxs.length > 1 ? " " + st.idxs.length + " khoản đó" : " khoản đó") + ".", t:Date.now(), src:"local" });
+      chatSave(); renderChat(); chatScrollEnd(true); return;
+    }
+    const j = st.idxs[br.idx] != null ? st.idxs[br.idx] : st.idxs[st.idxs.length - 1], it = m.items[j], f = br.f || {};
+    if(f.amt){ it.amt = f.amt; if(f.split === 0){ delete it.split; delete it.total; } }
+    if(f.kind){
+      it.kind = f.kind;
+      if(f.kind === "card"){ it.cardId = f.cardId || it.cardId || ((state.cards || [])[0] || {}).id || null; delete it.cardGuess; delete it.w; }
+      if(f.kind === "out"){ it.cardId = null; if(f.src) it.src = f.src; if("w" in f) it.w = f.w || null; }
+      if((f.kind === "out" || f.kind === "card") && !allTags().some(t => t.id === it.cat)) it.cat = window.N50KParse.guessTag(it.note || "", chatCtx());
+      if(f.kind === "in" && !INC.find(x => x.id === it.cat)) it.cat = "khac";
+    }
+    if(f.cardId && !f.kind) it.cardId = f.cardId;
+    if(f.date){ it.date = f.date; const now = new Date(); it.t = it.date === todayKey() ? now.getTime() : new Date(it.date + "T" + pad(now.getHours()) + ":" + pad(now.getMinutes()) + ":00").getTime(); }
+    if(f.cat) it.cat = f.cat;
+    if(f.note) it.note = f.note;
+    if(f.who){ it.who = f.who; const l = loansFor(it.kind).find(x => window.N50KParse.norm(x.who).includes(window.N50KParse.norm(f.who))); if(l){ it.loanId = l.id; it.who = l.who; } }
+    /* đưa thẻ xuống dưới câu vừa nhắn để bạn thấy ngay chỗ đã sửa */
+    const at = chat.msgs.indexOf(m); if(at >= 0) chat.msgs.splice(at, 1);
+    m.intro = "✓ " + (br.say || "Đã sửa.") + " Bạn xem lại rồi bấm Ghi nhé:"; m.introHtml = false; m.t = Date.now();
+    chat.msgs.push(m);
+    chatSave(); renderChat(); chatScrollEnd(true);
+  }
   function localReply(text, res){
     const out0 = localReply0(text, res);
     out0.forEach(m => {
@@ -6055,13 +6111,15 @@ function startNgay50k(){
     const out = [];
     const lt = libTalk(text, res);
     if(lt && !lt.ai){
+      if(lt.id === "thieu_tien") chat.waitAmt = { text, t:Date.now() };     /* v122: câu sau chỉ có số tiền thì ghép vào câu này */
       const chips = (lt.goi_y || []).map(g => '<button type="button" class="chat-q" data-say="' + esc(g) + '">' + esc(g) + ' ›</button>').join("");
       out.push({ id:uid(), role:"bot", html:lt.html + chips, t:Date.now() });
       return out;
     }
     if(res.query) out.push({ id:uid(), role:"bot", html:answer(res.query), q:res.query, t:Date.now() });
     else if(res.items.length){
-      out.push({ id:uid(), role:"bot", items:res.items, status:res.items.map(() => "pending"), refs:res.items.map(() => null), t:Date.now() });
+      const hint = itemHints(res.items);
+      out.push(Object.assign({ id:uid(), role:"bot", items:res.items, status:res.items.map(() => "pending"), refs:res.items.map(() => null), t:Date.now() }, hint ? { intro:hint, introHtml:true } : {}));
       if(res.unknown.length) out.push({ id:uid(), role:"bot", html:"Phần \"" + esc(res.unknown.join(" ")) + "\" mình chưa thấy số tiền nên bỏ qua.", t:Date.now() });
     }
     else if(/^(chào|chao|hi|hello|alo|xin chào|hey)\b/i.test(text)) out.push({ id:uid(), role:"bot", html:"Chào bạn 😊 Hôm nay bạn tiêu gì rồi, kể mình nghe với.", t:Date.now() });
@@ -6191,6 +6249,16 @@ function startNgay50k(){
     text = String(text || "").trim(); if(!text || aiBusy) return;
     if(!chat) chatLoad();
     chat.msgs.push({ id:uid(), role:"me", text, t:Date.now() });
+    /* v122: câu nối vào thẻ đang chờ / câu hỏi số tiền → xử lý trên máy, không gọi AI */
+    try{
+      const st = dlgState();
+      if(st && window.N50KLib){
+        const br = window.N50KLib.nhanh(text, st, window.N50KParse, Object.assign(chatCtx(), { guessTag:t => window.N50KParse.guessTag(t, chatCtx()) }));
+        if(br && br.act === "new") text = br.text;
+        else if(br){ chat.waitAmt = null; applyBranch(br, st); return; }
+      }
+    }catch(e){}
+    chat.waitAmt = null;
     let res0 = localParse(text);
     /* v118: câu cùng khuôn với câu đã học → dùng lại cách hiểu đã học, không cần AI */
     const lrn = learnFind(text);

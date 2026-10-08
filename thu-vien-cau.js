@@ -12,6 +12,9 @@
      NOI    câu nối tiếp câu hỏi trước ("còn thẻ thì sao", "tháng trước thì sao")
      TROCHUYEN  chào hỏi, cảm ơn, hỏi cách dùng app, than thở, xin lời khuyên, thiếu số tiền…
                 → app trả lời ngay bằng tra_loi, không cần AI
+     (E) thư viện riêng: học từ chỗ bạn sửa và từ AI (hocTao, hocTim)
+     (F) nhánh hội thoại: câu nối vào thẻ đang chờ Ghi hoặc câu hỏi số tiền (nhanh)
+   Kho câu mẫu vài nghìn câu để thử nằm ở kho-cau-mau.js (node tests-kho-cau.js).
 
    Dùng ở ba chỗ:
      1. App: N50KLib.talk(text, res, info) trả câu trả lời cho phần TROCHUYEN (index.html, localReply).
@@ -320,6 +323,11 @@
      goi_y: nút gợi ý hiện dưới câu trả lời (bấm là gửi câu đó). */
   const HOW = "(the nao|lam sao|lam the nao|o dau|cho nao|cach|huong dan|chi (minh|toi|em|tao|giup)|bang cach nao|duoc khong|dc khong|kieu gi|nhu nao|ra sao)";
   const TROCHUYEN = [
+    { id:"hoi_hanmuc", ten:"Hỏi hạn mức hiện tại", uu_tien:"truoc",
+      khop:[" han muc (cua (minh|toi|em) )?(la |hien tai |bay gio )?(bao nhieu|bn|may|the nao|ra sao) ", "^ (moi ngay|mot ngay) (duoc )?(tieu|chi) (bao nhieu|bn) "],
+      vi_du:["hạn mức là bao nhiêu", "mỗi ngày được tiêu bao nhiêu"],
+      tra_loi:["Hạn mức hiện tại là <b>{han_muc}</b> mỗi ngày. Đổi ở <b>Cài đặt → Hạn mức chi một ngày</b>."],
+      goi_y:["hôm nay còn bao nhiêu?"] },
     /* ---- hỏi cách dùng app ---- */
     { id:"hd_vay", ten:"Theo dõi vay mượn", uu_tien:"truoc",
       khop:[HOW + ".*(ghi|theo doi|quan ly) .*(vay|no|cho muon) ", " (ghi|theo doi|quan ly) .*(vay|no|cho muon) .*" + HOW, " (khoan vay|so no) .*" + HOW],
@@ -385,6 +393,33 @@
       vi_du:["cài app lên màn hình chính", "không có mạng dùng được không", "cập nhật bản mới thế nào"],
       tra_loi:["iPhone: mở bằng Safari → nút chia sẻ → <b>Thêm vào Màn hình chính</b>. Android: Chrome → menu → <b>Cài đặt ứng dụng</b>. Cài rồi thì mất mạng vẫn dùng bình thường (trừ Trợ lý AI). Có bản mới thì tắt hẳn app rồi mở lại."] },
 
+    /* ---- v122: tình huống thêm ---- */
+    { id:"rut_tien", ten:"Rút tiền mặt", uu_tien:"truoc", de_khoan:true,
+      khop:["^ (vua |da |moi )?rut (tien|tien mat|atm|tien atm|tien o atm|tien tu atm|tien tai khoan)( | # )", "^ (vua |da |moi )?rut # (tien mat|tien|o atm|atm)"],
+      vi_du:["rút tiền mặt 2tr", "rút atm 500k", "vừa rút tiền 1 triệu"],
+      tra_loi:["Rút tiền mặt không phải chi tiêu nên mình không ghi 🙂 Ví <b>Tài khoản</b> đã gồm cả tiền mặt, số dư không đổi. Khi tiêu khoản tiền mặt đó thì kể như thường, ví dụ <i>tiền mặt mua rau 30k</i>. Nếu bạn để tiền mặt ở một ví riêng thì nhắn <i>chuyển 2tr sang (tên ví)</i>."] },
+    { id:"hoi_ngay", ten:"Hỏi hôm nay ngày mấy", uu_tien:"truoc",
+      khop:["^ (hom nay|hnay|nay) (la )?(ngay|thu) (may|bao nhieu|gi) ", "^ (bay gio|gio) (la )?may gio "],
+      vi_du:["hôm nay ngày mấy", "hôm nay thứ mấy", "bây giờ mấy giờ"],
+      tra_loi:["Hôm nay là {hom_nay} 📅"] },
+    { id:"loi_app", ten:"Báo lỗi app", uu_tien:"truoc",
+      khop:[" (app|ung dung) .*(loi|bi loi|treo|do|khong chay|khong mo|dung|bug|cham|lag) ", "^ (bi loi|loi roi|bug|lag qua|treo roi) "],
+      vi_du:["app bị lỗi", "ứng dụng không mở được", "lag quá"],
+      tra_loi:["Tiếc quá 😥 Bạn thử tắt hẳn app (vuốt lên khỏi đa nhiệm) rồi mở lại. Vẫn lỗi thì vào <b>Cài đặt → Dung lượng → Nhật ký lỗi</b>, chụp màn hình gửi người làm app. Dữ liệu vẫn nằm trên máy, nhớ <b>Cài đặt → Sao lưu và đồng bộ → Xuất file</b> cho chắc."] },
+    { id:"xoa_het", ten:"Muốn xoá hết dữ liệu", uu_tien:"truoc",
+      khop:[" (xoa het|xoa sach|xoa toan bo|reset|lam lai tu dau) "],
+      vi_du:["xoá hết dữ liệu", "reset app", "làm lại từ đầu"],
+      tra_loi:["Xoá toàn bộ nằm ở <b>Cài đặt → Sao lưu và đồng bộ</b> (cuối trang), cần bấm xác nhận. Xoá rồi không lấy lại được, nên <b>Xuất file</b> sao lưu trước nhé."] },
+    { id:"nhac_ghi", ten:"Nhờ nhắc ghi chi tiêu", uu_tien:"truoc",
+      khop:[" (nhac|bao) (minh|toi|em)? ?(ghi|nhap|ke) ", " (dat|cai) (loi )?nhac "],
+      vi_du:["nhắc mình ghi chi tiêu mỗi tối", "đặt lời nhắc"],
+      tra_loi:["App chạy trên trình duyệt nên chưa tự gửi thông báo được. Mẹo: trên iPhone vào <b>Phím tắt → Tự động hoá → Thời gian trong ngày</b> (vd 21:00), thêm tác vụ <b>Mở ứng dụng → Tiêu Gọn</b>; hoặc đặt lời nhắc trong app Lời nhắc lặp lại mỗi ngày."] },
+    { id:"tam_su", ten:"Tâm sự chuyện tiền", uu_tien:"truoc", ai:true,
+      khop:[" (ap luc|stress|cang thang|so|lo lang|lo) .*(tien|no|cuoi thang|luong) ", " (khong du song|khong du tieu|thieu tien|vay no nhieu) "],
+      vi_du:["dạo này áp lực tiền bạc quá", "lương không đủ tiêu"],
+      tra_loi:["Mình hiểu, chuyện tiền bạc dễ làm mình mệt lắm 🫂 Mình cùng nhìn rõ trước đã: nhắn <b>tháng này tiêu gì</b> để xem tiền đi đâu, <b>ai còn nợ mình</b> / <b>mình còn nợ ai</b> để nắm khoản vay. Biết rõ con số thường giúp nhẹ lòng hơn. Nếu áp lực quá, chia sẻ với người thân tin cậy cũng là một cách tốt."],
+      goi_y:["tháng này tiêu gì", "mình còn nợ ai"] },
+
     /* ---- câu rõ nghĩa, ưu tiên trước câu hỏi số liệu ---- */
     { id:"ban_la_ai", ten:"Hỏi bạn là ai", uu_tien:"truoc",
       khop:["^ (ban|may|em|bot) (la ai|ten gi|la gi|la cai gi) ", " ten (ban|cua ban) la gi ", "^ ai (day|vay|the) "],
@@ -417,7 +452,7 @@
       tra_loi:["Xin lỗi bạn 🙏 Bạn chạm vào thẻ để sửa số tiền, nội dung, ngày hay nhóm rồi mới bấm Ghi. Nếu lỡ Ghi rồi thì bấm <b>Hoàn tác</b> trên thẻ. Có Trợ lý AI thì bấm <b>Phân tích lại bằng AI</b>, hoặc nhắn lại câu rõ hơn, ví dụ <i>quẹt thẻ VIB 500k mua áo</i>."] },
 
     /* ---- cảm xúc, tâm sự (chỉ khi không có khoản nào) ---- */
-    { id:"het_tien", ten:"Than hết tiền, tiêu nhiều", uu_tien:"sau",
+    { id:"het_tien", ten:"Than hết tiền, tiêu nhiều", uu_tien:"truoc",
       khop:[" (het tien|chay tui|vo ngan sach|vuot han muc|tieu nhieu qua|tieu qua tay|tieu lo tay|ngheo|khong con tien|can tien|cuoi thang roi|toang|xot) ", " (buon|chan|met|lo) (qua|ghe|that) "],
       vi_du:["hết tiền rồi", "tháng này cháy túi", "tiêu nhiều quá buồn ghê"],
       tra_loi:["Thương bạn 🫂 Mình xem cùng nhé: nhắn <b>tháng này tiêu gì</b> để biết tiền đi đâu nhiều nhất, hoặc <b>so với tháng trước</b> để thấy nhóm nào tăng. Từ giờ tới cuối tháng thử giữ đúng hạn mức mỗi ngày, mình báo còn bao nhiêu cho bạn."],
@@ -427,7 +462,7 @@
       vi_du:["hôm nay không tiêu gì", "tuần này tiết kiệm được"],
       tra_loi:["Tuyệt vời 🎉 Giữ phong độ nhé! Muốn xem còn bao nhiêu thì hỏi <b>hôm nay còn bao nhiêu?</b>"],
       goi_y:["hôm nay còn bao nhiêu?"] },
-    { id:"loi_khuyen", ten:"Xin lời khuyên tiết kiệm", uu_tien:"sau", ai:true,
+    { id:"loi_khuyen", ten:"Xin lời khuyên tiết kiệm", uu_tien:"truoc", ai:true,
       khop:[" (lam sao|cach|meo|bi quyet|lam the nao) .*(tiet kiem|bot tieu|giam chi|de danh|du tien|khong vuot) ", " (co nen|nen) (mua|chi|tieu|vay|tra gop|dau tu) ", " (tu van|goi y|loi khuyen) "],
       vi_du:["làm sao để tiết kiệm", "có nên mua iphone không", "tư vấn giúp mình"],
       tra_loi:["Mình không xem được hết hoàn cảnh của bạn, nhưng vài mẹo hay dùng:\n• Ghi đủ mọi khoản trong 2–3 tuần để thấy tiền đi đâu (<b>tháng này tiêu gì</b>)\n• Đặt hạn mức ngày vừa sức và cố giữ, hôm nào dư thì để dành\n• Món lớn: chờ 2–3 ngày rồi mới mua, so với số dư và nợ thẻ\n• Trả thẻ đủ trước hạn để khỏi mất lãi\nBật Trợ lý AI (Cài đặt) nếu muốn bàn kỹ hơn."],
@@ -452,7 +487,8 @@
 
   /* match(text) → kiểu câu TROCHUYEN khớp đầu tiên (không tính thieu_tien), hoặc null */
   function match(text){
-    const n = nrm(text), words = n.trim().split(" ").length;
+    /* bỏ từ đệm cuối câu ("ok ạ", "help nhé") để các mẫu khớp trọn câu vẫn nhận ra */
+    const n = nrm(text).replace(/( (a|ah|nhe|nha|nhi|oi|ha|day|ne|nhá|đi|di|voi|giup|với|nhe ban|ban oi|nha ban))+ $/, " "), words = n.trim().split(" ").length;
     for(const t of TROCHUYEN){
       if(!t.khop.length) continue;
       if(t.id.indexOf("hd_") !== 0 && words > SHORT) continue;
@@ -475,11 +511,14 @@
     const t = match(text);
     const howTo = new RegExp(HOW).test(n);
     let use = null;
-    if(t && t.uu_tien === "truoc" && (!items || (t.id.indexOf("hd_") === 0 && howTo))) use = t;
+    if(t && t.uu_tien === "truoc" && (!items || t.de_khoan || (t.id.indexOf("hd_") === 0 && howTo))) use = t;
     else if(t && t.uu_tien === "sau" && !items && !realQ) use = t;
     if(use){
       if(use.ai && info.hasAI) return { id:use.id, ai:true, html:"", goi_y:[] };
-      const html = pick(use.tra_loi, text).replace("{chao}", greetOf(now));
+      const WD = ["Chủ nhật","Thứ hai","Thứ ba","Thứ tư","Thứ năm","Thứ sáu","Thứ bảy"];
+      const html = pick(use.tra_loi, text).replace("{chao}", greetOf(now))
+        .replace("{hom_nay}", WD[now.getDay()] + ", " + now.getDate() + "/" + (now.getMonth() + 1) + "/" + now.getFullYear() + ", " + String(now.getHours()).padStart(2, "0") + ":" + String(now.getMinutes()).padStart(2, "0"))
+        .replace("{han_muc}", info.budget ? Number(info.budget).toLocaleString("vi-VN") + "đ" : "chưa đặt");
       return { id:use.id, html, goi_y:(use.goi_y || []).slice(), ai:false };
     }
     /* thiếu số tiền */
@@ -611,6 +650,101 @@
     });
   }
 
+  /* ======================= F. NHÁNH HỘI THOẠI (v122) =======================
+     Câu trả lời ngắn nối vào tin trước của bot, máy tự xử lý không cần AI:
+       đang có thẻ chờ Ghi   → "ok ghi đi" (ghi), "thôi bỏ" (bỏ), "50k chứ" / "nhầm, 54k" (sửa số tiền),
+                               "quẹt thẻ" / "thẻ VIB" / "tiền mặt" / "momo" (đổi nguồn tiền), "hôm qua chứ" (đổi ngày),
+                               "nhóm uống" / "là ăn uống" (đổi nhóm), "nội dung là …" (đổi nội dung),
+                               "chỉ phần mình" / "mình trả hết" (chia tiền), "Nam" (tên người vay khi còn thiếu)
+       bot vừa hỏi số tiền   → "45k" ghép với câu trước ("ăn phở" + "45k")
+     nhanh(text, dlg, P, ctx) → { act:"save"|"skip"|"set"|"new", idx, f:{…}, say, text } hoặc null
+     dlg: { items:[khoản đang chờ, theo thứ tự], idxs:[vị trí trong tin], waitAmt:"câu thiếu số tiền" } */
+  const N_SAVE = /^ (ok|oke|okay|okie|uh|uk|u|um|da|vang|duoc|dc|dung|dung roi|dung r|chuan|chuan roi|chinh xac|ghi|ghi di|ghi lai|ghi luon|ghi het|ghi tat ca|ghi giup|ghi nhe|luu|luu di|luu lai|ok ghi|ok ghi di|ok luu|xac nhan|yes|y|co|ok dung roi|dung vay|ok chuan|duyet|chot|chot di) (di |nhe |nha |luon |giup |voi |a |nhe ban |)$/;
+  const N_SKIP = /^ (bo|bo di|bo qua|thoi|thoi bo|thoi khoi|khoi|khoi ghi|huy|huy di|khong ghi|ko ghi|k ghi|dung ghi|xoa|xoa di|no|khong|ko|sai het|bo het|thoi khong ghi|khong can|ko can|cancel) (di |nhe |nha |luon |a |)$/;
+  const N_FIX = ["nham","nham roi","sua","sua lai","sua thanh","doi","doi thanh","thanh","chu","chu khong phai","khong phai","ko phai","k phai","a","ah","u","uh","dung ra","moi dung","moi dung chu","la","lai","ghi lai","nhe","nha","di","con","ma","ghi","ghi nham","sai","sai roi","cai","khoan","so tien","tien","nhe ban","oi","the","may","ghi sai","ok","oke","vay"];
+  const N_FIXW = new Set(N_FIX.join(" ").split(" "));
+  function nhanh(text, dlg, P, ctx){
+    if(!dlg || !P) return null;
+    const n = nrm(text), words = n.trim().split(" ").filter(Boolean);
+    const now = (ctx && ctx.now) || new Date();
+    /* bot vừa hỏi số tiền cho câu thiếu tiền: "45k", "hết 45k", "45 nghìn" */
+    if(dlg.waitAmt && !(dlg.items || []).length){
+      const k = khuon(text, P);
+      if(k.amts.length && words.length <= 5) return { act:"new", text:dlg.waitAmt + " " + String(text).trim() };
+      return null;
+    }
+    const items = dlg.items || []; if(!items.length || words.length > 9) return null;
+    const last = items.length - 1;
+    const SAVEW = new Set(["ok","oke","okay","okie","uh","uk","u","um","da","vang","duoc","dc","dung","roi","r","chuan","chinh","xac","ghi","di","lai","luon","het","tat","ca","giup","nhe","nha","luu","nhan","yes","y","co","vay","duyet","chot","a","ban","em","nhe!","the","minh","toi"]);
+    const strongSave = words.some(w => ["ok","oke","okay","okie","uh","uk","u","da","vang","dc","duoc","dung","chuan","ghi","luu","yes","chot","duyet"].includes(w));
+    if(/(^|\s)đừng(\s|$)/i.test(String(text)) || (N_SKIP.test(n) && !/(^|\s)đúng(\s|$)/i.test(String(text)))) return { act:"skip", say:"" };
+    if(N_SAVE.test(n) || (strongSave && words.every(w => SAVEW.has(w)) && !words.some(w => ["khong","ko","k","sai","bo","huy","thoi"].includes(w)))) return { act:"save", say:"" };
+    if(N_SKIP.test(n)) return { act:"skip", say:"" };
+    const k = khuon(text, P), cards = (ctx && ctx.cards) || [], wallets = (ctx && ctx.wallets) || [];
+    const rest = k.key.split(" ").filter(w => w && w !== "#");
+    const fixOnly = rest.every(w => N_FIXW.has(w));
+    /* chọn khoản đích: nhắc tới nội dung khoản nào thì khoản đó, nói số tiền cũ thì khoản có số đó, không thì khoản cuối */
+    const pickIdx = (oldAmt) => {
+      if(oldAmt) { const j = items.findIndex(it => it.amt === oldAmt); if(j >= 0) return j; }
+      for(let j = items.length - 1; j >= 0; j--){ const nt = nrm(items[j].note || "").trim(); if(nt && nt.split(" ").some(w => w.length >= 2 && rest.includes(w))) return j; }
+      return last;
+    };
+    /* chia tiền */
+    const sp = items.findIndex(it => it.split);
+    if(sp >= 0){
+      if(/ (phan minh|chi phan minh|tinh phan minh|phan cua minh|chi tinh minh|phan toi|chia deu) /.test(n)) return { act:"set", idx:sp, f:{ amt:Math.round(items[sp].total / items[sp].split) }, say:"Ghi phần của bạn." };
+      if(/ (minh tra het|toi tra het|tra het|ghi ca|ca bill|tra ca|minh tra ca|ghi het tien|ghi tong|tong bill|tra truoc|minh bao) /.test(n)) return { act:"set", idx:sp, f:{ amt:items[sp].total, split:0 }, say:"Ghi cả " + items[sp].total.toLocaleString("vi-VN") + "đ." };
+    }
+    /* sửa số tiền: "50k chứ", "nhầm 54k", "không phải 45k mà 54k", "45k thành 54k", hoặc chỉ "50k" */
+    if(k.amts.length && words.length <= 9){
+      const noteHit = rest.some(w => w.length >= 2 && !N_FIXW.has(w) && items.some(it => nrm(it.note || "").includes(" " + w + " ")));
+      const others = rest.filter(w => !N_FIXW.has(w) && !items.some(it => nrm(it.note || "").includes(" " + w + " ")));
+      if((fixOnly || (noteHit && !others.length && rest.some(w => ["nham","sua","chu","thanh","phai","dung","lai","moi"].includes(w)))) && k.amts.length <= 2){
+        const nv = k.amts[k.amts.length - 1], old = k.amts.length === 2 ? k.amts[0] : 0;
+        const idx = pickIdx(old);
+        return { act:"set", idx, f:{ amt:nv }, say:"Sửa số tiền thành " + nv.toLocaleString("vi-VN") + "đ." };
+      }
+      return null;
+    }
+    if(k.amts.length) return null;
+    /* đổi nguồn tiền */
+    const card = cards.find(c => { const cn = nrm(c.name).trim(); return cn && (n.includes(" " + cn + " ") || (cn.split(" ")[0].length >= 3 && n.includes(" " + cn.split(" ")[0] + " "))); });
+    const cardOnly = rest.every(w => ["quet","the","ca","bang","tin","dung","credit","visa","tra","chu","a","ah","la","nhe","nha","di","doi","sang","dung roi","thanh"].includes(w) || (card && nrm(card.name).includes(" " + w + " ")));
+    if((card || / (quet the|ca the|bang the|the tin dung|tra the|the) /.test(n)) && cardOnly && !/ tra the /.test(n.replace(/ tra the (vib|tp|mb)/, ""))){
+      const idx = pickIdx(0);
+      return { act:"set", idx, f:{ kind:"card", cardId: card ? card.id : (items[idx].cardId || (ctx && ctx.defaultCard) || (cards[0] || {}).id || null) }, say:"Đổi sang quẹt thẻ" + (card ? " " + card.name : "") + "." };
+    }
+    const wal = wallets.find(w => { const wn = nrm(w.name).trim(); return wn && n.includes(" " + wn + " "); });
+    if(wal && rest.length <= 4) return { act:"set", idx:pickIdx(0), f:{ kind:"out", w:wal.id }, say:"Đổi sang ví " + wal.name + "." };
+    if(/ (tien mat|tm) /.test(n) && rest.length <= 5) return { act:"set", idx:pickIdx(0), f:{ kind:"out", src:"cash", w:null }, say:"Đổi sang tiền mặt." };
+    if(/ (chuyen khoan|ck|tai khoan|tk) /.test(n) && rest.length <= 5) return { act:"set", idx:pickIdx(0), f:{ kind:"out", src:"tk", w:null }, say:"Đổi sang chi tài khoản." };
+    /* đổi ngày */
+    if(/ (hom qua|hqua|hom kia|hkia|hom nay|hnay|toi qua|sang qua|trua qua|chieu qua|thu (2|3|4|5|6|7|hai|ba|tu|nam|sau|bay)|chu nhat|cn|ngay \d{1,2}|\d{1,2}\/\d{1,2}) /.test(n) && rest.length <= 6){
+      let d = null; try{ const r = P.parse(String(text) + " 1000đ", Object.assign({}, ctx, { now })); d = r.items[0] && r.items[0].date; }catch(e){}
+      if(d) return { act:"set", idx:pickIdx(0), f:{ date:d }, say:"Đổi ngày." };
+    }
+    /* đổi loại khoản */
+    const KIND = [[/ (khoan thu|thu nhap|tien vao|duoc nhan|la thu) /, "in"], [/ (cho vay|cho muon) /, "lend"], [/ (di vay|vay|muon) /, "borrow"], [/ (tra no) /, "repay"], [/ (tra the|thanh toan the) /, "cardpay"], [/ (chi tieu|khoan chi|la chi) /, "out"]];
+    for(const [rx, kd] of KIND) if(rx.test(n) && rest.length <= 4) return { act:"set", idx:pickIdx(0), f:{ kind:kd }, say:"Đổi loại khoản." };
+    /* đổi nhóm: "nhóm uống", "là ăn uống", "tag đi lại", "thuộc nhóm xăng" */
+    const mg = n.match(/^ (?:doi |chuyen |sua )?(?:sang |thanh |vao )?(?:nhom|tag|loai|danh muc|muc|thuoc nhom|la nhom|la|vao nhom) (.+) $/);
+    if(mg){
+      const ow = String(text).trim().split(/\s+/), tail = ow.slice(ow.length - mg[1].trim().split(" ").length).join(" ");   /* tên nhóm lấy từ câu gốc (giữ dấu) */
+      const tg = (ctx && ctx.guessTag) ? ctx.guessTag(tail) : P.guessTag(tail, ctx);
+      if(tg && tg !== "khac") return { act:"set", idx:pickIdx(0), f:{ cat:tg }, say:"Đổi nhóm." };
+    }
+    /* đổi nội dung */
+    const mn = String(text).trim().match(/^(?:nội dung|noi dung|ghi chú|ghi chu|ghi là|ghi la|tên là|ten la|đặt tên|dat ten)\s*(?:là|la|:)?\s+(.+)$/i);
+    if(mn) return { act:"set", idx:pickIdx(0), f:{ note:mn[1].charAt(0).toUpperCase() + mn[1].slice(1) }, say:"Đổi nội dung." };
+    /* tên người cho khoản vay đang thiếu tên */
+    const lw = items.findIndex(it => ["lend","borrow","repay","collect"].includes(it.kind) && !it.loanId && !String(it.who || "").trim());
+    if(lw >= 0 && words.length <= 3 && /^[\p{L} ]+$/u.test(String(text).trim())){
+      const who = String(text).trim().replace(/^(cho|của|cua|là|la)\s+/i, "");
+      return { act:"set", idx:lw, f:{ who:who.charAt(0).toUpperCase() + who.slice(1) }, say:"" };
+    }
+    return null;
+  }
+
   /* bối cảnh dùng cho bài thử và câu mẫu */
   const MAU_CTX = {
     now: "2026-10-07T14:30:00",                                      /* thứ Tư */
@@ -619,7 +753,7 @@
     wallets: [{ id:"w1", name:"Momo" }]
   };
 
-  const api = { GHI, HOI, NOI, TROCHUYEN, MAU_CTX, match, talk, fewShot, nrm, khuon, hocTao, hocDung, hocTim, hocChoAI };
+  const api = { GHI, HOI, NOI, TROCHUYEN, MAU_CTX, match, talk, fewShot, nrm, khuon, hocTao, hocDung, hocTim, hocChoAI, nhanh };
   if(typeof module !== "undefined" && module.exports) module.exports = api;
   else root.N50KLib = api;
 })(typeof window !== "undefined" ? window : this);
