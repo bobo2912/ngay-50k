@@ -84,3 +84,46 @@ console.log("\n" + Object.entries(stat).map(([g, s]) => g + " " + s.ok + "/" + s
 console.log((total - fail) + "/" + total + " câu đúng. FAILED: " + fail);
 const fs = L.fewShot(); if(V) console.log("\nCâu mẫu cho AI (" + fs.length + " dòng):\n" + fs.join("\n"));
 process.exitCode = fail ? 1 : 0;
+
+var hocN = 0, hocOk = 0;
+function rec2(id, text, err, got){ hocN++; if(err) console.log("SAI  [hoc] " + text + "\n     " + err + "\n     → " + got); else hocOk++; }
+/* F: thư viện riêng — học từ chỗ bạn sửa / AI, dùng lại cho câu cùng khuôn */
+(function(){
+  const L2 = require("./thu-vien-cau.js"), o = { P, now }, D0 = D(0), DY = D(-1);
+  const CASES = [
+    /* [câu đã học, khoản đã ghi, câu mới, mong đợi (null = không dùng lại)] */
+    ["Thẻ trả ăn trưa 1 triệu", [{ kind:"card", amt:1000000, cat:"an", cardId:"c2", note:"Ăn trưa", date:D0 }], "the tra an trua 850k nhé", { kind:"card", amt:850000, card:"c2", cat:"an" }],
+    ["hôm qua ăn lẩu 600k chia 4", [{ kind:"out", amt:150000, cat:"an", note:"Ăn lẩu", date:DY }], "hôm qua ăn lẩu 800k chia 4", { kind:"out", amt:200000, date:-1 }],
+    ["siêu thị 500k giảm 10%", [{ kind:"out", amt:450000, cat:"cho", date:D0 }], "siêu thị 800k giảm 10%", { amt:720000, cat:"cho" }],
+    ["phở 54k", [{ kind:"out", amt:45000, cat:"an", date:D0 }], "phở 60k", null],
+    ["phở 54k", [{ kind:"out", amt:45000, cat:"an", date:D0 }], "phở 54k", { amt:45000 }],
+    ["gửi mẹ 2tr", [{ kind:"out", amt:2000000, cat:"hieuhy", note:"Gửi mẹ", date:D0 }], "gửi mẹ 3 triệu", { kind:"out", amt:3000000, cat:"hieuhy" }],
+    ["grab 28k, trà sữa 35k", [{ kind:"out", amt:28000, cat:"dilai", date:D0 }, { kind:"card", amt:35000, cat:"uong", cardId:"c1", date:D0 }], "grab 30k, trà sữa 40k", [{ amt:30000 }, { kind:"card", amt:40000, card:"c1" }]],
+    ["Thẻ trả ăn trưa 1 triệu", [{ kind:"card", amt:1000000, cat:"an", cardId:"c2", date:D0 }], "thẻ trả ăn tối 1 triệu", null]
+  ];
+  CASES.forEach(([t, items, t2, want]) => {
+    const rec = L2.hocTao(t, items, null, o); rec.id = "x";
+    const f = L2.hocTim([rec], t2, o), got = f ? f.out.items : null;
+    let err = "";
+    if(!want){ if(got) err = "không được dùng lại"; }
+    else if(!got) err = "không dùng lại được";
+    else { const ws = Array.isArray(want) ? want : [want]; if(got.length !== ws.length) err = "số khoản " + got.length; else ws.forEach((w, i) => { const m = checkItem(got[i], w); if(m) err += m + " "; }); }
+    rec2("HOC", t + " ⟶ " + t2, err.trim(), JSON.stringify(got));
+  });
+  const q = L2.hocTao("tháng này tiền đi đâu hết", null, { q:"report", period:"month", group:"tag" }, o);
+  const fq = L2.hocTim([q], "thang nay tien di dau het", o);
+  rec2("HOC", "câu hỏi AI đã hiểu", fq && fq.out.query.q === "report" ? "" : "không dùng lại", JSON.stringify(fq));
+  console.log("HOC " + hocOk + "/" + hocN + (hocN - hocOk ? " · SAI " + (hocN - hocOk) : ""));
+  if(hocN - hocOk) process.exitCode = 1;
+})();
+
+/* G: không nói thẻ nào mà có nhiều thẻ → dùng thẻ hay dùng nhất, máy tự xử lý (không gọi AI) */
+(function(){
+  const c = Object.assign(ctx(), { defaultCard:"c2" });
+  let bad = 0;
+  ["Thẻ trả ăn trưa 1 triệu", "quẹt thẻ 500k mua áo", "trả thẻ 3 triệu"].forEach(t => {
+    const r = P.parse(t, c), a = P.assess(t, r, c), it = r.items[0] || {};
+    if(!a.local || it.cardId !== "c2"){ bad++; console.log("SAI  [the] " + t + " → " + JSON.stringify(it) + " " + JSON.stringify(a)); }
+  });
+  console.log("THE_MAC_DINH " + (3 - bad) + "/3"); if(bad) process.exitCode = 1;
+})();

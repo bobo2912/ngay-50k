@@ -227,6 +227,8 @@
     cand.forEach(l => { const s = score(l) + (l.settled ? -0.5 : 0); if(s > bs){ bs = s; best = l; } });
     return bs >= 1 ? best : null;
   }
+  /* v118: thẻ hay dùng nhất (app tính từ lịch sử quẹt thẻ, ctx.defaultCard) khi câu không nói thẻ nào */
+  function defCard(ctx){ const cs = (ctx && ctx.cards) || [], d = ctx && ctx.defaultCard; return d && cs.some(c => c.id === d) ? d : null; }
   function findCard(ctx, N){
     const cards = (ctx && ctx.cards) || [];
     const txt = " " + N.join(" ") + " ";
@@ -322,6 +324,7 @@
     if(!kind && (has(N, ["tra","the"]) >= 0 || has(N, ["tra","no","the"]) >= 0 || has(N, ["thanh","toan","the"]) >= 0 || has(N, ["tat","toan","the"]) >= 0)){
       kind = "cardpay";
       const cd = findCard(ctx, N); if(cd) item.cardId = cd.id;
+      else { const cs = (ctx && ctx.cards) || []; item.cardId = cs.length === 1 ? cs[0].id : defCard(ctx); if(cs.length > 1 && item.cardId) item.cardGuess = true; }
     }
     /* vay mượn */
     if(!kind){
@@ -400,7 +403,8 @@
       if(byCard){
         kind = "card";
         const cards = (ctx && ctx.cards) || [];
-        item.cardId = card ? card.id : (cards.length === 1 ? cards[0].id : null);
+        item.cardId = card ? card.id : (cards.length === 1 ? cards[0].id : defCard(ctx));
+        if(!card && cards.length > 1 && item.cardId) item.cardGuess = true;   /* v119: không nói thẻ nào → thẻ hay dùng nhất, người dùng đổi được trên thẻ xác nhận */
         if(theIdx >= 0){ drop.add(theIdx); ["quet","ca","bang","qua","the"].forEach(w => { const j = N.indexOf(w); if(j >= 0 && Math.abs(j - theIdx) <= 1) drop.add(j); }); }
         if(card){ const cn = norm(card.name).split(" "); const j = has(N, cn); if(j >= 0) for(let k = 0; k < cn.length; k++) drop.add(j+k); else { const j2 = N.indexOf(cn[0]); if(j2 >= 0) drop.add(j2); } }
       } else {
@@ -648,7 +652,7 @@
   /* đọc số tiền người dùng gõ trong ô sửa ("45k", "1tr2", "45.000") */
   function amountText(s){ const { N } = tokenize(s); const a = amountAt(N, 0); return a ? a.v : (parseInt(String(s).replace(/\D/g, ""), 10) || 0); }
 
-  const api = { parse, assess, refine, amountText, guessTag, norm, _amountAt:amountAt, _clauses:clauses };
+  const api = { parse, assess, refine, amountText, guessTag, norm, _amountAt:amountAt, _clauses:clauses, _tokenize:tokenize };
   if(typeof module !== "undefined" && module.exports) module.exports = api;
   else root.N50KParse = api;
 })(typeof window !== "undefined" ? window : this);

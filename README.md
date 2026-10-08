@@ -56,6 +56,8 @@ Dữ liệu chính nằm trong **IndexedDB** của trình duyệt: cơ sở dữ
 
 Khi mở, app đọc hết dữ liệu vào bộ nhớ một lần (`N50K.ready`), rồi mới chạy phần còn lại. Mỗi lần lưu được ghi xuống IndexedDB ngay; các lần ghi dồn dập được gộp lại. Từ bản v46 trở về trước dữ liệu nằm trong `localStorage`; lần mở đầu tiên ở v47 tự chép sang, đọc lại để kiểm tra rồi xoá bản cũ. IndexedDB chưa mở xong sau 4 giây thì app chạy luôn bằng `localStorage` nhưng vẫn chờ tiếp; mở được lúc nào thì chuyển sang lúc đó (`adopt`), lấy bản có `updated` mới hơn. Mở lỗi thì app tự thử lại mỗi lần quay lại app, và trang Dung lượng ghi lý do (`N50K.why()`) kèm nút thử lại (`N50K.retry()`).
 
+**Chat tự học (từ v119).** `state.learn`: câu đã học, mỗi câu có `key` (khuôn câu: bỏ dấu, số tiền thành `#`), các khoản hoặc câu hỏi đúng, vị trí số tiền (`ai`) hoặc tỉ lệ (`aj`, `ar`) và độ lệch ngày (`dd`). `state.miss`: câu máy chưa hiểu kèm lý do. Hàm học nằm trong `thu-vien-cau.js` (`khuon`, `hocTao`, `hocTim`, `hocChoAI`). Hai mảng này là một phần của dữ liệu chính nên đi theo file sao lưu và gộp theo `id` như các bản ghi khác.
+
 **Khoá app (`lock.js`, từ v77).** Khi bật mã PIN, các khoá dữ liệu (`ngay50k:v1`, `ngay50k:beforeImport`, `ngay50k:chat`, `ngay50k:ai`) được ghi xuống dạng `enc1:<iv>:<bản mã>` (AES-GCM 256). Khoá dữ liệu là 32 byte ngẫu nhiên, được bọc bằng khoá sinh từ mã PIN (PBKDF2-SHA256, 600.000 vòng) và, nếu bật Face ID, bọc thêm một bản bằng bí mật PRF của passkey. Thông tin này nằm ở `ngay50k:lock` (không chứa mã PIN). Trong bộ nhớ vẫn là dữ liệu thường; chỉ lúc ghi mới mã hoá. Chưa mở khoá thì `N50K` không ghi các khoá dữ liệu. Thứ tự khởi động: `N50K.ready` → `N50KLock.gate` → `startNgay50k`.
 
 Hệ quả cần biết:

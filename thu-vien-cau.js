@@ -519,6 +519,98 @@
     return out;
   }
 
+  /* ======================= E. THƯ VIỆN RIÊNG: HỌC TỪ NGƯỜI DÙNG (v119) =======================
+     Mỗi lần bạn sửa thẻ xác nhận rồi bấm Ghi, hoặc ghi kết quả do AI hiểu, app lưu một "câu đã học":
+       { id, key, text, amts, items:[…], query, src:"sua"|"ai", t, used, hits }
+     key là "khuôn câu": bỏ dấu, chữ thường, số tiền thay bằng #, bỏ từ đệm (nhé, nha, ạ…).
+     Lần sau gõ câu cùng khuôn ("thẻ trả ăn trưa 1 triệu" → "thẻ trả ăn trưa 850k"), máy dùng lại đúng cách hiểu đó
+     với số tiền mới, không cần AI. Câu đã học nằm trong dữ liệu chính (state.learn) nên đi theo file sao lưu.
+     Câu máy chưa hiểu (phải nhờ AI, hoặc bạn bấm "Phân tích lại bằng AI") nằm ở state.miss: { id, key, text, why, n, t }. */
+  const FILL_W = new Set(["nhe","nha","a","ah","nhi","thoi","nhá","ha","day","do","oi","nhe!","di_"]);
+  const DAY = 86400000;
+  const dayKey = d => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  const dayDiff = (a, b) => Math.round((new Date(a + "T12:00:00") - new Date(b + "T12:00:00")) / DAY);
+  /* khuôn câu và các số tiền trong câu, theo đúng thứ tự */
+  function khuon(text, P){
+    const { N } = P._tokenize(String(text || "").replace(/\n+/g, " , "));
+    const w = [], amts = [];
+    for(let i = 0; i < N.length; i++){
+      const a = P._amountAt(N, i);
+      if(a){ w.push("#"); amts.push(a.v); i += a.n - 1; continue; }
+      if(!N[i] || FILL_W.has(N[i])) continue;
+      w.push(N[i]);
+    }
+    return { key:w.join(" "), amts };
+  }
+  const KEEP = ["kind","amt","cat","cardId","loanId","who","w","from","to","src","note"];
+  /* tạo một câu đã học từ các khoản bạn đã ghi (hoặc câu hỏi AI đã hiểu) */
+  function hocTao(text, items, query, opt){
+    opt = opt || {}; const P = opt.P, now = opt.now || new Date(), today = dayKey(now);
+    const k = khuon(text, P); if(!k.key) return null;
+    const rec = { key:k.key, text:String(text).trim().slice(0, 300), amts:k.amts, src:opt.src || "sua", t:now.getTime(), used:now.getTime(), hits:0 };
+    if(query){
+      if(query.q === "unknown" || query.period === "custom" && !/\bthang \d/.test(k.key)) return null;   /* "7 ngày qua" tính theo ngày học, dùng lại sẽ sai */
+      const q = {}; for(const x in query) if(query[x] !== undefined && query[x] !== null && query[x] !== "") q[x] = query[x];
+      rec.query = q; return rec;
+    }
+    if(!items || !items.length) return null;
+    const usedA = new Set();
+    rec.items = items.map(it => {
+      const o = {}; KEEP.forEach(f => { if(it[f] !== undefined && it[f] !== null && it[f] !== "") o[f] = it[f]; });
+      /* số tiền khớp số nào trong câu: lần sau thay bằng số mới ở đúng vị trí đó */
+      let ai = -1; for(let j = 0; j < k.amts.length; j++) if(!usedA.has(j) && k.amts[j] === it.amt){ ai = j; break; }
+      if(ai >= 0) usedA.add(ai);
+      o.ai = ai;
+      /* "ăn lẩu 600k chia 4" → 150k; "siêu thị 500k giảm 10%" → 450k: nhớ tỉ lệ so với số tiền lớn nhất trong câu,
+         chỉ khi câu có chữ chia/mỗi/giảm/%… và tỉ lệ tròn (1/n, n lần, bội của 5%), để không học nhầm lỗi gõ */
+      if(ai < 0 && k.amts.length && it.amt > 0 && /(^| )(chia|moi|giam|%|nhan|x|phan|nua|gap|cong|tru)( |$)/.test(k.key + " " + String(text).replace(/\d+\s*%/g, " % "))){
+        const big = k.amts.indexOf(Math.max.apply(null, k.amts)), r = it.amt / k.amts[big];
+        const nice = [2,3,4,5,6,7,8,9,10,12,15,20].some(n => Math.abs(r - 1 / n) < 1e-6 || Math.abs(r - n) < 1e-6) || (r > 0 && r < 2 && Math.abs(r * 20 - Math.round(r * 20)) < 1e-6);
+        if(nice){ o.aj = big; o.ar = r; }
+      }
+      if(it.date) o.dd = dayDiff(it.date, today);
+      return o;
+    });
+    return rec;
+  }
+  /* dùng lại câu đã học cho câu mới cùng khuôn → { items, query } hoặc null */
+  function hocDung(rec, text, opt){
+    opt = opt || {}; const P = opt.P, now = opt.now || new Date();
+    const k = khuon(text, P);
+    if(!rec || k.key !== rec.key || k.amts.length !== (rec.amts || []).length) return null;
+    if(rec.query) return { items:[], query:Object.assign({}, rec.query) };
+    const same = k.amts.join() === rec.amts.join();
+    const items = [];
+    for(const x of rec.items || []){
+      let amt = x.ai >= 0 ? k.amts[x.ai] : same ? x.amt : (x.aj >= 0 && x.ar) ? Math.round(k.amts[x.aj] * x.ar) : null;
+      if(!(amt > 0)) return null;                                   /* số tiền bạn tự sửa không suy ra được từ câu mới */
+      const it = {}; KEEP.forEach(f => { if(x[f] !== undefined) it[f] = x[f]; });
+      it.amt = amt;
+      const d = new Date(now); d.setDate(d.getDate() + (x.dd || 0));
+      it.date = dayKey(d);
+      it.t = x.dd ? new Date(it.date + "T" + String(now.getHours()).padStart(2, "0") + ":" + String(now.getMinutes()).padStart(2, "0") + ":00").getTime() : now.getTime();
+      it.who = it.who || ""; it.loanId = it.loanId || null; it.cardId = it.cardId || null; it.note = it.note || "";
+      if(!it.src) it.src = "tk";
+      items.push(it);
+    }
+    return items.length ? { items, query:null } : null;
+  }
+  /* tìm câu đã học hợp với câu mới: cùng khuôn, mới học / hay dùng trước */
+  function hocTim(list, text, opt){
+    if(!list || !list.length) return null;
+    const k = khuon(text, opt.P); if(!k.key) return null;
+    const cand = list.filter(r => r && r.key === k.key).sort((a, b) => (b.used || b.t || 0) - (a.used || a.t || 0));
+    for(const r of cand){ const out = hocDung(r, text, opt); if(out) return { rec:r, out }; }
+    return null;
+  }
+  /* câu mẫu riêng cho Trợ lý AI (dùng id thật của thẻ, khoản vay, ví) */
+  function hocChoAI(list, max){
+    return (list || []).slice().sort((a, b) => (b.used || b.t || 0) - (a.used || a.t || 0)).slice(0, max || 25).map(r => {
+      if(r.query) return "\"" + r.text + "\" → query " + JSON.stringify(r.query);
+      return "\"" + r.text + "\" → items " + JSON.stringify((r.items || []).map(x => { const o = Object.assign({}, x); delete o.ai; delete o.aj; delete o.ar; if(o.dd){ o.date = o.dd === -1 ? "hôm qua" : o.dd + " ngày"; } delete o.dd; return o; }));
+    });
+  }
+
   /* bối cảnh dùng cho bài thử và câu mẫu */
   const MAU_CTX = {
     now: "2026-10-07T14:30:00",                                      /* thứ Tư */
@@ -527,7 +619,7 @@
     wallets: [{ id:"w1", name:"Momo" }]
   };
 
-  const api = { GHI, HOI, NOI, TROCHUYEN, MAU_CTX, match, talk, fewShot, nrm };
+  const api = { GHI, HOI, NOI, TROCHUYEN, MAU_CTX, match, talk, fewShot, nrm, khuon, hocTao, hocDung, hocTim, hocChoAI };
   if(typeof module !== "undefined" && module.exports) module.exports = api;
   else root.N50KLib = api;
 })(typeof window !== "undefined" ? window : this);

@@ -1,6 +1,20 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v118, ngày 08/10/2026
+**Phiên bản hiện tại:** v119, ngày 08/10/2026
+
+---
+
+## Có gì mới trong v119 (so với v118)
+
+- **"Thẻ trả ăn trưa 1 triệu" giờ máy tự xử lý, không gọi AI.** Trước đây có từ hai thẻ mà câu không nói thẻ nào thì máy nhường AI. Giờ máy chọn **thẻ quẹt nhiều nhất 60 ngày qua**, bạn đổi được ngay trên thẻ xác nhận. "Trả thẻ 3 triệu" cũng chọn sẵn thẻ đó.
+- **Chat tự học từ bạn (thư viện riêng):**
+  - Sửa thẻ xác nhận (loại, số tiền, nhóm, thẻ, người, ví, nội dung, ngày) rồi bấm Ghi, hoặc ghi khoản do AI hiểu → app nhớ cách hiểu câu đó.
+  - Lần sau gõ câu cùng kiểu, chỉ khác số tiền ("thẻ trả ăn trưa 850k"), máy dùng lại ngay, nhãn **📚 Đã học**, không cần AI. Học được cả kiểu chia tiền và giảm giá: đã học "lẩu 600k chia 4" → 150k thì "lẩu 800k chia 4" ra 200k.
+  - Câu hỏi AI đã hiểu (vd "tháng này tiền đi đâu hết") cũng được nhớ, lần sau máy trả lời luôn.
+  - Khi vẫn phải nhờ AI, 25 câu đã học gần nhất được gửi kèm làm ví dụ riêng của bạn.
+- **Sổ "Câu máy chưa hiểu":** câu máy phải nhờ AI, không hiểu, hoặc bạn bấm "Phân tích lại bằng AI" được ghi lại kèm lý do. Máy học được câu nào thì câu đó tự rời sổ. Có nút **Sao chép danh sách** để gửi người làm app đưa vào thư viện chung.
+- **Cài đặt → Chat đã học:** xem, xoá từng câu đã học và câu chưa hiểu, số lần đã dùng lại không cần AI.
+- **Mọi thứ máy học đều nằm trong dữ liệu chính** (`learn`, `miss`), nên đi theo file sao lưu, gộp được giữa hai máy, và được mã hoá khi bật mã PIN.
 
 ---
 
