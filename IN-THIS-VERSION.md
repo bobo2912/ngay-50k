@@ -1,6 +1,13 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v115, ngày 08/10/2026
+**Phiên bản hiện tại:** v116, ngày 08/10/2026
+
+---
+
+## Có gì mới trong v116 (so với v115)
+
+- **"Thẻ trả ăn 1 triệu" giờ là quẹt thẻ, nhóm Ăn**, không còn hiểu nhầm thành trả nợ. "Trả" đi với thẻ hoặc với một khoản chi (trả tiền ăn, trả tiền cà phê…) là khoản chi; "trả thẻ" vẫn là trả thẻ, "trả nợ X" / "trả X" (X đang cho mình vay) vẫn là trả nợ.
+- Tìm người vay khớp theo nguyên từ: "ăn" không còn bị nhận nhầm là "Giang".
 
 ---
 
