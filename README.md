@@ -22,7 +22,7 @@ python3 -m http.server 8765
 # rồi mở http://127.0.0.1:8765
 ```
 
-Phải mở qua một máy chủ web, không mở thẳng bằng `file://`, vì service worker và camera đều cần `http` hoặc `https`.
+Phải mở qua một máy chủ web, không mở thẳng bằng `file://`, vì service worker cần `http` hoặc `https`.
 
 ---
 
@@ -36,7 +36,7 @@ Phải mở qua một máy chủ web, không mở thẳng bằng `file://`, vì 
 
 **Thẻ** — Quản lý chi tiêu thẻ tín dụng, không tính vào hạn mức mỗi ngày. Nhập nhanh bằng cách dán thông báo ngân hàng hoặc chọn ảnh chụp màn hình: app đọc chữ trong ảnh, tách ra từng giao dịch, tự gán vào đúng thẻ theo 6 số đầu và 4 số cuối, rồi để bạn tick chọn khoản đúng trước khi ghi. Biểu đồ theo ngày và theo 12 tháng. Mỗi thẻ khai được ngày sao kê, mỗi khoản gắn được nhóm.
 
-**Tài khoản** (trước gọi là Giao dịch) — Thẻ *Hôm nay còn được tiêu* với thanh tiến độ, chuyển đỏ khi vượt hạn mức. Quét mã VietQR bằng camera hoặc chọn ảnh mã QR, app tự điền số tài khoản, ngân hàng, số tiền và nội dung. Ghi tay, trả tiền mặt, nhập nhanh 5k–30k, nút 000. Gắn tag cho từng khoản, ghi bù ngày trước, sửa và xoá. Biểu đồ 7 ngày gần nhất kèm mức chi trung bình, và lịch tháng tô màu theo số tiền chi mỗi ngày.
+**Tài khoản** (trước gọi là Giao dịch) — Thẻ *Hôm nay còn được tiêu* với thanh tiến độ, chuyển đỏ khi vượt hạn mức. Ghi tay (chi tiền mặt hoặc chuyển khoản theo số tài khoản), thêm khoản thu, nhập nhanh 5k–30k, nút 000. Gắn tag cho từng khoản, ghi bù ngày trước, sửa và xoá. Biểu đồ 7 ngày gần nhất kèm mức chi trung bình, và lịch tháng tô màu theo số tiền chi mỗi ngày.
 
 **Khoản vay** — Theo dõi khoản mình đi vay và mình cho vay. Một khoản ghi được nhiều lần vay thêm và nhiều lần trả, lịch sử gộp theo thời gian. Cảnh báo quá hạn.
 
@@ -77,16 +77,12 @@ lock.js                 khoá app bằng mã PIN, mã hoá dữ liệu, Face ID 
 parse-vi.js             bộ hiểu câu tiếng Việt cho màn Trò chuyện (chạy trên máy)
 tests-parse-vi.js       bộ câu mẫu: node tests-parse-vi.js
 sw.js                   service worker, giữ app chạy được khi mất mạng
-scan.html               trang riêng chứa camera quét QR, đóng là camera tắt hẳn
 manifest.webmanifest    tên, icon, màu, chế độ standalone
-vendor/jsQR.js          thư viện đọc mã QR, để sẵn trong kho
 fonts/                  font Be Vietnam Pro dạng woff2
 icons/                  icon app
 HUONG-DAN.md            hướng dẫn đưa lên GitHub Pages và cài lên máy
 IN-THIS-VERSION.md      có gì mới ở hai bản gần nhất, kèm danh sách tính năng
 ```
-
-Camera nằm trong một trang riêng là có chủ ý: iOS giữ camera gắn với trang đang mở, nên khi đóng khung quét, app huỷ luôn cả `iframe` để chấm xanh trên iPhone tắt ngay.
 
 App không tải gì từ bên ngoài khi chạy. Riêng chức năng đọc chữ trong ảnh cần tải thư viện Tesseract.js từ CDN ở lần dùng đầu tiên; không có mạng thì app báo rõ và bạn dùng cách chép chữ sẵn có của iPhone rồi dán vào.
 
@@ -127,7 +123,6 @@ Vài chỗ dễ vỡ, sửa xong nên thử lại:
 - **Kho dữ liệu.** Đọc và ghi dữ liệu chính qua `N50K.get` / `N50K.set` / `N50K.del`, không gọi thẳng `localStorage` cho khoá `ngay50k:v1`. Toàn bộ app nằm trong hàm `startNgay50k()`, chỉ chạy sau khi `N50K.ready` xong.
 - **Thứ tự khai báo biến.** `renderAll()` chạy trước khi một số `const`/`let` kịp khởi tạo, nên những biến dùng trong lúc vẽ lần đầu phải là `var` hoặc hàm khai báo kiểu `function`.
 - **Bộ đọc thông báo ngân hàng.** Nhiều ngân hàng viết cả giao dịch trên một dòng ngăn bằng dấu `|`; bộ phân tích tách theo từng ô và bỏ qua ô số dư hay hạn mức còn lại. Sửa phần này thì thử lại với cả thông báo dán tay lẫn ảnh chụp màn hình.
-- **Vòng đời camera.** Mọi đường thoát khỏi khung quét đều phải huỷ `iframe`.
 - **Lề trên.** iPhone có tai thỏ; phần đầu trang dùng `--safe-top` để không lọt vào vùng thanh trạng thái.
 
 ---
@@ -136,11 +131,8 @@ Vài chỗ dễ vỡ, sửa xong nên thử lại:
 
 HTML, CSS và JavaScript thuần, không framework, không bước build. Mở `index.html` ra sửa là chạy.
 
-- [jsQR](https://github.com/cozmo/jsQR) — đọc mã QR, đã để sẵn trong `vendor/`
 - [Tesseract.js](https://github.com/naptha/tesseract.js) — đọc chữ trong ảnh, tải từ CDN khi cần
 - [Be Vietnam Pro](https://fonts.google.com/specimen/Be+Vietnam+Pro) — font, đã để sẵn trong `fonts/`
-
-Mã QR được đọc theo chuẩn EMVCo/VietQR, kể cả số tài khoản có chữ.
 
 ---
 

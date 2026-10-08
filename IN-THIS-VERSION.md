@@ -1,6 +1,15 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v105, ngày 08/10/2026
+**Phiên bản hiện tại:** v106, ngày 08/10/2026
+
+---
+
+## Có gì mới trong v106 (so với v105)
+
+- **Bỏ hẳn quét mã QR:** bỏ nút Quét QR và Ảnh, khung camera, mục Cài đặt → Quét mã QR, cùng phần mã liên quan (trang `scan.html`, thư viện `vendor/jsQR.js`). App nhẹ hơn, không còn xin quyền camera.
+- Hàng nút còn **Nhập tay** (chi, đỏ) và **Thêm thu** (thu, xanh).
+- Nút **Cập nhật số dư** nằm giữa theo chiều dọc với khối số dư, không còn lệch lên trên.
+- Đọc ảnh chụp thông báo ngân hàng trong Chat vẫn giữ nguyên (đó là đọc chữ, không phải QR).
 
 ---
 
@@ -16,14 +25,6 @@
 
 ---
 
-## Có gì mới trong v104 (so với v103)
-
-- Ô số dư tab Ví ghi gọn **Tài khoản** (bỏ "(gồm tiền mặt)").
-- Bốn nút **Quét QR, Ảnh QR, Nhập tay, Tiền mặt** gọn trên một hàng.
-- "Ghi lại khoản hay lặp" đổi thành dòng **Ghi nhanh** nhỏ gọn, các khoản là nút nhỏ trên cùng một dòng (vuốt ngang nếu nhiều).
-
----
-
 ## Tất cả tính năng của app
 
 ### Tab Chat (mở mặc định)
@@ -36,17 +37,14 @@
 
 ### Tab Ví (các ví, thẻ tín dụng, hôm nay, giao dịch theo ngày)
 - **Tổng các ví** (đã trừ nợ thẻ) và **hàng tab ví**: Tài khoản (gồm tiền mặt), các ví thêm (ngân hàng khác, ví điện tử), các thẻ tín dụng, nút **Thêm ví**. Chỉ một ví, không thẻ thì không có hàng tab.
-- Tab **Tài khoản**: số dư, nút **Đối chiếu số dư** và **Thêm khoản thu**, cùng các mục bên dưới (hạn mức hôm nay, quét QR, giao dịch theo ngày kèm trả thẻ / chuyển ví, 7 ngày, lịch).
+- Tab **Tài khoản**: số dư, nút **Đối chiếu số dư** và **Thêm khoản thu**, cùng các mục bên dưới (hạn mức hôm nay, nút ghi chi / thu, giao dịch theo ngày kèm trả thẻ / chuyển ví, 7 ngày, lịch).
 - Tab **ví khác**: số dư, nút Đối chiếu, Chuyển tiền, Sửa ví; các khoản sắp tới và biến động của ví.
 - Tab **thẻ**: nội dung thẻ tín dụng (xem mục Màn thẻ tín dụng bên dưới). Nút **Trả thẻ** chọn được ví trả.
 - Nút **Đối chiếu** mở màn riêng: ô nhập số dư thật (ví Tài khoản có thêm ô nợ thẻ), chuyển tiền giữa các ví, sắp tới, biến động từ lần đối chiếu, lịch sử đối chiếu / trả thẻ / chuyển ví.
 
 - **Thẻ Hôm nay còn được tiêu:** số tiền còn lại, thanh tiến độ, chuyển đỏ khi vượt hạn mức.
-- **Quét QR bằng camera:** mặc định mở camera iPhone để chụp mã (không cần cấp quyền), hoặc quét trực tiếp trong app tự nhận mã (chọn trong Cài đặt).
-- **Chọn ảnh mã QR:** đọc mã QR từ ảnh chụp sẵn trong máy.
-- **Đọc mã VietQR:** tự điền số tài khoản, ngân hàng, số tiền, nội dung và tên tài khoản (nếu mã có chứa).
 - **Chuyển nhanh cho người hay chuyển:** chạm tên để điền sẵn thông tin.
-- **Chuyển khoản nhập tay** và **Trả tiền mặt.**
+- **Nhập tay** (ghi chi tiền mặt; bấm "Chuyển khoản cho ai đó?" để nhập số tài khoản) và **Thêm thu.**
 - **Form ghi khoản chi:**
   - Số tiền, có chọn nhanh 5k, 10k, 15k, 20k, 30k và nút 000.
   - Số tài khoản, tên tài khoản, ngân hàng (có gợi ý tên ngân hàng), nội dung chuyển khoản.
@@ -98,7 +96,6 @@
 - **Ngân hàng hay dùng:** app ngân hàng mở bằng nút Sao chép và mở.
 - **Khoá app:** mã PIN 4 hoặc 6 số, mã hoá dữ liệu trên máy, tự khoá khi rời app, mở bằng Face ID, đổi và tắt mã PIN.
 - **Giao diện:** Tự động, Sáng, Tối hoặc Pastel.
-- **Quét mã QR:** Camera iPhone hoặc Quét trực tiếp, kèm thời gian tự tắt camera.
 - **Hạn mức chi một ngày.**
 - **Người nhận:** danh sách người hay chuyển tiền.
 - **Khoản định kỳ:** khai một lần, app tự ghi mỗi tháng, không tính vào hạn mức ngày. Chọn ghi vào chi thường hoặc vào một thẻ tín dụng.
@@ -132,6 +129,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v106** | Bỏ hẳn quét mã QR; nút Cập nhật số dư canh giữa |
 | **v105** | Màn Ví gọn (hướng A): số dư một lần, tab chữ, nút chi đỏ / thu xanh |
 | **v104** | Nhãn Tài khoản gọn; 4 nút ghi trên một hàng; Ghi nhanh gọn |
 | **v103** | Sửa: "nhận" là khoản thu; "tôi" không bị hiểu là "tối" |

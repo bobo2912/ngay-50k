@@ -4,13 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Tiêu Gọn – Quản lý chi tiêu</title>
-<meta name="description" content="Tiêu Gọn – app quản lý chi tiêu, sổ thu chi cho iPhone và Android: ghi bằng lời, quét VietQR, đặt hạn mức mỗi ngày. Không cần tài khoản, dữ liệu chỉ nằm trên máy của bạn.">
+<meta name="description" content="Tiêu Gọn – app quản lý chi tiêu, sổ thu chi cho iPhone và Android: ghi bằng lời, đặt hạn mức mỗi ngày. Không cần tài khoản, dữ liệu chỉ nằm trên máy của bạn.">
 <meta name="application-name" content="Tiêu Gọn">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Tiêu Gọn – Quản lý chi tiêu">
-<meta property="og:description" content="Tiêu Gọn – app quản lý chi tiêu, sổ thu chi cho iPhone và Android: ghi bằng lời, quét VietQR, đặt hạn mức mỗi ngày. Không cần tài khoản, dữ liệu chỉ nằm trên máy của bạn.">
+<meta property="og:description" content="Tiêu Gọn – app quản lý chi tiêu, sổ thu chi cho iPhone và Android: ghi bằng lời, đặt hạn mức mỗi ngày. Không cần tài khoản, dữ liệu chỉ nằm trên máy của bạn.">
 <meta property="og:locale" content="vi_VN">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Tiêu Gọn","alternateName":"Tieu Gon","applicationCategory":"FinanceApplication","operatingSystem":"iOS, Android, Web","inLanguage":"vi","description":"Tiêu Gọn – app quản lý chi tiêu, sổ thu chi cho iPhone và Android: ghi bằng lời, quét VietQR, đặt hạn mức mỗi ngày. Không cần tài khoản, dữ liệu chỉ nằm trên máy của bạn.","offers":{"@type":"Offer","price":"0","priceCurrency":"VND"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Tiêu Gọn","alternateName":"Tieu Gon","applicationCategory":"FinanceApplication","operatingSystem":"iOS, Android, Web","inLanguage":"vi","description":"Tiêu Gọn – app quản lý chi tiêu, sổ thu chi cho iPhone và Android: ghi bằng lời, đặt hạn mức mỗi ngày. Không cần tài khoản, dữ liệu chỉ nằm trên máy của bạn.","offers":{"@type":"Offer","price":"0","priceCurrency":"VND"}}</script>
 <meta name="theme-color" content="#E9EFFD" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0E1530" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v105";
+  var K = "ngay50k:errlog", VER = "v106";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -172,22 +172,6 @@ h2{font-size:.95rem; font-weight:600; margin:0 0 8px}
 .photo-btn{position:relative; display:flex; align-items:center; justify-content:center; gap:8px; width:100%; margin-top:8px; padding:11px; border:1.5px solid var(--line); border-radius:12px; background:var(--surface); color:var(--ink); font-weight:600; font-size:.95rem; cursor:pointer}
 .photo-btn svg{width:18px; height:18px}
 .photo-btn input{position:absolute; width:1px; height:1px; opacity:0; pointer-events:none}
-.cam{position:fixed; inset:0; z-index:90; background:#000; color:#fff; display:flex; flex-direction:column}
-.cam-host{position:absolute; inset:0}
-.cam-host iframe{display:block; width:100%; height:100%; border:0; background:#000}
-.cam-top, .cam-bottom{position:relative; z-index:2; display:flex; align-items:center; justify-content:space-between; padding:12px 16px}
-.cam-top{padding-top:calc(12px + env(safe-area-inset-top,0px)); background:linear-gradient(rgba(0,0,0,.55), transparent)}
-.cam-bottom{margin-top:auto; flex-direction:column; gap:12px; padding-bottom:calc(20px + env(safe-area-inset-bottom,0px)); background:linear-gradient(transparent, rgba(0,0,0,.6))}
-.cam-top h2{margin:0; font-size:1rem; font-weight:700; color:#fff}
-.cam-x{width:40px; height:40px; border:0; border-radius:20px; background:rgba(255,255,255,.18); color:#fff; font-size:1.2rem}
-.cam-frame{position:absolute; z-index:1; left:50%; top:46%; width:min(68vw, 300px); aspect-ratio:1; transform:translate(-50%,-50%); border-radius:22px; box-shadow:0 0 0 100vmax rgba(0,0,0,.45); outline:3px solid rgba(255,255,255,.9); outline-offset:-3px}
-.cam-frame.hit{outline-color:#5CC49A}
-.cam-hint{margin:0; text-align:center; font-size:.95rem; line-height:1.45; max-width:320px}
-.cam-hint.err{color:#FFB4AE}
-.cam-actions{display:flex; gap:10px}
-.cam-actions button, .cam-actions label{position:relative; border:0; border-radius:22px; padding:10px 16px; background:rgba(255,255,255,.18); color:#fff; font:inherit; font-weight:600; font-size:.9rem; cursor:pointer}
-.cam-actions button[aria-pressed="true"]{background:#fff; color:#000}
-.cam-actions input{position:absolute; width:1px; height:1px; opacity:0; pointer-events:none}
 .scan-msg{margin:8px 2px 0; font-size:.85rem; color:var(--muted); min-height:1.4em}
 .scan-msg.err{color:var(--over)}
 .link-btn{display:block; margin:10px auto 0; border:0; background:transparent; color:var(--muted); text-decoration:underline; text-underline-offset:3px; padding:6px}
@@ -1121,7 +1105,6 @@ body:not(.searching) .ledger-head{top:var(--head-h, 100px)}
 html{scroll-padding-top:var(--head-h, 100px)}
 .settings{padding-top:var(--safe-top)}
 .settings-head{top:0}
-.cam-top{padding-top:calc(12px + var(--safe-top))}
 /* thanh Cài đặt: kéo lên tận mép màn hình như thanh đầu trang chính, liền một dải;
    nằm trên dải nền vùng giờ/pin, cuộn xuống thì có nền mờ */
 .settings{z-index:76; padding-top:0}
@@ -1670,7 +1653,7 @@ body.kb #tab-chat > .chip-veil{display:none}
 .wtabs-box{margin:0 0 10px}
 .whead{margin:0 2px 10px}
 .wh-top{display:flex; align-items:center; gap:8px; min-height:30px}
-.wh-name{flex:1; min-width:0; font-size:.86rem; font-weight:600; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.wh-name{display:block; min-width:0; font-size:.86rem; font-weight:600; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
 .wh-acts{display:flex; gap:6px; flex:none}
 .wh-btn{border:0; border-radius:999px; padding:6px 12px; font:inherit; font-size:.78rem; font-weight:700; white-space:nowrap; background:var(--note-soft, rgba(0,0,0,.06)); color:var(--note)}
 .wh-btn.ic{width:30px; padding:6px 0; text-align:center}
@@ -1697,6 +1680,13 @@ body.kb #tab-chat > .chip-veil{display:none}
 .quick4 .q-btn.q-in{color:#23955f; background:rgba(35,149,95,.1); font-weight:700}
 .quick4 .q-btn span{white-space:nowrap}
 .to-transfer{display:block; margin:0 2px 10px; font-size:.82rem}
+/* v106: không còn quét QR; hàng nút còn Nhập tay (chi) và Thêm thu */
+.quick3.quick4.quick2{grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px}
+.quick2 .q-btn svg{display:inline-block !important}
+/* v106: nút Cập nhật số dư nằm giữa theo chiều dọc với khối số dư */
+.whead{display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; column-gap:10px}
+.whead .wh-l{min-width:0}
+.whead .wh-acts{align-self:center}
 @media (max-width:370px){
   .quick4 .q-btn{font-size:.74rem; gap:3px; padding:0 2px}
   .quick4 .q-btn svg{display:none}
@@ -1762,10 +1752,13 @@ body.kb #tab-chat > .chip-veil{display:none}
   <div class="wtabs-box" id="wTabsBox" hidden>
     <!-- v105 (hướng A): số dư chỉ hiện một lần, theo ví đang chọn -->
     <div class="whead">
-      <div class="wh-top"><span class="wh-name" id="whName">Tài khoản</span><span class="wh-acts" id="whActs"></span></div>
-      <p class="wh-big num" id="whNum">–</p>
-      <p class="wh-sub" id="whSub"></p>
-      <p class="wh-sub" id="whTot" hidden></p>
+      <div class="wh-l">
+        <span class="wh-name" id="whName">Tài khoản</span>
+        <p class="wh-big num" id="whNum">–</p>
+        <p class="wh-sub" id="whSub"></p>
+        <p class="wh-sub" id="whTot" hidden></p>
+      </div>
+      <span class="wh-acts" id="whActs"></span>
     </div>
     <p class="wtotal" hidden><span id="wTotLabel"></span><b class="num" id="wTotNum"></b><small id="wTotSub"></small></p>
     <div class="wstrip" id="wStrip" role="tablist" aria-label="Các ví"></div>
@@ -1851,10 +1844,7 @@ body.kb #tab-chat > .chip-veil{display:none}
     </div>
 
     <section id="startBox">
-      <input type="file" accept="image/*" capture="environment" id="snapQR" hidden aria-hidden="true" tabindex="-1">
-      <div class="quick3 quick4">
-        <button class="q-btn q-scan q-out" id="camBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><path d="M8 12h8"/></svg><span>Quét QR</span></button>
-        <label class="q-btn q-out"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/></svg><span>Ảnh</span><input type="file" accept="image/*" id="photoAny" aria-label="Chọn ảnh mã QR"></label>
+      <div class="quick3 quick4 quick2">
         <button class="q-btn q-out" id="manualTransferBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg><span>Nhập tay</span></button>
         <button class="q-btn q-in" id="addIncomeBtn" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Thêm thu</span></button>
         <button class="q-btn" id="cashBtn" hidden><span>Tiền mặt</span></button>
@@ -2060,7 +2050,6 @@ body.kb #tab-chat > .chip-veil{display:none}
       <h2 id="wTitle0" tabindex="-1">Ghi chi tiêu mỗi ngày, nhẹ như nhắn tin</h2>
       <ul class="w-points">
         <li><span aria-hidden="true">💬</span><div><b>Kể bằng lời</b>Gõ "trưa ăn phở 45k" là app ghi xong.</div></li>
-        <li><span aria-hidden="true">📷</span><div><b>Quét mã VietQR</b>Chuyển khoản xong là khoản chi đã được ghi.</div></li>
         <li><span aria-hidden="true">🎯</span><div><b>Hạn mức mỗi ngày</b>Luôn biết hôm nay còn được tiêu bao nhiêu.</div></li>
         <li><span aria-hidden="true">🔒</span><div><b>Dữ liệu chỉ nằm trên máy</b>Không tài khoản, không máy chủ, không quảng cáo.</div></li>
       </ul>
@@ -2129,7 +2118,6 @@ body.kb #tab-chat > .chip-veil{display:none}
         <button class="set-nav" data-go="setLock"><span class="nav-t">Khoá app</span><span class="nav-v" id="navLock"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
         <button class="set-nav" data-go="setStart"><span class="nav-t">Màn hình mở đầu</span><span class="nav-v" id="navStart"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
         <button class="set-nav" data-go="setTheme"><span class="nav-t">Giao diện</span><span class="nav-v" id="navTheme"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
-        <button class="set-nav" data-go="setScan"><span class="nav-t">Quét mã QR</span><span class="nav-v" id="navScan"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
         <button class="set-nav" data-go="setBank"><span class="nav-t">Ngân hàng hay dùng</span><span class="nav-v" id="navBank"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
         <button class="set-nav" data-go="setBudget"><span class="nav-t">Hạn mức chi một ngày</span><span class="nav-v" id="navBudget"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
         <button class="set-nav" data-go="setRecur"><span class="nav-t">Khoản định kỳ</span><span class="nav-v" id="navRecur"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
@@ -2255,24 +2243,6 @@ body.kb #tab-chat > .chip-veil{display:none}
     </section>
     </div>
 
-    <div class="set-page" id="setScan" hidden>
-      <div class="set-head"><button class="set-back" data-back>‹ Cài đặt</button><h2 tabindex="-1">Quét mã QR</h2></div>
-<section class="set-group" aria-labelledby="gScan">
-      <div class="seg" id="scanSeg" role="group" aria-label="Cách quét mã QR" style="margin-top:10px">
-        <button data-scan="snap" aria-pressed="true">Camera iPhone</button>
-        <button data-scan="live" aria-pressed="false">Quét trực tiếp</button>
-      </div>
-      <p class="set-now" id="scanHint" style="margin-top:10px"></p>
-      <h4 class="sub">Tự tắt camera</h4>
-      <p class="set-now">Chỉ dùng cho Quét trực tiếp. Mở khung quét mà không quét gì trong khoảng này thì camera tự tắt.</p>
-      <div class="seg seg4" id="camOffSeg" role="group" aria-label="Thời gian tự tắt camera" style="margin-top:10px">
-        <button data-off="30">30 giây</button>
-        <button data-off="45">45 giây</button>
-        <button data-off="120">2 phút</button>
-        <button data-off="300">5 phút</button>
-      </div>
-    </section>
-    </div>
 
     <div class="set-page" id="setBank" hidden>
       <div class="set-head"><button class="set-back" data-back>‹ Cài đặt</button><h2 tabindex="-1">Ngân hàng hay dùng</h2></div>
@@ -2434,7 +2404,7 @@ body.kb #tab-chat > .chip-veil{display:none}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v105</p>
+      <p class="sync" id="appVersion">Phiên bản v106</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -2459,18 +2429,6 @@ body.kb #tab-chat > .chip-veil{display:none}
     </section>
     </div>
 
-  </div>
-</div>
-<div class="cam" id="cam" role="dialog" aria-modal="true" aria-labelledby="camTitle" hidden>
-  <div class="cam-host" id="camHost"></div>
-  <div class="cam-frame" id="camFrame" aria-hidden="true"></div>
-  <div class="cam-top"><h2 id="camTitle">Quét mã QR</h2><button class="cam-x" id="camClose" aria-label="Đóng camera">✕</button></div>
-  <div class="cam-bottom">
-    <p class="cam-hint" id="camHint">Đưa mã QR vào trong khung</p>
-    <div class="cam-actions">
-      <button id="camTorch" aria-pressed="false" hidden>Đèn flash</button>
-      <label>Chọn ảnh thay thế<input type="file" accept="image/*" id="camPhoto"></label>
-    </div>
   </div>
 </div>
 <div class="sheet-back top" id="cardBack" hidden></div>
@@ -2932,12 +2890,10 @@ body.kb #tab-chat > .chip-veil{display:none}
   </div>
 </div>
 <datalist id="bankList"></datalist>
-<canvas id="canvas" hidden></canvas>
 
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
-<script src="vendor/jsQR.js"></script>
-<script src="parse-vi.js?v=105"></script>
-<script src="lock.js?v=105"></script>
+<script src="parse-vi.js?v=106"></script>
+<script src="lock.js?v=106"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -3405,36 +3361,10 @@ function startNgay50k(){
     return state.contacts.slice().sort((a,b)=> (b.uses||0)-(a.uses||0) || (b.last||0)-(a.last||0) || a.name.localeCompare(b.name));
   }
 
-  /* ---------- VietQR ---------- */
-  function tlv(str){
-    const out = {}; let i = 0;
-    while(i + 4 <= str.length){
-      const id = str.substr(i,2), len = parseInt(str.substr(i+2,2),10);
-      if(isNaN(len)) break;
-      out[id] = str.substr(i+4,len); i += 4 + len;
-    }
-    return out;
-  }
-  function parseVietQR(raw){
-    const top = tlv(raw);
-    let bin = "", acct = "";
-    for(const tag of ["38","26","27","28","29"]){
-      if(!top[tag]) continue;
-      const m = tlv(top[tag]);
-      if(m["01"]){ const b = tlv(m["01"]); if(b["00"] && b["01"]){ bin = b["00"]; acct = b["01"]; break; } }
-    }
-    if(!acct) return null;
-    const add = top["62"] ? tlv(top["62"]) : {};
-    const amount = top["54"] ? Math.round(parseFloat(top["54"])) : 0;
-    let name = (top["59"] || "").trim();
-    if(/^(na|n\/a|none|null|-+|\.+)$/i.test(name)) name = "";
-    return { bin, acct, bank: BANKS[bin] || "", amount: amount>0 ? amount : 0, memo: (add["08"]||"").trim(), name };
-  }
-
   /* ---------- expense form ---------- */
   function setSrc(id, kind){
     const el = $(id);
-    const map = {qr:["từ mã QR","src"], saved:["đã lưu","src"], need:["cần điền","need"]};
+    const map = {saved:["đã lưu","src"], need:["cần điền","need"]};
     const v = map[kind]; el.textContent = v ? v[0] : ""; el.className = v ? v[1] : "";
   }
   const amtValue = () => parseInt(digits($("amt").value),10) || 0;
@@ -3455,25 +3385,8 @@ function startNgay50k(){
     selectCat("an");
     wPicker("fWField", "fWChips", m === "cash" ? MAIN_W : lastW());   /* tiền mặt nằm trong ví mặc định */
 
-    if(data){
-      if(data.amount){ setAmt(data.amount); setSrc("amtSrc","qr"); } else setSrc("amtSrc","need");
-      bankSummary = true;
-      $("acct").value = data.acct; setSrc("acctSrc","qr");
-      if(data.name){ $("holder").value = data.name; setSrc("holderSrc","qr"); }
-      if(data.bank){ $("bank").value = data.bank; setSrc("bankSrc","qr"); }
-      if(data.memo){ $("memo").value = data.memo; setSrc("memoSrc","qr"); }
-      contact = contact || findContact(data.acct, data.bank);
-      const old = state.payees[data.bin + ":" + data.acct];
-      if(!contact && old){
-        if(!data.bank && old.bank){ $("bank").value = old.bank; setSrc("bankSrc","saved"); }
-        if(old.cat) selectCat(old.cat);
-        if(old.desc) $("desc").value = old.desc;
-      }
-      if(!$("holder").value && old && old.name){ $("holder").value = old.name; setSrc("holderSrc","saved"); }
-      if(!$("bank").value) setSrc("bankSrc","need");
-    }
     if(contact){
-      if(!data){ $("acct").value = contact.acct; $("bank").value = contact.bank; setSrc("acctSrc","saved"); setSrc("bankSrc","saved"); setSrc("amtSrc","need"); }
+      { $("acct").value = contact.acct; $("bank").value = contact.bank; setSrc("acctSrc","saved"); setSrc("bankSrc","saved"); setSrc("amtSrc","need"); }
       if(!$("bank").value && contact.bank){ $("bank").value = contact.bank; setSrc("bankSrc","saved"); }
       if(!$("memo").value && contact.memo){ $("memo").value = contact.memo; setSrc("memoSrc","saved"); }
       if(!$("holder").value && contact.holder){ $("holder").value = contact.holder; setSrc("holderSrc","saved"); }
@@ -3580,7 +3493,6 @@ function startNgay50k(){
         if(!c){ c = { id:uid(), name:$("contactName").value.trim(), acct:it.acct, bank:it.bank, memo:"", cat:it.cat, uses:0 }; state.contacts.push(c); }
       }
       if(c){ c.uses = (c.uses||0) + 1; c.last = Date.now(); c.cat = it.cat; if(!c.bank) c.bank = it.bank; if(it.holder) c.holder = it.holder; it.contactId = c.id; it.who = c.name; }
-      if(scanned) state.payees[scanned.bin + ":" + it.acct] = Object.assign({bank:it.bank, cat:it.cat, desc:it.note}, it.holder ? {name:it.holder} : {});
     }
     (state.days[k] = state.days[k] || []).push(it);
     viewDay = k === todayKey() ? null : k;
@@ -3599,13 +3511,13 @@ function startNgay50k(){
     return ok;
   }
 
-  /* ---------- transfer info: read-only summary when it came from a QR ---------- */
+  /* ---------- transfer info: read-only summary ---------- */
   let bankSummary = false;
   function renderBankSummary(){
     const box = $("bankSummary"), on = bankSummary && !$("bankFields").hidden;
     $("bankFields").classList.toggle("summary", on);
     box.hidden = !on; $("bankEdit").hidden = !on;
-    $("bankTitle").textContent = on ? "Đã điền sẵn từ mã QR" : "Thông tin chuyển khoản";
+    $("bankTitle").textContent = on ? "Đã điền sẵn" : "Thông tin chuyển khoản";
     $("bankAuto").hidden = on;
     if(!on) return;
     box.innerHTML = "";
@@ -3618,40 +3530,8 @@ function startNgay50k(){
         row.append(dt, dd); box.appendChild(row);
       });
   }
-  /* ---------- QR from photo ---------- */
-  function handleRaw(raw){
-    msg("");
-    const data = parseVietQR(raw);
-    if(data) openForm("qr", data);
-    else { openForm("transfer"); msg("Mã QR này không có số tài khoản. Hãy điền tay.", true); }
-  }
   function msg(t, err){
     $("scanMsg").hidden = !t; const m = $("scanMsg"); m.textContent = t; m.className = "scan-msg" + (err ? " err" : ""); }
-  function decodeFile(file){
-    if(!file) return;
-    if(!window.jsQR){ msg("Không tải được bộ đọc QR. Kiểm tra mạng rồi mở lại app.", true); return; }
-    msg("Đang đọc ảnh…");
-    const url = URL.createObjectURL(file), img = new Image();
-    img.onload = () => {
-      const c = $("canvas"), ctx = c.getContext("2d", {willReadFrequently:true});
-      let raw = null;
-      const tries = [[1000,1],[1600,1],[1000,0.6],[700,1],[1000,0.4]];
-      for(const [max, crop] of tries){
-        const sw = img.width*crop, sh = img.height*crop, sx = (img.width-sw)/2, sy = (img.height-sh)/2;
-        const s = Math.min(1, max / Math.max(sw, sh));
-        c.width = Math.round(sw*s); c.height = Math.round(sh*s);
-        ctx.drawImage(img, sx, sy, sw, sh, 0, 0, c.width, c.height);
-        const r = window.jsQR(ctx.getImageData(0,0,c.width,c.height).data, c.width, c.height, {inversionAttempts:"attemptBoth"});
-        if(r && r.data){ raw = r.data; break; }
-      }
-      URL.revokeObjectURL(url);
-      if(!raw){ msg("Không tìm thấy mã QR trong ảnh. Thử chụp gần hơn, đủ sáng, mã nằm gọn trong ảnh.", true); return; }
-      msg("");
-      handleRaw(raw);
-    };
-    img.onerror = () => { URL.revokeObjectURL(url); msg("Không mở được ảnh này. Thử ảnh khác.", true); };
-    img.src = url;
-  }
 
   /* ---------- render: today ---------- */
   function itemRow(it, opts){
@@ -3825,7 +3705,7 @@ function startNgay50k(){
     };
     if(!items.length && !moves.length){
       const li = document.createElement("li"); li.className = "empty";
-      li.textContent = dk === todayKey() ? "Chưa có khoản nào hôm nay. Bấm Quét QR thanh toán mỗi lần trả tiền." : "Không có giao dịch ngày này. Có thể ghi bù bằng cách chọn ngày trong form.";
+      li.textContent = dk === todayKey() ? "Chưa có khoản nào hôm nay. Bấm Nhập tay hoặc kể trong Chat mỗi lần chi tiêu." : "Không có giao dịch ngày này. Có thể ghi bù bằng cách chọn ngày trong form.";
       list.appendChild(li);
     }
     items.map(it => ({ t:it.t || 0, el:() => itemRow(it, {day:dk}) })).concat(moves.map(mv => ({ t:mv.t, el:() => moveRow(mv) })))
@@ -4311,7 +4191,7 @@ function startNgay50k(){
     const ul = $("peopleList"); ul.innerHTML = "";
     const list = sortedContacts();
     $("peopleTitle").textContent = "Danh sách (" + list.length + ")";
-    if(!list.length){ ul.innerHTML = '<li class="empty">Chưa có ai. Thêm ở đây, hoặc tick "Lưu vào danh sách người hay chuyển" khi quét QR.</li>'; return; }
+    if(!list.length){ ul.innerHTML = '<li class="empty">Chưa có ai. Thêm ở đây, hoặc tick "Lưu vào danh sách người hay chuyển" khi ghi chuyển khoản.</li>'; return; }
     list.forEach(c => {
       const cat = tagOf(c.cat);
       const li = document.createElement("li"); li.className = "item";
@@ -4843,7 +4723,6 @@ function startNgay50k(){
   $("prevDay").onclick = () => { viewDay = shiftKey(curDay(), -1); renderToday(); };
   $("nextDay").onclick = () => { const n = shiftKey(curDay(), 1); viewDay = n >= todayKey() ? null : n; renderToday(); };
   $("dayPick").addEventListener("change", e => { const v = e.target.value; viewDay = (!v || v >= todayKey()) ? null : v; renderToday(); });
-  $("photoAny").onchange = e => { decodeFile(e.target.files[0]); e.target.value = ""; };
   /* v105: Nhập tay mở form ghi chi đơn giản (tiền mặt nằm trong ví Tài khoản); cần chuyển khoản thì bấm dòng "Chuyển khoản" trong form */
   $("manualTransferBtn").onclick = () => openForm("cash");
   $("toTransfer").onclick = () => { const a = $("amt").value, d = $("desc").value; openForm("transfer"); if(a){ $("amt").value = a; $("amt").dispatchEvent(new Event("input")); } $("desc").value = d; };
@@ -4918,111 +4797,6 @@ function startNgay50k(){
   loadLocal(); renderAll();
 
 
-  /* ---------- live camera QR scan ----------
-     Camera runs inside scan.html. Closing the scanner stops the camera right away but keeps that frame
-     for a couple of minutes, so scanning again does not ask for permission again. The frame is destroyed
-     when the app goes to the background or after the keep time, so iOS fully releases the camera. */
-  let camFrame = null, torchOn = false, camIdle = null, camKeep = null;
-  const CAM_KEEP_MS = 30000, CAM_OFF_KEY = "ngay50k-camoff";
-  function camOffSec(){ let v = 45; try{ v = parseInt(localStorage.getItem(CAM_OFF_KEY), 10) || 45; }catch(e){} return [30,45,120,300].indexOf(v) < 0 ? 45 : v; }
-  function camHint(t, err){ const h = $("camHint"); h.textContent = t; h.className = "cam-hint" + (err ? " err" : ""); }
-  function postCam(msgObj){ try{ camFrame && camFrame.contentWindow.postMessage(msgObj, location.origin); }catch(e){} }
-  function destroyFrame(){
-    clearTimeout(camIdle); camIdle = null; clearTimeout(camKeep); camKeep = null;
-    if(!camFrame) return;
-    postCam({ type:"stop" });
-    const f = camFrame; camFrame = null;
-    try{ f.src = "about:blank"; }catch(e){}
-    f.remove();
-  }
-  function releaseFrame(){
-    clearTimeout(camIdle); camIdle = null;
-    if(!camFrame) return;
-    postCam({ type:"stop" });
-    clearTimeout(camKeep); camKeep = setTimeout(destroyFrame, CAM_KEEP_MS);
-  }
-  function openCamera(){
-    if(!$("cam").hidden) return;
-    if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.isSecureContext){
-      msg("Máy này chưa mở được camera trong app. Dùng nút Ảnh QR để chụp.", true);
-      $("photoAny").click(); return;
-    }
-    $("cam").hidden = false; document.body.style.overflow = "hidden";
-    $("camFrame").classList.remove("hit"); $("camTorch").hidden = true; torchOn = false;
-    camHint("Đang mở camera…");
-    clearTimeout(camKeep); camKeep = null;
-    if(camFrame){ postCam({ type:"start" }); return; }
-    const f = document.createElement("iframe");
-    f.setAttribute("allow", "camera");
-    f.setAttribute("title", "Camera quét mã QR");
-    f.src = "scan.html";
-    camFrame = f; $("camHost").appendChild(f);
-  }
-  window.addEventListener("message", e => {
-    if(e.origin !== location.origin) return;
-    const m = e.data || {};
-    if(m.src !== "ngay50k-scan" || !camFrame || e.source !== camFrame.contentWindow) return;
-    if(m.type === "ready"){
-      if($("cam").hidden){ releaseFrame(); return; }
-      clearTimeout(camIdle);
-      const secs = camOffSec();
-      camIdle = setTimeout(() => { closeCamera(); msg("Camera đã tự tắt sau " + (secs < 60 ? secs + " giây" : (secs/60) + " phút") + " không quét, để máy có thể tự khoá màn hình.", true); }, secs * 1000);
-      camHint("Đưa mã QR vào trong khung"); $("camTorch").hidden = !m.torch; $("camTorch").setAttribute("aria-pressed","false");
-    }
-    else if(m.type === "qr"){
-      $("camFrame").classList.add("hit");
-      if(navigator.vibrate) try{ navigator.vibrate(60); }catch(err){}
-      const raw = m.data; releaseFrame();
-      setTimeout(() => { closeCamera(); handleRaw(raw); }, 160);
-    }
-    else if(m.type === "torch"){ torchOn = !!m.on; $("camTorch").setAttribute("aria-pressed", String(torchOn)); if(m.fail) $("camTorch").hidden = true; }
-    else if(m.type === "error"){
-      const n = m.name;
-      if(n === "NotAllowedError" || n === "SecurityError") camHint("App chưa được phép dùng camera. Đóng lại rồi bấm Quét và chọn Cho phép. Nếu đã lỡ chặn, vào Cài đặt iPhone, chọn Safari, mục Camera, đổi thành Hỏi hoặc Cho phép.", true);
-      else if(n === "NotFoundError" || n === "OverconstrainedError") camHint("Không tìm thấy camera trên máy này. Dùng Chọn ảnh thay thế.", true);
-      else if(n === "NotReadableError") camHint("Camera đang bị app khác dùng. Tắt app đó rồi thử lại.", true);
-      else camHint("Không mở được camera. Dùng Chọn ảnh thay thế.", true);
-      destroyFrame();
-    }
-  });
-  function stopCamera(keepOpen, destroy){
-    if(destroy) destroyFrame(); else releaseFrame();
-    if(!keepOpen){ $("cam").hidden = true; document.body.style.overflow = ""; }
-  }
-  function closeCamera(){ stopCamera(false); $("camBtn").focus({ preventScroll:true }); }
-  /* scan mode: "snap" opens the iPhone camera app (never asks for permission), "live" scans in-app */
-  const SCAN_KEY = "ngay50k-scanmode";
-  let scanMode = "snap";
-  try{ scanMode = localStorage.getItem(SCAN_KEY) === "live" ? "live" : "snap"; }catch(e){}
-  function renderScanMode(){
-    document.querySelectorAll("#scanSeg button").forEach(b => b.setAttribute("aria-pressed", b.dataset.scan === scanMode ? "true" : "false"));
-    $("scanHint").textContent = scanMode === "snap"
-      ? "Mở camera của iPhone để chụp mã rồi app tự đọc. Không bao giờ phải cấp quyền camera."
-      : "Đưa mã vào khung là app tự nhận, không cần bấm chụp. iPhone có thể hỏi quyền camera mỗi lần mở lại app.";
-  }
-  document.querySelectorAll("#scanSeg button").forEach(b => b.onclick = () => {
-    scanMode = b.dataset.scan;
-    try{ localStorage.setItem(SCAN_KEY, scanMode); }catch(e){}
-    renderScanMode();
-  });
-  renderScanMode();
-  function renderCamOff(){
-    const v = camOffSec();
-    document.querySelectorAll("#camOffSeg button").forEach(b => b.setAttribute("aria-pressed", Number(b.dataset.off) === v ? "true" : "false"));
-  }
-  document.querySelectorAll("#camOffSeg button").forEach(b => b.onclick = () => {
-    try{ localStorage.setItem(CAM_OFF_KEY, b.dataset.off); }catch(e){}
-    renderCamOff();
-  });
-  renderCamOff();
-  $("snapQR").addEventListener("change", e => { const f = e.target.files && e.target.files[0]; e.target.value = ""; if(f) decodeFile(f); });
-  $("camBtn").onclick = () => { if(scanMode === "live") openCamera(); else $("snapQR").click(); };
-  $("camClose").onclick = closeCamera;
-  $("camTorch").onclick = () => postCam({ type:"torch", on:!torchOn });
-  $("camPhoto").onchange = e => { const f = e.target.files[0]; e.target.value = ""; closeCamera(); decodeFile(f); };
-  document.addEventListener("visibilitychange", () => { if(document.hidden) stopCamera(false, true); });
-  window.addEventListener("pagehide", () => stopCamera(false, true));
-  document.addEventListener("keydown", e => { if(e.key === "Escape" && !$("cam").hidden) closeCamera(); });
 
   /* ---------- tag library ---------- */
   function tagIsOff(id){ const e = (state.tagOff||{})[id]; return !!(e && e.v); }
@@ -5794,7 +5568,7 @@ function startNgay50k(){
       "Bạn là bộ phận hiểu câu của app ghi chi tiêu cá nhân tiếng Việt \"Tiêu Gọn\". Người dùng kể bằng lời tự nhiên (có thể gõ không dấu, viết tắt, đọc bằng giọng nói). Nhiệm vụ: chuyển thành các khoản cần ghi và/hoặc một câu hỏi. Trả lời đúng dạng JSON theo schema, không thêm chữ nào ngoài JSON.",
       "",
       "Loại khoản (kind):",
-      "- out: chi tiêu từ tài khoản ngân hàng hoặc tiền mặt (chuyển khoản, quét QR, trả tiền mặt, mua gì đó không nói thẻ). Đây là mặc định cho chi tiêu.",
+      "- out: chi tiêu từ tài khoản ngân hàng hoặc tiền mặt (chuyển khoản, trả tiền mặt, mua gì đó không nói thẻ). Đây là mặc định cho chi tiêu.",
       "- card: chi bằng thẻ tín dụng (quẹt thẻ, cà thẻ, bằng thẻ, thẻ VIB…). cardId lấy từ the_tin_dung nếu khớp tên; chỉ có 1 thẻ thì dùng thẻ đó.",
       "- in: khoản thu (lương, thưởng, bán hàng, được cho/tặng/lì xì, hoàn tiền, tiền về). cat là id trong nguon_thu.",
       "- lend: mình cho người khác vay/mượn (kể cả cho vay thêm). borrow: mình đi vay/mượn người khác (kể cả vay thêm).",
@@ -7217,7 +6991,6 @@ function startNgay50k(){
 
   /* ---------- swipe right to go back ---------- */
   function backTarget(){
-    if(!$("cam").hidden) return closeCamera;
     /* bottom-up popups close with their own ✕ button, not with a swipe */
     if(!$("tagSheet").hidden || !$("editSheet").hidden || !$("filterSheet").hidden || !$("formSheet").hidden
        || !$("cardSheet").hidden || !$("pasteSheet").hidden || !$("cardEditSheet").hidden) return null;
@@ -7236,7 +7009,7 @@ function startNgay50k(){
     sw = null;
     if(e.touches.length !== 1) return;
     const tg = e.target;
-    if(tg.closest && tg.closest("input, textarea, select, .hscroll, .cam")) { if(!(tg.closest(".cam") && !tg.closest("input,label,button"))) return; }
+    if(tg.closest && tg.closest("input, textarea, select, .hscroll")) return;
     const t = e.touches[0];
     sw = { x:t.clientX, y:t.clientY, t:Date.now(), active:false, fn:null, panel:null, dx:0 };
   }, { passive:true });
@@ -7323,18 +7096,6 @@ function startNgay50k(){
     else if(!$("editSheet").hidden){ closeEdit(); e.stopImmediatePropagation(); }
   }, true);
 
-  /* ---------- nothing may hold the screen awake while the app sits idle ---------- */
-  var idleT = null;
-  const IDLE_MS = 120000;
-  function idleReset(){
-    clearTimeout(idleT);
-    idleT = setTimeout(() => {
-      try{ if(!$("cam").hidden) closeCamera(); else stopCamera(false, true); }catch(e){}
-    }, IDLE_MS);
-  }
-  ["touchstart","pointerdown","keydown","focusin"].forEach(ev => document.addEventListener(ev, idleReset, { passive:true }));
-  document.addEventListener("visibilitychange", idleReset);
-  idleReset();
 
   /* ================= THẺ TÍN DỤNG ================= */
   var cardMonth = null, cxEditing = null, cxCard = null, cdEditing = null, pasteCard = null, pasteItems = [], pasteShowOther = false, cardFilterId = null, cardChartMode = "day", cxTag = "", netFilter = "all", searchQ = "", catOpenTag = null;
@@ -8353,7 +8114,7 @@ function startNgay50k(){
   }
 
   /* ---- settings navigation ---- */
-  const SET_PAGES = ["setHome","setLock","setBank","setStart","setAI","setTheme","setScan","setBudget","setRecur","setPeople","setTags","setTagOne","setSync","setStore"];
+  const SET_PAGES = ["setHome","setLock","setBank","setStart","setAI","setTheme","setBudget","setRecur","setPeople","setTags","setTagOne","setSync","setStore"];
   let setPage = "setHome";
   function showSetPage(id, back){
     setPage = id;
@@ -8376,7 +8137,6 @@ function startNgay50k(){
     $("navTheme").textContent = { auto:"Tự động", light:"Sáng", dark:"Tối", pastel:"Pastel" }[curTheme] || "Tự động";
     $("navStart").textContent = homeTab() === "chat" ? "Chat" : "Ví";
     $("navAI").textContent = aiNav();
-    $("navScan").textContent = scanMode === "live" ? "Quét trực tiếp" : "Camera iPhone";
     $("navBank").textContent = myBank() ? myBank().name : (lsGet(BANK_KEY) === "none" ? "Không dùng" : "chưa chọn");
     $("navBudget").textContent = fmt(state.budget) + "/ngày";
     $("navTags").textContent = allTags().length + " tag";
