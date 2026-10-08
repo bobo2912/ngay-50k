@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v110";
+  var K = "ngay50k:errlog", VER = "v111";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -1552,6 +1552,8 @@ header .date{font-size:1.25rem}
    Vì vậy: html/body, đầu trang (sticky), thanh Cài đặt, màn khoá, màn chào đều có background-color ĐẶC = --top-c;
    các ô dính khác (Số dư ví) vẽ nền bằng background-image để iPhone không lấy màu của chúng. */
 html, body{background-color:var(--top-c)}
+/* v111: body luôn phủ kín màn hình, trang ngắn (Chat, kết quả tìm) không còn bị chia 2 mảng nền */
+body{min-height:100vh; min-height:100dvh}
 main > header{background-color:var(--top-c)}
 main > header::after{content:""; position:absolute; left:0; right:0; top:100%; height:14px; pointer-events:none; background:linear-gradient(var(--top-c), color-mix(in srgb, var(--top-c) 0%, transparent))}
 main > header.stuck{background:var(--top-c); -webkit-backdrop-filter:none; backdrop-filter:none; box-shadow:0 1px 0 var(--line)}
@@ -1686,7 +1688,7 @@ body.kb #tab-chat > .chip-veil{display:none}
 .so-seg button{flex:1; border:0; background:transparent; border-radius:999px; padding:7px 0; font:inherit; font-size:.86rem; font-weight:600; color:var(--muted)}
 .so-seg button[aria-pressed="true"]{background:var(--glass-strong, var(--surface)); color:var(--note); box-shadow:var(--shadow-s)}
 #list .item.inc-it .amt, #ledgerList .item.inc-it .amt{color:#23955f}
-.srcic{display:inline-block; margin-left:5px; font-size:.8em; line-height:1; font-style:normal; vertical-align:middle; position:relative; top:-.12em}
+.srcic{display:inline-block; margin-left:5px; font-size:.7em; line-height:1; font-style:normal; vertical-align:middle; position:relative; top:-.17em}
 /* v110 */
 .walmonth{margin:2px 0 10px}
 .wal-stmt{margin:0 2px 10px; font-size:.8rem; color:var(--muted)}
@@ -1705,6 +1707,9 @@ body.kb #tab-chat > .chip-veil{display:none}
 .wh-acts.col{flex-direction:column; align-items:stretch; gap:6px}
 .wh-btn.ghost{background:transparent; border:1px solid var(--line); color:var(--ink)}
 /* v109: lúc tìm, khối chứa ô tìm không còn nền trắng thừa phía trên */
+/* v111: Sổ → Tháng: dải tiêu đề + ô tìm sát mép trên khung, không còn đường trắng phía trên */
+#tab-money section:has(#ledgerList) > .ledger-head{margin-top:-14px; border-radius:15px 15px 0 0}
+#tab-money.searching section:has(#ledgerList) > .ledger-head{margin-top:0; border-radius:0}
 #tab-money.searching > section, #tab-wal.searching > section{background:transparent!important; border:0!important; box-shadow:none!important; padding-top:0!important}
 body.searching .ledger-head{margin-top:0}
 body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #tab-wal.searching > #walSoonSec{display:none}
@@ -2458,7 +2463,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v110</p>
+      <p class="sync" id="appVersion">Phiên bản v111</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -2956,8 +2961,8 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
 <datalist id="bankList"></datalist>
 
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
-<script src="parse-vi.js?v=110"></script>
-<script src="lock.js?v=110"></script>
+<script src="parse-vi.js?v=111"></script>
+<script src="lock.js?v=111"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -6466,10 +6471,16 @@ function startNgay50k(){
       const c = cardOf(sel.slice(5)), cm = walMonth || new Date(), mk = monthKeyOf(cm);
       const rows = c ? cardTxOfMonth(mk).filter(r => r.it.cardId === c.id) : [];
       const tot = rows.reduce((a, r) => a + (Number(r.it.amt) || 0), 0);
+      /* v111: số dư thẻ = chi trong tháng trừ đi các lần trả thẻ trong tháng (giống ví: tiền vào thì số dư tăng) */
+      const only = (state.cards || []).length === 1;
+      const paid = c ? (state.cardPay || []).filter(p => (p.cardId === c.id || (only && !p.cardId)) && String(p.date).indexOf(mk) === 0)
+        .reduce((a, p) => a + (Number(p.amt) || 0), 0) : 0;
+      const net = tot - paid;
       nameEl.textContent = c ? c.name : "Thẻ tín dụng";
-      num.textContent = tot ? "−" + fmt(tot) : "0đ";
-      if(tot) num.classList.add("debt");
-      sub.textContent = "Chi tháng " + (cm.getMonth() + 1) + "/" + cm.getFullYear() + (rows.length ? " · " + rows.length + " khoản" : "");
+      num.textContent = net > 0 ? "−" + fmt(net) : net < 0 ? "+" + fmt(-net) : "0đ";
+      if(net > 0) num.classList.add("debt");
+      const ml = (cm.getMonth() + 1) + "/" + cm.getFullYear();
+      sub.textContent = paid ? "Chi " + fmt(tot) + " · đã trả " + fmt(paid) + " · tháng " + ml : "Chi tháng " + ml + (rows.length ? " · " + rows.length + " khoản" : "");
       if(c){ btn("Trả thẻ", "", () => openPayCard()); btn("Sửa thẻ", "", () => openCardEdit(c.id), "ghost"); }
       return;
     }
