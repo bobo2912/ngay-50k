@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v109";
+  var K = "ngay50k:errlog", VER = "v110";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -1686,7 +1686,17 @@ body.kb #tab-chat > .chip-veil{display:none}
 .so-seg button{flex:1; border:0; background:transparent; border-radius:999px; padding:7px 0; font:inherit; font-size:.86rem; font-weight:600; color:var(--muted)}
 .so-seg button[aria-pressed="true"]{background:var(--glass-strong, var(--surface)); color:var(--note); box-shadow:var(--shadow-s)}
 #list .item.inc-it .amt, #ledgerList .item.inc-it .amt{color:#23955f}
-.srcic{margin-left:5px; font-size:.82em; font-style:normal; filter:saturate(.9)}
+.srcic{display:inline-block; margin-left:5px; font-size:.8em; line-height:1; font-style:normal; vertical-align:middle; position:relative; top:-.12em}
+/* v110 */
+.walmonth{margin:2px 0 10px}
+.wal-stmt{margin:0 2px 10px; font-size:.8rem; color:var(--muted)}
+.wal-stmt.soon b{color:#B45309}
+.chi-pick{display:grid; gap:10px; margin:6px 0 4px}
+.chi-pick button{display:grid; grid-template-columns:auto 1fr; column-gap:12px; align-items:center; text-align:left; padding:14px 16px; border-radius:16px;
+  border:1px solid var(--line); background:var(--glass-strong, var(--surface)); font:inherit; color:var(--ink)}
+.chi-pick .ci{grid-row:1 / span 2; font-size:1.5rem}
+.chi-pick b{font-size:.98rem}
+.chi-pick small{color:var(--muted); font-size:.78rem}
 .item.move .amt{color:var(--muted); font-weight:600}
 .item.move .desc div:last-child{font-style:italic}
 /* v109: tab thẻ gọn như tab ví */
@@ -1804,6 +1814,13 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <button type="button" id="walEdit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>Sửa ví</button>
       </div>
     </div>
+    <!-- v110: mọi ví (tài khoản, ví khác, thẻ) cùng một bố cục: chọn tháng, ô tìm, lịch sử giao dịch theo ngày -->
+    <div class="month walmonth">
+      <button type="button" id="walPrev" aria-label="Tháng trước">‹</button>
+      <strong id="walMonthLabel"></strong>
+      <button type="button" id="walNext" aria-label="Tháng sau">›</button>
+    </div>
+    <p class="wal-stmt" id="walStmt" hidden></p>
     <section id="walSoonSec" hidden>
       <h2>Sắp tới, chưa trừ vào số dư</h2>
       <ul class="flow" id="walSoon"></ul>
@@ -2441,7 +2458,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v109</p>
+      <p class="sync" id="appVersion">Phiên bản v110</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -2666,6 +2683,16 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
   <div class="sheet-foot">
     <button class="ghost" id="xCancel" type="button">Huỷ</button>
     <button class="primary" id="xSave" type="button" style="margin:0" disabled>Lưu</button>
+  </div>
+</div>
+
+<div class="sheet-back top" id="chiBack" hidden></div>
+<div class="sheet top" id="chiSheet" role="dialog" aria-modal="true" aria-labelledby="chiTitle" hidden>
+  <div class="grab" aria-hidden="true"></div>
+  <div class="sheet-head"><h2 id="chiTitle">Ghi chi</h2><button class="x" id="closeChi" aria-label="Đóng">✕</button></div>
+  <div class="chi-pick">
+    <button type="button" id="chiManual"><span class="ci" aria-hidden="true">✍️</span><b>Ghi thủ công</b><small>Nhập số tiền, nội dung, chọn tài khoản hoặc thẻ</small></button>
+    <button type="button" id="chiPhoto"><span class="ci" aria-hidden="true">📷</span><b>Từ ảnh</b><small>Ảnh chụp hoặc dán thông báo ngân hàng, app tự tách từng giao dịch</small></button>
   </div>
 </div>
 
@@ -2929,8 +2956,8 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
 <datalist id="bankList"></datalist>
 
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
-<script src="parse-vi.js?v=109"></script>
-<script src="lock.js?v=109"></script>
+<script src="parse-vi.js?v=110"></script>
+<script src="lock.js?v=110"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -4765,7 +4792,7 @@ function startNgay50k(){
   function showTab(name){
     if(name === "wallet") name = "today";                  /* Ví và Tài khoản đã gộp làm một (v82) */
     if(name === "so") name = soView;
-    if(name === "vi"){ walSel = MAIN_W; name = "wal"; }
+    if(name === "vi"){ walSel = MAIN_W; walMonth = null; name = "wal"; }
     if(name === "today" || name === "money") soView = name;
     if(name !== currentTab){ clearSearch(); resetTab(name); }
     if(name !== "chat" && document.activeElement === $("chatIn")){ $("chatIn").blur(); document.body.classList.remove("kb"); }
@@ -4860,7 +4887,12 @@ function startNgay50k(){
   $("nextDay").onclick = () => { const n = shiftKey(curDay(), 1); viewDay = n >= todayKey() ? null : n; renderToday(); };
   $("dayPick").addEventListener("change", e => { const v = e.target.value; viewDay = (!v || v >= todayKey()) ? null : v; renderToday(); });
   /* v105: Nhập tay mở form ghi chi đơn giản (tiền mặt nằm trong ví Tài khoản); cần chuyển khoản thì bấm dòng "Chuyển khoản" trong form */
-  $("manualTransferBtn").onclick = () => openForm("cash");
+  /* v110: Ghi chi hỏi ghi thủ công hay từ ảnh (ảnh chụp / thông báo ngân hàng, cùng cơ chế "Từ ảnh" của thẻ trước đây) */
+  $("manualTransferBtn").onclick = () => showSheet("chiSheet", "chiBack");
+  const closeChi = () => hideSheet("chiSheet", "chiBack");
+  $("chiBack").onclick = closeChi; $("closeChi").onclick = closeChi;
+  $("chiManual").onclick = () => { closeChi(); setTimeout(() => openForm("cash"), 180); };
+  $("chiPhoto").onclick = () => { closeChi(); setTimeout(() => openPaste(), 180); };
   $("toTransfer").onclick = () => { const a = $("amt").value, d = $("desc").value; openForm("transfer"); if(a){ $("amt").value = a; $("amt").dispatchEvent(new Event("input")); } $("desc").value = d; };
   $("cashBtn").onclick = () => openForm("cash");
   $("bankEdit").onclick = () => { bankSummary = false; renderBankSummary(); $("acct").focus({ preventScroll:true }); };
@@ -6402,9 +6434,9 @@ function startNgay50k(){
   function renderWTabs(T){
     T = T || walletsTotal();
     /* v105 (hướng A): đầu màn Ví luôn có khối số dư của ví đang chọn + hàng tab chữ (kể cả khi chỉ có một ví: còn nút ＋) */
-    const on = currentTab === "wal" || currentTab === "cards";
+    const on = currentTab === "wal";
     $("wTabsBox").hidden = !on;
-    const sel = currentTab === "cards" ? "card:" + (cardFilterId || "") : currentTab === "wal" ? walSel : MAIN_W;
+    const sel = walSel || MAIN_W;
     renderWHead(T, sel);
     const box = $("wStrip"); box.innerHTML = "";
     const tab = (key, name, dot, onClick) => {
@@ -6431,7 +6463,7 @@ function startNgay50k(){
     acts.classList.toggle("col", sel.indexOf("card:") === 0);
     if(sel.indexOf("card:") === 0){
       /* v109: thẻ coi như ví có số dư âm = tổng chi bằng thẻ trong tháng đang xem */
-      const c = cardOf(sel.slice(5)), cm = cardMonth || new Date(), mk = monthKeyOf(cm);
+      const c = cardOf(sel.slice(5)), cm = walMonth || new Date(), mk = monthKeyOf(cm);
       const rows = c ? cardTxOfMonth(mk).filter(r => r.it.cardId === c.id) : [];
       const tot = rows.reduce((a, r) => a + (Number(r.it.amt) || 0), 0);
       nameEl.textContent = c ? c.name : "Thẻ tín dụng";
@@ -6457,26 +6489,56 @@ function startNgay50k(){
   }
   /* chọn một tab ví: nội dung đổi ngay trong màn Ví, không mở màn con */
   function selectWallet(key){
-    if(key.indexOf("card:") === 0){
-      const id = key.slice(5);
-      if(currentTab !== "cards") showTab("cards");
-      cardFilterId = id || null; cardLast = cardFilterId; renderCards(); renderWTabs();
-      return;
-    }
-    if(key === MAIN_W){ if(walQ) clearSearch(); walSel = MAIN_W; walLimit = 14; if(currentTab !== "wal") showTab("wal"); else { renderWTabs(); renderWal(); window.scrollTo(0, 0); } return; }
-    if(walQ){ clearSearch(); }
+    /* v110: thẻ cũng mở trong cùng màn ví (tab-wal), cùng bố cục với tài khoản */
+    if(key.indexOf("card:") === 0 && !cardOf(key.slice(5))) key = MAIN_W;
+    if(key !== MAIN_W && key.indexOf("card:") !== 0 && !walletById(key)) key = MAIN_W;
+    if(walQ) clearSearch();
     walSel = key; walLimit = 14;
-    if(currentTab !== "wal") showTab("wal"); else { renderWTabs(); window.scrollTo(0, 0); }
-    renderWal();
+    if(key.indexOf("card:") === 0){ cardFilterId = key.slice(5); cardLast = cardFilterId; }
+    if(currentTab !== "wal") showTab("wal"); else { renderWTabs(); renderWal(); window.scrollTo(0, 0); }
   }
   /* nội dung tab của một ví thêm: số dư, nút đối chiếu / chuyển tiền / sửa ví, các khoản của ví */
   /* v107: tab của một ví (kể cả ví Tài khoản): lịch sử giao dịch của riêng ví đó, gom theo ngày, mới nhất trước.
      Gồm thu, chi, trả thẻ từ ví, chuyển giữa ví, vay/trả nợ (ví Tài khoản). Quẹt thẻ nằm ở tab thẻ. */
+  /* giao dịch của một thẻ: quẹt thẻ (âm) và các lần trả thẻ (dương), mới nhất trước */
+  function cardFlows(cid){
+    const out = [], only = (state.cards || []).length === 1;
+    for(const k in (state.cardTx || {})) (state.cardTx[k] || []).forEach(it => {
+      if(it.cardId !== cid && !(only && !it.cardId)) return;
+      const tg = tagOf(it.cat);
+      out.push({ t:recTime(k, it.t), amt:-(Number(it.amt)||0), icon:tg.icon, label:it.where || tg.label, kind:tg.label, open:() => openCardTx(it.id, k), extra:tg.label });
+    });
+    (state.cardPay || []).forEach(p => {
+      if(p.cardId !== cid && !(only && !p.cardId)) return;
+      out.push({ t:recTime(p.date, p.t), amt:Number(p.amt)||0, icon:"💳", label:"Trả thẻ từ " + walletName(p.from || MAIN_W), kind:"Trả thẻ", open:null });
+    });
+    out.sort((a, b) => b.t - a.t);
+    const N = Date.now(); const past = out.filter(x => x.t <= N); past.soon = out.filter(x => x.t > N);
+    return past;
+  }
+  var walMonth = null;
   function renderWal(){
-    if(walSel !== MAIN_W && !walletById(walSel)) walSel = MAIN_W;
-    let all = balFlows({ t:0, amt:0, w:walSel }, walSel).filter(x => !x.card);
+    if(!walMonth){ walMonth = new Date(); walMonth.setDate(1); }
+    const isCard = String(walSel).indexOf("card:") === 0;
+    if(isCard && !cardOf(walSel.slice(5))) walSel = MAIN_W;
+    if(!isCard && walSel !== MAIN_W && !walletById(walSel)) walSel = MAIN_W;
+    const now = new Date(), mk = monthKeyOf(walMonth);
+    $("walMonthLabel").textContent = "Tháng " + (walMonth.getMonth() + 1) + "/" + walMonth.getFullYear();
+    $("walNext").disabled = walMonth.getFullYear() > now.getFullYear() || (walMonth.getFullYear() === now.getFullYear() && walMonth.getMonth() >= now.getMonth());
+    /* kỳ sao kê của thẻ (chỉ khi xem tháng hiện tại) */
+    const st = $("walStmt"); st.hidden = true;
+    if(String(walSel).indexOf("card:") === 0){
+      const c = cardOf(walSel.slice(5));
+      if(c && c.stmt && mk === monthKeyOf(now)){
+        const pr = stmtPeriod(Number(c.stmt)), sk = keyOf(pr.start), ek = keyOf(pr.end); let sum = 0;
+        for(const k in state.cardTx){ if(k < sk || k > ek) continue; (state.cardTx[k] || []).forEach(x => { if(x.cardId === c.id) sum += Number(x.amt) || 0; }); }
+        st.hidden = false; st.classList.toggle("soon", pr.left <= 3);
+        st.innerHTML = "Kỳ sao kê " + pr.start.getDate() + "/" + (pr.start.getMonth()+1) + " – " + pr.end.getDate() + "/" + (pr.end.getMonth()+1) + " · <b>" + fmt(sum) + "</b> · " + (pr.left === 0 ? "chốt hôm nay" : "còn " + pr.left + " ngày");
+      }
+    }
+    let all = String(walSel).indexOf("card:") === 0 ? cardFlows(walSel.slice(5)) : balFlows({ t:0, amt:0, w:walSel }, walSel).filter(x => !x.card);
     const soon = (all.soon || []).filter(x => !x.card), ul = $("walFlow"), us = $("walSoon");
-    us.innerHTML = ""; $("walSoonSec").hidden = !soon.length || !!walQ.trim();
+    us.innerHTML = ""; $("walSoonSec").hidden = !soon.length || !!walQ.trim() || mk !== monthKeyOf(now);
     soon.slice(0, 20).forEach(x => us.appendChild(flowRow(x, true, true)));
     ul.innerHTML = "";
     $("walFlowTitle").textContent = "Lịch sử giao dịch";
@@ -6492,20 +6554,24 @@ function startNgay50k(){
       $("walFlowTitle").textContent = all.length ? "Tìm thấy " + all.length + " khoản" + (tin ? " · thu " + fmt(tin) : "") + (tout ? " · chi " + fmt(tout) : "") : "Không tìm thấy khoản nào";
       if(!all.length){ ul.innerHTML = '<p class="empty">Thử tên nơi chi, tên nhóm hoặc số tiền.</p>'; $("walMore").hidden = true; return; }
     }
-    if(!all.length){ ul.innerHTML = '<p class="empty">Chưa có giao dịch nào của ví này.</p>'; $("walMore").hidden = true; return; }
+    if(!q) all = all.filter(x => keyOf(new Date(x.t)).slice(0, 7) === mk);   /* không tìm: chỉ tháng đang xem */
+    if(!all.length){ ul.innerHTML = '<p class="empty">Chưa có giao dịch nào trong tháng này.</p>'; $("walMore").hidden = true; return; }
     const days = []; const byDay = {};
     all.forEach(x => { const k = keyOf(new Date(x.t)); if(!byDay[k]){ byDay[k] = []; days.push(k); } byDay[k].push(x); });
-    days.slice(0, q ? 400 : walLimit).forEach(k => {
+    days.slice(0, 400).forEach(k => {
       const list = byDay[k], tin = list.filter(x => x.amt > 0).reduce((a, x) => a + x.amt, 0), tout = list.filter(x => x.amt < 0).reduce((a, x) => a - x.amt, 0);
       const h = el("li", "day-h");
       h.innerHTML = '<span></span><small class="num"></small>';
       h.querySelector("span").textContent = dateLabel(k);
-      h.querySelector("small").textContent = [tin ? "thu " + fmt(tin) : "", tout ? "chi " + fmt(tout) : ""].filter(Boolean).join(" · ");
+      const cardMode = String(walSel).indexOf("card:") === 0;
+      h.querySelector("small").textContent = [tin ? (cardMode ? "đã trả " : "thu ") + fmt(tin) : "", tout ? "chi " + fmt(tout) : ""].filter(Boolean).join(" · ");
       ul.appendChild(h);
       list.forEach(x => { x.short = true; ul.appendChild(flowRow(x, false, true)); });
     });
-    $("walMore").hidden = !!q || days.length <= walLimit;
+    $("walMore").hidden = true;
   }
+  $("walPrev").onclick = () => { walMonth = new Date(walMonth.getFullYear(), walMonth.getMonth() - 1, 1); renderWTabs(); renderWal(); };
+  $("walNext").onclick = () => { if($("walNext").disabled) return; walMonth = new Date(walMonth.getFullYear(), walMonth.getMonth() + 1, 1); renderWTabs(); renderWal(); };
   $("walRecon").onclick = () => openBalance(walSel);
   $("walXfer").onclick = () => openXfer(walSel);
   $("walEdit").onclick = () => openWSheet(walSel);
@@ -7659,7 +7725,7 @@ function startNgay50k(){
     state.cards = (state.cards || []).filter(c => c.id !== cdEditing);
     for(const k in state.cardTx) (state.cardTx[k] || []).forEach(it => { if(it.cardId === cdEditing) it.cardId = null; });
     persist(); hideSheet("cardEditSheet", "cardEditBack");
-    if(currentTab === "cards"){ const nx = (state.cards || [])[0]; if(nx) selectWallet("card:" + nx.id); else showTab("vi"); }
+    if(currentTab === "wal" && String(walSel).indexOf("card:") === 0){ const nx = (state.cards || [])[0]; selectWallet(nx ? "card:" + nx.id : MAIN_W); }
     renderCards(); renderBalance();
   };
   $("closeCardEdit").onclick = () => hideSheet("cardEditSheet", "cardEditBack");
