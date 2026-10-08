@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v112";
+  var K = "ngay50k:errlog", VER = "v113";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -1559,7 +1559,7 @@ header .date{font-size:1.25rem}
    các ô dính khác (Số dư ví) vẽ nền bằng background-image để iPhone không lấy màu của chúng. */
 html, body{background-color:var(--top-c)}
 /* v111: body luôn phủ kín màn hình, trang ngắn (Chat, kết quả tìm) không còn bị chia 2 mảng nền */
-body{min-height:100vh; min-height:100dvh}
+body{min-height:calc(100vh - var(--safe-top)); min-height:calc(100dvh - var(--safe-top))}   /* v113: trừ lề trên của html, để trang ngắn không dư ra rồi tự cuộn */
 main > header{background-color:var(--top-c)}
 main > header::after{content:""; position:absolute; left:0; right:0; top:100%; height:14px; pointer-events:none; background:linear-gradient(var(--top-c), color-mix(in srgb, var(--top-c) 0%, transparent))}
 main > header.stuck{background:var(--top-c); -webkit-backdrop-filter:none; backdrop-filter:none; box-shadow:0 1px 0 var(--line)}
@@ -1723,6 +1723,8 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
 #tab-wal.searching > section{margin-top:0}
 #tab-wal.searching .ledger-head{padding-top:0}
 #tab-wal .ledger-head h2{font-size:.95rem}
+/* v113: khối lịch sử ví cao ít nhất một màn hình, để ô tìm luôn dính đỉnh khi cuộn dù tháng có ít giao dịch (giống Sổ → Tháng) */
+#tab-wal > section:has(#walFlow){min-height:calc(100vh - var(--head-h, 100px)); min-height:calc(100dvh - var(--head-h, 100px))}
 #walFlow .day-h{display:flex; justify-content:space-between; align-items:baseline; list-style:none; margin:14px 2px 2px; font-size:.8rem; font-weight:700; color:var(--muted)}
 #walFlow .day-h:first-child{margin-top:4px}
 #walFlow .day-h small{font-weight:500; font-size:.74rem}
@@ -2292,7 +2294,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
       <p class="set-now" id="aiNotifMsg" style="margin-top:6px"></p>
       </details>
       <h4 class="sub">An toàn</h4>
-      <p class="set-now">Khoá chỉ lưu trên máy này: không nằm trong mã nguồn trên GitHub, không nằm trong file sao lưu, không gửi đi đâu ngoài nhà cung cấp bạn chọn. Câu bạn gõ cùng danh sách tên thẻ, tên người vay và nhóm chi được gửi cho nhà cung cấp để AI hiểu ngữ cảnh. Số liệu trả lời (đã chi, còn nợ, số dư) do app tự tính trên máy. Mất mạng hay AI lỗi thì app dùng bộ hiểu câu trên máy. Nên đặt hạn mức chi tiêu cho khoá trong trang của nhà cung cấp.</p>
+      <p class="set-now">Khoá lưu trên máy này và đi theo file sao lưu (để chuyển máy không phải dán lại), không nằm trong mã nguồn trên GitHub, không gửi đi đâu ngoài nhà cung cấp bạn chọn. Nên bật mật khẩu cho file sao lưu. Câu bạn gõ cùng danh sách tên thẻ, tên người vay và nhóm chi được gửi cho nhà cung cấp để AI hiểu ngữ cảnh. Số liệu trả lời (đã chi, còn nợ, số dư) do app tự tính trên máy. Mất mạng hay AI lỗi thì app dùng bộ hiểu câu trên máy. Nên đặt hạn mức chi tiêu cho khoá trong trang của nhà cung cấp.</p>
     </section>
     </div>
 
@@ -2412,6 +2414,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <div class="field"><label for="bkPw2"><span>Nhập lại mật khẩu</span></label><input id="bkPw2" class="inp" type="password" autocomplete="new-password" autocapitalize="off" spellcheck="false"></div>
         <p class="set-now">Dùng cho Xuất file sao lưu và Sao lưu nhanh. App không lưu mật khẩu này, quên thì file không mở được. File CSV không có mật khẩu.</p>
       </div>
+      <p class="set-now">File sao lưu gồm mọi khoản đã ghi và toàn bộ cài đặt: giao diện, ngân hàng, trợ lý AI <b>kể cả khoá API</b>, lịch sử Chat. Mã PIN / Face ID không đi theo file. Vì có khoá API, nên bật mật khẩu file nếu cất file ở nơi người khác xem được.</p>
 
       <h4 class="sub">Sao lưu nhanh bằng Phím tắt <button class="ib" type="button" data-info="infoSc" aria-expanded="false" aria-label="Cách cài">i</button></h4>
       <p class="set-now">Bấm nút, bảng chia sẻ hiện lên, chạm vào phím tắt của bạn. Phím tắt chạy ngay trong app, lưu file vào iCloud Drive theo ngày, không rời app.</p>
@@ -2470,7 +2473,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v112</p>
+      <p class="sync" id="appVersion">Phiên bản v113</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -2968,8 +2971,8 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
 <datalist id="bankList"></datalist>
 
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
-<script src="parse-vi.js?v=112"></script>
-<script src="lock.js?v=112"></script>
+<script src="parse-vi.js?v=113"></script>
+<script src="lock.js?v=113"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -5034,7 +5037,7 @@ function startNgay50k(){
 
   /* =================== TRÒ CHUYỆN ===================
      Người dùng kể bằng lời, bộ hiểu câu (parse-vi.js) tách thành các khoản; mỗi khoản hiện thẻ xác nhận sửa được,
-     bấm Ghi mới lưu. Lịch sử chat lưu ở khoá riêng "ngay50k:chat" (không nằm trong file sao lưu). */
+     bấm Ghi mới lưu. Lịch sử chat lưu ở khoá riêng "ngay50k:chat" (từ v113 có trong file sao lưu). */
   var CHAT_KEY = "ngay50k:chat", HOME_KEY = "ngay50k:home", chat = null;
   function homeTab(){ return lsGet(HOME_KEY) === "wallet" ? "wallet" : "chat"; }
   /* ô đầu tiên luôn là Trò chuyện; "Màn hình mở đầu" chỉ chọn tab hiện ra khi mở app */
@@ -5565,7 +5568,7 @@ function startNgay50k(){
     });
   }
   /* =================== TRỢ LÝ AI ===================
-     Khoá API chỉ lưu trên máy này (khoá "ngay50k:ai" trong kho dữ liệu, được mã hoá khi bật mã PIN), không nằm trong code, không nằm trong file sao lưu.
+     Khoá API lưu trên máy này (khoá "ngay50k:ai" trong kho dữ liệu, được mã hoá khi bật mã PIN), không nằm trong code. Từ v113 có nằm trong file sao lưu (xem backupSettings).
      AI chỉ có nhiệm vụ HIỂU câu: trả về các khoản và câu hỏi dạng JSON. Số liệu trả lời luôn do app tự tính từ dữ liệu trên máy.
      Lỗi, hết hạn chờ hoặc mất mạng thì dùng bộ hiểu câu trên máy (parse-vi.js). */
   var AI_KEY = "ngay50k:ai";
@@ -8360,9 +8363,9 @@ function startNgay50k(){
   function offerImport(obj, label){
     if(!obj || obj.app !== "ngay50k" || !obj.data || typeof obj.data !== "object"){ showSyncErr("Đây không phải bản sao lưu của Tiêu Gọn."); return; }
     const incoming = normalize(obj.data);
-    pending = { incoming, merged: mergeStates(state, incoming) };
+    pending = { incoming, merged: mergeStates(state, incoming), settings: hasSetBackup(obj.settings) ? obj.settings : null };
     const when = obj.exportedAt ? fmtStamp(obj.exportedAt) : "";
-    $("importInfo").textContent = (label || "File") + (when ? " xuất lúc " + when : "") + ", gồm " + summarize(incoming) + ".";
+    $("importInfo").textContent = (label || "File") + (when ? " xuất lúc " + when : "") + ", gồm " + summarize(incoming) + (pending.settings ? ", kèm cài đặt" + (pending.settings.ai ? " và khoá API AI" : "") : "") + ".";
     $("importPreview").textContent = "Gộp sẽ " + diffText(diffCount(state, pending.merged)) + ". Khoản mới ghi trên máy này vẫn được giữ.";
     delete $("replaceBtn").dataset.armed;
     $("replaceBtn").textContent = "Thay toàn bộ";
@@ -8652,8 +8655,28 @@ function startNgay50k(){
     }catch(e){ showSyncErr("Chưa xuất được file CSV."); }
   }
   /* nội dung file sao lưu; bật mật khẩu thì mã hoá. Trả về null nếu mật khẩu chưa hợp lệ. */
+  /* v113: file sao lưu mang theo cả cài đặt: giao diện, màn mở đầu, ngân hàng, trợ lý AI (kể cả khoá API), chi phí AI,
+     sao lưu nhanh, ví hay dùng, và lịch sử Chat. Không mang mã PIN / Face ID (gắn với từng máy). */
+  const SET_LS = ["ngay50k-theme","ngay50k:home","ngay50k:bank","ngay50k:aiUse","ngay50k:aiBudget","ngay50k:aiSaved","ngay50k:usdVnd","ngay50k:scUse","ngay50k:lastW"];
+  function backupSettings(){
+    const ls = {}; SET_LS.forEach(k => { const v = lsGet(k); if(v != null) ls[k] = v; });
+    const out = { ls };
+    const ai = N50K.get("ngay50k:ai"); if(ai) out.ai = ai;
+    const ch = N50K.get("ngay50k:chat"); if(ch) out.chat = ch;
+    return out;
+  }
+  function restoreSettings(st, full){
+    if(!st || typeof st !== "object") return;
+    if(st.ls && typeof st.ls === "object") SET_LS.forEach(k => { if(typeof st.ls[k] === "string") lsSet(k, st.ls[k]); else if(full) try{ localStorage.removeItem(k); }catch(e){} });
+    if(typeof st.ai === "string") N50K.set("ngay50k:ai", st.ai);
+    /* lịch sử Chat: thay toàn bộ thì lấy theo file; gộp thì chỉ lấy khi máy này chưa có tin nào */
+    if(typeof st.chat === "string"){ if(!chat) chatLoad(); if(full || !chat.msgs.length){ N50K.set("ngay50k:chat", st.chat); chat = null; } }
+    try{ curTheme = localStorage.getItem(THEME_KEY) || "auto"; }catch(e){ curTheme = "auto"; }
+    applyTheme(curTheme); applyHome(); aiBadge();
+  }
+  function hasSetBackup(st){ return !!(st && typeof st === "object" && (st.ls || st.ai || st.chat)); }
   async function backupText(){
-    const plain = JSON.stringify({ app:"ngay50k", format:1, exportedAt:new Date().toISOString(), data:state });
+    const plain = JSON.stringify({ app:"ngay50k", format:1, exportedAt:new Date().toISOString(), data:state, settings:backupSettings() });
     if(!$("bkPwOn").checked) return plain;
     const pw = $("bkPw").value;
     if(pw.length < 8){ showSyncErr("Mật khẩu file cần ít nhất 8 ký tự."); openSyncPw(); return null; }
@@ -8798,8 +8821,11 @@ function startNgay50k(){
   };
   $("impPw").addEventListener("keydown", e => { if(e.key === "Enter") $("impPwGo").click(); });
   $("impPwCancel").onclick = () => { encPending = null; $("impPwCard").hidden = true; $("impPw").value = ""; };
-  function applyImport(next, label){
+  let undoSettings = null;
+  function applyImport(next, label, full){
     N50K.set(UNDO_KEY, JSON.stringify(state));
+    undoSettings = null;
+    if(pending && pending.settings){ undoSettings = backupSettings(); restoreSettings(pending.settings, full); }
     const d = diffCount(state, next);
     state = next; sigs = collectSigs(state); state.updated = Date.now();
     N50K.set(LS_KEY, JSON.stringify(state));
@@ -8814,6 +8840,7 @@ function startNgay50k(){
       state = normalize(JSON.parse(raw)); sigs = collectSigs(state);
       N50K.set(LS_KEY, JSON.stringify(state));
       N50K.del(UNDO_KEY);
+      if(undoSettings){ if(!undoSettings.ai) N50K.del("ngay50k:ai"); if(!undoSettings.chat) N50K.del("ngay50k:chat"); restoreSettings(undoSettings, true); undoSettings = null; }
       renderAll(); showSyncOk("✓ Đã hoàn tác, dữ liệu trở lại như trước khi nhập.");
     }catch(e){ showSyncErr("Không hoàn tác được."); }
   }
@@ -8823,7 +8850,7 @@ function startNgay50k(){
     if(!pending) return;
     if(b.dataset.armed !== "1"){ b.dataset.armed = "1"; b.textContent = "Bấm lần nữa để thay"; return; }
     const next = normalize(pending.incoming); next.updated = Date.now();
-    applyImport(next, "Đã thay toàn bộ");
+    applyImport(next, "Đã thay toàn bộ", true);
   };
   $("cancelImport").onclick = () => { pending = null; $("importCard").hidden = true; };
 

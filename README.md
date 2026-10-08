@@ -64,8 +64,8 @@ Hệ quả cần biết:
 - Dữ liệu không tự đồng bộ giữa iPhone và máy tính. Muốn chuyển thì **Cài đặt → Sao lưu và đồng bộ → Xuất file**, mang file sang máy kia rồi **Nhập từ file**. Khi nhập có hai lựa chọn **Gộp** hoặc **Thay toàn bộ**, đều xem trước được thay đổi và hoàn tác được.
 - Sao lưu nhanh: `navigator.share` một file `ngay50k-yyyy-MM-dd.json`; người dùng chạm vào phím tắt của mình (bật Hiện trong Bảng chia sẻ, nhận Tệp, Lưu tệp vào iCloud Drive) ngay trong bảng chia sẻ, không rời app. Phím tắt không đọc được dữ liệu của app web, nên lượt nào cũng phải bắt đầu từ nút trong app.
 - Dữ liệu được giữ vô thời hạn; app không tự xoá khoản cũ.
-- Khoá API của Trợ lý AI chỉ nằm trên máy người dùng, không có trong kho này và không vào file sao lưu. **Đừng bao giờ dán khoá vào mã nguồn.**
-- File sao lưu là JSON có chứa số tài khoản và tên người nhận. **Đừng bao giờ tải file đó lên GitHub** — kho này công khai.
+- Khoá API của Trợ lý AI nằm trên máy người dùng, không có trong kho này. Từ v113 khoá **có đi theo file sao lưu** (cùng mọi cài đặt và lịch sử Chat, trừ mã PIN / Face ID), nên bật mật khẩu file. **Đừng bao giờ dán khoá vào mã nguồn.**
+- File sao lưu là JSON có chứa số tài khoản, tên người nhận và khoá API AI. **Đừng bao giờ tải file đó lên GitHub** — kho này công khai.
 
 ---
 
