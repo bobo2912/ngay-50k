@@ -1,6 +1,19 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v99, ngày 07/10/2026
+**Phiên bản hiện tại:** v100, ngày 08/10/2026
+
+---
+
+## Có gì mới trong v100 (so với v99)
+
+**Các ví là các tab ngay trong màn Ví, không mở màn con nữa.**
+- Đầu màn Ví là **Tổng các ví** (đã trừ nợ thẻ), bên dưới là hàng tab: Tài khoản, các ví thêm, các thẻ tín dụng, và nút Thêm ví.
+- Chọn **Tài khoản**: hiện số dư ví Tài khoản, thẻ hạn mức hôm nay, nút quét QR / nhập tay / tiền mặt, lịch sử tiêu theo ngày, 7 ngày, lịch, như trước.
+- Chọn **một ví khác** (Momo…): hiện ngay số dư và các khoản của ví đó, cùng nút Đối chiếu, Chuyển tiền, Sửa ví.
+- Chọn **một thẻ**: hiện ngay nội dung thẻ (chi theo tháng, kỳ sao kê, Từ ảnh, Ghi tay, Trả thẻ), hàng tab vẫn ở trên để đổi qua lại.
+- Màn Đối chiếu số dư chỉ mở khi bấm nút **Đối chiếu**.
+- Thêm ví mới thì mở luôn tab của ví đó.
+- Chỉ có một ví, không có thẻ thì màn Ví như cũ, không có hàng tab.
 
 ---
 
@@ -16,24 +29,6 @@
 
 ---
 
-## Có gì mới trong v98 (so với v97)
-
-**Nhiều ví (bước 2 của mục 2.2): chọn ví khi ghi, chuyển tiền giữa các ví.**
-- Có từ hai ví trở lên thì form chi, form thu, màn sửa khoản và thẻ xác nhận trong chat có thêm ô **chọn ví**. Chi tiền mặt mặc định là ví Tài khoản; chuyển khoản nhớ ví bạn dùng lần trước.
-- **Chuyển tiền giữa các ví**: nút "Chuyển tiền giữa các ví" trong màn từng ví. Không tính là chi tiêu, hiện trong biến động của cả hai ví và xoá được ở mục lịch sử.
-- Chat hiểu tên ví:
-  - "cafe 30k momo", "grab 28k qua zalopay" → chi từ ví đó;
-  - "nạp momo 500k", "chuyển 1tr sang momo", "rút 300k từ momo về tài khoản" → chuyển giữa ví;
-  - "momo còn 350k" → đối chiếu ví Momo; "momo còn bao nhiêu" → số dư ví Momo;
-  - "tháng này chi gì bằng momo" → báo cáo chỉ ví Momo; nói tiếp "còn momo thì sao", "tất cả các ví" cũng được.
-- Trợ lý AI cũng biết danh sách ví và kiểu chuyển giữa ví.
-- Báo cáo gom "theo nguồn" tách riêng từng ví; dòng giao dịch ghi tên ví.
-- Ghi xong, chat báo số dư của đúng ví vừa đổi.
-- Hạn mức mỗi ngày vẫn tính chi từ mọi ví.
-- Câu thử mới: `tests-wallet-vi.js` (23 câu).
-
----
-
 ## Tất cả tính năng của app
 
 ### Tab Chat (mở mặc định)
@@ -45,15 +40,11 @@
 - **Trợ lý AI** (tuỳ chọn, trong nhóm Nâng cao): dùng khoá API Claude, ChatGPT hoặc Gemini; khoá chỉ lưu trên máy. Mặc định chỉ gọi AI cho câu khó, câu đơn giản máy tự hiểu; có nút Nhờ AI hiểu lại. Xem chi phí và số câu tiết kiệm trong Cài đặt.
 
 ### Tab Ví (các ví, thẻ tín dụng, hôm nay, giao dịch theo ngày)
-- **Số tổng:** tổng tiền các ví đã trừ nợ thẻ; dòng dưới ghi tiền trong các ví và số đang nợ thẻ.
-- **Hàng ví:** ví Tài khoản (gồm tiền mặt), các ví thêm (ngân hàng khác, ví điện tử) và thẻ tín dụng. Nút **Thêm ví**.
-- Bấm một ví (hoặc nút **Đối chiếu số dư** cho ví Tài khoản) để mở màn riêng của ví:
-  - số dư theo sổ, ô nhập số dư thật (ví Tài khoản có thêm ô nợ thẻ);
-  - **Chuyển tiền giữa các ví**;
-  - **Sắp tới:** khoản ghi cho ngày tương lai, kèm số dư dự kiến; tới ngày mới trừ vào số dư;
-  - **Biến động từ lần đối chiếu**, mỗi dòng kèm số dư còn lại; chạm để sửa;
-  - lịch sử đối chiếu, trả thẻ và chuyển ví; ví thêm có nút **Sửa ví**.
-- Bấm một thẻ tín dụng để mở màn thẻ. Nút **Trả thẻ** chọn được ví trả.
+- **Tổng các ví** (đã trừ nợ thẻ) và **hàng tab ví**: Tài khoản (gồm tiền mặt), các ví thêm (ngân hàng khác, ví điện tử), các thẻ tín dụng, nút **Thêm ví**. Chỉ một ví, không thẻ thì không có hàng tab.
+- Tab **Tài khoản**: số dư, nút **Đối chiếu số dư** và **Trả thẻ**, cùng các mục bên dưới (hạn mức hôm nay, quét QR, giao dịch theo ngày, 7 ngày, lịch).
+- Tab **ví khác**: số dư, nút Đối chiếu, Chuyển tiền, Sửa ví; các khoản sắp tới và biến động của ví.
+- Tab **thẻ**: nội dung thẻ tín dụng (xem mục Màn thẻ tín dụng bên dưới). Nút **Trả thẻ** chọn được ví trả.
+- Nút **Đối chiếu** mở màn riêng: ô nhập số dư thật (ví Tài khoản có thêm ô nợ thẻ), chuyển tiền giữa các ví, sắp tới, biến động từ lần đối chiếu, lịch sử đối chiếu / trả thẻ / chuyển ví.
 
 - **Thẻ Hôm nay còn được tiêu:** số tiền còn lại, thanh tiến độ, chuyển đỏ khi vượt hạn mức.
 - **Quét QR bằng camera:** mặc định mở camera iPhone để chụp mã (không cần cấp quyền), hoặc quét trực tiếp trong app tự nhận mã (chọn trong Cài đặt).
@@ -86,7 +77,7 @@
 - **Tìm kiếm xuyên tháng** trên cả khoản chi, khoản thu và chi thẻ.
 - **Sửa ngay tại chỗ:** chạm một dòng trong kết quả tìm kiếm hay trong bảng chi tiết nhóm là mở luôn form sửa của khoản đó, không phải đi tìm lại theo ngày.
 
-### Màn thẻ tín dụng (mở từ hàng ví ở tab Ví)
+### Màn thẻ tín dụng (tab thẻ trong màn Ví)
 - Quản lý thẻ trong bảng riêng (nút **Thẻ · N** ở hàng chọn tháng): tên thẻ, 6 số đầu, 4 số cuối, ngày sao kê.
 - Khoản chi thẻ gắn được nhóm để vào thống kê theo tag, app tự đoán theo nơi chi đã gặp.
 - Dải chọn thẻ ngang, chạm để xem riêng từng thẻ; khoản chi thẻ không tính vào hạn mức mỗi ngày.
@@ -146,6 +137,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v100** | Các ví là các tab trong màn Ví, nội dung ví và thẻ hiện ngay tại chỗ |
 | **v99** | Thẻ tín dụng là một loại ví; bỏ ô Thẻ, thanh tab còn 4 ô; trả thẻ chọn ví |
 | **v98** | Chọn ví khi ghi; chuyển tiền giữa các ví; chat hiểu tên ví |
 | **v97** | Nhiều ví: thêm ví, hàng ví, tổng các ví trừ nợ thẻ, màn riêng từng ví |
