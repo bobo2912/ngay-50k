@@ -1,6 +1,22 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v121, ngày 09/10/2026
+**Phiên bản hiện tại:** v122, ngày 09/10/2026
+
+---
+
+## Có gì mới trong v122 (so với v121)
+
+- **Kho câu mẫu 4.342 câu** (`kho-cau-mau.js`, chạy `node tests-kho-cau.js`): ~250 món/việc chi kèm nhóm và giá × cách nói số tiền × lúc nào × có dấu/không dấu; quẹt thẻ, ví, tiền mặt, thu nhập, vay mượn, số dư, trả thẻ, chuyển ví, nhiều khoản một câu, phép tính, câu hỏi, trò chuyện, nhánh hội thoại, và ~150 câu viết tay kiểu người thật nhắn. Máy tự hiểu đúng 100% bộ này, không cần AI (trước khi sửa: 89,8%).
+- **Từ điển nhóm chi ~1.100 từ**, cụm dài khớp trước ("bún đậu mắm tôm" là Ăn dù có "mắm", "sửa điện thoại" là Sửa chữa). Nhóm bạn tự tạo (vd "Gym") được đoán theo tên.
+- **Máy tự tính:** "3 ly trà sữa mỗi ly 35k" → 105k; "35k/ly", "x3"; "siêu thị 500k giảm 10%" → 450k; "… được giảm 50k", "trừ voucher 30k"; "ăn lẩu 600k chia 4" → ghi phần mình 150k, có nút **mình trả hết** để ghi cả bill.
+- **Nhánh hội thoại, máy tự xử lý:** khi đang có thẻ chờ Ghi, nhắn tiếp
+  - "ok ghi đi" (ghi), "thôi bỏ" / "đừng ghi" (bỏ)
+  - "nhầm, 45k chứ" / "45k" (sửa số tiền), "quẹt thẻ" / "thẻ VIB" / "tiền mặt" / "momo" (đổi nguồn tiền)
+  - "hôm qua chứ" (đổi ngày), "nhóm uống" (đổi nhóm), "nội dung là …" (đổi nội dung), "Nam" (tên người khi cho vay thiếu tên).
+  - Kể thiếu số tiền ("ăn phở") → app hỏi lại → nhắn "45k" là ra đúng khoản.
+- **Gợi ý ngay trên thẻ:** thẻ đoán (bấm đổi thẻ khác), chia tiền, thiếu tên người vay, số tiền đã tính.
+- **Tình huống trò chuyện mới:** rút tiền mặt (không ghi là chi), hỏi ngày giờ, hỏi hạn mức, báo lỗi app, xoá hết dữ liệu, nhờ nhắc ghi, tâm sự chuyện tiền.
+- Hiểu đúng thêm nhiều kiểu câu: "gửi xe tháng 120k", "50.000 bò né", "2 triệu 9", "giày thể thao" (không phải thẻ), "nạp thẻ viettel" (không phải quẹt thẻ), "trà đào" gõ không dấu, "phí thường niên" (không phải thưởng), "Hùng mượn mình 500k", "mẹ chuyển cho 2tr", "khách chuyển tiền hàng", "trả hết nợ thẻ", "sao tháng này tiêu nhiều vậy" (báo cáo so với tháng trước), "tiền đi đâu hết", "còn bao nhiêu để tiêu", "số dư"…
 
 ---
 

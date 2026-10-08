@@ -15,10 +15,12 @@
   const pad = n => String(n).padStart(2, "0");
   const keyOf = d => d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
   const addDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
+  /* chữ đầu viết hoa (kể cả chữ có dấu: "Đức", "Ánh"); [A-ZÀ-Ỹ] lẫn cả chữ thường có dấu nên không dùng được */
+  const isCap = w => { const c = String(w || "").charAt(0); return !!c && c !== c.toLowerCase() && c === c.toUpperCase(); };
   const clean = w => w.replace(/^[^\p{L}\p{N}]+|[^\p{L}\p{N}%]+$/gu, "");
 
   /* ---------------- số tiền ---------------- */
-  const COUNTERS = new Set(["cai","ly","coc","chai","hop","goi","phan","suat","to","dia","nguoi","lan","ve","kg","qua","chiec","doi","bo","thang","ngay","tuan","nam","gio","h","phut","lon","bat","mon","cuon","tam","con","trai","cay","lit","km","m","g","gb","tb","%","dot","ky","buoi","tiet","so","thu","khoan"]);
+  const COUNTERS = new Set(["cai","ly","coc","chai","hop","goi","phan","suat","to","dia","nguoi","lan","ve","kg","qua","chiec","doi","bo","thang","ngay","tuan","nam","gio","h","phut","lon","bat","mon","cuon","tam","con","trai","cay","lit","km","m","g","gb","tb","%","dot","ky","buoi","tiet","so","thu","khoan","thung","lo","loc","tui","bich","hu","khay","mieng","thanh","chuc","set","combo","cap","xap","tep","que","bo_","hop","goi","nam_"]);
   const OF = new WeakMap();                                        /* mảng chữ chuẩn hoá -> mảng chữ gốc */
   const pair = (O, N) => { OF.set(N, O); return { O, N }; };
   const K_UNITS = new Set(["k","ng","ngh","nghin","ngan","nghn","ka","x"]);
@@ -35,7 +37,12 @@
     const t = N[i]; if(!t) return null;
     /* "tháng 10", "thứ 7" không phải tiền; so theo chữ gốc để "Tuấn 2 triệu" vẫn là tiền */
     const O = OF.get(N), po = O && O[i-1] ? clean(O[i-1]).toLowerCase() : "";
-    if(i > 0 && (hasMarks(po) ? ["tháng","ngày","thứ","tuần","kỳ","đợt"].includes(po) : ["thang","ngay","thu","ky","dot"].includes(N[i-1]))) return null;
+    const afterDate = i > 0 && !(i > 1 && O && isCap(clean(O[i-1] || ""))) && (hasMarks(po) ? ["tháng","ngày","thứ","tuần","kỳ","đợt"].includes(po) : ["thang","ngay","thu","ky","dot"].includes(N[i-1]));
+    /* v122: "tháng 10" không phải tiền, nhưng "gửi xe tháng 120k" là tiền: có đơn vị (k, tr, nghìn…) hoặc dấu chấm nghìn thì vẫn đọc */
+    if(afterDate && (/^\d{1,2}$/.test(t) ? !(K_UNITS.has(N[i+1]) || ["tr","trieu","cu","d","dong","vnd"].includes(N[i+1])) : !/^\d{3,}$|^\d+([.,]\d{3})+$|^\d+(k|ng|ngh|nghin|ngan|tr|trieu|cu|d|dong|vnd)\d*$/.test(t))) return null;
+    /* v122: "chia 4", "x 3", "nhân 2" là số người / số lượng, không phải tiền */
+    if(i > 0 && (["chia","x"].includes(N[i-1]) || (po === "nhân" || po === "gấp")) && /^\d{1,2}$/.test(t) && !K_UNITS.has(N[i+1])) return null;
+    if(i > 1 && N[i-1] === "cho" && N[i-2] === "chia" && /^\d{1,2}$/.test(t)) return null;
     let m = t.match(/^(\d+(?:[.,]\d+)*)(k|ng|ngh|nghin|ngan|tr|trieu|cu|m|d|dong|vnd|t)?(\d{1,3})?$/);
     if(!m) return null;
     let v = numOf(m[1]); if(isNaN(v)) return null;
@@ -43,11 +50,11 @@
     if(unit === "t" && !tail) return null;                       /* "2t" không rõ nghĩa */
     if(!unit){
       const nx = N[i+1] || "";
-      if(K_UNITS.has(nx)){ unit = "k"; used = 2; }
+      if(K_UNITS.has(nx) && !(nx === "x" && /^\d{1,2}$/.test(N[i+2] || ""))){ unit = "k"; used = 2; }
       else if(nx === "tr" || nx === "trieu" || nx === "cu" || nx === "chai" && false){ unit = "tr"; used = 2; }
       else if(nx === "tram"){ unit = "tram"; used = 2; }
       else if(nx === "d" || nx === "dong" || nx === "vnd"){ unit = "d"; used = 2; }
-      else if(COUNTERS.has(nx)) return null;                     /* "2 ly", "3 cái" là số lượng */
+      else if(COUNTERS.has(nx) && !/[.,]/.test(m[1]) && v < 100) return null;   /* "2 ly", "3 cái" là số lượng; "50.000 bò né" vẫn là tiền */
     }
     if(unit === "k" || unit === "ng" || unit === "ngh" || unit === "nghin" || unit === "ngan"){ v *= 1000; if(tail && unit === "k") v += parseInt(tail, 10) * Math.pow(10, 3 - tail.length); }
     else if(unit === "tr" || unit === "trieu" || unit === "cu" || unit === "m" || unit === "t"){
@@ -59,7 +66,7 @@
         if(/^\d{1,3}$/.test(nx)){
           if(K_UNITS.has(nn)){ v += parseInt(nx, 10) * 1000; used += 2; }
           else if(nn === "tram"){ v += parseInt(nx, 10) * 100000; used += 2; }
-          else if(!COUNTERS.has(nn)){ v += parseInt(nx, 10) * Math.pow(10, 6 - nx.length); used += 1; }
+          else if(!COUNTERS.has(nn) || nx.length === 1){ v += parseInt(nx, 10) * Math.pow(10, 6 - nx.length); used += 1; }
         } else if(nx === "ruoi"){ v += 500000; used += 1; }
       }
     }
@@ -90,6 +97,7 @@
     for(let i = 0; i < N.length; i++){
       const w = N[i];
       if(w === "hnay" || w === "homnay" || at(i, ["hum","nay"])){ date = keyOf(now); drop.add(i); if(w === "hum") drop.add(i+1); }
+      else if(w === "nay" && ["luc","vua","ban","khi","hoi"].includes(N[i-1]) || (w === "xong" && N[i-1] === "vua" && i === N.length - 1)){ if(!date) date = keyOf(now); drop.add(i).add(i-1); }
       else if(w === "hqua" || w === "homqua" || at(i, ["hum","qua"])){ date = keyOf(addDays(now, -1)); drop.add(i); if(w === "hum") drop.add(i+1); }
       else if(w === "hkia" || w === "homkia"){ date = keyOf(addDays(now, -2)); drop.add(i); }
       else if(at(i, ["hom","nay"])){ date = keyOf(now); drop.add(i).add(i+1); }
@@ -104,7 +112,7 @@
         else if(N[i-1] !== "an") drop.add(i);                     /* "ăn trưa" giữ lại làm nội dung */
         if(N[i-1] === "buoi") drop.add(i-1);
       }
-      else if((w === "thu" && N[i+1]) || w === "chu" || w === "cn"){
+      else if(((w === "thu" && N[i+1]) || w === "chu" || w === "cn") && !(i > 0 && O && isCap(clean(O[i] || "")))){
         const two = w + " " + (N[i+1] || ""), key = WDAY[two] !== undefined ? two : (WDAY[w] !== undefined ? w : null);
         if(key !== null){
           const len = key.split(" ").length, target = WDAY[key];
@@ -140,46 +148,70 @@
   }
 
   /* ---------------- tag ---------------- */
+  /* Từ điển nhóm chi (v122, ~900 từ): cụm dài khớp trước cụm ngắn ("bún đậu mắm tôm" là Ăn dù có "mắm";
+     "sửa điện thoại" là Sửa chữa dù có "điện thoại"). Bằng nhau thì nhóm đứng trước thắng. */
   const TAG_RULES = [
-    ["xang",     ["đổ xăng","xăng","petrolimex","nhớt"]],
-    ["dilai",    ["grab bike","grabbike","grab car","grab","xanh sm","taxi","xe ôm","gửi xe","vé xe","xe buýt","bus","metro","phí đường","cầu đường","be bike","gojek","đi lại","giữ xe","vé tàu"]],
-    ["dienthoai",["tiền mạng","cước mạng","mạng","nạp thẻ","nạp tiền điện thoại","nạp 3g","nạp 4g","3g","4g","5g","data","cước","internet","wifi","viettel","vinaphone","mobifone","fpt","điện thoại"]],
-    ["diennuoc", ["tiền điện","tiền nước","điện nước","hoá đơn điện","hóa đơn điện","gas"]],
-    ["nha",      ["tiền nhà","thuê nhà","tiền phòng","tiền trọ","phí quản lý","chung cư"]],
-    ["uong",     ["trà đá","trà","cà phê","cafe","coffee","cf","trà sữa","sinh tố","nước mía","nước ép","bia","rượu","highlands","starbucks","phúc long","katinat","cộng cà phê","trà chanh","nước ngọt","nước uống","milo","đồ uống"]],
-    ["cho",      ["đi chợ","chợ","siêu thị","winmart","coopmart","co.op","bách hoá xanh","bách hóa xanh","bhx","lotte mart","aeon","rau","thịt","trứng","gạo","mắm","dầu ăn"]],
-    ["an",       ["ăn","cơm","phở","bún","miến","mì","hủ tiếu","cháo","bánh mì","bánh cuốn","bánh","xôi","lẩu","nướng","bbq","kfc","lotteria","jollibee","mcdonald","pizza","sushi","gà rán","đồ ăn","grabfood","shopeefood","befood","baemin","gs25","circle k","7-eleven","snack","trưa","sáng","tối","bữa"]],
-    ["muasam",   ["shopee","lazada","tiki","tiktok","sendo","quần áo","áo","quần","giày","dép","túi","uniqlo","zara","mua sắm","đồ gia dụng","mỹ phẩm online"]],
-    ["suckhoe",  ["thuốc","khám","bệnh viện","nhà thuốc","pharmacity","long châu","vitamin","nha khoa","răng","xét nghiệm","dán nhiệt","y tế","sức khoẻ","sức khỏe"]],
-    ["lamdep",   ["cắt tóc","gội đầu","làm tóc","nail","spa","mỹ phẩm","son","skincare","làm đẹp"]],
-    ["hoctap",   ["học phí","khoá học","khóa học","sách","học","vở","bút"]],
-    ["giaitri",  ["xem phim","phim","cgv","lotte cinema","game","netflix","spotify","youtube","karaoke","concert","giải trí","vé xem"]],
-    ["dulich",   ["du lịch","khách sạn","homestay","vé máy bay","vietjet","vietnam airlines","bamboo","agoda","booking","resort"]],
-    ["concai",   ["sữa bột","bỉm","tã","đồ chơi","học phí con","cho con","con cái"]],
-    ["thucung",  ["chó","mèo","pate","cát vệ sinh","thú cưng","thú y"]],
-    ["hieuhy",   ["đám cưới","mừng cưới","phong bì","sinh nhật","quà","đám hiếu","viếng","biếu","mừng"]],
-    ["tuthien",  ["từ thiện","ủng hộ","công đức","cúng dường","chùa"]],
-    ["suachua",  ["sửa xe","sửa","thay nhớt","rửa xe","bảo dưỡng","thay lốp","vá xe"]]
+    ["xang",     ["đổ xăng","xăng","đổ dầu","dầu diesel","petrolimex","pvoil","nhớt","sạc xe điện","sạc xe","trạm sạc","tiền sạc xe","sạc vinfast","đổ xăng xe","tiền xăng"]],
+    ["dilai",    ["grab bike","grabbike","grab car","grabcar","grab","xanh sm","xanhsm","taxi","mai linh","vinasun","xe ôm","gửi xe","giữ xe","vé gửi xe","tiền gửi xe","phí gửi xe","gửi ô tô","vé xe","xe buýt","vé xe buýt","bus","metro","tàu điện","vé tàu","tàu hoả","tàu hỏa","xe khách","vé xe khách","limousine","phí đường","phí đường bộ","cầu đường","phí cầu đường","trạm thu phí","vetc","epass","be bike","be car","bebike","gojek","đi lại","phà","thuê xe","thuê xe máy","bảo hiểm xe","xe đạp công cộng","đi xe","cuốc xe","đi grab","đặt xe","xe điện"]],
+    ["dienthoai",["tiền mạng","cước mạng","mạng","cước điện thoại","nạp thẻ","thẻ cào","nạp tiền điện thoại","nạp điện thoại","mua thẻ điện thoại","nạp 3g","nạp 4g","nạp 5g","3g","4g","5g","gói data","data","internet","wifi","cáp quang","truyền hình cáp","cước","viettel","vinaphone","mobifone","vietnamobile","fpt telecom","vnpt","fpt","sim","mua sim","icloud","google one","gói cước","điện thoại","tiền điện thoại","cước internet","tiền wifi","tiền internet"]],
+    ["diennuoc", ["tiền điện","tiền nước","điện nước","hoá đơn điện","hóa đơn điện","hoá đơn nước","hóa đơn nước","tiền ga","bình ga","đổi ga","gas","tiền rác","phí rác","evn","tiền điện nước","nước sạch"]],
+    ["nha",      ["tiền nhà","thuê nhà","tiền thuê nhà","tiền phòng","tiền trọ","phòng trọ","thuê trọ","phí quản lý","phí chung cư","phí dịch vụ chung cư","chung cư","nồi cơm điện","nồi chiên","nồi chiên không dầu","máy giặt","tủ lạnh","quạt","điều hoà","điều hòa","máy lọc nước","máy hút bụi","bàn ghế","giường","nệm","đệm","chăn","gối","ga giường","rèm","bóng đèn","xà phòng","nước giặt","nước xả","nước rửa bát","nước lau nhà","giấy vệ sinh","khăn giấy","giấy ăn","chổi","cây lau nhà","đồ dùng nhà","đồ gia dụng","gia dụng","nồi","chảo","bát đĩa","cốc chén","dọn nhà","giúp việc","osin","lau nhà","giặt là","giặt ủi","giặt sấy","giặt đồ","chuyển nhà","sửa nhà","cây cảnh","chậu cây","nến thơm","ổ cắm","thùng rác","móc quần áo"]],
+    ["uong",     ["tiền nước uống","nước uống văn phòng","uống","đồ uống","chai nước","nước","lon bia","két bia","thùng bia","trà đá","trà","cà phê","cafe","café","coffee","cf","cà phê sữa","cafe sữa","bạc xỉu","nâu đá","đen đá","trà sữa","sinh tố","nước mía","nước ép","nước cam","nước dừa","dừa","bia","rượu","highlands","starbucks","phúc long","katinat","cộng cà phê","the coffee house","coffee house","trung nguyên","gong cha","tocotoco","mixue","koi","trà chanh","trà tắc","trà đào","matcha","cacao","soda","nước ngọt","nước uống","nước suối","nước khoáng","nước lọc","coca","pepsi","sting","redbull","bò húp","milo","đồ uống","nhậu","đi nhậu","nhậu bia","bia hơi","quán bia","quán nhậu","rượu vang","cocktail","trà chiều","cà phê muối","cafe muối","yaourt","sữa đậu nành","nước sâm","chè dưỡng nhan"]],
+    ["cho",      ["hộp sữa","lốc sữa","thùng sữa","đi chợ","chợ","siêu thị","winmart","vinmart","coopmart","co.op","bách hoá xanh","bách hóa xanh","bhx","lotte mart","aeon","big c","go!","emart","mega market","kingfoodmart","rau","thịt","thịt lợn","thịt heo","thịt bò","thịt gà","cá","tôm","cua","mực","trứng","gạo","mắm","nước mắm","dầu ăn","đường","muối","bột ngọt","mì chính","hạt nêm","gia vị","hành","tỏi","ớt","rau củ","hoa quả","trái cây","sữa tươi","sữa chua","đồ khô","mì gói","mì tôm","đậu phụ","đậu hũ","đồ ăn về nấu","thực phẩm","thức ăn","rau muống","cà chua","khoai tây","hành tây","bí đỏ","nấm","xoài","cam","táo","nho","chuối","dưa hấu","bưởi","sầu riêng","thanh long","ổi","lê","dâu tây","bơ","mít","vải","nhãn","chôm chôm","măng cụt","sườn","ba chỉ","giò","chả lụa","xúc xích","đồ hộp","bánh mì sandwich","ngũ cốc","yến mạch","bột mì","nước tương","tương ớt","dầu hào","bánh kẹo tết"]],
+    ["an",       ["ăn","cơm","phở","bún","miến","mì","mì quảng","mì cay","mì vằn thắn","hủ tiếu","cháo","bánh mì","bánh cuốn","bánh xèo","bánh canh","bánh tráng","bánh tráng trộn","bánh bao","bánh","xôi","lẩu","nướng","bbq","buffet","kfc","lotteria","jollibee","mcdonald","mcdonalds","burger king","burger","pizza","domino","sushi","gà rán","cơm tấm","cơm rang","cơm chiên","cơm gà","cơm văn phòng","cơm bình dân","cơm hộp","cơm niêu","bún chả","bún bò","bún bò huế","bún riêu","bún đậu","bún đậu mắm tôm","bún ốc","bún cá","bún mọc","bún thang","phở bò","phở gà","phở cuốn","ốc","hải sản","nem","nem rán","nem chua","nem chua rán","nem nướng","chả cá","gỏi cuốn","bò bía","chè","kem","bánh ngọt","bánh kem","bánh sinh nhật","bánh trung thu","snack","bim bim","kẹo","hướng dương","đồ ăn vặt","ăn vặt","đồ ăn","đồ ăn sáng","ăn sáng","ăn trưa","ăn tối","ăn khuya","ăn đêm","ăn uống","bữa","bữa sáng","bữa trưa","bữa tối","grabfood","shopeefood","befood","baemin","gofood","gs25","circle k","7-eleven","ministop","family mart","dimsum","mì ý","spaghetti","steak","bít tết","cháo lòng","lòng","thịt dê","lẩu dê","vịt quay","ngan","gà","bò né","bò kho","bò lá lốt","heo quay","bánh đa","cà ri","há cảo","takoyaki","tokbokki","tteokbokki","kimbap","ramen","udon","tiramisu","donut","croissant","khoai tây chiên","ngô","bắp","trứng vịt lộn","hột vịt lộn","nhà hàng","quán ăn","đặt đồ ăn","tiền ăn","cơm trưa","cơm tối","cơm chay","đồ chay","chay","bánh chưng","bánh giò","bánh khọt","bánh căn","bánh bèo","bánh flan","bánh crepe","sữa chua dẻo","sữa chua trân châu","kem tràng tiền","lẩu nướng","lẩu thái","lẩu gà","lẩu bò","nướng bbq","đồ nướng","sushi bar","gimbap","pho mai que","xiên que","xiên bẩn","cá viên chiên","phá lấu","bột chiên","bánh mì chảo","bánh mì que","cháo sườn","súp cua","bánh tráng nướng","ốc luộc","hàu nướng","trưa","sáng","tối","đồ ăn trưa","suất ăn","phần cơm","cơm ngoài","ăn ngoài","ăn nhà hàng","ăn quán","mì trộn","bún trộn","bún nem","cơm sườn","cơm phần","cơm bụi"]],
+    ["muasam",   ["cái áo","chiếc áo","bộ quần áo","đôi giày","đôi dép","shopee","lazada","tiki","tiktok shop","tiktok","sendo","quần áo","áo","quần","váy","đầm","áo khoác","áo phông","áo sơ mi","quần jean","quần short","giày","giày thể thao","dép","túi","túi xách","ví da","balo","mũ","nón","kính","đồng hồ","trang sức","nhẫn","dây chuyền","bông tai","thắt lưng","tất","đồ lót","uniqlo","zara","h&m","mango","nike","adidas","mua sắm","shopping","order","đặt hàng","hàng online","phí ship","tiền ship","ship","iphone","samsung","xiaomi","oppo","laptop","máy tính","macbook","tai nghe","airpods","loa","sạc","cáp sạc","củ sạc","sạc dự phòng","ốp lưng","ốp điện thoại","chuột","bàn phím","màn hình","ipad","máy tính bảng","máy ảnh","đồ điện tử","thế giới di động","điện máy xanh","fpt shop","cellphones","mua điện thoại","điện thoại mới","đồ công nghệ","phụ kiện","quà cho mình","đồ secondhand","đồ si","thời trang","mỹ phẩm online","ô","áo mưa"]],
+    ["suckhoe",  ["thuốc","mua thuốc","thuốc cảm","thuốc đau đầu","khám","khám bệnh","bệnh viện","phòng khám","nhà thuốc","pharmacity","long châu","an khang","vitamin","thực phẩm chức năng","nha khoa","răng","nhổ răng","niềng răng","lấy cao răng","trám răng","xét nghiệm","y tế","bảo hiểm y tế","bhyt","sức khoẻ","sức khỏe","tiêm","vaccine","vắc xin","tiêm phòng","khẩu trang","khám mắt","kính cận","kính mắt","vật lý trị liệu","châm cứu","gym","tập gym","phòng gym","yoga","đi bơi","bơi","bể bơi","thể thao","cầu lông","tennis","đá bóng","sân bóng","thuê sân","pickleball","chạy bộ","giày chạy","whey","thuốc bổ","siêu âm","nội soi","chụp x quang","tái khám","bảo hiểm sức khoẻ","bảo hiểm sức khỏe","bảo hiểm nhân thọ","băng cá nhân","dầu gió","nước muối sinh lý"]],
+    ["lamdep",   ["cắt tóc","gội đầu","làm tóc","uốn tóc","nhuộm tóc","duỗi tóc","nail","làm nail","sơn móng","spa","massage","mát xa","mỹ phẩm","son","son môi","kem chống nắng","sữa rửa mặt","skincare","serum","toner","kem dưỡng","mặt nạ","nước hoa","làm đẹp","dầu gội","dầu xả","sữa tắm","kem đánh răng","bàn chải đánh răng","dao cạo","waxing","triệt lông","phun môi","nối mi","gội đầu dưỡng sinh","barber","hasaki","guardian","watsons","cocolux","tẩy trang","nước tẩy trang","lăn khử mùi","trang điểm","makeup","chăm sóc da","lấy mụn","xông hơi"]],
+    ["hoctap",   ["học phí","khoá học","khóa học","sách","mua sách","học","vở","bút","học thêm","gia sư","tiếng anh","ielts","toeic","udemy","coursera","đồ dùng học tập","văn phòng phẩm","in ấn","in tài liệu","photo","phô tô","lệ phí thi","thi chứng chỉ","giáo trình","fahasa","học online","lớp học","workshop","khoá online","đăng ký học","tiền học","học lái xe","bằng lái"]],
+    ["giaitri",  ["xem phim","phim","rạp phim","cgv","lotte cinema","bhd","galaxy cinema","beta cinemas","game","nạp game","steam","netflix","spotify","youtube premium","youtube","apple music","chatgpt plus","karaoke","hát karaoke","concert","vé concert","vé ca nhạc","ca nhạc","giải trí","vé xem","bowling","bida","bi-a","bi a","chơi game","đi chơi","công viên","khu vui chơi","xem bóng","xem bóng đá","vé bóng đá","sở thú","bảo tàng","triển lãm","câu cá","escape room","board game","boardgame","trò chơi","vinwonders","sun world","nhạc hội","liveshow","đi bar","bar","pub","club","vé xem phim","bắp nước"]],
+    ["dulich",   ["du lịch","khách sạn","homestay","vé máy bay","máy bay","vietjet","vietnam airlines","bamboo","vietravel","agoda","booking","traveloka","airbnb","resort","villa","tour","đi phượt","vé tham quan","làm visa","phí visa","xin visa","hộ chiếu","đặt phòng","phòng khách sạn","thuê phòng","đi biển","nghỉ dưỡng","vé cáp treo","cáp treo","hành lý"]],
+    ["concai",   ["sữa bột","bỉm","tã","đồ chơi","học phí con","học phí mầm non","học phí cho con","cho con","con cái","sữa cho con","quần áo trẻ em","đồ trẻ em","trường mầm non","nhà trẻ","mầm non","mẫu giáo","tiền học cho con","học cho con","cho bé","đồ cho bé","xe đẩy","ăn dặm","khám nhi","bỉm sữa","đồ sơ sinh","sữa cho bé","bánh ăn dặm","vở cho con","quà cho con","học thêm cho con","tiền học con","đóng học cho con","đóng tiền học"]],
+    ["thucung",  ["cho con mèo","cho con chó","con mèo","con chó","cho mèo","cho chó","chó","mèo","pate","hạt cho mèo","hạt cho chó","thức ăn cho mèo","thức ăn cho chó","cát vệ sinh","cát mèo","thú cưng","thú y","spa chó","tắm chó","cắt tỉa lông","đồ chơi mèo","cá cảnh","thức ăn cá","chim cảnh","pet","pet shop","petshop","đồ cho mèo","đồ cho chó"]],
+    ["hieuhy",   ["đám cưới","mừng cưới","đi đám cưới","ăn cưới","đi cưới","đám hỏi","phong bì","sinh nhật","quà","quà sinh nhật","quà tặng","tặng quà","đám hiếu","đám ma","đám tang","viếng","phúng viếng","biếu","mừng","mừng tuổi","lì xì cho","li xi cho","đầy tháng","thôi nôi","tân gia","hoa","mua hoa","bó hoa","giỗ","đồ cúng","cúng","vàng mã","mừng thọ","quà tết","biếu tết","quà 20/10","quà 8/3","quà valentine","gửi mẹ","gửi bố","gửi bố mẹ","biếu bố mẹ","cho bố mẹ","cho mẹ","cho bố","hiếu hỷ","đi viếng"]],
+    ["tuthien",  ["từ thiện","ủng hộ","công đức","cúng dường","chùa","quyên góp","nhà thờ","phóng sinh","giúp đỡ","ủng hộ lũ lụt","quỹ"]],
+    ["suachua",  ["vá săm","thay săm","vá lốp xe","sửa xe","sửa","thay nhớt","rửa xe","bảo dưỡng","bảo dưỡng xe","thay lốp","vá xe","vá lốp","bơm xe","sửa điện thoại","thay màn hình","thay pin","sửa máy tính","sửa laptop","sửa máy giặt","sửa điều hoà","sửa điều hòa","sửa tủ lạnh","bảo dưỡng điều hoà","bảo dưỡng điều hòa","vệ sinh điều hoà","vệ sinh điều hòa","thợ điện","thợ nước","sửa ống nước","sửa khoá","sửa khóa","đăng kiểm","thay phanh","thay má phanh","thay ắc quy","ắc quy","sơn xe","độ xe","thay dầu","sửa chữa","bảo hành","thay xích","thay săm","sửa giày","sửa quần áo","may đo","sửa đồng hồ"]],
+    ["khac",     ["phí chuyển khoản","phí ngân hàng","phí thường niên","phí sms","lãi thẻ","phí trả chậm","thuế","phạt","tiền phạt","phạt nguội","rút tiền","phí rút tiền"]]
   ];
-  const AMBIG = new Set(["cho","cho con","cha","con","ca","sua","ao","quan","but","vo","the","tra","an","son","chó","chợ","nuoc"]);
+  const AMBIG = new Set(["cho","cho con","cha","con","ca","sua","ao","quan","but","vo","the","tra","an","son","chó","chợ","nuoc","che","bo","ga","dau","keo","hoa","cam","le","nho","bo","mang","hanh","duong","sach","hoc","sang","trua","toi","bua","ban","bia","banh","kem","nem","com","mi","bun","pho","oc","tom","cua","muc","ngan","ga_","chay","bar","lon","tour_"]);
+  /* các từ không dấu vẫn chắc nghĩa dù gõ không dấu */
+  const SAFE_UNMARKED = new Set(["com","pho","bun","banh","banh mi","mi","oc","kem","nem","bia","hoc","sach"]);
+  /* từ chỉ buổi / chung chung: chỉ dùng khi không có từ nào rõ hơn ("cf sáng" là Uống, "sáng 30k" là Ăn) */
+  const WEAK = new Set(["trưa","sáng","tối","bữa","ăn","mua","đồ ăn"]);
+  const DICT = []; TAG_RULES.forEach(([tag, words], ti) => words.forEach(w => DICT.push({ tag, ti, w:w.toLowerCase(), n:norm(w), weak:WEAK.has(w) })));
+  const DRINK2 = new Set(DICT.filter(d => d.tag === "uong" && /^tra /.test(d.n)).map(d => d.n));
   function guessTag(text, ctx){
-    const low = String(text).toLowerCase(), marks = hasMarks(text), n = " " + norm(text) + " ";
     if(ctx && ctx.history){ const h = ctx.history(text); if(h) return h; }
-    for(const [tag, words] of TAG_RULES){
-      for(const w of words){
-        if(marks){ if(new RegExp("(^|[^\\p{L}])" + w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "($|[^\\p{L}])", "u").test(low)) return tag; }
-        else { const nw = norm(w); if(AMBIG.has(nw) || AMBIG.has(w)) continue; if(n.includes(" " + nw + " ")) return tag; }
+    const low = " " + String(text).toLowerCase().replace(/[^\p{L}\p{N}&!.\-/%]+/gu, " ").replace(/\s+/g, " ").trim() + " ";
+    const n = " " + norm(text).replace(/[^a-z0-9&!.\-/%]+/g, " ").replace(/\s+/g, " ").trim() + " ";
+    let best = null, bs = 0;
+    const consider = (tag, ti, sc) => { if(sc > bs || (sc === bs && best && ti < best.ti)){ bs = sc; best = { tag, ti }; } };
+    /* nhóm do người dùng tự tạo: tên nhóm xuất hiện trong câu */
+    ((ctx && ctx.tags) || []).forEach(t => { const ln = norm(t.label || "").trim(); if(ln.length >= 3 && n.includes(" " + ln + " ")) consider(t.id, -1, ln.length * 2 + 2); });
+    for(const d of DICT){
+      if(low.includes(" " + d.w + " ")) consider(d.tag, d.ti, d.weak ? 1 : d.n.length * 2 + 1);
+      else if(!AMBIG.has(d.n) || SAFE_UNMARKED.has(d.n)){
+        /* gõ không dấu (hoặc lẫn có dấu, không dấu): so bản bỏ dấu, nhưng chỉ khi đoạn đó trong câu cũng không có dấu */
+        const i = n.indexOf(" " + d.n + " ");
+        if(i >= 0){ const seg = low.slice(i + 1, i + 1 + d.n.length); if(!hasMarks(seg) || seg === d.w) consider(d.tag, d.ti, d.weak ? 0.5 : d.n.length * 2); }
       }
     }
-    return "khac";
+    return best ? best.tag : "khac";
   }
 
   /* ---------------- tách câu ---------------- */
   const SPLIT_WORDS = ["va","voi","roi","xong","sau do","con","them","cung","kem"];
+  const SPLIT_MARK = { va:"và", voi:"với", roi:"rồi", xong:"xong", con:"còn", them:"thêm", cung:"cùng", kem:"kèm", sau:"sau", do:"đó" };
+  /* có dấu mà khác dấu của từ nối thì không phải từ nối */
+  const isSplit = (O, N, j) => { const w = N[j]; if(!SPLIT_WORDS.includes(w) && w !== "sau" && w !== "do") return false; const o = clean(O[j] || "").toLowerCase(); return !hasMarks(o) || o === SPLIT_MARK[w]; };
   function tokenize(text){
-    const O = String(text).replace(/[ ]/g, " ").replace(/(\d)\s*([kK])\b/g, "$1$2").split(/\s+/).map(w => w.trim()).filter(Boolean);
+    const O = String(text).replace(/[ ]/g, " ").replace(/(\d)\s*([kK])\b/g, "$1$2")
+      .replace(/(\d[\d.,]*\s*(?:k|đ|d|ngh|nghìn|ngàn|ngan|nghin|tr|triệu|trieu)?)\s*\/\s*(?=\p{L})/giu, "$1 mỗi ")   /* v122: "35k/ly" = 35k mỗi ly */
+      .split(/\s+/).map(w => w.trim()).filter(Boolean);
     return pair(O, O.map(w => clean(norm(w))));
   }
+  /* v122: số tiền đứng sau "giảm", "trừ", "voucher", "bớt", "chiết khấu" là tiền được giảm, không phải khoản mới */
+  const DISC_W = ["giam","tru","bot","voucher","coupon","km"];
+  function isDisc(N, i){ return DISC_W.includes(N[i-1]) || (N[i-1] === "gia" && N[i-2] === "giam") || (N[i-1] === "khau" && N[i-2] === "chiet") || (N[i-1] === "mai" && N[i-2] === "khuyen") || (DISC_W.includes(N[i-2]) && ["duoc","them","di","ma"].includes(N[i-1])); }
   /* chia thành các đoạn, mỗi đoạn tối đa một số tiền (trừ khi là câu vay/trả có một số) */
   function clauses(text){
     const parts = String(text).split(/[\n;]+|,(?!\d)|(?<!\d),|\.(?=\s+[^\d])|\s\+\s/).map(s => s.trim()).filter(Boolean);
@@ -187,7 +219,7 @@
     parts.forEach(p => {
       const { O, N } = tokenize(p);
       /* trong một phần có >1 số tiền: cắt tại từ nối hoặc ngay sau mỗi số tiền */
-      const amts = []; for(let i = 0; i < N.length; i++){ const a = amountAt(N, i); if(a){ amts.push([i, a.n]); i += a.n - 1; } }
+      const amts = []; for(let i = 0; i < N.length; i++){ const a = amountAt(N, i); if(a){ if(!isDisc(N, i) || !amts.length) amts.push([i, a.n]); i += a.n - 1; } }
       if(amts.length <= 1){ out.push(pair(O, N)); return; }
       let start = 0;
       amts.forEach(([ai, an], k) => {
@@ -195,11 +227,11 @@
         let cut = ai + an;
         const nextA = amts[k+1][0];
         /* nếu sau số tiền là chữ rồi mới tới số tiếp, phần chữ đó thuộc khoản sau khi có từ nối */
-        for(let j = ai + an; j < nextA; j++){ if(SPLIT_WORDS.includes(N[j]) || (N[j] === "sau" && N[j+1] === "do")){ cut = j; break; } }
+        for(let j = ai + an; j < nextA; j++){ if((SPLIT_WORDS.includes(N[j]) && isSplit(O, N, j)) || (N[j] === "sau" && N[j+1] === "do" && isSplit(O, N, j))){ cut = j; break; } }
         const seg = pair(O.slice(start, cut), N.slice(start, cut));
         out.push(seg);
         start = cut;
-        while(start < nextA && (SPLIT_WORDS.includes(N[start]) || N[start] === "do" || N[start] === "sau")) start++;
+        while(start < nextA && ((SPLIT_WORDS.includes(N[start]) && isSplit(O, N, start)) || (N[start] === "sau" && N[start+1] === "do" && isSplit(O, N, start)) || (N[start] === "do" && N[start-1] === "sau" && isSplit(O, N, start)))) start++;
       });
     });
     return out;
@@ -210,7 +242,10 @@
   function nameFrom(O, N, from, to, drop){
     const w = [];
     for(let i = Math.max(0, from); i < Math.min(N.length, to); i++){
-      const named = /^[A-ZĐÀ-Ỹ]/.test(O[i]) && i > 0;                /* "Minh" viết hoa là tên, "mình" là đại từ */
+      /* "Minh" viết hoa là tên, "mình" là đại từ. Đầu câu (iPhone tự viết hoa) chỉ là tên khi không phải đại từ/từ thường */
+      const o0 = clean(O[i] || ""), lo0 = o0.toLowerCase();
+      const PRON = ["mình","tôi","tao","em","anh","chị","từ","cho","vay","mượn","trả","tiền","nợ","thêm","của","lại","đã","vừa","mới","hôm","nay","qua","cũng","đi","về","gửi"];
+      const named = isCap(o0) && (i > 0 || (hasMarks(lo0) ? !PRON.includes(lo0) : !["minh","toi","tao","em","cho","vay","muon","tra","tien","no","them","cua","lai","hom","di","ve","gui"].includes(N[i])));
       if(drop.has(i) || (FILLER.has(N[i]) && !named) || amountAt(N, i) || /^\d/.test(N[i])) { if(w.length) break; else continue; }
       w.push(clean(O[i]));
     }
@@ -259,13 +294,71 @@
   const TO_W = ["sang","vao","qua","ve"], PAY_W = ["bang","qua","tu","trong","o"];
   const TOPUP_NOT = / (dien thoai|dt|3g|4g|5g|data|game|the cao|sim|dien|nuoc|hoc phi) /;
 
+  /* ---------------- phép tính trong câu (v122) ----------------
+     "3 ly trà sữa mỗi ly 35k", "2 cái áo 150k một cái", "trà sữa 35k x3", "35k/ly" → nhân số lượng
+     "siêu thị 500k giảm 10%", "… được giảm 50k", "… trừ voucher 30k" → trừ
+     "ăn lẩu 600k chia 4 (người)" → phần mình = 150k, giữ cả bill để đổi lại nếu mình trả hết
+     Trả { amt, how:"qty"|"disc"|"split", split, total } hoặc null; đánh dấu các chữ đã dùng vào drop. */
+  function calcAmount(O, N, ai, an, amt, drop){
+    let v = amt, split = 0, total = 0; const how = [];
+    const isN = w => /^\d{1,2}$/.test(w || "");
+    /* số lượng: "x3", "x 3", "nhân 3" */
+    let q = 0;
+    for(let i = ai + an; i < N.length; i++){
+      if(drop.has(i)) continue;
+      const m = (N[i] || "").match(/^x(\d{1,2})$/);
+      if(m){ q = +m[1]; drop.add(i); break; }
+      if((N[i] === "x" || clean(O[i]).toLowerCase() === "nhân") && isN(N[i+1])){ q = +N[i+1]; drop.add(i).add(i+1); break; }
+    }
+    /* đơn giá: "mỗi ly 35k", "35k mỗi ly", "35k một cái", "35k 1 ly"; số lượng là "3 ly …" ở chỗ khác trong câu */
+    if(!q){
+      let per = false;
+      for(let i = 0; i < N.length && !per; i++){
+        if(drop.has(i)) continue;
+        if(N[i] === "moi" && clean(O[i]).toLowerCase() !== "mới"){ per = true; drop.add(i); if(COUNTERS.has(N[i+1]) && i + 1 !== ai) drop.add(i+1); }
+        else if(i >= ai + an && (N[i] === "mot" || N[i] === "1") && COUNTERS.has(N[i+1])){ per = true; drop.add(i).add(i+1); }
+      }
+      if(per) for(let i = 0; i < N.length; i++){ if(i !== ai && !drop.has(i) && isN(N[i]) && N[i] !== "1" && COUNTERS.has(N[i+1])){ q = +N[i]; break; } }
+    }
+    if(q >= 2 && q <= 99){ v *= q; how.push("qty"); }
+    /* giảm giá: "giảm 10%", "sale 20%", "giảm 50k", "trừ voucher 30k" */
+    for(let i = ai + an; i < N.length; i++){
+      const pm = (O[i] || "").match(/^(\d{1,2})\s*%$/);
+      if(pm && N.slice(Math.max(0, i - 3), i).some(w => ["giam","sale","off","khau","km","mai","bot"].includes(w))){
+        v = Math.round(v * (100 - +pm[1]) / 100); how.push("disc");
+        for(let k = Math.max(0, i - 3); k <= i; k++) if(k === i || ["giam","gia","sale","off","duoc","chiet","khau","khuyen","mai","km","bot"].includes(N[k])) drop.add(k);
+        break;
+      }
+      if(isDisc(N, i)){
+        const a = amountAt(N, i);
+        if(a && a.v < v){
+          v -= a.v; how.push("disc");
+          for(let k = 0; k < a.n; k++) drop.add(i + k);
+          for(let k = Math.max(0, i - 2); k < i; k++) if(DISC_W.concat(["gia","duoc","them","di","ma","chiet","khau","khuyen","mai"]).includes(N[k])) drop.add(k);
+          i += a.n - 1;
+        }
+      }
+    }
+    /* chia tiền: "chia 4", "chia đều 4 người", "chia cho 3 đứa" */
+    const ic = N.indexOf("chia");
+    if(ic >= 0){
+      let j = ic + 1; while(["deu","cho","ra","lam"].includes(N[j])) j++;
+      if(isN(N[j]) && +N[j] >= 2){
+        split = +N[j]; total = v; v = Math.round(v / split); how.push("split");
+        for(let k = ic; k <= j; k++) drop.add(k);
+        if(["nguoi","dua","phan","ban","suat","anh em"].includes(N[j+1])) drop.add(j+1);
+      }
+    }
+    return how.length ? { amt:v, how:how.join("+"), split, total } : null;
+  }
+
   /* ---------------- hiểu một đoạn ---------------- */
   const INC_RULES = [
     ["luong", [["luong"]]],
     ["thuong",[["thuong"],["hoa","hong"],["bonus"]]],
     ["ban",   [["ban","duoc"],["ban","hang"],["ban"]]],
     ["cho",   [["duoc","cho"],["duoc","tang"],["duoc","bieu"],["li","xi"],["lixi"],["mung","tuoi"],["duoc","mung"]]],
-    ["khac",  [["hoan","tien"],["tien","ve"],["ve","tai","khoan"],["nhan","tien"],["nhan","duoc"],["thu","nhap"],["co","nguoi","chuyen"],["chuyen","cho","minh"],["chuyen","cho","toi"],["lai","tiet","kiem"],["tien","lai"]]]
+    ["khac",  [["hoan","tien"],["tien","ve"],["ve","tai","khoan"],["nhan","tien"],["nhan","duoc"],["thu","nhap"],["co","nguoi","chuyen"],["chuyen","cho","minh"],["chuyen","cho","toi"],["lai","tiet","kiem"],["tien","lai"],["lai","ngan","hang"],["thu","tien"],["khach","chuyen"],["khach","tra"],["khach","gui"],["khach","thanh","toan"],["thu","tien","hang"],["ung","luong"],["tam","ung"],["tien","hoan"],["duoc","hoan"],["hoan","lai"]]]
   ];
   const has = (N, seq) => { for(let i = 0; i + seq.length <= N.length; i++) if(seq.every((w, k) => N[i+k] === w)) return i; return -1; };
 
@@ -276,9 +369,12 @@
     let amtI = -1, amt = 0, amtN = 0;
     for(let i = 0; i < N.length; i++){ if(dt.drop.has(i)) continue; const a = amountAt(N, i); if(a){ amtI = i; amt = a.v; amtN = a.n; break; } }
     const drop = new Set(dt.drop); for(let k = 0; k < amtN; k++) drop.add(amtI + k);
+    const calc = amt ? calcAmount(O, N, amtI, amtN, amt, drop) : null;
+    if(calc){ amt = calc.amt; }
     const date = dt.date || carry.date || keyOf(now);
     const hh = dt.hh !== null ? dt.hh : carry.hh;
     const item = { amt, date, cardId:null, who:"", loanId:null, src:"tk" };
+    if(calc){ item.calc = calc.how; if(calc.split){ item.split = calc.split; item.total = calc.total; } }
     let t;
     if(date === keyOf(now) && hh === null) t = now.getTime();
     else { const d = new Date(date + "T12:00:00"); if(hh !== null){ d.setHours(hh, dt.mm || 0, 0, 0); } else d.setHours(now.getHours(), now.getMinutes(), 0, 0); t = d.getTime(); }
@@ -321,38 +417,44 @@
       kind = "bal";
     }
     /* trả thẻ */
-    if(!kind && (has(N, ["tra","the"]) >= 0 || has(N, ["tra","no","the"]) >= 0 || has(N, ["thanh","toan","the"]) >= 0 || has(N, ["tat","toan","the"]) >= 0)){
+    if(!kind && (has(N, ["tra","the"]) >= 0 || has(N, ["tra","no","the"]) >= 0 || / tra (het |bot |them |not |)(no |tien |)the /.test(txt) || has(N, ["thanh","toan","the"]) >= 0 || has(N, ["tat","toan","the"]) >= 0)){
       kind = "cardpay";
       const cd = findCard(ctx, N); if(cd) item.cardId = cd.id;
       else { const cs = (ctx && ctx.cards) || []; item.cardId = cs.length === 1 ? cs[0].id : defCard(ctx); if(cs.length > 1 && item.cardId) item.cardGuess = true; }
     }
     /* vay mượn */
     if(!kind){
+      /* v122: "trà" (có dấu) không phải "trả" */
+      const traIdx = N.findIndex((w, i) => w === "tra" && (!hasMarks(clean(O[i]).toLowerCase()) || clean(O[i]).toLowerCase() === "trả"));
       const iCho = N.indexOf("cho");
       const iVay = N.findIndex((w, i) => (w === "vay" || w === "muon") && i > 0);
-      const meIdx = N.findIndex(w => w === "minh" || w === "toi" || w === "tao" || w === "em");
-      if(iCho >= 0 && iVay > iCho){
+      const meIdx = N.findIndex((w, i) => (w === "minh" || w === "toi" || w === "tao" || w === "em") && !(i > 0 && isCap(clean(O[i]))));
+      const meAfterVay = iVay > 0 && ["minh","toi","em","tao"].includes(N[iVay+1]) && !isCap(clean(O[iVay+1] || "x")) && iCho < 0;
+      if(meAfterVay){ kind = "lend"; item.who = nameFrom(O, N, 0, iVay, drop) || (isCap(clean(O[0])) ? clean(O[0]) : ""); }
+      else if(iCho >= 0 && iVay > iCho){
         /* "cho X vay" (mình cho vay) hoặc "X cho mình vay" (mình đi vay) */
-        if(meIdx > iCho && meIdx < iVay){ kind = "borrow"; item.who = nameFrom(O, N, 0, iCho, drop); }
-        else { kind = "lend"; item.who = nameFrom(O, N, iCho + 1, iVay, drop); }
+        const meBetween = N.some((w, i) => i > iCho && i < iVay && (w === "minh" || w === "toi" || w === "tao" || w === "em") && !isCap(clean(O[i])) && !(w === "em" && ["gai","trai","ho","re","dau","be","con"].includes(N[i+1])));
+        if(meBetween){ kind = "borrow"; item.who = nameFrom(O, N, 0, iCho, drop) || (iCho === 1 && isCap(clean(O[0])) ? clean(O[0]) : ""); }
+        else { kind = "lend"; item.who = nameFrom(O, N, iCho + 1, iVay, drop); if(!item.who){ let st = iVay + 1; while(["them","tien"].includes(N[st])) st++; item.who = nameFrom(O, N, st, N.length, drop); } }
       } else if(has(N, ["vay"]) >= 0 || has(N, ["muon"]) >= 0){
         const iv = Math.max(N.indexOf("vay"), N.indexOf("muon") >= 0 && N.indexOf("vay") < 0 ? N.indexOf("muon") : -1);
-        if(iv >= 0 && !hasW("tra")){ kind = "borrow"; let st = iv + 1; while(["cua","tu","them","tien"].includes(N[st])) st++; item.who = nameFrom(O, N, st, N.length, drop) || nameFrom(O, N, 0, iv, drop); }
+        if(iv >= 0 && traIdx < 0){ kind = "borrow"; let st = iv + 1; while(["cua","tu","them","tien"].includes(N[st]) && !(N[st] === "tu" && (isCap(clean(O[st])) || clean(O[st]).toLowerCase() === "tú"))) st++; item.who = nameFrom(O, N, st, N.length, drop) || nameFrom(O, N, 0, iv, drop); }
       }
       /* v116: "thẻ trả ăn 1 triệu", "trả tiền ăn 200k": trả = trả tiền cho khoản chi, không phải trả nợ.
          Có nhắc thẻ (mà không phải "trả thẻ") hoặc ngay sau "trả" là một khoản chi (ăn, cà phê, xăng…) thì để phần chi tiêu xử lý. */
       let payFor = false;
-      if(!kind && hasW("tra") && !hasW("no")){
-        const it0 = N.indexOf("tra"); let s0 = it0 + 1; while(N[s0] === "tien" || N[s0] === "cho") s0++;
+      if(!kind && traIdx >= 0 && !hasW("no")){
+        const it0 = traIdx; let s0 = it0 + 1; while(N[s0] === "tien" || N[s0] === "cho") s0++;
         const restTxt = O.slice(s0).filter((w, i) => !/\d/.test(w)).join(" ");
         /* trước "trả" có người khác ("con trả tiền học") thì còn mơ hồ: không tự quyết */
         const beforeMe = N.slice(0, it0).every(w => ["minh","toi","em","tao","hom","nay","qua","sang","trua","toi","chieu","vua"].includes(w));
-        if(N.includes("the") || (beforeMe && restTxt && guessTag(restTxt, ctx) !== "khac")){ payFor = true; drop.add(it0); }
+        const isDrink = !hasMarks(clean(O[it0])) && DRINK2.has("tra " + (N[it0+1] || ""));   /* "tra dao" (trà đào) gõ không dấu */
+        if(!isDrink && (N.includes("the") || (beforeMe && restTxt && guessTag(restTxt, ctx) !== "khac"))){ payFor = true; drop.add(it0); }
       }
-      if(!kind && !payFor && hasW("tra") && !hasW("tra sua") && !hasW("tra da") && !hasW("tra chanh")){
-        const it = N.indexOf("tra");
+      if(!kind && !payFor && traIdx >= 0 && !DRINK2.has("tra " + (N[traIdx+1] || ""))){
+        const it = traIdx;
         const before = nameFrom(O, N, 0, it, drop);
-        const giveBack = ["no","tien","lai","cho"];
+        const giveBack = ["no","tien","lai","cho","bot","het","them","not","dan"];
         let st = it + 1; while(giveBack.includes(N[st])) st++;
         const after = nameFrom(O, N, st, N.length, drop);
         const meAfter = N.slice(it).some(w => w === "minh" || w === "toi" || w === "tao" || w === "em");
@@ -377,20 +479,26 @@
       const diNotAunt = N[0] === "di" && !/^dì$/i.test(clean(O[0]));
       /* v111: "Đóng tiền học cho Mon 500k" là chi: trước "cho" có động từ/từ chi tiêu thì không phải "ai đó cho mình";
          chữ hoa đầu câu (iPhone tự viết hoa) không đủ để coi là tên người: mọi chữ trước "cho" đều phải viết hoa */
-      const SPENDW = ["mua","tra","chi","tieu","an","nap","gui","dong","nop","chuyen","tang","dat","thue","lam","sua","gop","mung","bieu","uong","tien","phi","hoc","xin"];
-      const nameLike = O.slice(0, ic).every(w => /^[A-ZĐÀ-Ỹ]/.test(clean(w)));
-      if(ic > 0 && ic <= 3 && !diNotAunt && N.indexOf("vay") < 0 && N.indexOf("muon") < 0 && (GIVERS.has(N[0]) || nameLike) && N.slice(0, ic).every(w => !SPENDW.includes(w))){
+      const SPENDW = [hasMarks(clean(O[0] || "")) && clean(O[0]).toLowerCase() === "chị" ? "chi_" : "chi","mua","tra","tieu","an","nap","gui","dong","nop","chuyen","tang","dat","thue","lam","sua","gop","mung","bieu","uong","tien","phi","hoc","xin"];
+      const nameLike = O.slice(0, ic).every(w => isCap(clean(w)));
+      const giverSend = ic > 0 && ic <= 3 && GIVERS.has(N[0]) && ["chuyen","gui","ck","bank"].includes(N[ic-1]) && (ic + 1 >= N.length || amountAt(N, ic + 1) || ["minh","toi","em"].includes(N[ic+1]));
+      if(giverSend){ kind = "in"; item.cat = "cho"; item.who = clean(O[0]); }
+      else if(ic > 0 && ic <= 3 && !diNotAunt && N.indexOf("vay") < 0 && N.indexOf("muon") < 0 && (GIVERS.has(N[0]) || nameLike) && N.slice(0, ic).every(w => !SPENDW.includes(w))){
         kind = "in"; item.cat = "cho"; item.who = nameFrom(O, N, 0, ic, drop);
       }
     }
     /* khoản thu */
     if(!kind){
-      for(const [cat, seqs] of INC_RULES){ for(const s of seqs){ if(has(N, s) >= 0){ kind = "in"; item.cat = cat; break; } } if(kind) break; }
+      for(const [cat, seqs] of INC_RULES){ for(const s of seqs){ const j = has(N, s); if(j >= 0){
+        /* v122: "phí thường niên" không phải "thưởng"; có dấu thì so đúng dấu */
+        if(s[0] === "tien" && s[1] === "ve" && (N[j-1] === "gui" || N[j-1] === "chuyen" || hasW("cho bo") || hasW("cho me"))) continue;
+        if(s[0] === "thuong"){ const o = clean(O[j]).toLowerCase(); if(hasMarks(o) && o !== "thưởng") continue; if(!hasMarks(o) && (N[j+1] === "nien" || N[j-1] === "phi")) continue; }
+        kind = "in"; item.cat = cat; break; } } if(kind) break; }
       if(kind === "in" && item.cat === "ban" && (hasW("mua") || hasW("tieu"))){ kind = null; delete item.cat; }
       /* v117: "nhậu với bạn 300k": "bạn" (người) không phải "bán"; gõ không dấu thì "với/cho/của ban" là bạn */
       if(kind === "in" && item.cat === "ban" && !hasW("ban duoc") && !hasW("ban hang")){
         const ib = N.indexOf("ban"), ob = ib >= 0 ? clean(O[ib]).toLowerCase() : "";
-        if(ib >= 0 && (hasMarks(ob) ? ob !== "bán" : ["voi","cung","cho","cua","cac","may","nhom","ban","va"].includes(N[ib-1]))){ kind = null; delete item.cat; }
+        if(ib >= 0 && (hasMarks(ob) ? ob !== "bán" : ["voi","vs","cung","cho","cua","cac","may","nhom","ban","va"].includes(N[ib-1]))){ kind = null; delete item.cat; }
       }
       /* "nhận 1 triệu từ công đoàn", "tôi nhận 500k" → khoản thu (v103); "nhận hàng", "nhận ship" là chi */
       if(!kind && hasW("nhan") && !hasW("nhan hang") && !hasW("nhan don") && !hasW("ship") && !hasW("mua") && !hasW("tra")){ kind = "in"; item.cat = "khac"; }
@@ -398,7 +506,9 @@
     /* chi bằng thẻ hay tài khoản */
     if(!kind){
       const card = findCard(ctx, N);
-      const theIdx = O.findIndex((w, i) => N[i] === "the" && (/thẻ/i.test(w) || !hasMarks(O.join(" "))));
+      /* v122: "giày thể thao", "nạp thẻ viettel", "thẻ cào", "mua thẻ điện thoại" không phải quẹt thẻ tín dụng */
+      const notCard = i => ["thao","cao","dien","game","nap","viettel","vina","vinaphone","mobi","mobifone","sim","cao_"].includes(N[i+1]) || ["nap","mua"].includes(N[i-1]) || N[i+1] === "dt";
+      const theIdx = O.findIndex((w, i) => N[i] === "the" && (/thẻ/i.test(w) || !hasMarks(O.join(" "))) && !notCard(i));
       const byCard = card || theIdx >= 0 || hasW("visa") || hasW("credit") || hasW("mastercard") || (hasW("ca") && theIdx >= 0);
       if(byCard){
         kind = "card";
@@ -426,8 +536,12 @@
     const SKIP = new Set(["het","mat","ton","la","tieu","chi","bang","qua","luc","vao","o","tai","duoc","da","vua","moi","roi","xong","thi"]);
     const PARTICLE = new Set(["nhé","nha","nhe","nhỉ","à","ạ","a","thôi","nhá","đó","đấy"]);
     const words = [];
-    O.forEach((w, i) => { if(drop.has(i)) return; const n = N[i]; if(!n) return; if(PARTICLE.has(clean(w).toLowerCase())) return; if(SKIP.has(n) && (words.length === 0 || i === O.length - 1 || ["het","mat","ton"].includes(n))) return; words.push(clean(w) || w); });
-    while(words.length && (SKIP.has(norm(words[words.length-1])) || PARTICLE.has(words[words.length-1].toLowerCase()))) words.pop();
+    /* v122: từ thừa so cả dấu: "xem bóng đá" giữ "đá" (khác "đã"), "giặt là" giữ "là", "hết/mất/tốn" mới bỏ ("mắt" giữ lại) */
+    const SKIP_MARK = { het:"hết", mat:"mất", ton:"tốn", la:"là", tieu:"tiêu", chi:"chi", bang:"bằng", qua:"qua", luc:"lúc", vao:"vào", o:"ở", tai:"tại", duoc:"được", da:"đã", vua:"vừa", moi:"mới", roi:"rồi", xong:"xong", thi:"thì" };
+    const isSkip = (w, n) => { if(!SKIP.has(n)) return false; const o = clean(w).toLowerCase(); return !hasMarks(o) || o === SKIP_MARK[n]; };
+    O.forEach((w, i) => { if(drop.has(i)) return; const n = N[i]; if(!n) return; if(PARTICLE.has(clean(w).toLowerCase())) return;
+      if(isSkip(w, n) && !(n === "la" && N[i-1] === "giat") && (words.length === 0 || i === O.length - 1 || ["het","mat","ton"].includes(n))) return; words.push(clean(w) || w); });
+    while(words.length && ((isSkip(words[words.length-1], norm(words[words.length-1])) && !(norm(words[words.length-1]) === "la" && norm(words[words.length-2] || "") === "giat")) || PARTICLE.has(words[words.length-1].toLowerCase()))) words.pop();
     /* bỏ đại từ ở đầu nội dung: "Tôi nhận từ công đoàn" → "Nhận từ công đoàn" */
     while(words.length > 1 && ["toi","minh","tao"].includes(norm(words[0]))) words.shift();
     let note = words.join(" ").replace(/\s+/g, " ").trim();
@@ -435,13 +549,16 @@
     if(kind === "in" && /^(nhận|nhan|được|duoc)$/i.test(note)) note = "";
     if(kind === "in" && item.cat === "cho" && item.who && !note) note = item.who + " cho";
     item.note = note ? note.charAt(0).toUpperCase() + note.slice(1) : "";
-    if(kind === "out" || kind === "card") item.cat = guessTag(O.join(" "), ctx);
+    if(kind === "out" || kind === "card"){
+      const tagText = O.filter((w, i) => !drop.has(i)).join(" ");
+      item.cat = guessTag(tagText.trim() ? tagText : O.join(" "), ctx);
+    }
     return { item, meta };
   }
 
   /* ---------------- câu hỏi ---------------- */
   /* câu hỏi muốn xem chi tiết, liệt kê, gom nhóm, phân tích → báo cáo (q:"report") thay vì một con số tổng */
-  const REPORT = / (gi|nhung gi|cai gi|khoan gi|khoan nao|nhung khoan|cac khoan|tung khoan|liet ke|chi tiet|cu the|phan tich|thong ke|tong hop|bao cao|gom nhom|gom lai|theo nhom|theo loai|theo danh muc|theo ngay|theo tuan|theo thang|vao dau|vao viec gi|cho viec gi|vao nhung gi|o dau|top|lon nhat|nhieu tien nhat|khoan to|so voi|so sanh|co nhieu hon|co it hon|nhieu hon|it hon|tang hay giam) /;
+  const REPORT = / (gi|nhung gi|cai gi|khoan gi|khoan nao|nhung khoan|cac khoan|tung khoan|liet ke|chi tiet|cu the|phan tich|thong ke|tong hop|bao cao|gom nhom|gom lai|theo nhom|theo loai|theo danh muc|theo ngay|theo tuan|theo thang|vao dau|vao viec gi|cho viec gi|vao nhung gi|o dau|di dau|bay dau|di dau het|dau het|top|lon nhat|nhieu tien nhat|khoan to|so voi|so sanh|co nhieu hon|co it hon|nhieu hon|it hon|tang hay giam) /;
   function periodOf(n, now){
     const pad2 = x => String(x).padStart(2, "0"), k = d => d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate());
     let m;
@@ -466,11 +583,20 @@
     return { period:null };
   }
   function asQuery(text, ctx){
-    const n = " " + norm(text).replace(/[?!.,:;]/g, " ").replace(/\s+/g, " ") + " ";
+    text = String(text).replace(/vậy/gi, "vậy_").replace(/\bvay\s*\??\s*$/i, "vậy_");   /* "sao tiêu nhiều vậy" không phải vay nợ */
+    let n = " " + norm(text).replace(/[?!.,:;]/g, " ").replace(/\s+/g, " ") + " ";
+    /* v122: "thế nào" không phải "thẻ"; "máy giặt" không phải "mấy" */
+    n = n.replace(/ the nao /g, " ra sao ").replace(/ nhu the nao /g, " ra sao ");
+    const tokO = String(text).split(/\s+/).map(w => clean(w).toLowerCase());
+    const mayQ = tokO.some((w, i) => w === "mấy" || (w === "may" && !hasMarks(String(text)) && !["giat","tinh","bay","lanh","anh","in","say","lam","khoan_","man","moc","xay","han","hut"].includes(norm(tokO[i+1] || ""))));
+    if(!mayQ) n = n.replace(/ may /g, " may_ ");
+    if(/^ (so du|so du vi|kiem tra so du|check so du|xem so du|so du tai khoan|so du tk) $/.test(n) || /^ so du [a-z]+ $/.test(n)) n = n.replace(/ $/, " bao nhieu ");
     const now = (ctx && ctx.now) || new Date();
     const nq = n.replace(/ gi (do|day|ay|ca) /g, " ");                 /* "200k gì đó" là lời kể, không phải câu hỏi */
-    let wantsReport = REPORT.test(nq) || /^ (cho (toi|minh|em|tao) (biet|xem)|liet ke|thong ke|phan tich|bao cao|xem) /.test(nq);
-    const isQ = /\?\s*$/.test(text) || / (bao nhieu|bn|may|nhieu khong|the nao|sao) /.test(n) || / (ngay|hom|khoan|nhom|thang|tuan) nao /.test(n) || / (khong|ko|chua) $/.test(n) && / (tieu|chi|xai|nhieu|it|tang|giam|vuot) /.test(n) || /^ (xem|cho xem|tong) /.test(n) || / (ai|nhung ai) (con |dang |van )?no | no (ai|nhung ai) /.test(n) || wantsReport;
+    /* v122: "sao tháng này tiêu nhiều vậy" → báo cáo so với kỳ trước (máy tự làm, AI cũng chỉ làm được vậy vì không xem số liệu) */
+    const why = /^ (sao|tai sao|vi sao|lam sao ma) .*(tieu|chi|xai|het|ton).*(nhieu|qua|the|vay_|du vay)/.test(nq) || /^ (sao|tai sao|vi sao) .*(nhieu|tang) /.test(nq);
+    let wantsReport = why || REPORT.test(nq) || /^ (cho (toi|minh|em|tao) (biet|xem)|liet ke|thong ke|phan tich|bao cao|xem) /.test(nq);
+    const isQ = /\?\s*$/.test(text) || / (bao nhieu|bn|may|nhieu khong|the nao|sao) /.test(n) || / (ngay|hom|khoan|nhom|thang|tuan) nao /.test(n) || / (khong|ko|chua) $/.test(n) && / (tieu|chi|xai|nhieu|it|tang|giam|vuot) /.test(n) || /^ (xem|cho xem|tong) /.test(n) || / (ai|nhung ai) (con |dang |van )?no | no (ai|nhung ai) /.test(n) || / no (khong|ko|chua|k) $/.test(n) || wantsReport;
     if(!isQ) return null;
     const { N } = tokenize(text);
     if(wantsReport && !/\?\s*$/.test(text)){
@@ -492,7 +618,7 @@
     const qw = walletsIn(ctx || {}, N).find(m => m.id !== "main");
     if(qw && !wantsReport && / (so du|con) /.test(n) && !/ (tieu|chi|xai) /.test(n)) return { q:"balance", wid:qw.id };
     if(qw){ src = "tk"; cardId = null; }
-    if(/ so du | (tai khoan|tk|vi) con /.test(n) && !wantsReport) return { q:"balance" };
+    if(/ so du | (tai khoan|tk|vi) con | trong (tai khoan|tk|vi) /.test(n) && !wantsReport) return { q:"balance" };
     if(/ (no|vay) /.test(n) && !/ the /.test(n)){
       const m = n.match(/ (?:minh|toi) no (.+?) bao/) ; const m2 = n.match(/ (.+?) (?:con )?no (?:minh|toi)/);
       let who = m ? m[1] : m2 ? m2[1].replace(/^(con|da) /, "") : "";
@@ -517,9 +643,10 @@
       const tm = n.match(/ top (\d{1,2}) | (\d{1,2}) khoan (lon|to) /);
       if(tm || / (lon nhat|nhieu tien nhat|khoan to) /.test(n)){ q.top = tm ? +(tm[1] || tm[2]) : 5; q.group = "none"; q.list = true; }
       for(let i = 0; i < N.length; i++){ if(["tren","hon","tu"].includes(N[i]) && N[i+1]){ const a = amountAt(N, i + 1); if(a && a.v >= 1000){ q.minAmt = a.v; break; } } }
-      if(/ (so voi|so sanh|nhieu hon|it hon|tang hay giam|tang khong|giam khong) /.test(n)) q.compare = true;
+      if(/ (so voi|so sanh|nhieu hon|it hon|tang hay giam|tang khong|giam khong) /.test(n) || why) q.compare = true;
       return q;
     }
+    if(/ (con tieu duoc|tieu duoc nua|tieu them duoc|con duoc tieu|tieu duoc them|con bao nhieu de tieu|con bao nhieu (tien )?(de |duoc )tieu) /.test(n) && (!period || period === "today")) return { q:"left" };
     if(/ the /.test(n) && !/ (an|uong) /.test(n)) return { q:"card", period: period || "month" };
     if(/ con (bao nhieu|bn|duoc) | con lai /.test(n) && (!period || (period === "today" && !/ (tieu|chi|xai|het|ton|an|uong|mua) /.test(n)))) return { q:"left" };
     if(/ (tieu|chi|xai|het|ton|an|uong|mua) /.test(n) || tag || period){
@@ -623,8 +750,8 @@
      Mọi khoản vẫn hiện thẻ xác nhận trước khi ghi, nên máy hiểu sai thì người dùng sửa được hoặc bấm "Nhờ AI hiểu lại". */
   const HARD = / (chia|chia deu|moi nguoi|moi dua|tru di|tru ra|tru vao|cong them|cong vao|nham|sua lai|sua thanh|doi thanh|xoa|huy|khong phai|chu khong|tra gop|lai suat|phan tram|giam gia|hoan tien mot phan|tong cong|tat ca la|ca thay|moi cai|moi ly|moi phan|neu|thi sao|bao gio) /;
   /* câu hỏi mà bộ trả lời trên máy chỉ đoán bừa: xin lời khuyên, hỏi tương lai, hỏi lý do */
-  const ASK = / (nen|co nen|tu van|goi y|lam sao|lam the nao|tai sao|vi sao|du doan|du kien|tuan sau|thang sau|nam sau|ke hoach|xu huong) |^ sao /;
-  const EDIT = / (sua|doi|chinh) (khoan|cai|lai|thanh|so|tien) | thanh \d| ghi (nham|sai|lon|thieu|thua) /;
+  const ASK = / (nen|co nen|tu van|goi y|lam sao|lam the nao|du doan|du kien|tuan sau|thang sau|nam sau|ke hoach|xu huong) /;
+  const EDIT = / (sua|doi|chinh) (khoan|lai|thanh|so tien|cai khoan|cai vua|cai luc) | thanh \d| ghi (nham|sai|lon|thieu|thua) /;
   function assess(text, res, ctx){
     ctx = ctx || {};
     const why = [], n = " " + norm(text).replace(/[?!.,;:]/g, " ").replace(/\s+/g, " ") + " ";
@@ -636,9 +763,12 @@
     if(!res.items.length){ why.push("noitem"); return { local:false, why }; }
     if(res.unknown && res.unknown.length) why.push("leftover");
     const { N } = tokenize(text); let cnt = 0;
-    for(let i = 0; i < N.length; i++){ const a = amountAt(N, i); if(a){ cnt++; i += a.n - 1; } }
+    for(let i = 0; i < N.length; i++){ const a = amountAt(N, i); if(a){ if(!isDisc(N, i) || !cnt) cnt++; i += a.n - 1; } }
     if(cnt > res.items.length) why.push("numbers");
-    if(HARD.test(n) || EDIT.test(n) || /%/.test(text)) why.push("words");
+    /* v122: chia tiền, mỗi ly/cái, giảm giá… máy đã tự tính (item.calc) thì không còn là chữ khó */
+    const calcd = res.items.some(it => it.calc);
+    const n2 = calcd ? n.replace(/ (chia deu|chia|moi nguoi|moi dua|moi cai|moi ly|moi phan|moi suat|moi hop|moi ve|moi doi|moi chai|moi bat|giam gia|tru di|tru ra|phan tram|tru) /g, " ") : n;
+    if(HARD.test(n2) || EDIT.test(n2) || (/%/.test(text) && !calcd)) why.push("words");
     const cards = ctx.cards || [];
     res.items.forEach(it => {
       if(it.kind === "card" && !it.cardId && cards.length > 1 && why.indexOf("card") < 0) why.push("card");

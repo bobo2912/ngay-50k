@@ -17,12 +17,12 @@ const CASES = [
   ["hôm nay tiêu bao nhiêu?", "may"], ["ai còn nợ mình?", "may"], ["tháng này ăn uống bao nhiêu", "may"],
   ["hôm nay còn bao nhiêu?", "may"], ["số dư bao nhiêu", "may"],
   ["quẹt thẻ 500k mua áo", "ai"],                       /* có 2 thẻ, không biết thẻ nào */
-  ["ăn lẩu 600k chia 4 người", "ai"], ["mua 3 ly trà sữa mỗi ly 35k", "ai"],
+  ["ăn lẩu 600k chia 4 người", "may"] /* v122: máy tự tính */, ["mua 3 ly trà sữa mỗi ly 35k", "may"],
   ["lúc nãy ghi nhầm phở 45k thành 54k", "ai"], ["sửa khoản cafe thành 25k", "ai"],
-  ["trả góp điện thoại 1tr5 tháng này", "ai"], ["đi siêu thị hết 450k nhưng được giảm 10%", "ai"],
+  ["trả góp điện thoại 1tr5 tháng này", "ai"], ["đi siêu thị hết 450k nhưng được giảm 10%", "may"],
   ["hôm qua với mấy đứa bạn đi ăn uống linh tinh tốn khoảng 200k gì đó rồi về nhà", "ai"],
   ["mua đồ ăn sáng cho cả nhà", "ai"], ["tuần sau có nên mua laptop không?", "ai"],
-  ["tháng này so với tháng trước tiêu nhiều hơn không?", "may"], ["sao tháng này tiêu nhiều thế?", "ai"],
+  ["tháng này so với tháng trước tiêu nhiều hơn không?", "may"], ["sao tháng này tiêu nhiều thế?", "may"] /* v122: báo cáo so với tháng trước, máy tự làm */,
   ["con trả tiền học 2tr", "ai"]
 ];
 let fail = 0;
