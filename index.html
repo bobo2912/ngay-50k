@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v104";
+  var K = "ngay50k:errlog", VER = "v105";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -1665,6 +1665,44 @@ body.kb #tab-chat > .chip-veil{display:none}
 #repeatList .rep .ic{font-size:.85rem; line-height:1}
 #repeatList .rep b{font-weight:500}
 #repeatList .rep .a{font-weight:700; color:var(--note)}
+/* v105 (hướng A): số dư một lần, tab ví dạng chữ, hạn mức gọn, nút chi đỏ / thu xanh */
+#tab-today #balBox, #tab-wal #walBox, .wtotal[hidden], .wh-sub[hidden]{display:none}
+.wtabs-box{margin:0 0 10px}
+.whead{margin:0 2px 10px}
+.wh-top{display:flex; align-items:center; gap:8px; min-height:30px}
+.wh-name{flex:1; min-width:0; font-size:.86rem; font-weight:600; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.wh-acts{display:flex; gap:6px; flex:none}
+.wh-btn{border:0; border-radius:999px; padding:6px 12px; font:inherit; font-size:.78rem; font-weight:700; white-space:nowrap; background:var(--note-soft, rgba(0,0,0,.06)); color:var(--note)}
+.wh-btn.ic{width:30px; padding:6px 0; text-align:center}
+.wh-big{margin:0; font-size:2rem; font-weight:800; letter-spacing:-.02em; line-height:1.1; white-space:nowrap}
+.wh-big.neg, .wh-big.debt{color:var(--over, #d64545)}
+.wh-sub{margin:3px 0 0; font-size:.74rem; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.wtabs-box .wstrip{gap:6px; margin:0 -16px; padding:2px 16px 4px}
+.wpill{flex:none; display:inline-flex; align-items:center; border:1px solid var(--line); background:var(--glass-strong, var(--surface)); color:var(--ink);
+  border-radius:999px; padding:7px 14px; font:inherit; font-size:.82rem; font-weight:600; white-space:nowrap; max-width:180px; overflow:hidden; text-overflow:ellipsis}
+.wpill[aria-selected="true"]{background:var(--note); border-color:var(--note); color:#fff}
+.wpill.wadd{padding:7px 12px; color:var(--note); background:transparent; border-style:dashed}
+.wdot{width:6px; height:6px; border-radius:3px; background:var(--over, #d64545); margin-left:6px; flex:none}
+.wpill[aria-selected="true"] .wdot{background:#fff}
+/* hạn mức: một dòng + thanh mảnh */
+#tab-today .note{display:grid; grid-template-columns:1fr auto; align-items:center; column-gap:10px; row-gap:0; padding:10px 14px; border-radius:16px}
+#tab-today .note .hero-top{grid-column:1; grid-row:1; justify-content:flex-start; min-width:0}
+#tab-today .note .hero-top .badge{font-size:.62rem; padding:2px 7px}
+#tab-today .note .remain{grid-column:2; grid-row:1; font-size:1.05rem; margin:0; white-space:nowrap}
+#tab-today .note .hero-bar{grid-column:1 / -1; height:4px; margin:7px 0 0}
+#tab-today .note .status{grid-column:1 / -1; font-size:.72rem; margin:6px 0 0}
+#tab-today .note .remain-label{white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+/* nút chi màu đỏ, nút thu màu xanh */
+.quick4 .q-btn.q-out{color:#c94545; background:rgba(214,69,69,.08); font-weight:600}
+.quick4 .q-btn.q-in{color:#23955f; background:rgba(35,149,95,.1); font-weight:700}
+.quick4 .q-btn span{white-space:nowrap}
+.to-transfer{display:block; margin:0 2px 10px; font-size:.82rem}
+@media (max-width:370px){
+  .quick4 .q-btn{font-size:.74rem; gap:3px; padding:0 2px}
+  .quick4 .q-btn svg{display:none}
+  #tab-today .note .hero-top .badge{display:none}
+  .wh-big{font-size:1.75rem}
+}
 /* v99: thanh tab còn 4 ô (Chat, Tổng quan, Ví, Khoản vay) */
 .tabs{grid-template-columns:repeat(4,minmax(0,1fr))}
 .cards-top{display:flex; align-items:center; gap:10px; margin:0 2px 8px}
@@ -1722,7 +1760,14 @@ body.kb #tab-chat > .chip-veil{display:none}
   <!-- v100: các ví là các tab trong màn Ví: chọn Tài khoản thì hiện hạn mức và lịch sử tiêu,
        chọn ví khác hiện số dư và giao dịch của ví đó, chọn thẻ hiện nội dung thẻ, ngay tại chỗ -->
   <div class="wtabs-box" id="wTabsBox" hidden>
-    <p class="wtotal"><span id="wTotLabel">Tổng các ví</span><b class="num" id="wTotNum"></b><small id="wTotSub"></small></p>
+    <!-- v105 (hướng A): số dư chỉ hiện một lần, theo ví đang chọn -->
+    <div class="whead">
+      <div class="wh-top"><span class="wh-name" id="whName">Tài khoản</span><span class="wh-acts" id="whActs"></span></div>
+      <p class="wh-big num" id="whNum">–</p>
+      <p class="wh-sub" id="whSub"></p>
+      <p class="wh-sub" id="whTot" hidden></p>
+    </div>
+    <p class="wtotal" hidden><span id="wTotLabel"></span><b class="num" id="wTotNum"></b><small id="wTotSub"></small></p>
     <div class="wstrip" id="wStrip" role="tablist" aria-label="Các ví"></div>
   </div>
 
@@ -1758,7 +1803,6 @@ body.kb #tab-chat > .chip-veil{display:none}
       <p class="set-now info" id="infoBal" hidden>Số dư = số bạn nhập ở lần đối chiếu gần nhất, cộng khoản thu, trừ chi thường và tiền trả thẻ, tính cả tiền vay, cho vay, trả nợ ghi sau lúc đó. Quẹt thẻ chưa trừ số dư mà cộng vào nợ thẻ, tới khi bạn ghi Trả thẻ. Khoản ghi bù cho thời điểm trước lần đối chiếu không làm đổi số dư, vì số thật bạn nhập đã có nó.</p>
       <div class="chero-foot">
         <button type="button" id="balOpen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span id="balOpenLabel">Đối chiếu số dư</span></button>
-        <button type="button" id="addIncomeBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Thêm khoản thu</button>
         <button type="button" id="walletPay" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2.5"/><path d="M2 10h20"/></svg>Trả thẻ</button>
         <button type="button" id="wAddBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Thêm ví</button>
       </div>
@@ -1809,10 +1853,11 @@ body.kb #tab-chat > .chip-veil{display:none}
     <section id="startBox">
       <input type="file" accept="image/*" capture="environment" id="snapQR" hidden aria-hidden="true" tabindex="-1">
       <div class="quick3 quick4">
-        <button class="q-btn q-scan" id="camBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><path d="M8 12h8"/></svg><span>Quét QR</span></button>
-        <label class="q-btn"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/></svg><span>Ảnh QR</span><input type="file" accept="image/*" id="photoAny" aria-label="Chọn ảnh mã QR"></label>
-        <button class="q-btn" id="manualTransferBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg><span>Nhập tay</span></button>
-        <button class="q-btn" id="cashBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/></svg><span>Tiền mặt</span></button>
+        <button class="q-btn q-scan q-out" id="camBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><path d="M8 12h8"/></svg><span>Quét QR</span></button>
+        <label class="q-btn q-out"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/></svg><span>Ảnh</span><input type="file" accept="image/*" id="photoAny" aria-label="Chọn ảnh mã QR"></label>
+        <button class="q-btn q-out" id="manualTransferBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg><span>Nhập tay</span></button>
+        <button class="q-btn q-in" id="addIncomeBtn" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Thêm thu</span></button>
+        <button class="q-btn" id="cashBtn" hidden><span>Tiền mặt</span></button>
       </div>
       <p class="scan-msg" id="scanMsg" hidden></p>
       <div id="repeatBox" hidden>
@@ -2389,7 +2434,7 @@ body.kb #tab-chat > .chip-veil{display:none}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v104</p>
+      <p class="sync" id="appVersion">Phiên bản v105</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -2732,6 +2777,7 @@ body.kb #tab-chat > .chip-veil{display:none}
         </div>
         </div>
 
+        <button type="button" class="linkbtn to-transfer" id="toTransfer" hidden>Chuyển khoản cho ai đó? Nhập số tài khoản ›</button>
         <div id="bankFields" class="blk blk-info">
           <p class="blk-h"><span id="bankTitle">Thông tin chuyển khoản</span><span class="blk-note" id="bankAuto"></span><button type="button" class="blk-edit" id="bankEdit" hidden>Sửa</button></p>
           <dl class="sum" id="bankSummary" hidden></dl>
@@ -2890,8 +2936,8 @@ body.kb #tab-chat > .chip-veil{display:none}
 
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
 <script src="vendor/jsQR.js"></script>
-<script src="parse-vi.js?v=104"></script>
-<script src="lock.js?v=104"></script>
+<script src="parse-vi.js?v=105"></script>
+<script src="lock.js?v=105"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -3399,7 +3445,8 @@ function startNgay50k(){
     $("formBox").hidden = false; $("resultBox").hidden = true; showSheet("formSheet", "formBack");
     lockForm(false);
     $("bankFields").hidden = (m === "cash");
-    $("formTitle").textContent = m === "cash" ? "Trả tiền mặt" : "Thông tin chuyển khoản";
+    $("formTitle").textContent = m === "cash" ? "Nhập khoản chi" : "Thông tin chuyển khoản";
+    $("toTransfer").hidden = m !== "cash";
     ["amt","acct","holder","bank","memo","desc","contactName"].forEach(id => { $(id).value = ""; $(id).classList.remove("missing"); });
     ["amtSrc","acctSrc","holderSrc","bankSrc","memoSrc"].forEach(id => setSrc(id,""));
     [...$("amtChips").children].forEach(c=>c.setAttribute("aria-pressed","false"));
@@ -3709,7 +3756,7 @@ function startNgay50k(){
     $("mask").style.width = (left<0 ? 100 : pct) + "%";
     note.classList.toggle("over", left<0);
     $("remain").textContent = left<0 ? "−" + fmt(-left) : fmt(left);
-    $("remainLabel").textContent = left<0 ? "Hôm nay đã vượt hạn mức" : "Hôm nay còn được tiêu";
+    $("remainLabel").textContent = left<0 ? "Hôm nay vượt" : "Hôm nay còn";
     note.setAttribute("aria-label", left<0 ? "Đã vượt " + fmt(-left) : "Còn lại " + fmt(left) + " trên " + fmt(b));
     let s;
     if(spent===0) s = "Chưa tiêu đồng nào. Cứ thế nhé.";
@@ -4797,7 +4844,9 @@ function startNgay50k(){
   $("nextDay").onclick = () => { const n = shiftKey(curDay(), 1); viewDay = n >= todayKey() ? null : n; renderToday(); };
   $("dayPick").addEventListener("change", e => { const v = e.target.value; viewDay = (!v || v >= todayKey()) ? null : v; renderToday(); });
   $("photoAny").onchange = e => { decodeFile(e.target.files[0]); e.target.value = ""; };
-  $("manualTransferBtn").onclick = () => openForm("transfer");
+  /* v105: Nhập tay mở form ghi chi đơn giản (tiền mặt nằm trong ví Tài khoản); cần chuyển khoản thì bấm dòng "Chuyển khoản" trong form */
+  $("manualTransferBtn").onclick = () => openForm("cash");
+  $("toTransfer").onclick = () => { const a = $("amt").value, d = $("desc").value; openForm("transfer"); if(a){ $("amt").value = a; $("amt").dispatchEvent(new Event("input")); } $("desc").value = d; };
   $("cashBtn").onclick = () => openForm("cash");
   $("bankEdit").onclick = () => { bankSummary = false; renderBankSummary(); $("acct").focus({ preventScroll:true }); };
   $("cancelForm").onclick = closeForm;
@@ -6438,42 +6487,57 @@ function startNgay50k(){
     renderRecon();
   }
   /* hàng tab ví hiện khi có từ hai ví, hoặc có thẻ tín dụng (thẻ là ví tín dụng, v99) */
-  function stripOn(){ return multiW() || (state.cards || []).length > 0; }
+  function stripOn(){ return true; }   /* v105: luôn có hàng tab ví (ít nhất Tài khoản và nút ＋) */
   function renderWTabs(T){
     T = T || walletsTotal();
-    const on = stripOn() && (currentTab === "today" || currentTab === "wal" || currentTab === "cards");
+    /* v105 (hướng A): đầu màn Ví luôn có khối số dư của ví đang chọn + hàng tab chữ (kể cả khi chỉ có một ví: còn nút ＋) */
+    const on = currentTab === "today" || currentTab === "wal" || currentTab === "cards";
     $("wTabsBox").hidden = !on;
-    if(!stripOn()) return;
-    /* tổng các ví, đã trừ nợ thẻ */
-    $("wTotNum").textContent = T.any ? sMon(T.net) : "–";
-    const sub = [];
-    if(T.debt > 0) sub.push("đã trừ nợ thẻ " + fmt(T.debt));
-    if(T.missing.length) sub.push("chưa có số dư: " + T.missing.map(w => w.name).join(", "));
-    $("wTotSub").textContent = sub.join(" · ");
-    const box = $("wStrip"); box.innerHTML = "";
     const sel = currentTab === "cards" ? "card:" + (cardFilterId || "") : currentTab === "wal" ? walSel : MAIN_W;
-    const tab = (key, icon, name, val, cls, onClick) => {
-      const b = el("button", "wcard" + (cls ? " " + cls : "")); b.type = "button"; b.setAttribute("role", "tab");
+    renderWHead(T, sel);
+    const box = $("wStrip"); box.innerHTML = "";
+    const tab = (key, name, dot, onClick) => {
+      const b = el("button", "wpill"); b.type = "button"; b.setAttribute("role", "tab");
       b.setAttribute("aria-selected", key === sel ? "true" : "false");
-      b.innerHTML = '<span class="wi" aria-hidden="true"></span><span class="wn"></span><b class="num"></b>';
-      b.querySelector(".wi").textContent = icon; b.querySelector(".wn").textContent = name;
-      const v = b.querySelector("b"); v.textContent = val.t; if(val.c) v.className = val.c;
+      b.textContent = name;
+      if(dot){ const d = el("span", "wdot"); d.setAttribute("aria-label", "đang nợ"); b.appendChild(d); }
       b.onclick = onClick; box.appendChild(b);
-      return b;
     };
-    T.rows.forEach(({ w, r }) => tab(w.id, w.icon || "👛", w.name,
-      r ? { t:sMon(r.bal), c: r.bal < 0 ? "num neg" : "" } : { t:"Nhập số dư", c:"mute" }, "", () => selectWallet(w.id)));
-    (state.cards || []).forEach(c => {
-      const d = payDebtOf(c.id);
-      tab("card:" + c.id, "💳", c.name || "Thẻ", T.rows[0].r ? { t: d > 0 ? "nợ " + fmt(d) : "không nợ", c: d > 0 ? "num debt" : "" } : { t:"thẻ tín dụng", c:"mute" },
-        "credit", () => selectWallet("card:" + c.id));
-    });
-    const add = el("button", "wcard wadd"); add.type = "button";
-    add.innerHTML = '<span class="wi" aria-hidden="true">＋</span><span class="wn">Thêm ví</span>';
+    T.rows.forEach(({ w, r }) => tab(w.id, w.name, false, () => selectWallet(w.id)));
+    (state.cards || []).forEach(c => tab("card:" + c.id, c.name || "Thẻ", T.rows[0].r && payDebtOf(c.id) > 0, () => selectWallet("card:" + c.id)));
+    const add = el("button", "wpill wadd", "＋"); add.type = "button"; add.setAttribute("aria-label", "Thêm ví hoặc thẻ");
     add.onclick = () => openWSheet(null);
     box.appendChild(add);
     const cur = box.querySelector('[aria-selected="true"]');
     if(cur) requestAnimationFrame(() => { const bl = box.getBoundingClientRect(), cr = cur.getBoundingClientRect(); if(cr.left < bl.left || cr.right > bl.right) box.scrollLeft += cr.left - bl.left - 16; });
+  }
+  /* khối số dư đầu màn Ví: tên ví, số tiền, dòng nhỏ "đối chiếu …" và nút cập nhật số dư */
+  function renderWHead(T, sel){
+    const acts = $("whActs"); acts.innerHTML = "";
+    const btn = (txt, title, fn, cls) => { const b = el("button", "wh-btn" + (cls ? " " + cls : ""), txt); b.type = "button"; if(title) b.setAttribute("aria-label", title); b.onclick = fn; acts.appendChild(b); };
+    const nameEl = $("whName"), num = $("whNum"), sub = $("whSub"), tot = $("whTot");
+    num.classList.remove("neg", "debt"); tot.hidden = true;
+    if(sel.indexOf("card:") === 0){
+      const c = cardOf(sel.slice(5)), d = c ? payDebtOf(c.id) : 0;
+      nameEl.textContent = c ? c.name : "Thẻ tín dụng";
+      num.textContent = T.rows[0].r ? (d > 0 ? fmt(d) : "0đ") : "–";
+      if(d > 0) num.classList.add("debt");
+      sub.textContent = T.rows[0].r ? (d > 0 ? "Đang nợ thẻ, chưa trả" : "Không nợ") : "Nhập số dư tài khoản để app tính nợ thẻ";
+      if(c) btn("Trả thẻ", "", () => openPayCard());
+      return;
+    }
+    const wid = sel === MAIN_W ? MAIN_W : sel, w = walletById(wid), r = balCalc(null, wid);
+    nameEl.textContent = w ? w.name : "Tài khoản";
+    num.textContent = r ? sMon(r.bal) : "Chưa có số dư";
+    if(r && r.bal < 0) num.classList.add("neg");
+    sub.textContent = r ? "Đối chiếu " + stampText(r.anchor.t) : "Nhập số dư đang có, app sẽ tự tính tiếp";
+    btn(r ? "Cập nhật số dư" : "Nhập số dư", "", () => openBalance(wid));
+    if(wid !== MAIN_W){ btn("⇄", "Chuyển tiền", () => openXfer(wid), "ic"); btn("✎", "Sửa ví", () => openWSheet(wid), "ic"); }
+    /* tổng chỉ hiện khi có từ hai ví hoặc đang nợ thẻ */
+    if(wid === MAIN_W && T.any && (multiW() || T.debt > 0)){
+      tot.hidden = false;
+      tot.textContent = (multiW() ? "Tổng các ví " + sMon(T.cash) : "") + (T.debt > 0 ? (multiW() ? " · " : "") + "nợ thẻ " + fmt(T.debt) + " · còn " + sMon(T.net) : "");
+    }
   }
   /* chọn một tab ví: nội dung đổi ngay trong màn Ví, không mở màn con */
   function selectWallet(key){
