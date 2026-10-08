@@ -1,6 +1,15 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v108, ngày 08/10/2026
+**Phiên bản hiện tại:** v109, ngày 08/10/2026
+
+---
+
+## Có gì mới trong v109 (so với v108)
+
+- **Tìm ở Sổ → Tháng:** bỏ dải trắng thừa phía trên ô tìm; nút Ngày/Tháng cũng ẩn khi đang tìm.
+- **Tab thẻ giống tab ví:** đầu màn là **số dư âm** = tổng chi bằng thẻ trong tháng đang xem (vd −3.681.117đ, "Chi tháng 10/2026 · 4 khoản"), bên phải xếp dọc 2 nút **Trả thẻ** và **Sửa thẻ**. Bỏ chữ "Không nợ", bỏ khối tổng chi và biểu đồ; bên dưới là nút Ghi tay / Từ ảnh, kỳ sao kê và **Lịch sử giao dịch**.
+- **Sổ đồng bộ với Ví:** Sổ (Ngày và Tháng) giờ có đủ mọi giao dịch: chi tài khoản/ví, quẹt thẻ, thu, và các khoản tiền di chuyển như **trả thẻ, chuyển giữa ví, vay / cho vay / trả nợ** (ghi "không tính thu chi", không cộng vào hạn mức hay thu chi). Danh sách tháng có thêm quẹt thẻ.
+- **Nguồn tiền bằng biểu tượng:** cuối dòng phụ có biểu tượng nhỏ 🏦 tài khoản, 📱 ví điện tử, 💳 thẻ (giữ ngón tay hoặc trình đọc màn hình đọc được tên đầy đủ).
 
 ---
 
@@ -9,18 +18,6 @@
 - **Tìm trong lịch sử ví:** ô tìm ngay dưới tiêu đề "Lịch sử giao dịch" ở tab Ví, tìm trong ví đang chọn. Cơ chế giống ô tìm ở Sổ → Tháng: chạm vào là ô tìm lên sát đỉnh màn hình và đứng yên, đầu trang và hàng ví ẩn đi; bấm ✕ (hoặc xoá hết chữ rồi rời ô) là trở lại như cũ.
 - Tìm theo nội dung, tên nhóm, tên người nhận, gõ không dấu cũng được, hoặc số tiền (từ 3 chữ số). Kết quả vẫn gom theo ngày, tiêu đề ghi số khoản, tổng thu, tổng chi.
 - Ô tìm gọn hơn (bỏ khung trắng thừa bên trong), áp dụng cho cả Sổ → Tháng.
-
----
-
-## Có gì mới trong v107 (so với v106)
-
-**Gộp Tổng quan và Ví thành Sổ và Ví, mỗi tab một vai.** Thanh tab: **Chat · Sổ · Ví · Khoản vay**.
-- **Sổ** (thay Tổng quan): nút **Ngày / Tháng** ở trên.
-  - **Ngày:** hạn mức hôm nay, nút **Ghi chi** (đỏ) và **Ghi thu** (xanh), Ghi nhanh, lịch sử ngày gồm chi từ tài khoản/ví, quẹt thẻ và khoản thu (xanh, dấu +); mỗi dòng ghi nguồn tiền (Tài khoản, Momo, Thẻ MB Visa…). Có 7 ngày gần nhất và lịch tháng.
-  - **Tháng:** như Tổng quan trước đây (dòng tiền ròng, thu, chi thường, chi thẻ, phân tích, tất cả thu chi, tìm kiếm).
-- ⚠️ **Hạn mức ngày giờ tính cả quẹt thẻ** (trước chỉ tính chi tài khoản). Lịch tháng, 7 ngày, cảnh báo vượt hạn mức đều tính theo cách mới.
-- **Ghi chi** chọn được nguồn: ví hoặc thẻ tín dụng. Chọn thẻ thì khoản được ghi vào sổ thẻ (cộng vào nợ thẻ).
-- **Ví:** chỉ lo tiền đang ở đâu. Chọn ví (Tài khoản, Momo…) để xem số dư, Cập nhật số dư, ⇄ chuyển tiền và **lịch sử giao dịch theo ngày** của riêng ví đó (thu, chi, trả thẻ, chuyển ví). Chọn thẻ để xem nội dung thẻ như trước.
 
 ---
 
@@ -128,6 +125,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v109** | Tab thẻ số dư âm + Trả/Sửa thẻ; Sổ có đủ trả thẻ, chuyển ví, vay; nguồn tiền bằng biểu tượng |
 | **v108** | Tìm trong lịch sử ví (cùng cơ chế ô tìm của Sổ) |
 | **v107** | Sổ (Ngày/Tháng) và Ví tách vai; hạn mức tính cả quẹt thẻ; Ghi chi chọn được thẻ |
 | **v106** | Bỏ hẳn quét mã QR; nút Cập nhật số dư canh giữa |
