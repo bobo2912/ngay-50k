@@ -1,6 +1,14 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v112, ngày 08/10/2026
+**Phiên bản hiện tại:** v113, ngày 08/10/2026
+
+---
+
+## Có gì mới trong v113 (so với v112)
+
+- **Sao lưu mang theo toàn bộ cài đặt:** giao diện, màn mở đầu, ngân hàng, Trợ lý AI **kể cả khoá API**, chi phí AI, sao lưu nhanh, ví hay dùng và lịch sử Chat. Nhập file ở máy mới là dùng được ngay, không phải dán lại khoá. Mã PIN / Face ID không đi theo file. Gộp thì chỉ lấy lịch sử Chat khi máy này chưa có tin nào; Hoàn tác trả lại cả cài đặt cũ.
+- **Chat hiện câu chào ngay** khi mở app hoặc chuyển sang tab Chat (trước phải vuốt xuống mới thấy).
+- **Ô tìm ở Ví luôn dính đỉnh khi cuộn**, kể cả tháng có ít giao dịch, giống Sổ → Tháng.
 
 ---
 
