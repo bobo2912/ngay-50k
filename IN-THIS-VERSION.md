@@ -1,6 +1,18 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v106, ngày 08/10/2026
+**Phiên bản hiện tại:** v107, ngày 08/10/2026
+
+---
+
+## Có gì mới trong v107 (so với v106)
+
+**Gộp Tổng quan và Ví thành Sổ và Ví, mỗi tab một vai.** Thanh tab: **Chat · Sổ · Ví · Khoản vay**.
+- **Sổ** (thay Tổng quan): nút **Ngày / Tháng** ở trên.
+  - **Ngày:** hạn mức hôm nay, nút **Ghi chi** (đỏ) và **Ghi thu** (xanh), Ghi nhanh, lịch sử ngày gồm chi từ tài khoản/ví, quẹt thẻ và khoản thu (xanh, dấu +); mỗi dòng ghi nguồn tiền (Tài khoản, Momo, Thẻ MB Visa…). Có 7 ngày gần nhất và lịch tháng.
+  - **Tháng:** như Tổng quan trước đây (dòng tiền ròng, thu, chi thường, chi thẻ, phân tích, tất cả thu chi, tìm kiếm).
+- ⚠️ **Hạn mức ngày giờ tính cả quẹt thẻ** (trước chỉ tính chi tài khoản). Lịch tháng, 7 ngày, cảnh báo vượt hạn mức đều tính theo cách mới.
+- **Ghi chi** chọn được nguồn: ví hoặc thẻ tín dụng. Chọn thẻ thì khoản được ghi vào sổ thẻ (cộng vào nợ thẻ).
+- **Ví:** chỉ lo tiền đang ở đâu. Chọn ví (Tài khoản, Momo…) để xem số dư, Cập nhật số dư, ⇄ chuyển tiền và **lịch sử giao dịch theo ngày** của riêng ví đó (thu, chi, trả thẻ, chuyển ví). Chọn thẻ để xem nội dung thẻ như trước.
 
 ---
 
@@ -10,18 +22,6 @@
 - Hàng nút còn **Nhập tay** (chi, đỏ) và **Thêm thu** (thu, xanh).
 - Nút **Cập nhật số dư** nằm giữa theo chiều dọc với khối số dư, không còn lệch lên trên.
 - Đọc ảnh chụp thông báo ngân hàng trong Chat vẫn giữ nguyên (đó là đọc chữ, không phải QR).
-
----
-
-## Có gì mới trong v105 (so với v104)
-
-**Màn Ví gọn lại (hướng A).**
-- Số dư chỉ hiện một lần ở đầu màn, theo ví đang chọn: tên ví, số tiền, dòng nhỏ "Đối chiếu …" ngay dưới, nút **Cập nhật số dư** (trước là Đối chiếu số dư). Ví thêm có thêm nút ⇄ chuyển tiền và ✎ sửa ví; thẻ có nút Trả thẻ.
-- Hàng tab ví chỉ còn tên (không kèm số tiền); thẻ đang nợ có chấm đỏ; nút ＋ để thêm ví hoặc thẻ.
-- Tổng các ví chỉ hiện (dòng nhỏ) khi có từ hai ví hoặc đang nợ thẻ.
-- Hạn mức hôm nay gọn trên một dòng kèm thanh mảnh.
-- Hàng nút: **Quét QR · Ảnh · Nhập tay** (chi, màu đỏ) và **Thêm thu** (màu xanh). Nhập tay mở form ghi chi đơn giản; cần chuyển khoản thì bấm dòng "Chuyển khoản cho ai đó?" trong form.
-- Tiêu đề, nút đều một dòng, không rớt dòng kể cả màn hình nhỏ.
 
 ---
 
@@ -60,7 +60,7 @@
 - **Nhắc sao lưu** khi quá 7 ngày, kèm số khoản đang chỉ nằm trên máy này.
 - **Ghi lại khoản hay lặp** bằng một chạm, và nhắc khi hôm qua bỏ ghi.
 
-### Tab Tổng quan
+### Tab Sổ → Tháng (trước là Tổng quan)
 - **Dòng tiền ròng** theo tháng (thu trừ chi), chọn được gồm chi thường, chi thẻ hay cả hai, kèm mức tăng giảm so với tháng trước.
 - Bốn ô tổng: thu vào, chi thường, chi thẻ, khoản vay. Khoản vay để riêng, không tính vào dòng tiền ròng.
 - Khoản thu (thêm ở tab Ví) hiện trong danh sách theo nguồn: Lương, Thưởng, Bán hàng, Được cho, Khác. Chạm vào khoản thu để sửa số tiền, ghi chú, ngày nhận, nguồn thu.
@@ -129,6 +129,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v107** | Sổ (Ngày/Tháng) và Ví tách vai; hạn mức tính cả quẹt thẻ; Ghi chi chọn được thẻ |
 | **v106** | Bỏ hẳn quét mã QR; nút Cập nhật số dư canh giữa |
 | **v105** | Màn Ví gọn (hướng A): số dư một lần, tab chữ, nút chi đỏ / thu xanh |
 | **v104** | Nhãn Tài khoản gọn; 4 nút ghi trên một hàng; Ghi nhanh gọn |
