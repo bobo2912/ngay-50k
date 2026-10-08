@@ -23,7 +23,11 @@ const CASES = [
   ["momo còn bao nhiêu", { q:"balance", wid:"w1" }],
   ["số dư bao nhiêu", { q:"balance", wid:undefined }],
   ["tháng này chi gì bằng momo", { q:"report", wid:"w1" }],
-  ["hôm nay tiêu bao nhiêu", { q:"spent", wid:undefined }]
+  ["hôm nay tiêu bao nhiêu", { q:"spent", wid:undefined }],
+  /* v103: "tôi" không phải "tối"; "nhận" là khoản thu */
+  ["Tôi nhận 1 triệu từ công đoàn MB", { kind:"in", note:"Nhận từ công đoàn MB", t:ctx.now.getTime() }],
+  ["tôi ăn phở 45k", { kind:"out", note:"Ăn phở", t:ctx.now.getTime() }],
+  ["nhận hàng shopee 200k", { kind:"out" }]
 ];
 let fail = 0;
 CASES.forEach(([t, want]) => {
