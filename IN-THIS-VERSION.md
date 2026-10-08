@@ -1,6 +1,12 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v117, ngày 08/10/2026
+**Phiên bản hiện tại:** v118, ngày 08/10/2026
+
+---
+
+## Có gì mới trong v118 (so với v117)
+
+- **Đang gõ ở Chat, chạm ra chỗ trống là bàn phím hạ ngay; vuốt lên/xuống cũng hạ bàn phím** mà không còn giật (trang không bị cuộn dưới bàn phím nữa), giống iMessage. Bấm nút gửi, hàng gợi ý, hay nút Ghi/Bỏ, ô chọn trong thẻ xác nhận vẫn hoạt động như thường.
 
 ---
 
