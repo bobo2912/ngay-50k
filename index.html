@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v111";
+  var K = "ngay50k:errlog", VER = "v112";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -1218,6 +1218,12 @@ body.kb .tabs{display:none}
   background:linear-gradient(to bottom, transparent, color-mix(in srgb, var(--bg) 55%, transparent));
   -webkit-mask-image:linear-gradient(to bottom, transparent, #000 14px); mask-image:linear-gradient(to bottom, transparent, #000 14px)}
 body.kb .tab-veil{display:none}
+/* v111: cuộn xuống thì menu dưới trượt khuất, cuộn lên thì hiện lại (như Facebook) */
+.tabs{transition:transform .25s ease, opacity .25s ease}
+.tab-veil{transition:opacity .25s ease}
+body.nav-hide .tabs{transform:translate(-50%, calc(100% + 24px + env(safe-area-inset-bottom,0px))); opacity:0; pointer-events:none}
+body.nav-hide .tab-veil{opacity:0}
+@media (prefers-reduced-motion: reduce){ .tabs, .tab-veil{transition:none} }
 /* đang gõ: màn chat lấp đúng phần màn hình phía trên bàn phím (theo khung nhìn thật của iPhone),
    tin nhắn cuộn bên trong, khung nhập nằm ngay trên bàn phím; không phụ thuộc việc iPhone trượt trang */
 body.kb #tab-chat{position:fixed; z-index:45; left:0; right:0; top:var(--vv-top, 0px); height:var(--vv-h, 100vh);
@@ -1708,8 +1714,9 @@ body.kb #tab-chat > .chip-veil{display:none}
 .wh-btn.ghost{background:transparent; border:1px solid var(--line); color:var(--ink)}
 /* v109: lúc tìm, khối chứa ô tìm không còn nền trắng thừa phía trên */
 /* v111: Sổ → Tháng: dải tiêu đề + ô tìm sát mép trên khung, không còn đường trắng phía trên */
-#tab-money section:has(#ledgerList) > .ledger-head{margin-top:-14px; border-radius:15px 15px 0 0}
-#tab-money.searching section:has(#ledgerList) > .ledger-head{margin-top:0; border-radius:0}
+#tab-money section:has(#ledgerList){overflow:clip}
+#tab-money section:has(#ledgerList) > .ledger-head{margin-top:-14px; border-radius:0}
+#tab-money.searching section:has(#ledgerList) > .ledger-head{margin-top:0}
 #tab-money.searching > section, #tab-wal.searching > section{background:transparent!important; border:0!important; box-shadow:none!important; padding-top:0!important}
 body.searching .ledger-head{margin-top:0}
 body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #tab-wal.searching > #walSoonSec{display:none}
@@ -2463,7 +2470,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v111</p>
+      <p class="sync" id="appVersion">Phiên bản v112</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -2961,8 +2968,8 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
 <datalist id="bankList"></datalist>
 
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
-<script src="parse-vi.js?v=111"></script>
-<script src="lock.js?v=111"></script>
+<script src="parse-vi.js?v=112"></script>
+<script src="lock.js?v=112"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -4800,6 +4807,7 @@ function startNgay50k(){
     if(name === "vi"){ walSel = MAIN_W; walMonth = null; name = "wal"; }
     if(name === "today" || name === "money") soView = name;
     if(name !== currentTab){ clearSearch(); resetTab(name); }
+    if(window.N50KNavShow) window.N50KNavShow();
     if(name !== "chat" && document.activeElement === $("chatIn")){ $("chatIn").blur(); document.body.classList.remove("kb"); }
     currentTab = name;
     const slot = name === "chat" ? "first" : (name === "cards" || name === "wal") ? "vi" : (name === "today" || name === "money") ? "so" : name;
@@ -9101,7 +9109,18 @@ function startNgay50k(){
     const setH = () => document.documentElement.style.setProperty("--head-h", h.offsetHeight + "px");
     setH(); if(window.ResizeObserver) new ResizeObserver(setH).observe(h, { box:"border-box" });
     window.addEventListener("resize", setH); window.addEventListener("orientationchange", () => setTimeout(setH, 300));
-    const onScroll = () => { const on = window.scrollY > 4; h.classList.toggle("stuck", on); document.body.classList.toggle("head-stuck", on); };
+    /* v111: menu dưới ẩn khi cuộn xuống, hiện khi cuộn lên / về đầu / chạm đáy; tab Chat luôn hiện vì ô nhập nằm trên menu */
+    let lastY = window.scrollY, acc = 0;
+    const navShow = on => document.body.classList.toggle("nav-hide", !on);
+    const onScroll = () => {
+      const y = window.scrollY, on = y > 4; h.classList.toggle("stuck", on); document.body.classList.toggle("head-stuck", on);
+      const dy = y - lastY; lastY = y;
+      if(currentTab === "chat" || document.body.classList.contains("kb") || y < 60){ acc = 0; navShow(true); return; }
+      if(window.innerHeight + y >= document.documentElement.scrollHeight - 4){ acc = 0; navShow(true); return; }
+      acc = (dy > 0) === (acc > 0) ? acc + dy : dy;   /* cộng dồn theo cùng chiều, đổi chiều thì đếm lại */
+      if(acc > 12) navShow(false); else if(acc < -12) navShow(true);
+    };
+    window.N50KNavShow = () => { acc = 0; navShow(true); };
     const st = $("settings"), sh = st && st.querySelector(".settings-head");
     if(sh){ const onSet = () => sh.classList.toggle("stuck", st.scrollTop > 4); st.addEventListener("scroll", onSet, { passive:true }); onSet(); }
     window.addEventListener("scroll", onScroll, { passive:true }); onScroll();

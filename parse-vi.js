@@ -360,7 +360,11 @@
     if(!kind){
       const ic = N.indexOf("cho");
       const diNotAunt = N[0] === "di" && !/^dì$/i.test(clean(O[0]));
-      if(ic > 0 && ic <= 3 && !diNotAunt && N.indexOf("vay") < 0 && N.indexOf("muon") < 0 && (GIVERS.has(N[0]) || /^[A-ZĐÀ-Ỹ]/.test(O[0])) && N.slice(0, ic).every(w => !["mua","tra","chi","tieu","an","nap","gui"].includes(w))){
+      /* v111: "Đóng tiền học cho Mon 500k" là chi: trước "cho" có động từ/từ chi tiêu thì không phải "ai đó cho mình";
+         chữ hoa đầu câu (iPhone tự viết hoa) không đủ để coi là tên người: mọi chữ trước "cho" đều phải viết hoa */
+      const SPENDW = ["mua","tra","chi","tieu","an","nap","gui","dong","nop","chuyen","tang","dat","thue","lam","sua","gop","mung","bieu","uong","tien","phi","hoc","xin"];
+      const nameLike = O.slice(0, ic).every(w => /^[A-ZĐÀ-Ỹ]/.test(clean(w)));
+      if(ic > 0 && ic <= 3 && !diNotAunt && N.indexOf("vay") < 0 && N.indexOf("muon") < 0 && (GIVERS.has(N[0]) || nameLike) && N.slice(0, ic).every(w => !SPENDW.includes(w))){
         kind = "in"; item.cat = "cho"; item.who = nameFrom(O, N, 0, ic, drop);
       }
     }
