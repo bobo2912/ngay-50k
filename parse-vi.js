@@ -18,7 +18,7 @@
   const clean = w => w.replace(/^[^\p{L}\p{N}]+|[^\p{L}\p{N}%]+$/gu, "");
 
   /* ---------------- số tiền ---------------- */
-  const COUNTERS = new Set(["cai","ly","coc","chai","hop","goi","phan","suat","to","dia","nguoi","lan","ve","kg","qua","chiec","doi","bo","thang","ngay","tuan","nam","gio","h","phut","lon","bat","mon","cuon","tam","con","trai","cay","lit","km","m","g","gb","tb","%","dot","ky","buoi","tiet","so","thu"]);
+  const COUNTERS = new Set(["cai","ly","coc","chai","hop","goi","phan","suat","to","dia","nguoi","lan","ve","kg","qua","chiec","doi","bo","thang","ngay","tuan","nam","gio","h","phut","lon","bat","mon","cuon","tam","con","trai","cay","lit","km","m","g","gb","tb","%","dot","ky","buoi","tiet","so","thu","khoan"]);
   const OF = new WeakMap();                                        /* mảng chữ chuẩn hoá -> mảng chữ gốc */
   const pair = (O, N) => { OF.set(N, O); return { O, N }; };
   const K_UNITS = new Set(["k","ng","ngh","nghin","ngan","nghn","ka","x"]);
@@ -384,6 +384,11 @@
     if(!kind){
       for(const [cat, seqs] of INC_RULES){ for(const s of seqs){ if(has(N, s) >= 0){ kind = "in"; item.cat = cat; break; } } if(kind) break; }
       if(kind === "in" && item.cat === "ban" && (hasW("mua") || hasW("tieu"))){ kind = null; delete item.cat; }
+      /* v117: "nhậu với bạn 300k": "bạn" (người) không phải "bán"; gõ không dấu thì "với/cho/của ban" là bạn */
+      if(kind === "in" && item.cat === "ban" && !hasW("ban duoc") && !hasW("ban hang")){
+        const ib = N.indexOf("ban"), ob = ib >= 0 ? clean(O[ib]).toLowerCase() : "";
+        if(ib >= 0 && (hasMarks(ob) ? ob !== "bán" : ["voi","cung","cho","cua","cac","may","nhom","ban","va"].includes(N[ib-1]))){ kind = null; delete item.cat; }
+      }
       /* "nhận 1 triệu từ công đoàn", "tôi nhận 500k" → khoản thu (v103); "nhận hàng", "nhận ship" là chi */
       if(!kind && hasW("nhan") && !hasW("nhan hang") && !hasW("nhan don") && !hasW("ship") && !hasW("mua") && !hasW("tra")){ kind = "in"; item.cat = "khac"; }
     }
@@ -432,7 +437,7 @@
 
   /* ---------------- câu hỏi ---------------- */
   /* câu hỏi muốn xem chi tiết, liệt kê, gom nhóm, phân tích → báo cáo (q:"report") thay vì một con số tổng */
-  const REPORT = / (gi|nhung gi|cai gi|khoan gi|khoan nao|nhung khoan|cac khoan|tung khoan|liet ke|chi tiet|cu the|phan tich|thong ke|tong hop|bao cao|gom nhom|gom lai|theo nhom|theo loai|theo danh muc|theo ngay|theo tuan|theo thang|vao dau|vao viec gi|cho viec gi|vao nhung gi|o dau|top|lon nhat|nhieu tien nhat|khoan to|so voi|so sanh|co nhieu hon|co it hon|tang hay giam) /;
+  const REPORT = / (gi|nhung gi|cai gi|khoan gi|khoan nao|nhung khoan|cac khoan|tung khoan|liet ke|chi tiet|cu the|phan tich|thong ke|tong hop|bao cao|gom nhom|gom lai|theo nhom|theo loai|theo danh muc|theo ngay|theo tuan|theo thang|vao dau|vao viec gi|cho viec gi|vao nhung gi|o dau|top|lon nhat|nhieu tien nhat|khoan to|so voi|so sanh|co nhieu hon|co it hon|nhieu hon|it hon|tang hay giam) /;
   function periodOf(n, now){
     const pad2 = x => String(x).padStart(2, "0"), k = d => d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate());
     let m;
@@ -461,7 +466,7 @@
     const now = (ctx && ctx.now) || new Date();
     const nq = n.replace(/ gi (do|day|ay|ca) /g, " ");                 /* "200k gì đó" là lời kể, không phải câu hỏi */
     let wantsReport = REPORT.test(nq) || /^ (cho (toi|minh|em|tao) (biet|xem)|liet ke|thong ke|phan tich|bao cao|xem) /.test(nq);
-    const isQ = /\?\s*$/.test(text) || / (bao nhieu|bn|may|nhieu khong|the nao|sao) /.test(n) || /^ (xem|cho xem|tong) /.test(n) || / (ai|nhung ai) (con |dang |van )?no | no (ai|nhung ai) /.test(n) || wantsReport;
+    const isQ = /\?\s*$/.test(text) || / (bao nhieu|bn|may|nhieu khong|the nao|sao) /.test(n) || / (ngay|hom|khoan|nhom|thang|tuan) nao /.test(n) || / (khong|ko|chua) $/.test(n) && / (tieu|chi|xai|nhieu|it|tang|giam|vuot) /.test(n) || /^ (xem|cho xem|tong) /.test(n) || / (ai|nhung ai) (con |dang |van )?no | no (ai|nhung ai) /.test(n) || wantsReport;
     if(!isQ) return null;
     const { N } = tokenize(text);
     if(wantsReport && !/\?\s*$/.test(text)){
@@ -470,7 +475,7 @@
     }
     if(!wantsReport){ for(let i = 0; i < N.length; i++){ const a = amountAt(N, i); if(a && !/ (bao nhieu|bn) /.test(n)) return null; } }
     /* "tháng này so với tháng trước": kỳ chính là kỳ nói trước, kỳ so sánh tự lấy kỳ liền trước */
-    const cmpAt = n.search(/ (so voi|so sanh) /);
+    const cmpAt = n.search(/ (so voi|so sanh|nhieu hon|it hon) /);
     const pr = periodOf(cmpAt > 0 && periodOf(n.slice(0, cmpAt + 1), now).period ? n.slice(0, cmpAt + 1) : n, now), period = pr.period;
     const tag = (() => { if(/ an uong /.test(n)) return "an+uong"; const g = guessTag(text.replace(/\b(chi tiết|chi tiêu|tiêu|chi)\b/gi, " "), null); return g !== "khac" ? g : null; })();
     /* nguồn tiền: tài khoản/tiền mặt hay thẻ tín dụng */
@@ -508,7 +513,7 @@
       const tm = n.match(/ top (\d{1,2}) | (\d{1,2}) khoan (lon|to) /);
       if(tm || / (lon nhat|nhieu tien nhat|khoan to) /.test(n)){ q.top = tm ? +(tm[1] || tm[2]) : 5; q.group = "none"; q.list = true; }
       for(let i = 0; i < N.length; i++){ if(["tren","hon","tu"].includes(N[i]) && N[i+1]){ const a = amountAt(N, i + 1); if(a && a.v >= 1000){ q.minAmt = a.v; break; } } }
-      if(/ (so voi|so sanh|co nhieu hon|co it hon|tang hay giam|tang khong|giam khong) /.test(n)) q.compare = true;
+      if(/ (so voi|so sanh|nhieu hon|it hon|tang hay giam|tang khong|giam khong) /.test(n)) q.compare = true;
       return q;
     }
     if(/ the /.test(n) && !/ (an|uong) /.test(n)) return { q:"card", period: period || "month" };

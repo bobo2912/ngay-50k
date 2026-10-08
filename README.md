@@ -75,6 +75,8 @@ Hệ quả cần biết:
 index.html              toàn bộ app: giao diện, CSS và JavaScript trong một file
 lock.js                 khoá app bằng mã PIN, mã hoá dữ liệu, Face ID (passkey PRF), sao lưu có mật khẩu
 parse-vi.js             bộ hiểu câu tiếng Việt cho màn Trò chuyện (chạy trên máy)
+thu-vien-cau.js         thư viện câu hỏi – trả lời: câu mẫu theo ngữ cảnh, câu trả lời trò chuyện/hướng dẫn, câu mẫu cho AI
+tests-thu-vien.js       chạy mọi câu mẫu của thư viện: node tests-thu-vien.js
 tests-parse-vi.js       bộ câu mẫu: node tests-parse-vi.js
 sw.js                   service worker, giữ app chạy được khi mất mạng
 manifest.webmanifest    tên, icon, màu, chế độ standalone

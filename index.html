@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v116";
+  var K = "ngay50k:errlog", VER = "v117";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -2475,7 +2475,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v116</p>
+      <p class="sync" id="appVersion">Phiên bản v117</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -2973,8 +2973,9 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
 <datalist id="bankList"></datalist>
 
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
-<script src="parse-vi.js?v=116"></script>
-<script src="lock.js?v=116"></script>
+<script src="parse-vi.js?v=117"></script>
+<script src="thu-vien-cau.js?v=117"></script>
+<script src="lock.js?v=117"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -5787,6 +5788,8 @@ function startNgay50k(){
       "Ví dụ: \"tháng rồi tiêu gì\" → report lastmonth group tag. \"tháng này tiêu gì từ tài khoản\" → report month src tk. \"liệt kê các khoản grab tuần này\" → report week kw grab group none list true. \"sao tháng này tiêu nhiều thế\" → report month compare true. \"5 khoản lớn nhất tháng 9\" → report custom from/to tháng 9 top 5 group none.",
       "CÂU NỐI TIẾP: nếu câu mới chỉ thêm hoặc đổi một điều kiện của câu hỏi trước (cau_hoi_truoc trong ngữ cảnh, hoặc lượt trước trong hội thoại) như \"chỉ tính từ tài khoản\", \"còn thẻ thì sao\", \"tháng trước thì sao\", \"theo ngày\", \"liệt kê ra\", \"nhóm ăn thôi\" thì trả query = cau_hoi_truoc với điều kiện mới thay vào, giữ nguyên các điều kiện còn lại.",
       "Câu chào hỏi, tâm sự, hoặc thiếu số tiền: items rỗng, reply hỏi lại ngắn gọn (vd hỏi số tiền). Không bịa số tiền.",
+      "CÂU MẪU từ thư viện câu của app (bắt chước đúng cách hiểu; <thẻ …>, <ví …>, <khoản vay …> thay bằng id thật trong ngữ cảnh, ngày tính theo hom_nay):",
+      ...(window.N50KLib ? window.N50KLib.fewShot(1).map(x => "- " + x) : []),
       "reply: 1 câu ngắn, ấm áp, tự nhiên như bạn bè; KHÔNG nêu số liệu (bạn không xem được dữ liệu, app tự tính và hiện). Với report chỉ cần nói ngắn bạn đang xem gì, vd \"Đây là chi tiêu tháng trước theo nhóm nè\".",
       "",
       "Dạng JSON phải trả (bỏ trường không dùng): {\"reply\":\"...\", \"items\":[{\"kind\":\"out\",\"amt\":45000,\"note\":\"Ăn phở\",\"cat\":\"an\",\"date\":\"yyyy-mm-dd\",\"time\":\"\",\"cardId\":\"\",\"loanId\":\"\",\"who\":\"\"}], \"query\":null hoặc {\"q\":\"report\",\"period\":\"month\",\"from\":\"\",\"to\":\"\",\"src\":\"all\",\"cardId\":\"\",\"tag\":\"\",\"tags\":[],\"kind\":\"out\",\"group\":\"tag\",\"list\":false,\"top\":0,\"minAmt\":0,\"kw\":\"\",\"compare\":false,\"who\":\"\"}}",
@@ -5937,7 +5940,12 @@ function startNgay50k(){
   function localParse(text){ try{ return window.N50KParse.parse(text, chatCtx()); }catch(e){ return { items:[], query:null, unknown:[text] }; } }
   const GREET = /^(chào|chao|hi|hello|alo|xin chào|hey)\b/i, THANKS = /^(cảm ơn|cam on|thanks|thank|ok|oke|okay|được rồi)\b/i;
   /* AI đang bật: câu này máy tự xử lý được không (máy trước, AI sau) */
+  /* v117: thư viện câu (thu-vien-cau.js): chào hỏi, cảm ơn, hỏi cách dùng app, than thở, thiếu số tiền… */
+  function libTalk(text, res){
+    try{ return window.N50KLib ? window.N50KLib.talk(text, res, { now:new Date(), hasAI:aiReady() && navigator.onLine !== false, guessTag:t => window.N50KParse.guessTag(t, chatCtx()) }) : null; }catch(e){ return null; }
+  }
   function localEnough(text, res){
+    const lt = libTalk(text, res); if(lt) return !lt.ai;
     if(GREET.test(text) || THANKS.test(text)) return true;
     try{ return window.N50KParse.assess(text, res, chatCtx()).local; }catch(e){ return false; }
   }
@@ -5961,6 +5969,12 @@ function startNgay50k(){
   function localReply0(text, res){
     if(!res) res = localParse(text);
     const out = [];
+    const lt = libTalk(text, res);
+    if(lt && !lt.ai){
+      const chips = (lt.goi_y || []).map(g => '<button type="button" class="chat-q" data-say="' + esc(g) + '">' + esc(g) + ' ›</button>').join("");
+      out.push({ id:uid(), role:"bot", html:lt.html + chips, t:Date.now() });
+      return out;
+    }
     if(res.query) out.push({ id:uid(), role:"bot", html:answer(res.query), q:res.query, t:Date.now() });
     else if(res.items.length){
       out.push({ id:uid(), role:"bot", items:res.items, status:res.items.map(() => "pending"), refs:res.items.map(() => null), t:Date.now() });
@@ -6327,6 +6341,7 @@ function startNgay50k(){
   $("soSeg").querySelectorAll("button").forEach(b => b.onclick = () => showTab(b.dataset.so));
   $("chatLog").addEventListener("click", e => {
     const b = e.target.closest(".chat-q"); if(!b) return;
+    if(b.dataset.say){ b.disabled = true; chatSend(b.dataset.say); return; }   /* nút gợi ý của thư viện câu: gửi như người dùng gõ */
     let q = null; try{ q = JSON.parse(b.dataset.q); }catch(_){ return; }
     b.disabled = true;
     chat.msgs.push({ id:uid(), role:"bot", html:answer(q), q, t:Date.now(), src:"local" });
