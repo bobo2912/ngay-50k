@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v119";
+  var K = "ngay50k:errlog", VER = "v120";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -1593,6 +1593,7 @@ body.searching .ledger-head{background:var(--top-c)}
 #chatIn{height:38px; min-height:38px; line-height:24px; padding:7px 0; box-sizing:border-box}
 #chatIn.empty{overflow:hidden; white-space:nowrap}
 #chatIn::placeholder{white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+#chatIn::placeholder{color:var(--muted); opacity:.75}
 /* lớp mờ quanh ô Số dư ví khi cuộn (v94): phủ hết bề ngang, từ đáy đầu trang xuống quá ô số dư, mép dưới mờ dần,
    giống lớp mờ phía trên thanh menu. Là phần tử riêng nằm dưới ô số dư nên không làm đổi màu ô. */
 #tab-chat > #chatToWallet::before{display:none!important}
@@ -1604,6 +1605,10 @@ body.head-stuck #tab-chat > .chip-veil{display:block}
 body.kb #tab-chat > .chip-veil{display:none}
 /* v96: ô chat trong suốt trong tích tắc lúc chạm, để iPhone không trượt cả trang khi bật bàn phím */
 #chatIn.nf{opacity:0!important}
+.chat-bar{position:relative}
+#chatGhost{position:absolute; pointer-events:none; overflow:hidden; white-space:pre-wrap; word-break:break-word; color:var(--ink); box-sizing:border-box; font-family:inherit}
+#chatGhost.ph{color:var(--muted); opacity:.75; white-space:nowrap; text-overflow:ellipsis}
+#chatGhost[hidden]{display:none}
 /* v95: nút cập nhật bản mới trong Cài đặt */
 .upd-go{width:100%; margin-top:10px}
 #navUpd.new{color:var(--note); font-weight:700}
@@ -2491,7 +2496,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v119</p>
+      <p class="sync" id="appVersion">Phiên bản v120</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -2989,9 +2994,9 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
 <datalist id="bankList"></datalist>
 
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
-<script src="parse-vi.js?v=119"></script>
-<script src="thu-vien-cau.js?v=119"></script>
-<script src="lock.js?v=119"></script>
+<script src="parse-vi.js?v=120"></script>
+<script src="thu-vien-cau.js?v=120"></script>
+<script src="lock.js?v=120"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -6378,12 +6383,26 @@ function startNgay50k(){
      - trong lúc bàn phím trượt lên, bám theo khung nhìn từng khung hình (trước đây chỉ đo lại ở 120/300/600 ms),
        nên nếu iPhone vẫn trượt thì đầu trang cũng không bị lệch thấy được. */
   const ciEl = $("chatIn"); let ciT = 0, kbRaf = 0;
+  /* v120: trong lúc ô nhập tạm trong suốt (mẹo chống trượt trang ở trên), đặt một lớp chữ giống hệt đè lên đúng chỗ,
+     để mắt không thấy chữ / dòng gợi ý trong ô biến mất rồi hiện lại (trông như nháy) */
+  const ciGhost = document.createElement("div"); ciGhost.id = "chatGhost"; ciGhost.setAttribute("aria-hidden", "true");
+  ciEl.parentNode.appendChild(ciGhost);
+  function nfOn(){
+    const f = ciEl.parentNode, cs = getComputedStyle(ciEl);
+    ciGhost.textContent = ciEl.value || ciEl.placeholder;
+    ciGhost.classList.toggle("ph", !ciEl.value);
+    Object.assign(ciGhost.style, { left:ciEl.offsetLeft + "px", top:ciEl.offsetTop + "px", width:ciEl.offsetWidth + "px", height:ciEl.offsetHeight + "px",
+      padding:cs.padding, lineHeight:cs.lineHeight, fontSize:cs.fontSize, fontWeight:cs.fontWeight, letterSpacing:cs.letterSpacing, textAlign:cs.textAlign });
+    ciGhost.hidden = false; ciEl.classList.add("nf");
+  }
+  function nfOff(){ ciEl.classList.remove("nf"); ciGhost.hidden = true; }
+  ciGhost.hidden = true;
   ciEl.addEventListener("touchstart", () => {
     if(document.activeElement === ciEl) return;
-    ciEl.classList.add("nf");
-    clearTimeout(ciT); ciT = setTimeout(() => { if(document.activeElement !== ciEl) ciEl.classList.remove("nf"); }, 900);
+    nfOn();
+    clearTimeout(ciT); ciT = setTimeout(() => { if(document.activeElement !== ciEl) nfOff(); }, 900);
   }, { passive:true });
-  ciEl.addEventListener("touchcancel", () => { if(document.activeElement !== ciEl) ciEl.classList.remove("nf"); }, { passive:true });
+  ciEl.addEventListener("touchcancel", () => { if(document.activeElement !== ciEl) nfOff(); }, { passive:true });
   function kbFollow(ms){
     cancelAnimationFrame(kbRaf);
     const end = performance.now() + ms;
@@ -6393,7 +6412,7 @@ function startNgay50k(){
   $("chatIn").addEventListener("focus", () => {
     kbSeen = false; kbGoneAt = 0;
     document.body.classList.add("kb"); fitTyping(); chatScrollEnd(false);
-    clearTimeout(ciT); ciT = setTimeout(() => ciEl.classList.remove("nf"), 280);
+    clearTimeout(ciT); ciT = setTimeout(nfOff, 280);
     /* iPhone mở bàn phím xong mới báo khung nhìn mới: bám theo từng khung hình trong lúc bàn phím trượt lên */
     kbFollow(900);
     [300, 600].forEach(ms => setTimeout(() => chatScrollEnd(false), ms));
