@@ -1,6 +1,12 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v119, ngày 08/10/2026
+**Phiên bản hiện tại:** v120, ngày 09/10/2026
+
+---
+
+## Có gì mới trong v120 (so với v119)
+
+- **Chạm vào ô nhập Chat không còn nháy.** App vẫn giữ mẹo chống đẩy cả trang lên khi bật bàn phím (ô nhập tạm trong suốt khoảng 0,3 giây), nhưng giờ đặt một lớp chữ giống hệt đè lên đúng chỗ, nên chữ / dòng gợi ý trong ô đứng yên.
 
 ---
 
