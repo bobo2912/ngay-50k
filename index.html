@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v118";
+  var K = "ngay50k:errlog", VER = "v119";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -1583,6 +1583,9 @@ body.searching .ledger-head{background:var(--top-c)}
 .src-tag{display:inline-flex; align-items:center; gap:3px; margin:0 6px 0 0; padding:1px 7px; border-radius:999px; font-size:.66rem; font-weight:700; font-style:normal; letter-spacing:.02em; line-height:1.5; vertical-align:2px; white-space:nowrap}
 .src-tag.ai-mark{color:var(--note); background:var(--note-soft)}
 .src-tag.local-mark{color:var(--muted); background:color-mix(in srgb, var(--muted) 12%, transparent)}
+.learn-row{cursor:default}
+.learn-row .t small{white-space:normal}
+.learn-row .del{margin-left:auto; flex:none; border:0; background:none; color:var(--muted); font-size:1rem; padding:6px 4px 6px 10px}
 .msg.bot:has(> .rpt) > .src-tag{margin-bottom:6px}
 .msg.by-ai .rpt, .msg.by-local .rpt{margin-top:6px}
 
@@ -2199,6 +2202,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
       <h3 class="set-label">Nâng cao</h3>
       <div class="set-list">
         <button class="set-nav" data-go="setAI"><span class="nav-t">Trợ lý AI <span class="opt">(không bắt buộc)</span></span><span class="nav-v" id="navAI"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+        <button class="set-nav" data-go="setLearn"><span class="nav-t">Chat đã học</span><span class="nav-v" id="navLearn"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
       </div>
       <h3 class="set-label">Phiên bản</h3>
       <div class="set-list">
@@ -2464,6 +2468,18 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
     </section>
     </div>
 
+    <div class="set-page" id="setLearn" hidden>
+      <div class="set-head"><button class="set-back" data-back>‹ Cài đặt</button><h2 tabindex="-1">Chat đã học</h2><button class="ib" type="button" data-info="infoLearn" aria-expanded="false" aria-label="Giải thích">i</button></div>
+      <p class="set-now info" id="infoLearn" hidden>Mỗi khi bạn sửa thẻ xác nhận rồi bấm Ghi, hoặc ghi khoản do Trợ lý AI hiểu, Chat nhớ cách hiểu đó. Lần sau gõ câu cùng kiểu (chỉ khác số tiền), máy dùng lại ngay, có nhãn 📚 Đã học, không cần AI. Những câu này cũng được gửi kèm làm ví dụ khi phải nhờ AI. Câu máy còn phân vân hoặc không hiểu được ghi ở mục dưới; khi máy đã học được thì tự bỏ khỏi danh sách. Tất cả nằm trong dữ liệu trên máy và đi theo file sao lưu.</p>
+      <p class="set-now" id="learnSum"></p>
+      <h4 class="sub">Câu đã học</h4>
+      <div id="learnList"></div>
+      <h4 class="sub">Câu máy chưa hiểu</h4>
+      <div id="missList"></div>
+      <div class="set-row" style="margin-top:10px"><button class="ghost grow" id="missCopy" type="button">Sao chép danh sách câu chưa hiểu</button></div>
+      <p class="inline-ok" id="learnMsg" hidden></p>
+    </div>
+
     <div class="set-page" id="setStore" hidden>
       <div class="set-head"><button class="set-back" data-back>‹ Cài đặt</button><h2 tabindex="-1">Dung lượng</h2></div>
 <section class="set-group" aria-labelledby="gStore">
@@ -2475,7 +2491,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v118</p>
+      <p class="sync" id="appVersion">Phiên bản v119</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -2973,9 +2989,9 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
 <datalist id="bankList"></datalist>
 
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
-<script src="parse-vi.js?v=118"></script>
-<script src="thu-vien-cau.js?v=118"></script>
-<script src="lock.js?v=118"></script>
+<script src="parse-vi.js?v=119"></script>
+<script src="thu-vien-cau.js?v=119"></script>
+<script src="lock.js?v=119"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -3298,7 +3314,11 @@ function startNgay50k(){
          mã "main", không nằm trong danh sách. Khoản chi/thu, lần đối chiếu có trường w = mã ví; thiếu w nghĩa là ví mặc định,
          nên dữ liệu cũ không cần chuyển đổi. xfer: chuyển tiền giữa các ví (không tính là chi tiêu). */
       wallets: Array.isArray(s.wallets) ? s.wallets.filter(w => w && w.id && w.id !== "main") : [],
-      xfer: Array.isArray(s.xfer) ? s.xfer.filter(x => x && x.id && Number(x.amt) > 0) : []
+      xfer: Array.isArray(s.xfer) ? s.xfer.filter(x => x && x.id && Number(x.amt) > 0) : [],
+      /* v119 – thư viện riêng của Chat: learn = câu đã học (bạn sửa / AI hiểu rồi bạn ghi), miss = câu máy chưa hiểu.
+         Nằm trong dữ liệu chính nên đi theo file sao lưu và gộp được giữa hai máy */
+      learn: Array.isArray(s.learn) ? s.learn.filter(r => r && r.id && r.key) : [],
+      miss: Array.isArray(s.miss) ? s.miss.filter(r => r && r.id && r.key) : []
     };  /* caps: giữ lại cho dữ liệu cũ, không còn dùng */
   }
   function loadLocal(){
@@ -3320,6 +3340,8 @@ function startNgay50k(){
     (st.cardPay||[]).forEach(p => fn(p.id, p, false));
     (st.wallets||[]).forEach(w => fn(w.id, w, false));
     (st.xfer||[]).forEach(x => fn(x.id, x, false));
+    (st.learn||[]).forEach(x => fn(x.id, x, false));
+    (st.miss||[]).forEach(x => fn(x.id, x, false));
   }
   function collectSigs(st){
     const out = {};
@@ -5062,7 +5084,11 @@ function startNgay50k(){
     const days = Object.keys(state.days).sort().slice(-120);
     days.forEach(k => (state.days[k] || []).forEach(it => { if(it.note && it.cat) recent[it.note.trim().toLowerCase()] = it.cat; }));
     for(const k in state.cardTx) (state.cardTx[k] || []).forEach(it => { if(it.where && it.cat) recent[it.where.trim().toLowerCase()] = it.cat; });
-    return { now:new Date(), cards:(state.cards || []).map(c => ({ id:c.id, name:c.name || "" })), loans,
+    /* v118: thẻ quẹt nhiều nhất 60 ngày qua (hoà thì thẻ quẹt gần nhất): câu không nói thẻ nào thì dùng thẻ này */
+    const use = {}, last = {}, from = keyOf(new Date(Date.now() - 60 * 86400000));
+    for(const k in state.cardTx){ if(k < from) continue; (state.cardTx[k] || []).forEach(it => { const c = it.cardId; if(!c) return; use[c] = (use[c] || 0) + 1; last[c] = Math.max(last[c] || 0, it.t || 0); }); }
+    const defaultCard = Object.keys(use).filter(id => (state.cards || []).some(c => c.id === id)).sort((a, b) => use[b] - use[a] || last[b] - last[a])[0] || (((state.cards || [])[0]) || {}).id || null;
+    return { now:new Date(), defaultCard, cards:(state.cards || []).map(c => ({ id:c.id, name:c.name || "" })), loans,
       wallets:(state.wallets || []).filter(w => !w.off).map(w => ({ id:w.id, name:w.name || "" })),
       history: text => { const k = String(text).trim().toLowerCase(); return recent[k] || ""; } };
   }
@@ -5473,6 +5499,7 @@ function startNgay50k(){
     const done = [];
     idxs.forEach(i => { if(m.status[i] !== "pending" || validate(m.items[i])) return; m.refs[i] = commit(m.items[i]); m.status[i] = "saved"; done.push(i); });
     if(!done.length) return;
+    learnFromSave(m);
     persist(true); renderAll();
     /* mỗi loại khoản chỉ nói một lần: chi tài khoản -> hạn mức hôm nay, thẻ -> chi thẻ tháng này, vay -> còn nợ... */
     const seen = new Set(), parts = [];
@@ -5499,7 +5526,7 @@ function startNgay50k(){
       const intro = document.createElement("div"); intro.className = "msg bot";
       const pend = m.status.filter(s => s === "pending").length;
       if(m.introHtml) intro.innerHTML = m.intro; else intro.innerHTML = (m.intro ? esc(m.intro) + "\n" : "") + (m.items.length > 1 ? "Mình hiểu là có <b>" + m.items.length + " khoản</b>, bạn xem lại rồi bấm Ghi nhé:" : (m.intro ? "Bạn xem lại rồi bấm Ghi nhé:" : "Mình hiểu vậy, đúng không?"));
-      if(m.ai) markAI(intro); else if(m.src === "local") markLocal(intro);
+      if(m.ai) markAI(intro); else if(m.src === "local" || m.src === "learn") markLocal(intro, m.src === "learn");
       box.appendChild(intro);
       m.items.forEach((_, i) => box.appendChild(cardEl(m, i)));
       if(pend > 1){
@@ -5514,7 +5541,7 @@ function startNgay50k(){
       return box;
     }
     const d = document.createElement("div"); d.className = "msg bot"; d.innerHTML = m.html;
-    if(m.ai) markAI(d); else if(m.src === "local") markLocal(d);
+    if(m.ai) markAI(d); else if(m.src === "local" || m.src === "learn") markLocal(d, m.src === "learn");
     if(!m.retry) return d;
     const wrap = document.createElement("div"); wrap.className = "msg-wrap"; wrap.appendChild(d); retryBtn(m, wrap);
     return wrap;
@@ -5526,9 +5553,10 @@ function startNgay50k(){
     el.insertBefore(k, el.firstChild);
   }
   /* câu trả lời do máy tự làm (bộ hiểu câu, đọc ảnh, tính báo cáo trên máy) */
-  function markLocal(el){
+  function markLocal(el, learned){
     el.classList.add("by-local");
-    const k = document.createElement("span"); k.className = "src-tag local-mark"; k.textContent = "⚡ Máy"; k.title = "Máy tự trả lời, không dùng AI"; k.setAttribute("aria-label", "Máy tự trả lời, không dùng AI");
+    const tip = learned ? "Máy dùng lại câu đã học từ bạn, không dùng AI" : "Máy tự trả lời, không dùng AI";
+    const k = document.createElement("span"); k.className = "src-tag local-mark"; k.textContent = learned ? "📚 Đã học" : "⚡ Máy"; k.title = tip; k.setAttribute("aria-label", tip);
     el.insertBefore(k, el.firstChild);
   }
   /* nút chọn nhanh dưới câu trả lời của máy: có AI thì phân tích lại; chưa cài AI thì chỉ hiện ở câu máy chưa hiểu, mở Cài đặt */
@@ -5790,6 +5818,7 @@ function startNgay50k(){
       "Câu chào hỏi, tâm sự, hoặc thiếu số tiền: items rỗng, reply hỏi lại ngắn gọn (vd hỏi số tiền). Không bịa số tiền.",
       "CÂU MẪU từ thư viện câu của app (bắt chước đúng cách hiểu; <thẻ …>, <ví …>, <khoản vay …> thay bằng id thật trong ngữ cảnh, ngày tính theo hom_nay):",
       ...(window.N50KLib ? window.N50KLib.fewShot(1).map(x => "- " + x) : []),
+      ...((state.learn || []).length && window.N50KLib ? ["CÂU RIÊNG người dùng này đã xác nhận (id thẻ, khoản vay, ví là id thật; câu giống hoặc gần giống thì hiểu y như vậy):"].concat(window.N50KLib.hocChoAI(state.learn, 25).map(x => "- " + x)) : []),
       "reply: 1 câu ngắn, ấm áp, tự nhiên như bạn bè; KHÔNG nêu số liệu (bạn không xem được dữ liệu, app tự tính và hiện). Với report chỉ cần nói ngắn bạn đang xem gì, vd \"Đây là chi tiêu tháng trước theo nhóm nè\".",
       "",
       "Dạng JSON phải trả (bỏ trường không dùng): {\"reply\":\"...\", \"items\":[{\"kind\":\"out\",\"amt\":45000,\"note\":\"Ăn phở\",\"cat\":\"an\",\"date\":\"yyyy-mm-dd\",\"time\":\"\",\"cardId\":\"\",\"loanId\":\"\",\"who\":\"\"}], \"query\":null hoặc {\"q\":\"report\",\"period\":\"month\",\"from\":\"\",\"to\":\"\",\"src\":\"all\",\"cardId\":\"\",\"tag\":\"\",\"tags\":[],\"kind\":\"out\",\"group\":\"tag\",\"list\":false,\"top\":0,\"minAmt\":0,\"kw\":\"\",\"compare\":false,\"who\":\"\"}}",
@@ -5944,7 +5973,51 @@ function startNgay50k(){
   function libTalk(text, res){
     try{ return window.N50KLib ? window.N50KLib.talk(text, res, { now:new Date(), hasAI:aiReady() && navigator.onLine !== false, guessTag:t => window.N50KParse.guessTag(t, chatCtx()) }) : null; }catch(e){ return null; }
   }
+  /* ---- v118: thư viện riêng (state.learn, state.miss) ---- */
+  const LEARN_MAX = 500, MISS_MAX = 200;
+  const LIBO = () => ({ P:window.N50KParse, now:new Date() });
+  function learnFind(text){ try{ return window.N50KLib && (state.learn || []).length ? window.N50KLib.hocTim(state.learn, text, LIBO()) : null; }catch(e){ return null; } }
+  function learnAdd(text, items, query, src){
+    let rec = null; try{ rec = window.N50KLib.hocTao(text, items, query, Object.assign(LIBO(), { src })); }catch(e){}
+    if(!rec) return;
+    state.learn = state.learn || [];
+    const old = state.learn.find(r => r.key === rec.key);
+    if(old){ const keep = { id:old.id, hits:old.hits || 0 }; Object.keys(old).forEach(k => delete old[k]); Object.assign(old, rec, keep); }
+    else { rec.id = uid(); state.learn.push(rec); }
+    if(state.learn.length > LEARN_MAX) state.learn = state.learn.sort((a, b) => (b.used || b.t || 0) - (a.used || a.t || 0)).slice(0, LEARN_MAX);
+    state.miss = (state.miss || []).filter(x => x.key !== rec.key);    /* câu này máy đã biết, bỏ khỏi sổ chưa hiểu */
+    persist();
+  }
+  function missAdd(text, why){
+    if(!window.N50KLib || !why || !why.length) return;
+    let k; try{ k = window.N50KLib.khuon(text, window.N50KParse).key; }catch(e){ return; }
+    if(!k || (state.learn || []).some(r => r.key === k)) return;
+    state.miss = state.miss || [];
+    const old = state.miss.find(x => x.key === k);
+    if(old){ old.n = (old.n || 1) + 1; old.t = Date.now(); old.text = String(text).slice(0, 300); old.why = [...new Set((old.why || []).concat(why))]; }
+    else state.miss.push({ id:uid(), key:k, text:String(text).slice(0, 300), why:why.slice(), n:1, t:Date.now() });
+    if(state.miss.length > MISS_MAX) state.miss = state.miss.sort((a, b) => b.t - a.t).slice(0, MISS_MAX);
+    persist();
+  }
+  /* câu máy còn phân vân (cần AI) hoặc không hiểu: ghi vào sổ "câu máy chưa hiểu" */
+  function noteMiss(text, res){
+    if(!res || res.learned || libTalk(text, res)) return;
+    let why = [];
+    try{ why = window.N50KParse.assess(text, res, chatCtx()).why; }catch(e){}
+    if(!res.items.length && !res.query) why = ["khong_hieu"];
+    if(why.length) missAdd(text, why);
+  }
+  /* bấm Ghi trên thẻ xác nhận: khoản do AI hiểu, hoặc bạn đã sửa so với lúc máy đề xuất → học câu này */
+  function learnFromSave(m){
+    if(!m || !m.text || !m.orig || !window.N50KLib) return;
+    const saved = m.items.filter((_, i) => m.status[i] === "saved"); if(!saved.length) return;
+    const F = ["kind","amt","cat","cardId","loanId","who","w","from","to","date","note"], v = x => x == null ? "" : String(x);
+    const edited = m.items.some((it, i) => m.status[i] === "saved" && F.some(f => v(it[f]) !== v((m.orig[i] || {})[f])));
+    const skipped = m.status.some(st => st === "skipped");
+    if(m.ai || edited || (skipped && m.status.every(st => st !== "pending"))) learnAdd(m.text, saved, null, m.ai ? "ai" : "sua");
+  }
   function localEnough(text, res){
+    if(res && res.learned) return true;
     const lt = libTalk(text, res); if(lt) return !lt.ai;
     if(GREET.test(text) || THANKS.test(text)) return true;
     try{ return window.N50KParse.assess(text, res, chatCtx()).local; }catch(e){ return false; }
@@ -5963,7 +6036,10 @@ function startNgay50k(){
   }
   function localReply(text, res){
     const out0 = localReply0(text, res);
-    out0.forEach(m => { if(!m.thinking) m.src = "local"; });
+    out0.forEach(m => {
+      if(!m.thinking) m.src = res && res.learned ? "learn" : "local";
+      if(m.items){ m.text = text; m.orig = JSON.parse(JSON.stringify(m.items)); }
+    });
     return out0;
   }
   function localReply0(text, res){
@@ -6058,9 +6134,10 @@ function startNgay50k(){
   $("chatImg").addEventListener("change", e => { const fl = e.target.files; if(fl && fl.length) chatSendImgs([...fl]); e.target.value = ""; });
   /* khoản máy hiểu chưa đúng: gửi lại đúng câu đó cho AI, thay thẻ cũ bằng kết quả của AI */
   /* kết quả AI → các tin trả lời (dùng chung cho gửi tin, phân tích lại) */
-  function aiMsgs(r){
+  function aiMsgs(r, text){
     const msgs = [];
-    if(r.items.length) msgs.push({ id:uid(), role:"bot", items:r.items, intro:r.reply || "", status:r.items.map(() => "pending"), refs:r.items.map(() => null), t:Date.now(), ai:true });
+    if(text && r.query && !r.items.length) learnAdd(text, null, r.query, "ai");
+    if(r.items.length) msgs.push({ id:uid(), role:"bot", items:r.items, intro:r.reply || "", status:r.items.map(() => "pending"), refs:r.items.map(() => null), t:Date.now(), ai:true, text:text || "", orig:JSON.parse(JSON.stringify(r.items)) });
     if(r.query) msgs.push({ id:uid(), role:"bot", html:(r.reply && !r.items.length ? esc(r.reply) + (r.query.q === "report" ? "" : "\n") : "") + answer(r.query), q:r.query, t:Date.now(), ai:true });
     if(!r.items.length && !r.query) msgs.push({ id:uid(), role:"bot", html:esc(r.reply || "Mình chưa rõ ý bạn, kể lại giúp mình nhé?"), t:Date.now(), ai:true });
     return msgs;
@@ -6089,8 +6166,8 @@ function startNgay50k(){
       if(files){
         const imgs = await imgsForAI(files);
         r = await aiCall("Đọc các giao dịch trừ tiền trong ảnh chụp thông báo ngân hàng này, mỗi giao dịch một khoản." + (text && text !== "(ảnh)" ? "\n" + text : ""), null, imgs);
-      } else r = await aiCall(text);
-      msgs = tagRetry(aiMsgs(r), text);
+      } else { if(wasLocal) missAdd(text, ["sai"]); r = await aiCall(text); }
+      msgs = tagRetry(aiMsgs(r, files ? "" : text), text);
       if(files) retryImgs[msgs[0].grp] = files;
       if(wasLocal && !files){ const v = aiSavedGet(), mk = todayKey().slice(0, 7); if(v[mk] > 0){ v[mk]--; lsSet(AI_SAVED_KEY, JSON.stringify(v)); } }
     }catch(e){
@@ -6107,14 +6184,18 @@ function startNgay50k(){
     if(!chat) chatLoad();
     chat.msgs.push({ id:uid(), role:"me", text, t:Date.now() });
     let res0 = localParse(text);
+    /* v118: câu cùng khuôn với câu đã học → dùng lại cách hiểu đã học, không cần AI */
+    const lrn = learnFind(text);
+    if(lrn){ res0 = { items:lrn.out.items, query:lrn.out.query, unknown:[], learned:lrn.rec.id }; lrn.rec.hits = (lrn.rec.hits || 0) + 1; lrn.rec.used = Date.now(); persist(); }
     /* câu nối tiếp câu hỏi trước: gộp điều kiện mới vào câu hỏi trước, trả lời ngay trên máy */
-    if(!res0.items.length && chat.lastQ){
+    if(!res0.items.length && chat.lastQ && !res0.learned){
       const fresh = res0.query && res0.query.q;
       /* câu hỏi mới đủ ý (báo cáo mới, số dư, nợ, còn tiêu được) thì giữ; câu ngắn kiểu "còn thẻ thì sao" thì nối vào câu trước */
       if(!fresh || fresh === "unknown" || (chat.lastQ.q === "report" && (fresh === "spent" || fresh === "card") && /(^|\s)(thì sao|thi sao|còn|con|thôi|thoi|chỉ|chi tinh|vậy|vay)(\s|$)/i.test(text.trim().toLowerCase()) && !/bao nhiêu|bao nhieu|\bbn\b/i.test(text)) || (fresh === "report" && res0.query.noPeriod && text.trim().split(/\s+/).length <= 8)){
         try{ const rq = window.N50KParse.refine(text, chat.lastQ, chatCtx()); if(rq) res0 = { items:[], query:rq, unknown:[] }; }catch(e){}
       }
     }
+    noteMiss(text, res0);
     if(aiReady() && navigator.onLine !== false && aiCfg().smart && localEnough(text, res0)){
       /* máy hiểu chắc chắn: không gọi AI. Khoản chờ ghi có nút "Nhờ AI hiểu lại" phòng khi máy hiểu sai */
       const out = tagRetry(localReply(text, res0), text);
@@ -6132,7 +6213,7 @@ function startNgay50k(){
     let msgs;
     try{
       const r = await aiCall(text);
-      msgs = tagRetry(aiMsgs(r), text);
+      msgs = tagRetry(aiMsgs(r, text), text);
     }catch(e){
       msgs = tagRetry(localReply(text, res0), text);
       msgs.push({ id:uid(), role:"bot", html:"<i>(" + esc(aiErrText(e)) + ", mình dùng bộ hiểu câu trên máy. Kiểm tra ở Cài đặt → Trợ lý AI.)</i>", t:Date.now() });
@@ -8425,7 +8506,7 @@ function startNgay50k(){
   }
 
   /* ---- settings navigation ---- */
-  const SET_PAGES = ["setHome","setLock","setBank","setStart","setAI","setTheme","setBudget","setRecur","setPeople","setTags","setTagOne","setSync","setStore"];
+  const SET_PAGES = ["setHome","setLock","setBank","setStart","setAI","setTheme","setBudget","setRecur","setPeople","setTags","setTagOne","setSync","setStore","setLearn"];
   let setPage = "setHome";
   function showSetPage(id, back){
     setPage = id;
@@ -8440,14 +8521,60 @@ function startNgay50k(){
     if(id === "setTags") renderTagList();
     if(id === "setPeople"){ closeContactForm(); renderPeople(); }
     if(id === "setRecur") renderRecur();
+    if(id === "setLearn") renderLearn();
     if(id === "setLock") renderLockSet();
     if(id === "setBank") renderBanks("setBanks", true);
   }
+  /* v118: trang Chat đã học */
+  const MISS_WHY = { noitem:"không tìm ra khoản nào", query:"câu hỏi khó", leftover:"thừa chữ không có số tiền", numbers:"nhiều số tiền hơn số khoản", words:"có chữ khó (chia, sửa, %…)", card:"không rõ thẻ nào", who:"không rõ người vay", long:"câu dài", khong_hieu:"máy không hiểu", sai:"bạn báo máy hiểu sai" };
+  function learnLine(r){
+    if(r.query) return "Câu hỏi: " + ({ spent:"đã chi bao nhiêu", report:"báo cáo chi tiêu", left:"còn tiêu được", balance:"số dư", loans:"vay nợ", card:"chi thẻ", topday:"ngày tiêu nhiều nhất" }[r.query.q] || r.query.q) + (r.query.period ? " · " + ({ today:"hôm nay", yesterday:"hôm qua", week:"tuần này", lastweek:"tuần trước", month:"tháng này", lastmonth:"tháng trước", year:"năm nay", custom:"kỳ riêng" }[r.query.period] || r.query.period) : "");
+    return (r.items || []).map(x => {
+      let w = KIND_LABEL[x.kind] || x.kind;
+      if(x.kind === "out" || x.kind === "card") w += " · " + tagOf(x.cat).label;
+      if((x.kind === "card" || x.kind === "cardpay") && x.cardId) w += " · thẻ " + (cardName(x.cardId) || "?");
+      if(x.loanId || x.who){ const l = x.loanId ? getLoan(x.loanId) : null; w += " · " + ((l && l.who) || x.who); }
+      if(x.w && x.w !== MAIN_W && walletById(x.w)) w += " · " + walletName(x.w);
+      if(x.note) w += " · \u201c" + x.note + "\u201d";
+      return w;
+    }).join("; ");
+  }
+  function learnRow(box, title, sub, onDel){
+    const row = document.createElement("div"); row.className = "card-nav learn-row";
+    row.innerHTML = '<span class="t"><b></b><small></small></span><button type="button" class="del" aria-label="Xoá">✕</button>';
+    row.querySelector("b").textContent = title; row.querySelector("small").textContent = sub;
+    row.querySelector(".del").onclick = onDel;
+    box.appendChild(row);
+  }
+  function renderLearn(){
+    const L = state.learn || [], M = state.miss || [];
+    const hits = L.reduce((a, r) => a + (r.hits || 0), 0);
+    $("learnSum").textContent = "Đã học " + L.length + " câu · dùng lại " + hits + " lần không cần AI · " + M.length + " câu máy chưa hiểu.";
+    const lb = $("learnList"); lb.innerHTML = "";
+    if(!L.length) lb.innerHTML = '<p class="empty">Chưa học câu nào. Sửa thẻ xác nhận trong Chat rồi bấm Ghi là máy nhớ.</p>';
+    L.slice().sort((a, b) => (b.used || b.t || 0) - (a.used || a.t || 0)).slice(0, 80).forEach(r => {
+      learnRow(lb, r.text, learnLine(r) + " · " + (r.src === "ai" ? "học từ AI" : "học từ bạn sửa") + (r.hits ? " · dùng " + r.hits + " lần" : ""), () => { state.learn = state.learn.filter(x => x.id !== r.id); persist(); renderLearn(); });
+    });
+    const mb = $("missList"); mb.innerHTML = "";
+    if(!M.length) mb.innerHTML = '<p class="empty">Không có câu nào 👌</p>';
+    M.slice().sort((a, b) => b.t - a.t).slice(0, 80).forEach(r => {
+      learnRow(mb, r.text, (r.why || []).map(w => MISS_WHY[w] || w).join(", ") + (r.n > 1 ? " · " + r.n + " lần" : "") + " · " + agoText(r.t), () => { state.miss = state.miss.filter(x => x.id !== r.id); persist(); renderLearn(); });
+    });
+    $("missCopy").disabled = !M.length;
+  }
+  $("missCopy").onclick = async () => {
+    const txt = "Tiêu Gọn – câu máy chưa hiểu (" + (state.miss || []).length + ")\n" + (state.miss || []).slice().sort((a, b) => b.t - a.t).map(r => "- " + r.text.replace(/\n/g, " / ") + "  [" + (r.why || []).map(w => MISS_WHY[w] || w).join(", ") + "]").join("\n");
+    const msg = $("learnMsg");
+    try{ await navigator.clipboard.writeText(txt); msg.className = "inline-ok"; msg.textContent = "✓ Đã chép. Dán gửi cho người làm app để đưa vào thư viện chung."; }
+    catch(e){ msg.className = "inline-ok warn"; msg.textContent = "Máy không cho chép tự động."; }
+    msg.hidden = false;
+  };
   function renderSetHome(){
     $("navLock").textContent = N50KLock.isOn() ? (N50KLock.meta().pk ? "PIN, Face ID" : "Mã PIN") : "Tắt";
     $("navTheme").textContent = { auto:"Tự động", light:"Sáng", dark:"Tối", pastel:"Pastel" }[curTheme] || "Tự động";
     $("navStart").textContent = homeTab() === "chat" ? "Chat" : "Sổ";
     $("navAI").textContent = aiNav();
+    $("navLearn").textContent = (state.learn || []).length ? state.learn.length + " câu" : "chưa có";
     $("navBank").textContent = myBank() ? myBank().name : (lsGet(BANK_KEY) === "none" ? "Không dùng" : "chưa chọn");
     $("navBudget").textContent = fmt(state.budget) + "/ngày";
     $("navTags").textContent = allTags().length + " tag";
@@ -8804,6 +8931,7 @@ function startNgay50k(){
       cards: byId(a.cards, b.cards), cardTx: byDay(a.cardTx || {}, b.cardTx || {}),
       recur: byId(a.recur, b.recur), bals: byId(a.bals, b.bals), cardPay: byId(a.cardPay, b.cardPay),
       wallets: byId(a.wallets, b.wallets), xfer: byId(a.xfer, b.xfer),
+      learn: byId(a.learn, b.learn), miss: byId(a.miss, b.miss).filter(x => !byId(a.learn, b.learn).some(r => r.key === x.key)),
       payees: Object.assign({}, b.payees, a.payees), tagOff: mergeTagOff(a.tagOff, b.tagOff),
       deleted: del, updated: Date.now()
     });
@@ -8832,7 +8960,7 @@ function startNgay50k(){
     for(const k in st.days) exp += st.days[k].length;
     for(const k in st.income) inc += st.income[k].length;
     let ctx = 0; for(const k in (st.cardTx||{})) ctx += st.cardTx[k].length;
-    return exp + " khoản chi, " + inc + " khoản thu, " + ctx + " khoản thẻ, " + st.loans.length + " khoản vay, " + st.contacts.length + " người nhận";
+    return exp + " khoản chi, " + inc + " khoản thu, " + ctx + " khoản thẻ, " + st.loans.length + " khoản vay, " + st.contacts.length + " người nhận" + ((st.learn || []).length ? ", " + st.learn.length + " câu Chat đã học" : "");
   }
   function fmtStamp(iso){
     const d = new Date(iso); if(isNaN(d)) return "";
