@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v117";
+  var K = "ngay50k:errlog", VER = "v118";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -2475,7 +2475,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v117</p>
+      <p class="sync" id="appVersion">Phiên bản v118</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -2973,9 +2973,9 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
 <datalist id="bankList"></datalist>
 
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
-<script src="parse-vi.js?v=117"></script>
-<script src="thu-vien-cau.js?v=117"></script>
-<script src="lock.js?v=117"></script>
+<script src="parse-vi.js?v=118"></script>
+<script src="thu-vien-cau.js?v=118"></script>
+<script src="lock.js?v=118"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -6331,6 +6331,32 @@ function startNgay50k(){
   }
   window.addEventListener("resize", placeDockSoon);
   document.addEventListener("focusout", () => setTimeout(() => { if(document.activeElement !== $("chatIn") && document.body.classList.contains("kb")){ document.body.classList.remove("kb"); dockLast = { b:-1, h:-1 }; placeDock(); } }, 80));
+  /* v117: đang gõ ở Chat mà chạm ra ngoài hoặc vuốt: hạ bàn phím ngay (iPhone không tự hạ khi chạm vào chỗ trống).
+     Vuốt thì chặn luôn cú cuộn đó, để trang không bị cuộn dưới bàn phím rồi giật khi bố cục đổi lại (giống iMessage).
+     Chạm vào nút, ô chọn, ô nhập trong thẻ xác nhận hay hàng gợi ý / nút gửi thì vẫn hoạt động như thường. */
+  (function(){
+    let g = null;
+    const typing = () => document.body.classList.contains("kb") && document.activeElement === $("chatIn");
+    const drop = () => { try{ $("chatIn").blur(); }catch(_){} };
+    document.addEventListener("touchstart", e => {
+      g = null;
+      if(!typing() || e.touches.length !== 1) return;
+      const t = e.target, inDock = t.closest && t.closest("#chatDock");
+      const ctl = t.closest && t.closest("button, a, input, select, textarea, label, summary, [role=button]");
+      g = { x:e.touches[0].clientX, y:e.touches[0].clientY, inDock:!!inDock, ctl:!!ctl, done:false };
+    }, { passive:true, capture:true });
+    document.addEventListener("touchmove", e => {
+      if(!g) return;
+      if(g.done){ if(e.cancelable) e.preventDefault(); return; }
+      const dx = e.touches[0].clientX - g.x, dy = e.touches[0].clientY - g.y;
+      if(Math.abs(dy) > 8 && Math.abs(dy) > Math.abs(dx)){ g.done = true; if(e.cancelable) e.preventDefault(); if(typing()) drop(); }
+    }, { passive:false, capture:true });
+    document.addEventListener("touchend", () => {
+      if(g && !g.done && !g.inDock && !g.ctl && typing()) drop();
+      g = null;
+    }, { passive:true, capture:true });
+    document.addEventListener("touchcancel", () => { g = null; }, { passive:true, capture:true });
+  })();
   document.addEventListener("touchstart", e => { if(e.target === $("chatIn")) return; if(kbWatch()) return; if(document.body.classList.contains("kb") && document.activeElement !== $("chatIn")){ document.body.classList.remove("kb"); dockLast = { b:-1, h:-1 }; placeDockSoon(); } }, { passive:true });
   setInterval(() => { if(kbWatch()) return; if(document.body.classList.contains("kb") && document.activeElement !== $("chatIn")){ document.body.classList.remove("kb"); dockLast = { b:-1, h:-1 }; placeDock(); } }, 1500);
   const redock = () => { if(kbWatch()) return; if(document.activeElement !== $("chatIn")) document.body.classList.remove("kb"); dockLast = { b:-1, h:-1 }; placeDockSoon(); };
