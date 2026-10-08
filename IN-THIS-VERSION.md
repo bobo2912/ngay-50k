@@ -1,6 +1,18 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v104, ngày 08/10/2026
+**Phiên bản hiện tại:** v105, ngày 08/10/2026
+
+---
+
+## Có gì mới trong v105 (so với v104)
+
+**Màn Ví gọn lại (hướng A).**
+- Số dư chỉ hiện một lần ở đầu màn, theo ví đang chọn: tên ví, số tiền, dòng nhỏ "Đối chiếu …" ngay dưới, nút **Cập nhật số dư** (trước là Đối chiếu số dư). Ví thêm có thêm nút ⇄ chuyển tiền và ✎ sửa ví; thẻ có nút Trả thẻ.
+- Hàng tab ví chỉ còn tên (không kèm số tiền); thẻ đang nợ có chấm đỏ; nút ＋ để thêm ví hoặc thẻ.
+- Tổng các ví chỉ hiện (dòng nhỏ) khi có từ hai ví hoặc đang nợ thẻ.
+- Hạn mức hôm nay gọn trên một dòng kèm thanh mảnh.
+- Hàng nút: **Quét QR · Ảnh · Nhập tay** (chi, màu đỏ) và **Thêm thu** (màu xanh). Nhập tay mở form ghi chi đơn giản; cần chuyển khoản thì bấm dòng "Chuyển khoản cho ai đó?" trong form.
+- Tiêu đề, nút đều một dòng, không rớt dòng kể cả màn hình nhỏ.
 
 ---
 
@@ -9,15 +21,6 @@
 - Ô số dư tab Ví ghi gọn **Tài khoản** (bỏ "(gồm tiền mặt)").
 - Bốn nút **Quét QR, Ảnh QR, Nhập tay, Tiền mặt** gọn trên một hàng.
 - "Ghi lại khoản hay lặp" đổi thành dòng **Ghi nhanh** nhỏ gọn, các khoản là nút nhỏ trên cùng một dòng (vuốt ngang nếu nhiều).
-
----
-
-## Có gì mới trong v103 (so với v102)
-
-**Sửa lỗi bộ hiểu câu:**
-- "Tôi nhận 1 triệu từ công đoàn MB" bị hiểu là **chi**. Giờ câu có "nhận" (không phải "nhận hàng", "nhận đơn", "ship") là **khoản thu**.
-- Chữ "Tôi" ở đầu câu bị hiểu là "tối" (20:00), nên khoản ghi lúc chiều bị xếp vào giờ tương lai, nằm ở mục Sắp tới và **chưa cộng vào số dư**. Giờ "tôi" có dấu là đại từ; gõ không dấu "toi" chỉ là buổi tối khi đi với "nay/qua" ("tối nay", "toi qua").
-- Bỏ "Tôi/Mình" ở đầu nội dung khoản ("Nhận từ công đoàn MB").
 
 ---
 
@@ -129,6 +132,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v105** | Màn Ví gọn (hướng A): số dư một lần, tab chữ, nút chi đỏ / thu xanh |
 | **v104** | Nhãn Tài khoản gọn; 4 nút ghi trên một hàng; Ghi nhanh gọn |
 | **v103** | Sửa: "nhận" là khoản thu; "tôi" không bị hiểu là "tối" |
 | **v102** | Thêm khoản thu ở tab Ví (Tài khoản), bỏ khỏi Tổng quan |
