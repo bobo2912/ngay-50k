@@ -77,6 +77,14 @@
   const PARTS = { sang:8, trua:12, chieu:16, toi:20, dem:22 };
   /* tìm ngày, giờ trong đoạn đã chuẩn hoá; trả {date, hh, mm, drop:Set(token index)} */
   function dateIn(N, now){
+    /* "tôi" (đại từ) và "tối" (buổi tối) cùng chuẩn hoá thành "toi" (v103): có dấu thì nhìn dấu;
+       gõ không dấu thì chỉ coi là buổi tối khi đi với "nay/qua" hoặc sau "buổi" */
+    const O = OF.get(N);
+    const isMe = i => {
+      const o = O && O[i] ? clean(O[i]).toLowerCase() : "";
+      if(hasMarks(o)) return o === "tôi";
+      return !(N[i+1] === "nay" || N[i+1] === "qua" || N[i-1] === "buoi");
+    };
     let date = null, hh = null, mm = null; const drop = new Set();
     const at = (i, words) => words.every((w, k) => N[i+k] === w);
     for(let i = 0; i < N.length; i++){
@@ -88,7 +96,8 @@
       else if(at(i, ["hom","qua"])){ date = keyOf(addDays(now, -1)); drop.add(i).add(i+1); }
       else if(at(i, ["hom","kia"])){ date = keyOf(addDays(now, -2)); drop.add(i).add(i+1); }
       else if(at(i, ["bua","nay"]) || at(i, ["bua","qua"])){ date = keyOf(addDays(now, N[i+1] === "qua" ? -1 : 0)); drop.add(i).add(i+1); }
-      else if(PARTS[w] !== undefined && (N[i+1] === "nay" || N[i+1] === "qua" || i === 0 || drop.has(i-1) || N[i-1] === "buoi" || N[i-1] === "an")){
+      else if(PARTS[w] !== undefined && (N[i+1] === "nay" || N[i+1] === "qua" || i === 0 || drop.has(i-1) || N[i-1] === "buoi" || N[i-1] === "an")
+              && !(w === "toi" && isMe(i))){
         if(hh === null) hh = PARTS[w];
         if(N[i+1] === "nay"){ drop.add(i).add(i+1); if(!date) date = keyOf(now); }
         else if(N[i+1] === "qua"){ drop.add(i).add(i+1); date = keyOf(addDays(now, -1)); }
@@ -359,6 +368,8 @@
     if(!kind){
       for(const [cat, seqs] of INC_RULES){ for(const s of seqs){ if(has(N, s) >= 0){ kind = "in"; item.cat = cat; break; } } if(kind) break; }
       if(kind === "in" && item.cat === "ban" && (hasW("mua") || hasW("tieu"))){ kind = null; delete item.cat; }
+      /* "nhận 1 triệu từ công đoàn", "tôi nhận 500k" → khoản thu (v103); "nhận hàng", "nhận ship" là chi */
+      if(!kind && hasW("nhan") && !hasW("nhan hang") && !hasW("nhan don") && !hasW("ship") && !hasW("mua") && !hasW("tra")){ kind = "in"; item.cat = "khac"; }
     }
     /* chi bằng thẻ hay tài khoản */
     if(!kind){
@@ -392,6 +403,8 @@
     const words = [];
     O.forEach((w, i) => { if(drop.has(i)) return; const n = N[i]; if(!n) return; if(PARTICLE.has(clean(w).toLowerCase())) return; if(SKIP.has(n) && (words.length === 0 || i === O.length - 1 || ["het","mat","ton"].includes(n))) return; words.push(clean(w) || w); });
     while(words.length && (SKIP.has(norm(words[words.length-1])) || PARTICLE.has(words[words.length-1].toLowerCase()))) words.pop();
+    /* bỏ đại từ ở đầu nội dung: "Tôi nhận từ công đoàn" → "Nhận từ công đoàn" */
+    while(words.length > 1 && ["toi","minh","tao"].includes(norm(words[0]))) words.shift();
     let note = words.join(" ").replace(/\s+/g, " ").trim();
     if(kind === "lend" || kind === "borrow" || kind === "repay" || kind === "collect" || kind === "bal" || kind === "cardpay" || kind === "xfer") note = "";
     if(kind === "in" && /^(nhận|nhan|được|duoc)$/i.test(note)) note = "";

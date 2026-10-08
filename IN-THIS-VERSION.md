@@ -1,6 +1,15 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v102, ngày 08/10/2026
+**Phiên bản hiện tại:** v103, ngày 08/10/2026
+
+---
+
+## Có gì mới trong v103 (so với v102)
+
+**Sửa lỗi bộ hiểu câu:**
+- "Tôi nhận 1 triệu từ công đoàn MB" bị hiểu là **chi**. Giờ câu có "nhận" (không phải "nhận hàng", "nhận đơn", "ship") là **khoản thu**.
+- Chữ "Tôi" ở đầu câu bị hiểu là "tối" (20:00), nên khoản ghi lúc chiều bị xếp vào giờ tương lai, nằm ở mục Sắp tới và **chưa cộng vào số dư**. Giờ "tôi" có dấu là đại từ; gõ không dấu "toi" chỉ là buổi tối khi đi với "nay/qua" ("tối nay", "toi qua").
+- Bỏ "Tôi/Mình" ở đầu nội dung khoản ("Nhận từ công đoàn MB").
 
 ---
 
@@ -8,15 +17,6 @@
 
 - **Khoản thu chuyển sang tab Ví:** nút **Thêm khoản thu** nằm cạnh Đối chiếu số dư ở tab Tài khoản (chỗ nút Trả thẻ trước đây). Form khoản thu mở ngay bên dưới, chọn được ví nhận nếu có nhiều ví.
 - **Tổng quan** bỏ nút Khoản thu; khoản thu vẫn hiện trong thu chi của tháng như cũ.
-
----
-
-## Có gì mới trong v101 (so với v100)
-
-- **Bỏ hàng chọn thẻ trong tab thẻ:** chọn thẻ bằng hàng tab ví ở trên. Chỉ còn nút "Chưa gán thẻ" khi có khoản quẹt thẻ chưa biết thuộc thẻ nào. Nút góc phải đổi thành **Sửa thẻ** cho thẻ đang xem.
-- **Thêm ví → Thẻ tín dụng** nhập luôn 6 số đầu, 4 số cuối, ngày sao kê ngay trong màn Thêm ví (như màn thêm thẻ trước đây), lưu xong mở tab thẻ đó.
-- **Bỏ nút Trả thẻ ở tab Tài khoản:** trả thẻ ở tab thẻ. Tiền trả thẻ (và tiền chuyển sang/nhận từ ví khác) hiện trong lịch sử ngày của tab Tài khoản, ghi "không tính chi tiêu", không cộng vào số đã chi.
-- Khoản chi từ ví khác trong lịch sử ngày ghi thêm tên ví.
 
 ---
 
@@ -128,6 +128,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v103** | Sửa: "nhận" là khoản thu; "tôi" không bị hiểu là "tối" |
 | **v102** | Thêm khoản thu ở tab Ví (Tài khoản), bỏ khỏi Tổng quan |
 | **v101** | Bỏ hàng chọn thẻ; thêm thẻ ngay trong Thêm ví; trả thẻ chỉ ở tab thẻ, hiện trong lịch sử Tài khoản |
 | **v100** | Các ví là các tab trong màn Ví, nội dung ví và thẻ hiện ngay tại chỗ |
