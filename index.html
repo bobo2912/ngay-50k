@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v101";
+  var K = "ngay50k:errlog", VER = "v102";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -1745,12 +1745,41 @@ body.kb #tab-chat > .chip-veil{display:none}
       <p class="set-now info" id="infoBal" hidden>Số dư = số bạn nhập ở lần đối chiếu gần nhất, cộng khoản thu, trừ chi thường và tiền trả thẻ, tính cả tiền vay, cho vay, trả nợ ghi sau lúc đó. Quẹt thẻ chưa trừ số dư mà cộng vào nợ thẻ, tới khi bạn ghi Trả thẻ. Khoản ghi bù cho thời điểm trước lần đối chiếu không làm đổi số dư, vì số thật bạn nhập đã có nó.</p>
       <div class="chero-foot">
         <button type="button" id="balOpen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span id="balOpenLabel">Đối chiếu số dư</span></button>
+        <button type="button" id="addIncomeBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Thêm khoản thu</button>
         <button type="button" id="walletPay" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2.5"/><path d="M2 10h20"/></svg>Trả thẻ</button>
         <button type="button" id="wAddBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Thêm ví</button>
       </div>
     </div>
 
     </div>
+    <!-- v102: khoản thu ghi ở tab Ví (Tài khoản), không còn ở Tổng quan -->
+    <section id="incomeForm" hidden>
+      <div class="form">
+        <div class="form-head"><h2>Thêm khoản thu</h2><button class="x" id="cancelIncome" aria-label="Huỷ">✕</button></div>
+        <div class="field">
+          <label for="incAmt"><span>Số tiền</span></label>
+          <input id="incAmt" class="inp amount-inp num" inputmode="numeric" autocomplete="off" placeholder="0đ">
+        </div>
+        <div class="field">
+          <label><span>Nguồn thu</span></label>
+          <div class="chips" id="incChips" style="margin-top:0"></div>
+        </div>
+        <div class="field">
+          <label for="incNote"><span>Ghi chú</span></label>
+          <input id="incNote" class="inp" maxlength="60" autocomplete="off" placeholder="vd: lương tháng 9">
+        </div>
+        <div class="field">
+          <label for="incDate"><span>Ngày nhận</span></label>
+          <input id="incDate" class="inp" type="date">
+        </div>
+        <div class="field" id="iWField" hidden>
+          <label><span>Vào ví</span></label>
+          <div class="chips wchips" id="iWChips" style="margin-top:0"></div>
+        </div>
+        <button class="primary green" id="saveIncome" disabled>Lưu khoản thu</button>
+      </div>
+    </section>
+    <p class="inline-ok" id="incomeMsg" hidden></p>
     <div class="note" id="note" role="img" aria-label="">
       <div class="hero-top"><span class="remain-label" id="remainLabel">Hôm nay còn được tiêu</span><span class="badge num">Hạn mức <span id="corner">50</span>k</span></div>
       <div class="remain num" id="remain">50.000đ</div>
@@ -1829,9 +1858,6 @@ body.kb #tab-chat > .chip-veil{display:none}
       <button class="cards-btn icon-only" id="openAnalytics" aria-haspopup="dialog" aria-label="Phân tích tháng">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V11M10 20V4M16 20v-6M22 20H2"/></svg>
       </button>
-      <button class="cards-btn" id="addIncomeBtn">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span class="inc-l">Khoản thu</span>
-      </button>
     </div>
     <div class="ledger chero">
       <p class="chero-lb"><span id="netLabel">Dòng tiền ròng tháng này</span><span class="lb-r"><span class="chero-trend" id="netTrend" hidden></span><button class="ib" type="button" data-info="infoNet" aria-expanded="false" aria-label="Giải thích">i</button></span></p>
@@ -1852,33 +1878,6 @@ body.kb #tab-chat > .chip-veil{display:none}
       <button class="kpi" id="kpiLoan"><small>Khoản vay</small><b class="num" id="sumLoan">0đ</b></button>
     </div>
 
-    <section id="incomeForm" hidden>
-      <div class="form">
-        <div class="form-head"><h2>Thêm khoản thu</h2><button class="x" id="cancelIncome" aria-label="Huỷ">✕</button></div>
-        <div class="field">
-          <label for="incAmt"><span>Số tiền</span></label>
-          <input id="incAmt" class="inp amount-inp num" inputmode="numeric" autocomplete="off" placeholder="0đ">
-        </div>
-        <div class="field">
-          <label><span>Nguồn thu</span></label>
-          <div class="chips" id="incChips" style="margin-top:0"></div>
-        </div>
-        <div class="field">
-          <label for="incNote"><span>Ghi chú</span></label>
-          <input id="incNote" class="inp" maxlength="60" autocomplete="off" placeholder="vd: lương tháng 9">
-        </div>
-        <div class="field">
-          <label for="incDate"><span>Ngày nhận</span></label>
-          <input id="incDate" class="inp" type="date">
-        </div>
-        <div class="field" id="iWField" hidden>
-          <label><span>Vào ví</span></label>
-          <div class="chips wchips" id="iWChips" style="margin-top:0"></div>
-        </div>
-        <button class="primary green" id="saveIncome" disabled>Lưu khoản thu</button>
-      </div>
-    </section>
-    <p class="inline-ok" id="incomeMsg" hidden></p>
 
     <section>
       <div class="ledger-head">
@@ -2380,7 +2379,7 @@ body.kb #tab-chat > .chip-veil{display:none}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v101</p>
+      <p class="sync" id="appVersion">Phiên bản v102</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -2881,8 +2880,8 @@ body.kb #tab-chat > .chip-veil{display:none}
 
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
 <script src="vendor/jsQR.js"></script>
-<script src="parse-vi.js?v=101"></script>
-<script src="lock.js?v=101"></script>
+<script src="parse-vi.js?v=102"></script>
+<script src="lock.js?v=102"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -4202,12 +4201,13 @@ function startNgay50k(){
   /* ---------- income form ---------- */
   const incAmt = () => parseInt(digits($("incAmt").value),10) || 0;
   function openIncome(){
-    $("incomeForm").hidden = false; $("addIncomeBtn").hidden = true;
+    $("incomeForm").hidden = false; $("incomeMsg").hidden = true;
+    requestAnimationFrame(() => $("incomeForm").scrollIntoView({ behavior:"smooth", block:"nearest" }));
     $("incAmt").value = ""; $("incNote").value = ""; $("incDate").value = todayKey();
     wPicker("iWField", "iWChips", MAIN_W);
     selectInc("luong"); refreshIncome();
   }
-  function closeIncome(){ $("incomeForm").hidden = true; $("addIncomeBtn").hidden = false; }
+  function closeIncome(){ $("incomeForm").hidden = true; }
   function selectInc(id){ incCat = id; [...$("incChips").children].forEach((x,i)=>x.setAttribute("aria-pressed", INC[i].id===id?"true":"false")); }
   function refreshIncome(){
     const a = incAmt(); $("saveIncome").disabled = !a;
@@ -4668,6 +4668,7 @@ function startNgay50k(){
   function resetTab(name){
     if(name === "today"){
       flowLimit = 30; renderBalance();
+      closeIncome(); $("incomeMsg").hidden = true;
       calMonth = null; renderCal();
       viewDay = null;
       if(!$("formBox").hidden) closeForm();
@@ -4675,7 +4676,6 @@ function startNgay50k(){
       renderToday();
     } else if(name === "money"){
       viewMonth = new Date(); viewMonth.setDate(1);
-      closeIncome(); $("incomeMsg").hidden = true;
       clearSearch(); netFilter = "all";
       [...$("netSeg").children].forEach(x => x.setAttribute("aria-pressed", x.dataset.nf === "all" ? "true" : "false"));
       renderMoney();

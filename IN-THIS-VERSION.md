@@ -1,6 +1,13 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v101, ngày 08/10/2026
+**Phiên bản hiện tại:** v102, ngày 08/10/2026
+
+---
+
+## Có gì mới trong v102 (so với v101)
+
+- **Khoản thu chuyển sang tab Ví:** nút **Thêm khoản thu** nằm cạnh Đối chiếu số dư ở tab Tài khoản (chỗ nút Trả thẻ trước đây). Form khoản thu mở ngay bên dưới, chọn được ví nhận nếu có nhiều ví.
+- **Tổng quan** bỏ nút Khoản thu; khoản thu vẫn hiện trong thu chi của tháng như cũ.
 
 ---
 
@@ -10,19 +17,6 @@
 - **Thêm ví → Thẻ tín dụng** nhập luôn 6 số đầu, 4 số cuối, ngày sao kê ngay trong màn Thêm ví (như màn thêm thẻ trước đây), lưu xong mở tab thẻ đó.
 - **Bỏ nút Trả thẻ ở tab Tài khoản:** trả thẻ ở tab thẻ. Tiền trả thẻ (và tiền chuyển sang/nhận từ ví khác) hiện trong lịch sử ngày của tab Tài khoản, ghi "không tính chi tiêu", không cộng vào số đã chi.
 - Khoản chi từ ví khác trong lịch sử ngày ghi thêm tên ví.
-
----
-
-## Có gì mới trong v100 (so với v99)
-
-**Các ví là các tab ngay trong màn Ví, không mở màn con nữa.**
-- Đầu màn Ví là **Tổng các ví** (đã trừ nợ thẻ), bên dưới là hàng tab: Tài khoản, các ví thêm, các thẻ tín dụng, và nút Thêm ví.
-- Chọn **Tài khoản**: hiện số dư ví Tài khoản, thẻ hạn mức hôm nay, nút quét QR / nhập tay / tiền mặt, lịch sử tiêu theo ngày, 7 ngày, lịch, như trước.
-- Chọn **một ví khác** (Momo…): hiện ngay số dư và các khoản của ví đó, cùng nút Đối chiếu, Chuyển tiền, Sửa ví.
-- Chọn **một thẻ**: hiện ngay nội dung thẻ (chi theo tháng, kỳ sao kê, Từ ảnh, Ghi tay, Trả thẻ), hàng tab vẫn ở trên để đổi qua lại.
-- Màn Đối chiếu số dư chỉ mở khi bấm nút **Đối chiếu**.
-- Thêm ví mới thì mở luôn tab của ví đó.
-- Chỉ có một ví, không có thẻ thì màn Ví như cũ, không có hàng tab.
 
 ---
 
@@ -38,7 +32,7 @@
 
 ### Tab Ví (các ví, thẻ tín dụng, hôm nay, giao dịch theo ngày)
 - **Tổng các ví** (đã trừ nợ thẻ) và **hàng tab ví**: Tài khoản (gồm tiền mặt), các ví thêm (ngân hàng khác, ví điện tử), các thẻ tín dụng, nút **Thêm ví**. Chỉ một ví, không thẻ thì không có hàng tab.
-- Tab **Tài khoản**: số dư, nút **Đối chiếu số dư**, cùng các mục bên dưới (hạn mức hôm nay, quét QR, giao dịch theo ngày kèm trả thẻ / chuyển ví, 7 ngày, lịch).
+- Tab **Tài khoản**: số dư, nút **Đối chiếu số dư** và **Thêm khoản thu**, cùng các mục bên dưới (hạn mức hôm nay, quét QR, giao dịch theo ngày kèm trả thẻ / chuyển ví, 7 ngày, lịch).
 - Tab **ví khác**: số dư, nút Đối chiếu, Chuyển tiền, Sửa ví; các khoản sắp tới và biến động của ví.
 - Tab **thẻ**: nội dung thẻ tín dụng (xem mục Màn thẻ tín dụng bên dưới). Nút **Trả thẻ** chọn được ví trả.
 - Nút **Đối chiếu** mở màn riêng: ô nhập số dư thật (ví Tài khoản có thêm ô nợ thẻ), chuyển tiền giữa các ví, sắp tới, biến động từ lần đối chiếu, lịch sử đối chiếu / trả thẻ / chuyển ví.
@@ -67,8 +61,8 @@
 ### Tab Tổng quan
 - **Dòng tiền ròng** theo tháng (thu trừ chi), chọn được gồm chi thường, chi thẻ hay cả hai, kèm mức tăng giảm so với tháng trước.
 - Bốn ô tổng: thu vào, chi thường, chi thẻ, khoản vay. Khoản vay để riêng, không tính vào dòng tiền ròng.
-- Thêm khoản thu theo nguồn: Lương, Thưởng, Bán hàng, Được cho, Khác. Chạm vào khoản thu để sửa số tiền, ghi chú, ngày nhận, nguồn thu.
-- **Phân tích tháng** (nút biểu đồ cạnh nút Khoản thu): biểu đồ so sánh thu chi theo ngày, tuần, tháng.
+- Khoản thu (thêm ở tab Ví) hiện trong danh sách theo nguồn: Lương, Thưởng, Bán hàng, Được cho, Khác. Chạm vào khoản thu để sửa số tiền, ghi chú, ngày nhận, nguồn thu.
+- **Phân tích tháng** (nút biểu đồ cạnh tên tháng): biểu đồ so sánh thu chi theo ngày, tuần, tháng.
 - Thống kê chi theo tag nằm trong Phân tích tháng, ăn theo lựa chọn ở trên. Chạm một nhóm để xem các khoản của nhóm đó theo ngày.
 - Danh sách tất cả thu chi trong tháng. Chạm vào ô tìm là ô tìm lên sát đỉnh màn hình và đứng yên ở đó.
 - **Tìm kiếm xuyên tháng** trên cả khoản chi, khoản thu và chi thẻ.
@@ -134,6 +128,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v102** | Thêm khoản thu ở tab Ví (Tài khoản), bỏ khỏi Tổng quan |
 | **v101** | Bỏ hàng chọn thẻ; thêm thẻ ngay trong Thêm ví; trả thẻ chỉ ở tab thẻ, hiện trong lịch sử Tài khoản |
 | **v100** | Các ví là các tab trong màn Ví, nội dung ví và thẻ hiện ngay tại chỗ |
 | **v99** | Thẻ tín dụng là một loại ví; bỏ ô Thẻ, thanh tab còn 4 ô; trả thẻ chọn ví |
