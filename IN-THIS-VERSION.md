@@ -1,6 +1,14 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v107, ngày 08/10/2026
+**Phiên bản hiện tại:** v108, ngày 08/10/2026
+
+---
+
+## Có gì mới trong v108 (so với v107)
+
+- **Tìm trong lịch sử ví:** ô tìm ngay dưới tiêu đề "Lịch sử giao dịch" ở tab Ví, tìm trong ví đang chọn. Cơ chế giống ô tìm ở Sổ → Tháng: chạm vào là ô tìm lên sát đỉnh màn hình và đứng yên, đầu trang và hàng ví ẩn đi; bấm ✕ (hoặc xoá hết chữ rồi rời ô) là trở lại như cũ.
+- Tìm theo nội dung, tên nhóm, tên người nhận, gõ không dấu cũng được, hoặc số tiền (từ 3 chữ số). Kết quả vẫn gom theo ngày, tiêu đề ghi số khoản, tổng thu, tổng chi.
+- Ô tìm gọn hơn (bỏ khung trắng thừa bên trong), áp dụng cho cả Sổ → Tháng.
 
 ---
 
@@ -13,15 +21,6 @@
 - ⚠️ **Hạn mức ngày giờ tính cả quẹt thẻ** (trước chỉ tính chi tài khoản). Lịch tháng, 7 ngày, cảnh báo vượt hạn mức đều tính theo cách mới.
 - **Ghi chi** chọn được nguồn: ví hoặc thẻ tín dụng. Chọn thẻ thì khoản được ghi vào sổ thẻ (cộng vào nợ thẻ).
 - **Ví:** chỉ lo tiền đang ở đâu. Chọn ví (Tài khoản, Momo…) để xem số dư, Cập nhật số dư, ⇄ chuyển tiền và **lịch sử giao dịch theo ngày** của riêng ví đó (thu, chi, trả thẻ, chuyển ví). Chọn thẻ để xem nội dung thẻ như trước.
-
----
-
-## Có gì mới trong v106 (so với v105)
-
-- **Bỏ hẳn quét mã QR:** bỏ nút Quét QR và Ảnh, khung camera, mục Cài đặt → Quét mã QR, cùng phần mã liên quan (trang `scan.html`, thư viện `vendor/jsQR.js`). App nhẹ hơn, không còn xin quyền camera.
-- Hàng nút còn **Nhập tay** (chi, đỏ) và **Thêm thu** (thu, xanh).
-- Nút **Cập nhật số dư** nằm giữa theo chiều dọc với khối số dư, không còn lệch lên trên.
-- Đọc ảnh chụp thông báo ngân hàng trong Chat vẫn giữ nguyên (đó là đọc chữ, không phải QR).
 
 ---
 
@@ -129,6 +128,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v108** | Tìm trong lịch sử ví (cùng cơ chế ô tìm của Sổ) |
 | **v107** | Sổ (Ngày/Tháng) và Ví tách vai; hạn mức tính cả quẹt thẻ; Ghi chi chọn được thẻ |
 | **v106** | Bỏ hẳn quét mã QR; nút Cập nhật số dư canh giữa |
 | **v105** | Màn Ví gọn (hướng A): số dư một lần, tab chữ, nút chi đỏ / thu xanh |
