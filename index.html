@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v114";
+  var K = "ngay50k:errlog", VER = "v115";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -1208,14 +1208,14 @@ html{scroll-padding-top:var(--head-h, 100px)}
 .chat-dock .chat-sugg{padding:0 0 6px}
 /* nền mờ dần phía sau hàng gợi ý để tin nhắn cuộn bên dưới không lẫn vào */
 .chat-dock::before{content:""; position:absolute; z-index:-1; left:-14px; right:-14px; top:-14px; bottom:-10px; pointer-events:none;
-  background:linear-gradient(to bottom, transparent, var(--bg) 22px, var(--bg))}
+  background:linear-gradient(to bottom, transparent, var(--top-c, var(--bg)) 22px, var(--top-c, var(--bg)))}
 body.kb .chat-dock::before{display:none}
 .chat-dock .chat-bar{margin-top:0; box-shadow:var(--shadow-s); background:var(--glass-strong); -webkit-backdrop-filter:blur(18px); backdrop-filter:blur(18px)}
 body.kb .tabs{display:none}
 /* làm mờ nội dung cuộn phía sau, từ thanh menu xuống đáy màn hình */
 .tab-veil{position:fixed; z-index:38; left:0; right:0; bottom:0; height:calc(16px + 62px + 10px + env(safe-area-inset-bottom,0px)); pointer-events:none;
   -webkit-backdrop-filter:blur(14px) saturate(140%); backdrop-filter:blur(14px) saturate(140%);
-  background:linear-gradient(to bottom, transparent, color-mix(in srgb, var(--bg) 55%, transparent));
+  background:linear-gradient(to bottom, transparent, color-mix(in srgb, var(--top-c, var(--bg)) 55%, transparent));
   -webkit-mask-image:linear-gradient(to bottom, transparent, #000 14px); mask-image:linear-gradient(to bottom, transparent, #000 14px)}
 body.kb .tab-veil{display:none}
 /* v111: cuộn xuống thì menu dưới trượt khuất, cuộn lên thì hiện lại (như Facebook) */
@@ -1558,8 +1558,10 @@ header .date{font-size:1.25rem}
    Vì vậy: html/body, đầu trang (sticky), thanh Cài đặt, màn khoá, màn chào đều có background-color ĐẶC = --top-c;
    các ô dính khác (Số dư ví) vẽ nền bằng background-image để iPhone không lấy màu của chúng. */
 html, body{background-color:var(--top-c)}
-/* v111: body luôn phủ kín màn hình, trang ngắn (Chat, kết quả tìm) không còn bị chia 2 mảng nền */
-body{min-height:calc(100vh - var(--safe-top)); min-height:calc(100dvh - var(--safe-top))}   /* v113: trừ lề trên của html, để trang ngắn không dư ra rồi tự cuộn */
+
+/* v115: không kéo dài body nữa (trên iPhone làm trang ngắn dư ra, vuốt được, đẩy câu chào Chat vào dưới khung Số dư ví).
+   Nền liền màu: lớp nền loang phía sau (body::before) bị thân trang che ở trang dài, nên ẩn hẳn để trang ngắn cũng một màu --top-c như html */
+body::before{display:none}
 main > header{background-color:var(--top-c)}
 main > header::after{content:""; position:absolute; left:0; right:0; top:100%; height:14px; pointer-events:none; background:linear-gradient(var(--top-c), color-mix(in srgb, var(--top-c) 0%, transparent))}
 main > header.stuck{background:var(--top-c); -webkit-backdrop-filter:none; backdrop-filter:none; box-shadow:0 1px 0 var(--line)}
@@ -2473,7 +2475,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v114</p>
+      <p class="sync" id="appVersion">Phiên bản v115</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -2971,8 +2973,8 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
 <datalist id="bankList"></datalist>
 
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
-<script src="parse-vi.js?v=114"></script>
-<script src="lock.js?v=114"></script>
+<script src="parse-vi.js?v=115"></script>
+<script src="lock.js?v=115"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
