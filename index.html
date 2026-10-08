@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v107";
+  var K = "ngay50k:errlog", VER = "v108";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -1079,6 +1079,7 @@ body.searching header{display:none}
 .searchbar input{flex:1; min-width:0; border:0; background:transparent; padding:10px 0; font-size:.9rem; outline:none}
 .searchbar input::-webkit-search-cancel-button{display:none}
 .searchbar:focus-within{border-color:var(--note); box-shadow:0 0 0 3px var(--note-soft)}
+.searchbar input.inp, .searchbar input.inp:focus{background:transparent!important; border:0!important; box-shadow:none!important; outline:none; border-radius:0}
 .searchbar .sx{border:0; background:transparent; color:var(--muted); font-size:.95rem; padding:4px 0 4px 4px}
 .src{flex:none; font-size:.66rem; font-weight:700; border-radius:999px; padding:3px 7px; background:var(--line); color:var(--muted)}
 .src.c{background:var(--note-soft); color:var(--note)}
@@ -1685,6 +1686,10 @@ body.kb #tab-chat > .chip-veil{display:none}
 .so-seg button{flex:1; border:0; background:transparent; border-radius:999px; padding:7px 0; font:inherit; font-size:.86rem; font-weight:600; color:var(--muted)}
 .so-seg button[aria-pressed="true"]{background:var(--glass-strong, var(--surface)); color:var(--note); box-shadow:var(--shadow-s)}
 #list .item.inc-it .amt{color:#23955f}
+body.searching #wTabsBox, #tab-wal.searching > #walBox, #tab-wal.searching > #walSoonSec{display:none}
+#tab-wal.searching > section{margin-top:0}
+#tab-wal.searching .ledger-head{padding-top:0}
+#tab-wal .ledger-head h2{font-size:.95rem}
 #walFlow .day-h{display:flex; justify-content:space-between; align-items:baseline; list-style:none; margin:14px 2px 2px; font-size:.8rem; font-weight:700; color:var(--muted)}
 #walFlow .day-h:first-child{margin-top:4px}
 #walFlow .day-h small{font-weight:500; font-size:.74rem}
@@ -1793,7 +1798,14 @@ body.kb #tab-chat > .chip-veil{display:none}
       <ul class="flow" id="walSoon"></ul>
     </section>
     <section>
-      <h2 id="walFlowTitle">Giao dịch của ví</h2>
+      <div class="ledger-head">
+        <h2 id="walFlowTitle">Lịch sử giao dịch</h2>
+        <div class="searchbar">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input id="walSearch" class="inp" type="search" inputmode="search" autocomplete="off" placeholder="Tìm trong lịch sử ví này">
+          <button type="button" class="sx" id="walSearchClear" hidden aria-label="Xoá tìm kiếm">✕</button>
+        </div>
+      </div>
       <ul class="flow" id="walFlow"></ul>
       <button type="button" class="linkbtn" id="walMore" hidden>Xem thêm</button>
     </section>
@@ -2417,7 +2429,7 @@ body.kb #tab-chat > .chip-veil{display:none}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v107</p>
+      <p class="sync" id="appVersion">Phiên bản v108</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -2905,8 +2917,8 @@ body.kb #tab-chat > .chip-veil{display:none}
 <datalist id="bankList"></datalist>
 
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
-<script src="parse-vi.js?v=107"></script>
-<script src="lock.js?v=107"></script>
+<script src="parse-vi.js?v=108"></script>
+<script src="lock.js?v=108"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -6292,7 +6304,7 @@ function startNgay50k(){
   var reconW = "main";
   function sMon(n){ return (n < 0 ? "−" : "") + fmt(Math.abs(n)); }
   /* ví đang chọn ở hàng tab của màn Ví (v100): "main", mã ví thêm, hoặc "card:<mã thẻ>" */
-  var walSel = "main", walLimit = 14, cardLast = null;
+  var walSel = "main", walLimit = 14, cardLast = null, walQ = "";
   function renderBalance(){
     const T = walletsTotal(), hasCards = (state.cards || []).length > 0, many = multiW(), tabs = stripOn();
     const big = $("balNow"), sub = $("balSub"), main = T.rows[0].r;
@@ -6382,7 +6394,8 @@ function startNgay50k(){
       cardFilterId = id || null; cardLast = cardFilterId; renderCards(); renderWTabs();
       return;
     }
-    if(key === MAIN_W){ walSel = MAIN_W; walLimit = 14; if(currentTab !== "wal") showTab("wal"); else { renderWTabs(); renderWal(); window.scrollTo(0, 0); } return; }
+    if(key === MAIN_W){ if(walQ) clearSearch(); walSel = MAIN_W; walLimit = 14; if(currentTab !== "wal") showTab("wal"); else { renderWTabs(); renderWal(); window.scrollTo(0, 0); } return; }
+    if(walQ){ clearSearch(); }
     walSel = key; walLimit = 14;
     if(currentTab !== "wal") showTab("wal"); else { renderWTabs(); window.scrollTo(0, 0); }
     renderWal();
@@ -6392,16 +6405,28 @@ function startNgay50k(){
      Gồm thu, chi, trả thẻ từ ví, chuyển giữa ví, vay/trả nợ (ví Tài khoản). Quẹt thẻ nằm ở tab thẻ. */
   function renderWal(){
     if(walSel !== MAIN_W && !walletById(walSel)) walSel = MAIN_W;
-    const all = balFlows({ t:0, amt:0, w:walSel }, walSel).filter(x => !x.card);
+    let all = balFlows({ t:0, amt:0, w:walSel }, walSel).filter(x => !x.card);
     const soon = (all.soon || []).filter(x => !x.card), ul = $("walFlow"), us = $("walSoon");
-    us.innerHTML = ""; $("walSoonSec").hidden = !soon.length;
+    us.innerHTML = ""; $("walSoonSec").hidden = !soon.length || !!walQ.trim();
     soon.slice(0, 20).forEach(x => us.appendChild(flowRow(x, true, true)));
     ul.innerHTML = "";
     $("walFlowTitle").textContent = "Lịch sử giao dịch";
+    /* v108: tìm trong lịch sử của ví đang chọn (không dấu cũng được, gõ số tiền từ 3 chữ số) */
+    const q = walQ.trim();
+    if(q){
+      const P = window.N50KParse, nq = P ? P.norm(q) : q.toLowerCase(), dq = q.replace(/[^\d]/g, "");
+      all = all.concat(soon).filter(x => {
+        const txt = (x.label + " " + x.kind + " " + (x.extra || "")).toLowerCase();
+        return (P ? P.norm(txt) : txt).indexOf(nq) >= 0 || (dq.length >= 3 && String(Math.abs(x.amt)).indexOf(dq) === 0);
+      }).sort((a, b) => b.t - a.t);
+      const tin = all.filter(x => x.amt > 0).reduce((a, x) => a + x.amt, 0), tout = all.filter(x => x.amt < 0).reduce((a, x) => a - x.amt, 0);
+      $("walFlowTitle").textContent = all.length ? "Tìm thấy " + all.length + " khoản" + (tin ? " · thu " + fmt(tin) : "") + (tout ? " · chi " + fmt(tout) : "") : "Không tìm thấy khoản nào";
+      if(!all.length){ ul.innerHTML = '<p class="empty">Thử tên nơi chi, tên nhóm hoặc số tiền.</p>'; $("walMore").hidden = true; return; }
+    }
     if(!all.length){ ul.innerHTML = '<p class="empty">Chưa có giao dịch nào của ví này.</p>'; $("walMore").hidden = true; return; }
     const days = []; const byDay = {};
     all.forEach(x => { const k = keyOf(new Date(x.t)); if(!byDay[k]){ byDay[k] = []; days.push(k); } byDay[k].push(x); });
-    days.slice(0, walLimit).forEach(k => {
+    days.slice(0, q ? 400 : walLimit).forEach(k => {
       const list = byDay[k], tin = list.filter(x => x.amt > 0).reduce((a, x) => a + x.amt, 0), tout = list.filter(x => x.amt < 0).reduce((a, x) => a - x.amt, 0);
       const h = el("li", "day-h");
       h.innerHTML = '<span></span><small class="num"></small>';
@@ -6410,7 +6435,7 @@ function startNgay50k(){
       ul.appendChild(h);
       list.forEach(x => { x.short = true; ul.appendChild(flowRow(x, false, true)); });
     });
-    $("walMore").hidden = days.length <= walLimit;
+    $("walMore").hidden = !!q || days.length <= walLimit;
   }
   $("walRecon").onclick = () => openBalance(walSel);
   $("walXfer").onclick = () => openXfer(walSel);
@@ -6420,16 +6445,16 @@ function startNgay50k(){
   function balFlows(anchor, wid){
     wid = wid || wOf(anchor);
     const T = anchor.t || 0, out = [], main = wid === MAIN_W, inW = o => wOf(o) === wid;
-    const add = (t, amt, icon, label, kind, open, card) => { if(t > T) out.push({ t, amt, icon, label, kind, open, card:!!card }); };
+    const add = (t, amt, icon, label, kind, open, card, extra) => { if(t > T) out.push({ t, amt, icon, label, kind, open, card:!!card, extra:extra || "" }); };
     for(const k in state.income) (state.income[k]||[]).forEach(it => {
       if(!inW(it)) return;
       const c = INC.find(x => x.id === it.cat) || INC[INC.length - 1];
-      add(recTime(k, it.t), Number(it.amt)||0, c.icon, it.note || c.label, "Thu", () => openEdit(it.id, k, "in"));
+      add(recTime(k, it.t), Number(it.amt)||0, c.icon, it.note || c.label, "Thu", () => openEdit(it.id, k, "in"), false, c.label);
     });
     for(const k in state.days) (state.days[k]||[]).forEach(it => {
       if(!inW(it)) return;
       const c = tagOf(it.cat);
-      add(recTime(k, it.t), -(Number(it.amt)||0), c.icon, it.note || it.who || it.holder || c.label, it.fx ? "Định kỳ" : "Chi", () => openEdit(it.id, k, "out"));
+      add(recTime(k, it.t), -(Number(it.amt)||0), c.icon, it.note || it.who || it.holder || c.label, it.fx ? "Định kỳ" : "Chi", () => openEdit(it.id, k, "out"), false, [c.label, it.who, it.holder, it.bank].filter(Boolean).join(" "));
     });
     if(main) for(const k in state.cardTx) (state.cardTx[k]||[]).forEach(it => {
       const nm = cardName(it.cardId);
@@ -7994,8 +8019,8 @@ function startNgay50k(){
   $("closeCat").onclick = closeCat;
   $("catBack").onclick = closeCat;
   $("anBack").onclick = closeAn;
-  function setSearchMode(on){
-    const t = $("tab-money");
+  function setSearchMode(on, panel){
+    const t = $(panel || "tab-money");
     if(!t || document.body.classList.contains("searching") === on) return;
     t.classList.toggle("searching", on);
     document.body.classList.toggle("searching", on);
@@ -8004,6 +8029,8 @@ function startNgay50k(){
   function clearSearch(){
     searchQ = "";
     if($("tab-money")) $("tab-money").classList.remove("searching");
+    if($("tab-wal")) $("tab-wal").classList.remove("searching");
+    walQ = ""; if($("walSearch")) $("walSearch").value = ""; if($("walSearchClear")) $("walSearchClear").hidden = true;
     document.body.classList.remove("searching");
     if($("searchBox")) $("searchBox").value = "";
     if($("searchClear")) $("searchClear").hidden = true;
@@ -8018,6 +8045,17 @@ function startNgay50k(){
     renderMoney();
   });
   $("searchClear").onclick = () => { clearSearch(); renderMoney(); $("searchBox").blur(); };
+  /* v108: ô tìm trong Ví dùng đúng cơ chế ô tìm ở Sổ → Tháng: chạm vào là ô tìm lên sát đỉnh màn hình và đứng yên,
+     đầu trang và các khối khác ẩn đi; xoá hết chữ rồi rời ô là trở lại như cũ */
+  $("walSearch").addEventListener("focus", () => setSearchMode(true, "tab-wal"));
+  $("walSearch").addEventListener("blur", () => { if(!$("walSearch").value.trim()) setSearchMode(false, "tab-wal"); });
+  $("walSearch").addEventListener("input", () => {
+    walQ = $("walSearch").value;
+    $("walSearchClear").hidden = !walQ;
+    setSearchMode(true, "tab-wal");
+    renderWal();
+  });
+  $("walSearchClear").onclick = () => { clearSearch(); renderWal(); $("walSearch").blur(); };
   $("netSeg").onclick = e => {
     const b = e.target.closest("button[data-nf]"); if(!b) return;
     netFilter = b.dataset.nf;
