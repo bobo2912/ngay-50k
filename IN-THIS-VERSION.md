@@ -1,6 +1,15 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v110, ngày 08/10/2026
+**Phiên bản hiện tại:** v111, ngày 08/10/2026
+
+---
+
+## Có gì mới trong v111 (so với v110)
+
+- **Số dư thẻ trừ cả tiền đã trả:** đầu màn thẻ = chi trong tháng − các lần trả thẻ trong tháng (vd chi 745.937đ, trả 299.145đ → −446.792đ). Dòng phụ ghi rõ "Chi … · đã trả … · tháng …".
+- Biểu tượng nguồn tiền (🏦, 💳…) nhỏ lại và nâng lên, nằm giữa chiều cao chữ.
+- **Sổ → Tháng:** bỏ đường trắng phía trên tiêu đề và ô tìm.
+- **Nền không còn chia 2 mảng màu** ở trang ngắn (Chat, kết quả tìm), ở mọi giao diện.
 
 ---
 
