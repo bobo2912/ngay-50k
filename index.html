@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v106";
+  var K = "ngay50k:errlog", VER = "v107";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -1680,6 +1680,14 @@ body.kb #tab-chat > .chip-veil{display:none}
 .quick4 .q-btn.q-in{color:#23955f; background:rgba(35,149,95,.1); font-weight:700}
 .quick4 .q-btn span{white-space:nowrap}
 .to-transfer{display:block; margin:0 2px 10px; font-size:.82rem}
+/* v107: Sổ (Ngày / Tháng) và Ví */
+.so-seg{display:flex; background:var(--field, rgba(0,0,0,.05)); border-radius:999px; padding:3px; margin:0 0 12px}
+.so-seg button{flex:1; border:0; background:transparent; border-radius:999px; padding:7px 0; font:inherit; font-size:.86rem; font-weight:600; color:var(--muted)}
+.so-seg button[aria-pressed="true"]{background:var(--glass-strong, var(--surface)); color:var(--note); box-shadow:var(--shadow-s)}
+#list .item.inc-it .amt{color:#23955f}
+#walFlow .day-h{display:flex; justify-content:space-between; align-items:baseline; list-style:none; margin:14px 2px 2px; font-size:.8rem; font-weight:700; color:var(--muted)}
+#walFlow .day-h:first-child{margin-top:4px}
+#walFlow .day-h small{font-weight:500; font-size:.74rem}
 /* v106: không còn quét QR; hàng nút còn Nhập tay (chi) và Thêm thu */
 .quick3.quick4.quick2{grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px}
 .quick2 .q-btn svg{display:inline-block !important}
@@ -1722,8 +1730,8 @@ body.kb #tab-chat > .chip-veil{display:none}
   <div class="tab-veil" aria-hidden="true"></div>
   <nav class="tabs" role="tablist" aria-label="Menu">
     <button role="tab" data-tab="chat" aria-selected="true" id="tabFirst"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-4.9A8 8 0 1 1 21 12z"/><path d="M8.5 11h.01M12 11h.01M15.5 11h.01"/></svg><span>Chat</span></button>
-    <button role="tab" data-tab="money" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9h-9z"/><path d="M14 3.3A9 9 0 0 1 20.7 10H14z"/></svg><span>Tổng quan</span></button>
-    <button role="tab" data-tab="today" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h15a3 3 0 0 1 3 3v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M3 7l12-4v4"/><circle cx="16.5" cy="13.5" r="1.2"/></svg><span>Ví</span></button>
+    <button role="tab" data-tab="so" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9h-9z"/><path d="M14 3.3A9 9 0 0 1 20.7 10H14z"/></svg><span>Sổ</span></button>
+    <button role="tab" data-tab="vi" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h15a3 3 0 0 1 3 3v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M3 7l12-4v4"/><circle cx="16.5" cy="13.5" r="1.2"/></svg><span>Ví</span></button>
     <button role="tab" data-tab="loans" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 3l4 4-4 4"/><path d="M3 7h18"/><path d="M7 21l-4-4 4-4"/><path d="M21 17H3"/></svg><span>Khoản vay</span></button>
   </nav>
 
@@ -1746,6 +1754,11 @@ body.kb #tab-chat > .chip-veil{display:none}
   <!-- ================= TAB: VÍ ================= -->
   <!-- Ví đã gộp vào tab Ví (id "today") từ v82; giữ khung rỗng để mã cũ gọi tới không lỗi -->
   <div id="tab-wallet" role="tabpanel" hidden></div>
+
+  <!-- v107: Sổ thu chi, xem theo Ngày (tab-today) hoặc Tháng (tab-money) -->
+  <div class="so-seg" id="soSeg" role="group" aria-label="Xem sổ theo" hidden>
+    <button type="button" data-so="today" aria-pressed="true">Ngày</button><button type="button" data-so="money" aria-pressed="false">Tháng</button>
+  </div>
 
   <!-- v100: các ví là các tab trong màn Ví: chọn Tài khoản thì hiện hạn mức và lịch sử tiêu,
        chọn ví khác hiện số dư và giao dịch của ví đó, chọn thẻ hiện nội dung thẻ, ngay tại chỗ -->
@@ -1845,8 +1858,8 @@ body.kb #tab-chat > .chip-veil{display:none}
 
     <section id="startBox">
       <div class="quick3 quick4 quick2">
-        <button class="q-btn q-out" id="manualTransferBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg><span>Nhập tay</span></button>
-        <button class="q-btn q-in" id="addIncomeBtn" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Thêm thu</span></button>
+        <button class="q-btn q-out" id="manualTransferBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg><span>Ghi chi</span></button>
+        <button class="q-btn q-in" id="addIncomeBtn" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Ghi thu</span></button>
         <button class="q-btn" id="cashBtn" hidden><span>Tiền mặt</span></button>
       </div>
       <p class="scan-msg" id="scanMsg" hidden></p>
@@ -2175,7 +2188,7 @@ body.kb #tab-chat > .chip-veil{display:none}
       <p class="set-now">Màn hình hiện ra khi mở app. Cả hai luôn có trên thanh tab.</p>
       <div class="seg seg2h" id="homeSeg" role="group" aria-label="Màn hình mở đầu" style="margin-top:12px">
         <button data-home="chat" aria-pressed="true">Chat</button>
-        <button data-home="wallet" aria-pressed="false">Ví</button>
+        <button data-home="wallet" aria-pressed="false">Sổ</button>
       </div>
     </section>
     </div>
@@ -2404,7 +2417,7 @@ body.kb #tab-chat > .chip-veil{display:none}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v106</p>
+      <p class="sync" id="appVersion">Phiên bản v107</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -2892,8 +2905,8 @@ body.kb #tab-chat > .chip-veil{display:none}
 <datalist id="bankList"></datalist>
 
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
-<script src="parse-vi.js?v=106"></script>
-<script src="lock.js?v=106"></script>
+<script src="parse-vi.js?v=107"></script>
+<script src="lock.js?v=107"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -3327,20 +3340,26 @@ function startNgay50k(){
   }
   /* hàng chọn ví trong các form (v98): chỉ hiện khi có từ hai ví */
   const LASTW_KEY = "ngay50k:lastW";
-  function wPicker(fieldId, boxId, sel){
+  /* withCards (v107): form Ghi chi cho chọn cả thẻ tín dụng; giá trị là "card:<mã thẻ>" */
+  function wPicker(fieldId, boxId, sel, withCards){
     const f = $(fieldId), box = $(boxId); if(!f || !box) return;
-    sel = sel && walletById(sel) ? sel : MAIN_W;
-    f.hidden = !multiW(); box.innerHTML = ""; box.dataset.w = sel;
+    const cards = withCards ? (state.cards || []) : [];
+    const okSel = sel && (walletById(sel) || (String(sel).indexOf("card:") === 0 && cards.some(c => "card:" + c.id === sel)));
+    sel = okSel ? sel : MAIN_W;
+    f.hidden = !(multiW() || cards.length); box.innerHTML = ""; box.dataset.w = sel;
     if(f.hidden) return;
-    walletList().forEach(w => {
+    const add = (key, label) => {
       const b = document.createElement("button"); b.type = "button"; b.className = "chip";
-      b.textContent = w.icon + " " + w.name; b.setAttribute("aria-pressed", sel === w.id ? "true" : "false");
-      b.onclick = () => wPicker(fieldId, boxId, w.id);
+      b.textContent = label; b.setAttribute("aria-pressed", sel === key ? "true" : "false");
+      b.onclick = () => wPicker(fieldId, boxId, key, withCards);
       box.appendChild(b);
-    });
+    };
+    walletList().forEach(w => add(w.id, w.icon + " " + w.name));
+    cards.forEach(c => add("card:" + c.id, "💳 " + c.name));
   }
+  function pickedCard(boxId){ const v = $(boxId) && $(boxId).dataset.w; return v && v.indexOf("card:") === 0 ? v.slice(5) : null; }
   function pickedW(boxId){ const v = $(boxId) && $(boxId).dataset.w; return v && v !== MAIN_W && walletById(v) ? v : null; }
-  function lastW(){ const v = lsGet(LASTW_KEY); return v && walletById(v) ? v : MAIN_W; }
+  function lastW(withCards){ const v = lsGet(LASTW_KEY); return v && (walletById(v) || (withCards && v.indexOf("card:") === 0)) ? v : MAIN_W; }
   const todays = () => state.days[todayKey()] || [];
   const sumOf = items => (items||[]).reduce((a,b)=>a+(Number(b.amt)||0),0);
   function fmtShort(n){
@@ -3351,6 +3370,8 @@ function startNgay50k(){
   }
   /* khoản định kỳ không tính vào hạn mức ngày */
   const sumLimit = items => (items||[]).reduce((a,b)=> a + (b.fx ? 0 : (Number(b.amt)||0)), 0);
+  /* v107: hạn mức ngày tính cả chi từ tài khoản/ví lẫn quẹt thẻ (không tính khoản định kỳ) */
+  function dayLimit(k){ return sumLimit(state.days[k]) + sumLimit((state.cardTx || {})[k]); }
   function flash(id, text){ const el = $(id); el.textContent = text; el.hidden = false; clearTimeout(el._t); el._t = setTimeout(()=>el.hidden = true, 3000); }
 
   /* ---------- contacts ---------- */
@@ -3383,7 +3404,8 @@ function startNgay50k(){
     $("saveContact").checked = false; $("contactNameField").hidden = true;
     $("txDate").max = todayKey(); $("txDate").value = curDay(); updateTxHint();
     selectCat("an");
-    wPicker("fWField", "fWChips", m === "cash" ? MAIN_W : lastW());   /* tiền mặt nằm trong ví mặc định */
+    wPicker("fWField", "fWChips", lastW(m === "cash"), m === "cash");   /* Ghi chi chọn được ví hoặc thẻ; chuyển khoản chỉ chọn ví */
+    $("fWField").querySelector("label span").textContent = m === "cash" ? "Chi từ" : "Trả từ ví";
 
     if(contact){
       { $("acct").value = contact.acct; $("bank").value = contact.bank; setSrc("acctSrc","saved"); setSrc("bankSrc","saved"); setSrc("amtSrc","need"); }
@@ -3454,7 +3476,7 @@ function startNgay50k(){
     if(!a){ pv.className="preview"; pv.textContent = "Nhập số tiền để xem hôm nay còn bao nhiêu."; }
     else{
       const k = txDay(), pre = k === todayKey() ? "" : dayName(k) + ": ";
-      const after = state.budget - sumLimit(state.days[k]) - a;
+      const after = state.budget - dayLimit(k) - a;
       pv.className = "preview" + (after<0 ? " bad" : "");
       pv.innerHTML = pre + (after>=0 ? "sau khoản này còn <strong>"+fmt(after)+"</strong>."
                               : "khoản này làm vượt hạn mức <strong>"+fmt(-after)+"</strong>.");
@@ -3483,7 +3505,14 @@ function startNgay50k(){
     const when = k === todayKey() ? now.getTime() : new Date(k + "T" + pad(now.getHours()) + ":" + pad(now.getMinutes()) + ":00").getTime();
     const it = { id:uid(), amt:amtValue(), cat:selectedCat, note:$("desc").value.trim(), t:when };
     const fw = pickedW("fWChips"); if(fw) it.w = fw;
-    if(multiW()) lsSet(LASTW_KEY, fw || MAIN_W);
+    const fc = mode === "cash" ? pickedCard("fWChips") : null;
+    if(!$("fWField").hidden) lsSet(LASTW_KEY, fc ? "card:" + fc : (fw || MAIN_W));
+    if(fc && cardOf(fc)){
+      /* chi bằng thẻ: ghi vào sổ thẻ (cộng vào nợ thẻ, tính vào hạn mức ngày) */
+      (state.cardTx[k] = state.cardTx[k] || []).push({ id:it.id, amt:it.amt, where:it.note || "Chi thẻ", cardId:fc, cat:it.cat, t:it.t });
+      viewDay = k === todayKey() ? null : k;
+      persist(true); renderAll(); closeForm(); return;
+    }
     if(mode !== "cash"){
       it.acct = acctOf($("acct").value); it.bank = $("bank").value.trim(); it.memo = $("memo").value.trim();
       const holder = $("holder").value.trim(); if(holder) it.holder = holder;
@@ -3541,7 +3570,7 @@ function startNgay50k(){
     li.querySelector(".cat").textContent = c.icon;
     li.querySelector(".desc div:first-child").textContent = it.note || it.who || it.holder || (it.bank ? "Chuyển khoản " + it.bank : c.label);
     li.querySelector(".desc div:last-child").textContent = pad(t.getHours())+":"+pad(t.getMinutes()) + " · " + (it.bank ? (it.who && it.note && it.note !== it.who ? it.who + " · " : "") + it.bank : c.label)
-      + (it.w && it.w !== MAIN_W && multiW() ? " · " + walletName(it.w) : "");
+      + (srcLabels() ? " · " + walletName(it.w || MAIN_W) : "");
     li.querySelector(".amt").textContent = (opts && opts.sign ? "−" : "") + fmt(it.amt);
     const dk = opts && opts.day ? opts.day : (viewDay || todayKey());
     li.classList.add("tap"); li.tabIndex = 0; li.setAttribute("role","button"); li.setAttribute("aria-label", "Sửa khoản " + (it.note || c.label) + " " + fmt(it.amt));
@@ -3557,13 +3586,51 @@ function startNgay50k(){
     };
     return li;
   }
+  /* nguồn tiền chỉ cần ghi khi có từ hai ví hoặc có thẻ */
+  function srcLabels(){ return multiW() || (state.cards || []).length > 0; }
+  /* dòng quẹt thẻ trong Sổ theo ngày */
+  function cardDayRow(it, dk){
+    const c = tagOf(it.cat), t = new Date(it.t || 0), nm = cardName(it.cardId);
+    const li = document.createElement("li"); li.className = "item card-it";
+    li.innerHTML = '<span class="cat" aria-hidden="true"></span><div class="desc"><div></div><div></div></div><span class="amt num"></span><button class="del" aria-label="Xoá khoản này">✕</button>';
+    li.querySelector(".cat").textContent = c.icon;
+    li.querySelector(".desc div:first-child").textContent = it.where || c.label;
+    li.querySelector(".desc div:last-child").textContent = pad(t.getHours()) + ":" + pad(t.getMinutes()) + " · " + c.label + " · " + (nm ? "Thẻ " + nm.replace(/^thẻ\s*/i, "") : "Thẻ tín dụng");
+    li.querySelector(".amt").textContent = fmt(it.amt);
+    li.classList.add("tap"); li.tabIndex = 0; li.setAttribute("role", "button");
+    li.addEventListener("click", e => { if(e.target.closest(".del")) return; openCardTx(it.id, dk); });
+    li.querySelector(".del").onclick = e => {
+      e.stopPropagation(); if(!armed(e.currentTarget)) return;
+      state.cardTx[dk] = (state.cardTx[dk] || []).filter(x => x.id !== it.id); if(!state.cardTx[dk].length) delete state.cardTx[dk];
+      persist(); renderAll();
+    };
+    return li;
+  }
+  /* dòng khoản thu trong Sổ theo ngày (màu xanh, dấu +) */
+  function incDayRow(it, dk){
+    const c = INC.find(x => x.id === it.cat) || INC[INC.length - 1], t = new Date(it.t || 0);
+    const li = document.createElement("li"); li.className = "item inc-it";
+    li.innerHTML = '<span class="cat" aria-hidden="true"></span><div class="desc"><div></div><div></div></div><span class="amt num"></span><button class="del" aria-label="Xoá khoản này">✕</button>';
+    li.querySelector(".cat").textContent = c.icon;
+    li.querySelector(".desc div:first-child").textContent = it.note || c.label;
+    li.querySelector(".desc div:last-child").textContent = (untimed(it.t || 0) ? "" : pad(t.getHours()) + ":" + pad(t.getMinutes()) + " · ") + c.label + (srcLabels() ? " · vào " + walletName(it.w || MAIN_W) : "");
+    li.querySelector(".amt").textContent = "+" + fmt(it.amt);
+    li.classList.add("tap"); li.tabIndex = 0; li.setAttribute("role", "button");
+    li.addEventListener("click", e => { if(e.target.closest(".del")) return; openEdit(it.id, dk, "in"); });
+    li.querySelector(".del").onclick = e => {
+      e.stopPropagation(); if(!armed(e.currentTarget)) return;
+      state.income[dk] = (state.income[dk] || []).filter(x => x.id !== it.id); if(!state.income[dk].length) delete state.income[dk];
+      persist(); renderAll();
+    };
+    return li;
+  }
   /* hạn mức còn lại của cả tuần, tính từ thứ hai */
   function weekLeft(b){
     const now = new Date(), dow = (now.getDay() + 6) % 7;
     let used = 0;
     for(let i = 0; i <= dow; i++){
       const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - dow + i);
-      used += sumLimit(state.days[keyOf(d)] || []);
+      used += dayLimit(keyOf(d));
     }
     return (dow === 0) ? null : b * (dow + 1) - used;
   }
@@ -3630,7 +3697,7 @@ function startNgay50k(){
     const now = new Date();
     $("dateSmall").textContent = ["Chủ nhật","Thứ hai","Thứ ba","Thứ tư","Thứ năm","Thứ sáu","Thứ bảy"][now.getDay()];
     $("dateLabel").textContent = now.getDate() + " tháng " + (now.getMonth()+1);
-    const b = state.budget, spent = sumLimit(todays()), left = b - spent, pct = Math.min(100, spent/b*100);
+    const b = state.budget, spent = dayLimit(todayKey()), left = b - spent, pct = Math.min(100, spent/b*100);
     const note = $("note");
     $("corner").textContent = Math.round(b/1000);
     $("mask").style.width = (left<0 ? 100 : pct) + "%";
@@ -3675,50 +3742,34 @@ function startNgay50k(){
     $("dayPick").max = todayKey(); $("dayPick").value = dk;
     $("nextDay").disabled = dk >= todayKey();
     const list = $("list"); list.innerHTML = "";
-    const items = (state.days[dk] || []).slice().sort((a,b)=>b.t-a.t);
-    const dsum = sumLimit(items), dfx = sumOf(items) - dsum;
-    $("daySum").innerHTML = items.length
+    /* v107: Sổ theo ngày gồm chi tài khoản/ví, quẹt thẻ và khoản thu; mỗi dòng ghi nguồn tiền */
+    const items = (state.days[dk] || []).slice();
+    const cards = ((state.cardTx || {})[dk] || []).slice();
+    const incs = (state.income[dk] || []).slice();
+    const dsum = dayLimit(dk), dfx = sumOf(items) - sumLimit(items), dIn = sumOf(incs);
+    $("daySum").innerHTML = (items.length || cards.length || incs.length)
       ? "Đã chi <strong>" + fmt(dsum) + "</strong> / " + fmt(b) + (dsum > b ? " · vượt <strong style='color:var(--over)'>" + fmt(dsum-b) + "</strong>" : "")
         + (dfx ? " · định kỳ <strong>" + fmt(dfx) + "</strong>" : "")
+        + (dIn ? " · thu <strong style='color:var(--in-c, #23955f)'>" + fmt(dIn) + "</strong>" : "")
       : "";
-    /* v101: tiền đi khỏi ví Tài khoản mà không phải chi tiêu (trả thẻ, chuyển sang ví khác) cũng hiện trong lịch sử ngày,
-       ghi rõ "không tính chi tiêu"; không cộng vào số đã chi */
-    const moves = [];
-    (state.cardPay || []).forEach(p => { if(p.date === dk && (p.from || MAIN_W) === MAIN_W) moves.push({ t:recTime(p.date, p.t), icon:"💳", name:"Trả thẻ" + (cardName(p.cardId) ? " " + cardName(p.cardId) : ""), amt:-p.amt, o:p, kind:"pay" }); });
-    (state.xfer || []).forEach(x => { if(x.date !== dk) return; const out = (x.from || MAIN_W) === MAIN_W, inn = (x.to || MAIN_W) === MAIN_W; if(!out && !inn) return;
-      moves.push({ t:recTime(x.date, x.t), icon:"🔁", name: out ? "Chuyển sang " + walletName(x.to) : "Nhận từ " + walletName(x.from), amt: out ? -x.amt : x.amt, o:x, kind:"xfer" }); });
-    const moveRow = mv => {
-      const li = document.createElement("li"); li.className = "item move";
-      li.innerHTML = '<span class="cat" aria-hidden="true"></span><div class="desc"><div></div><div></div></div><span class="amt num"></span><button class="del" aria-label="Xoá mục này">✕</button>';
-      const d = new Date(mv.t);
-      li.querySelector(".cat").textContent = mv.icon;
-      li.querySelector(".desc div:first-child").textContent = mv.name;
-      li.querySelector(".desc div:last-child").textContent = (untimed(mv.t) ? "" : pad(d.getHours()) + ":" + pad(d.getMinutes()) + " · ") + "không tính chi tiêu";
-      li.querySelector(".amt").textContent = (mv.amt < 0 ? "−" : "+") + fmt(Math.abs(mv.amt));
-      if(mv.kind === "pay" && cardOf(mv.o.cardId)){ li.classList.add("tap"); li.tabIndex = 0; li.setAttribute("role", "button"); li.addEventListener("click", e => { if(e.target.closest(".del")) return; selectWallet("card:" + mv.o.cardId); }); }
-      li.querySelector(".del").onclick = e => {
-        e.stopPropagation(); if(!armed(e.currentTarget)) return;
-        if(mv.kind === "pay") state.cardPay = state.cardPay.filter(y => y.id !== mv.o.id); else state.xfer = state.xfer.filter(y => y.id !== mv.o.id);
-        persist(true); renderAll();
-      };
-      return li;
-    };
-    if(!items.length && !moves.length){
+    if(!items.length && !cards.length && !incs.length){
       const li = document.createElement("li"); li.className = "empty";
-      li.textContent = dk === todayKey() ? "Chưa có khoản nào hôm nay. Bấm Nhập tay hoặc kể trong Chat mỗi lần chi tiêu." : "Không có giao dịch ngày này. Có thể ghi bù bằng cách chọn ngày trong form.";
+      li.textContent = dk === todayKey() ? "Chưa có khoản nào hôm nay. Bấm Ghi chi, Ghi thu hoặc kể trong Chat." : "Không có giao dịch ngày này. Có thể ghi bù bằng cách chọn ngày trong form.";
       list.appendChild(li);
     }
-    items.map(it => ({ t:it.t || 0, el:() => itemRow(it, {day:dk}) })).concat(moves.map(mv => ({ t:mv.t, el:() => moveRow(mv) })))
+    items.map(it => ({ t:it.t || 0, el:() => itemRow(it, {day:dk}) }))
+      .concat(cards.map(it => ({ t:it.t || 0, el:() => cardDayRow(it, dk) })))
+      .concat(incs.map(it => ({ t:it.t || 0, el:() => incDayRow(it, dk) })))
       .sort((a, b) => b.t - a.t).forEach(x => list.appendChild(x.el()));
 
     const week = $("week"), labels = $("weekLabels"); week.innerHTML = ""; labels.innerHTML = "";
     const days = []; for(let i=6;i>=0;i--){ const d = new Date(); d.setDate(d.getDate()-i); days.push(d); }
-    const totals = days.map(d => sumLimit(state.days[keyOf(d)]));
+    const totals = days.map(d => dayLimit(keyOf(d)));
     const maxV = Math.max(b*1.25, ...totals);
     const line = document.createElement("div"); line.className = "limit-line"; line.style.bottom = (b/maxV*100) + "%"; week.appendChild(line);
     let kept = 0, tracked = 0, total = 0, withData = 0;
     days.forEach((d,i)=>{
-      const k = keyOf(d), v = totals[i], has = !!(state.days[k] && state.days[k].length);
+      const k = keyOf(d), v = totals[i], has = !!((state.days[k] && state.days[k].length) || ((state.cardTx || {})[k] && state.cardTx[k].length));
       const w = document.createElement("button"); w.type = "button"; w.className = "bar-wrap" + (k === dk ? " sel" : "");
       w.setAttribute("aria-label", "Xem giao dịch ngày " + fmtDate(k) + ", đã chi " + fmt(v));
       w.onclick = () => {
@@ -4631,16 +4682,24 @@ function startNgay50k(){
       renderCards();
     }
   }
+  /* v107: thanh tab Chat · Sổ · Ví · Khoản vay.
+     Sổ = hai màn "today" (Ngày) và "money" (Tháng), chuyển bằng nút Ngày/Tháng; Ví = "wal" (ví) và "cards" (thẻ). */
+  var soView = "today";
   function showTab(name){
     if(name === "wallet") name = "today";                  /* Ví và Tài khoản đã gộp làm một (v82) */
+    if(name === "so") name = soView;
+    if(name === "vi"){ walSel = MAIN_W; name = "wal"; }
+    if(name === "today" || name === "money") soView = name;
     if(name !== currentTab){ clearSearch(); resetTab(name); }
     if(name !== "chat" && document.activeElement === $("chatIn")){ $("chatIn").blur(); document.body.classList.remove("kb"); }
     currentTab = name;
-    const slot = name === "chat" ? "first" : (name === "cards" || name === "wal") ? "today" : name;
+    const slot = name === "chat" ? "first" : (name === "cards" || name === "wal") ? "vi" : (name === "today" || name === "money") ? "so" : name;
     document.querySelectorAll(".tabs button").forEach(b => b.setAttribute("aria-selected", (b.id === "tabFirst" ? "first" : b.dataset.tab) === slot ? "true":"false"));
     ["chat","wallet","today","money","loans","cards","wal"].forEach(n => $("tab-"+n).hidden = n !== name);
-    if(name === "today") walSel = MAIN_W;
+    $("soSeg").hidden = !(name === "today" || name === "money");
+    $("soSeg").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", b.dataset.so === name ? "true" : "false"));
     renderWTabs();
+    if(name === "wal") renderWal();
     window.scrollTo(0,0);
     if(name === "chat"){ renderChat(); dockLast = { b:-1, h:-1 }; placeDock(); chatScrollEnd(false); setTimeout(() => { dockLast = { b:-1, h:-1 }; placeDock(); }, 250); }
   }
@@ -4903,7 +4962,7 @@ function startNgay50k(){
     return { acc, card, by };
   }
   function todayLeftText(){
-    const used = sumLimit(state.days[todayKey()] || []), left = state.budget - used;
+    const used = dayLimit(todayKey()), left = state.budget - used;
     return left >= 0 ? "Hôm nay còn được tiêu <b>" + fmt(left) + "</b>." : "Hôm nay đã vượt hạn mức <b>" + fmt(-left) + "</b> rồi, nhẹ tay chút nha 😅";
   }
 
@@ -5056,7 +5115,7 @@ function startNgay50k(){
       if(top && Object.keys(by).length > 1) notes.push("Nhóm tốn nhiều nhất: " + tagOf(top[0]).icon + " " + esc(tagOf(top[0]).label) + " " + Math.round(top[1] / total * 100) + "%");
     }
     if(kind === "out" && q.src !== "card" && !tags && !q.kw && !q.minAmt && state.budget > 0){
-      let over = 0, n = 0; for(let d = new Date(a + "T12:00:00"); keyOf(d) <= lastDay; d.setDate(d.getDate() + 1)){ n++; if(sumLimit(state.days[keyOf(d)] || []) > state.budget) over++; }
+      let over = 0, n = 0; for(let d = new Date(a + "T12:00:00"); keyOf(d) <= lastDay; d.setDate(d.getDate() + 1)){ n++; if(dayLimit(keyOf(d)) > state.budget) over++; }
       if(n > 1) notes.push(over ? over + "/" + n + " ngày vượt hạn mức " + fmt(state.budget) : "Không ngày nào vượt hạn mức " + fmt(state.budget) + " 👍");
     }
     if(prevBy && q.compare){
@@ -6129,7 +6188,8 @@ function startNgay50k(){
   document.addEventListener("visibilitychange", () => { if(!document.hidden) setTimeout(redock, 120); });
   window.addEventListener("pageshow", redock); window.addEventListener("focus", redock);
   if(window.ResizeObserver) new ResizeObserver(placeDockSoon).observe($("chatDock"));
-  $("chatToWallet").onclick = () => showTab("today");
+  $("chatToWallet").onclick = () => showTab("vi");
+  $("soSeg").querySelectorAll("button").forEach(b => b.onclick = () => showTab(b.dataset.so));
   $("chatLog").addEventListener("click", e => {
     const b = e.target.closest(".chat-q"); if(!b) return;
     let q = null; try{ q = JSON.parse(b.dataset.q); }catch(_){ return; }
@@ -6167,11 +6227,11 @@ function startNgay50k(){
     const nDays = new Date(y, m+1, 0).getDate(), lead = (new Date(y, m, 1).getDay() + 6) % 7;
     const vals = []; let total = 0, fixed = 0, maxV = 0, maxK = null, spentDays = 0, overDays = 0;
     for(let d = 1; d <= nDays; d++){
-      const k = prefix + pad(d), v = sumLimit(state.days[k]);
+      const k = prefix + pad(d), v = dayLimit(k);
       fixed += sumOf(state.days[k]) - v;
       vals.push(v); total += v;
       if(v > 0) spentDays++;
-      if(sumLimit(state.days[k]) > b) overDays++;
+      if(v > b) overDays++;
       if(v > maxV){ maxV = v; maxK = k; }
     }
     const grid = $("calGrid"); grid.innerHTML = "";
@@ -6185,7 +6245,7 @@ function startNgay50k(){
       let lv = 0;
       if(v > 0 && maxV > 0){ const r = v / maxV; lv = r > .8 ? 5 : r > .6 ? 4 : r > .4 ? 3 : r > .2 ? 2 : 1; }
       if(lv) bt.classList.add("h" + lv);
-      if(sumLimit(state.days[k]) > b) bt.classList.add("over");
+      if(v > b) bt.classList.add("over");
       if(k === maxK && spentDays > 1) bt.classList.add("top");
       if(k === tk) bt.classList.add("today");
       if(k === sel) bt.classList.add("sel");
@@ -6232,7 +6292,7 @@ function startNgay50k(){
   var reconW = "main";
   function sMon(n){ return (n < 0 ? "−" : "") + fmt(Math.abs(n)); }
   /* ví đang chọn ở hàng tab của màn Ví (v100): "main", mã ví thêm, hoặc "card:<mã thẻ>" */
-  var walSel = "main", walLimit = 30, cardLast = null;
+  var walSel = "main", walLimit = 14, cardLast = null;
   function renderBalance(){
     const T = walletsTotal(), hasCards = (state.cards || []).length > 0, many = multiW(), tabs = stripOn();
     const big = $("balNow"), sub = $("balSub"), main = T.rows[0].r;
@@ -6265,7 +6325,7 @@ function startNgay50k(){
   function renderWTabs(T){
     T = T || walletsTotal();
     /* v105 (hướng A): đầu màn Ví luôn có khối số dư của ví đang chọn + hàng tab chữ (kể cả khi chỉ có một ví: còn nút ＋) */
-    const on = currentTab === "today" || currentTab === "wal" || currentTab === "cards";
+    const on = currentTab === "wal" || currentTab === "cards";
     $("wTabsBox").hidden = !on;
     const sel = currentTab === "cards" ? "card:" + (cardFilterId || "") : currentTab === "wal" ? walSel : MAIN_W;
     renderWHead(T, sel);
@@ -6306,7 +6366,8 @@ function startNgay50k(){
     if(r && r.bal < 0) num.classList.add("neg");
     sub.textContent = r ? "Đối chiếu " + stampText(r.anchor.t) : "Nhập số dư đang có, app sẽ tự tính tiếp";
     btn(r ? "Cập nhật số dư" : "Nhập số dư", "", () => openBalance(wid));
-    if(wid !== MAIN_W){ btn("⇄", "Chuyển tiền", () => openXfer(wid), "ic"); btn("✎", "Sửa ví", () => openWSheet(wid), "ic"); }
+    if(multiW()) btn("⇄", "Chuyển tiền", () => openXfer(wid), "ic");
+    if(wid !== MAIN_W) btn("✎", "Sửa ví", () => openWSheet(wid), "ic");
     /* tổng chỉ hiện khi có từ hai ví hoặc đang nợ thẻ */
     if(wid === MAIN_W && T.any && (multiW() || T.debt > 0)){
       tot.hidden = false;
@@ -6321,38 +6382,40 @@ function startNgay50k(){
       cardFilterId = id || null; cardLast = cardFilterId; renderCards(); renderWTabs();
       return;
     }
-    if(key === MAIN_W){ showTab("today"); return; }
-    walSel = key; walLimit = 30;
+    if(key === MAIN_W){ walSel = MAIN_W; walLimit = 14; if(currentTab !== "wal") showTab("wal"); else { renderWTabs(); renderWal(); window.scrollTo(0, 0); } return; }
+    walSel = key; walLimit = 14;
     if(currentTab !== "wal") showTab("wal"); else { renderWTabs(); window.scrollTo(0, 0); }
     renderWal();
   }
   /* nội dung tab của một ví thêm: số dư, nút đối chiếu / chuyển tiền / sửa ví, các khoản của ví */
+  /* v107: tab của một ví (kể cả ví Tài khoản): lịch sử giao dịch của riêng ví đó, gom theo ngày, mới nhất trước.
+     Gồm thu, chi, trả thẻ từ ví, chuyển giữa ví, vay/trả nợ (ví Tài khoản). Quẹt thẻ nằm ở tab thẻ. */
   function renderWal(){
-    const w = walletById(walSel);
-    if(!w || walSel === MAIN_W){ if(currentTab === "wal") showTab("today"); return; }
-    const r = balCalc(null, walSel);
-    $("walName").textContent = w.name;
-    $("walNow").textContent = r ? sMon(r.bal) : "Chưa có";
-    $("walNow").parentNode.classList.toggle("neg", !!r && r.bal < 0);
-    $("walWhen").textContent = r ? "đối chiếu " + stampText(r.anchor.t) : "";
-    $("walSub").textContent = r ? "" : "Nhập số dư đang có trong " + w.name + ", app sẽ tự tính tiếp theo từng khoản bạn ghi vào ví này.";
-    $("walSub").hidden = !!r;
-    $("walReconLabel").textContent = r ? "Đối chiếu" : "Nhập số dư";
-    /* chưa có mốc: vẫn liệt kê các khoản của ví, chỉ không có số dư sau mỗi khoản */
-    const list = balFlows(r ? r.anchor : { t:0, amt:0, w:walSel }, walSel);
-    const soon = list.soon || [], ul = $("walFlow"), us = $("walSoon");
+    if(walSel !== MAIN_W && !walletById(walSel)) walSel = MAIN_W;
+    const all = balFlows({ t:0, amt:0, w:walSel }, walSel).filter(x => !x.card);
+    const soon = (all.soon || []).filter(x => !x.card), ul = $("walFlow"), us = $("walSoon");
     us.innerHTML = ""; $("walSoonSec").hidden = !soon.length;
-    soon.slice(0, 20).forEach(x => us.appendChild(flowRow(x, true, !r)));
+    soon.slice(0, 20).forEach(x => us.appendChild(flowRow(x, true, true)));
     ul.innerHTML = "";
-    $("walFlowTitle").textContent = r ? "Biến động từ lần đối chiếu" : "Giao dịch của ví";
-    if(!list.length) ul.innerHTML = '<p class="empty">' + (r ? "Chưa có khoản nào kể từ lần đối chiếu." : "Chưa có khoản nào ghi vào ví này.") + "</p>";
-    list.slice(0, walLimit).forEach(x => ul.appendChild(flowRow(x, false, !r)));
-    $("walMore").hidden = list.length <= walLimit;
+    $("walFlowTitle").textContent = "Lịch sử giao dịch";
+    if(!all.length){ ul.innerHTML = '<p class="empty">Chưa có giao dịch nào của ví này.</p>'; $("walMore").hidden = true; return; }
+    const days = []; const byDay = {};
+    all.forEach(x => { const k = keyOf(new Date(x.t)); if(!byDay[k]){ byDay[k] = []; days.push(k); } byDay[k].push(x); });
+    days.slice(0, walLimit).forEach(k => {
+      const list = byDay[k], tin = list.filter(x => x.amt > 0).reduce((a, x) => a + x.amt, 0), tout = list.filter(x => x.amt < 0).reduce((a, x) => a - x.amt, 0);
+      const h = el("li", "day-h");
+      h.innerHTML = '<span></span><small class="num"></small>';
+      h.querySelector("span").textContent = dateLabel(k);
+      h.querySelector("small").textContent = [tin ? "thu " + fmt(tin) : "", tout ? "chi " + fmt(tout) : ""].filter(Boolean).join(" · ");
+      ul.appendChild(h);
+      list.forEach(x => { x.short = true; ul.appendChild(flowRow(x, false, true)); });
+    });
+    $("walMore").hidden = days.length <= walLimit;
   }
   $("walRecon").onclick = () => openBalance(walSel);
   $("walXfer").onclick = () => openXfer(walSel);
   $("walEdit").onclick = () => openWSheet(walSel);
-  $("walMore").onclick = () => { walLimit += 30; renderWal(); };
+  $("walMore").onclick = () => { walLimit += 14; renderWal(); };
   /* các khoản làm đổi số dư của một ví (và quẹt thẻ với ví mặc định, để thấy vì sao số dư không đổi), kèm số dư sau mỗi khoản */
   function balFlows(anchor, wid){
     wid = wid || wOf(anchor);
@@ -6398,7 +6461,8 @@ function startNgay50k(){
     li.innerHTML = '<span class="fi" aria-hidden="true"></span><div class="fd"><div></div><div></div></div><div class="fa"><b class="num"></b><small class="num"></small></div>';
     li.querySelector(".fi").textContent = x.icon;
     li.querySelector(".fd div:first-child").textContent = x.label;
-    li.querySelector(".fd div:last-child").textContent = (untimed(x.t) || soon ? stampText(x.t).replace(/ 00:00$/, "") : stampText(x.t)) + " · " + x.kind;
+    const hm = new Date(x.t);
+    li.querySelector(".fd div:last-child").textContent = (x.short ? (untimed(x.t) ? "" : pad(hm.getHours()) + ":" + pad(hm.getMinutes()) + " · ") : (untimed(x.t) || soon ? stampText(x.t).replace(/ 00:00$/, "") : stampText(x.t)) + " · ") + x.kind;
     const b = li.querySelector(".fa b");
     if(x.card){ b.textContent = fmt(x.amt); b.className = "num mute"; li.querySelector(".fa small").textContent = "nợ thẻ"; }
     else {
@@ -6605,7 +6669,7 @@ function startNgay50k(){
     /* xoá ví: các khoản đã ghi vẫn nằm trong thống kê chi tiêu, chỉ bỏ số dư ví này khỏi tổng */
     state.wallets = (state.wallets || []).filter(x => x.id !== wEditId);
     persist(true); closeWSheet(); if(balEditing && reconW === wEditId) closeBalance(); reconW = MAIN_W;
-    if(currentTab === "wal" && walSel === wEditId) showTab("today");
+    if(currentTab === "wal" && walSel === wEditId) showTab("vi");
     renderAll();
   };
   $("wAddBtn").onclick = () => openWSheet(null);
@@ -7500,7 +7564,7 @@ function startNgay50k(){
     state.cards = (state.cards || []).filter(c => c.id !== cdEditing);
     for(const k in state.cardTx) (state.cardTx[k] || []).forEach(it => { if(it.cardId === cdEditing) it.cardId = null; });
     persist(); hideSheet("cardEditSheet", "cardEditBack");
-    if(currentTab === "cards"){ const nx = (state.cards || [])[0]; if(nx) selectWallet("card:" + nx.id); else showTab("today"); }
+    if(currentTab === "cards"){ const nx = (state.cards || [])[0]; if(nx) selectWallet("card:" + nx.id); else showTab("vi"); }
     renderCards(); renderBalance();
   };
   $("closeCardEdit").onclick = () => hideSheet("cardEditSheet", "cardEditBack");
@@ -8135,7 +8199,7 @@ function startNgay50k(){
   function renderSetHome(){
     $("navLock").textContent = N50KLock.isOn() ? (N50KLock.meta().pk ? "PIN, Face ID" : "Mã PIN") : "Tắt";
     $("navTheme").textContent = { auto:"Tự động", light:"Sáng", dark:"Tối", pastel:"Pastel" }[curTheme] || "Tự động";
-    $("navStart").textContent = homeTab() === "chat" ? "Chat" : "Ví";
+    $("navStart").textContent = homeTab() === "chat" ? "Chat" : "Sổ";
     $("navAI").textContent = aiNav();
     $("navBank").textContent = myBank() ? myBank().name : (lsGet(BANK_KEY) === "none" ? "Không dùng" : "chưa chọn");
     $("navBudget").textContent = fmt(state.budget) + "/ngày";

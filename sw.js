@@ -1,6 +1,6 @@
 /* Tiêu Gọn – bộ nhớ đệm để app mở được khi không có mạng.
    Mỗi lần sửa app, hãy tăng số phiên bản dưới đây (v1 -> v2 ...) để máy nhận bản mới. */
-const V = "106";                                   /* tăng cùng lúc với ?v= trong index.html (xem README) */
+const V = "107";                                   /* tăng cùng lúc với ?v= trong index.html (xem README) */
 const VERSION = "ngay50k-v" + V;
 
 /* Trang chính và các file script luôn đi cùng một bản: script có đuôi ?v=<số bản>, và chỉ lấy từ đúng bộ nhớ đệm
