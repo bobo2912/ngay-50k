@@ -6,10 +6,9 @@ Thư mục này là toàn bộ app. Bạn đưa nó lên một trang web miễn 
 
 - `index.html`: app
 - `manifest.webmanifest`: tên và icon khi cài lên màn hình chính
-- `scan.html`: khung camera dùng khi quét QR, tự huỷ sau mỗi lần quét để iPhone tắt hẳn camera
 - `sw.js`: giúp app mở được khi không có mạng
 - `IN-THIS-VERSION.md`: danh sách tính năng, điểm mới của bản hiện tại và lịch sử các phiên bản
-- `fonts/`, `vendor/`, `icons/`: phông chữ, thư viện quét QR, icon. Tất cả nằm sẵn trong thư mục, app không tải gì từ trang web khác.
+- `fonts/`, `icons/`: phông chữ, icon. Tất cả nằm sẵn trong thư mục, app không tải gì từ trang web khác.
 
 ## Bước 1: Đưa app lên GitHub Pages (làm một lần, trên máy tính)
 
