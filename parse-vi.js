@@ -220,7 +220,9 @@
     if(!name || !ctx || !ctx.loans) return null;
     const n = norm(name), last = n.split(" ").pop();
     const cand = ctx.loans.filter(l => (!type || l.type === type));
-    const score = l => { const w = norm(l.who); if(w === n) return 3; if(w.includes(n) || n.includes(w)) return 2; if(w.split(" ").pop() === last) return 1; return 0; };
+    /* v116: khớp theo nguyên từ ("an" không khớp "Giang") */
+    const inW = (a, b) => (" " + a + " ").includes(" " + b + " ");
+    const score = l => { const w = norm(l.who); if(w === n) return 3; if(inW(w, n) || inW(n, w)) return 2; if(w.split(" ").pop() === last) return 1; return 0; };
     let best = null, bs = 0;
     cand.forEach(l => { const s = score(l) + (l.settled ? -0.5 : 0); if(s > bs){ bs = s; best = l; } });
     return bs >= 1 ? best : null;
@@ -334,7 +336,17 @@
         const iv = Math.max(N.indexOf("vay"), N.indexOf("muon") >= 0 && N.indexOf("vay") < 0 ? N.indexOf("muon") : -1);
         if(iv >= 0 && !hasW("tra")){ kind = "borrow"; let st = iv + 1; while(["cua","tu","them","tien"].includes(N[st])) st++; item.who = nameFrom(O, N, st, N.length, drop) || nameFrom(O, N, 0, iv, drop); }
       }
-      if(!kind && hasW("tra") && !hasW("tra sua") && !hasW("tra da") && !hasW("tra chanh")){
+      /* v116: "thẻ trả ăn 1 triệu", "trả tiền ăn 200k": trả = trả tiền cho khoản chi, không phải trả nợ.
+         Có nhắc thẻ (mà không phải "trả thẻ") hoặc ngay sau "trả" là một khoản chi (ăn, cà phê, xăng…) thì để phần chi tiêu xử lý. */
+      let payFor = false;
+      if(!kind && hasW("tra") && !hasW("no")){
+        const it0 = N.indexOf("tra"); let s0 = it0 + 1; while(N[s0] === "tien" || N[s0] === "cho") s0++;
+        const restTxt = O.slice(s0).filter((w, i) => !/\d/.test(w)).join(" ");
+        /* trước "trả" có người khác ("con trả tiền học") thì còn mơ hồ: không tự quyết */
+        const beforeMe = N.slice(0, it0).every(w => ["minh","toi","em","tao","hom","nay","qua","sang","trua","toi","chieu","vua"].includes(w));
+        if(N.includes("the") || (beforeMe && restTxt && guessTag(restTxt, ctx) !== "khac")){ payFor = true; drop.add(it0); }
+      }
+      if(!kind && !payFor && hasW("tra") && !hasW("tra sua") && !hasW("tra da") && !hasW("tra chanh")){
         const it = N.indexOf("tra");
         const before = nameFrom(O, N, 0, it, drop);
         const giveBack = ["no","tien","lai","cho"];

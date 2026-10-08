@@ -60,4 +60,6 @@ t('sáng 8h cafe 35k', r => it(r).amt===35000 && new Date(it(r).t).getHours()===
 t('Đóng tiền học cho Mon 500k thi Ngôi sao', r => it(r).kind==='out' && it(r).amt===500000);
 t('Nộp tiền cho cô giáo 300k', r => it(r).kind==='out');
 t('Bố cho 1tr', r => it(r).kind==='in');
+t('Thẻ trả ăn 1 triệu', r => it(r).kind==='card' && it(r).cat==='an' && it(r).amt===1000000);
+t('trả tiền ăn 200k', r => it(r).kind==='out' && it(r).cat==='an');
 console.log('\nFAILED (thêm):', f);
