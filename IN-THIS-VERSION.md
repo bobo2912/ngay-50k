@@ -1,6 +1,14 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v103, ngày 08/10/2026
+**Phiên bản hiện tại:** v104, ngày 08/10/2026
+
+---
+
+## Có gì mới trong v104 (so với v103)
+
+- Ô số dư tab Ví ghi gọn **Tài khoản** (bỏ "(gồm tiền mặt)").
+- Bốn nút **Quét QR, Ảnh QR, Nhập tay, Tiền mặt** gọn trên một hàng.
+- "Ghi lại khoản hay lặp" đổi thành dòng **Ghi nhanh** nhỏ gọn, các khoản là nút nhỏ trên cùng một dòng (vuốt ngang nếu nhiều).
 
 ---
 
@@ -10,13 +18,6 @@
 - "Tôi nhận 1 triệu từ công đoàn MB" bị hiểu là **chi**. Giờ câu có "nhận" (không phải "nhận hàng", "nhận đơn", "ship") là **khoản thu**.
 - Chữ "Tôi" ở đầu câu bị hiểu là "tối" (20:00), nên khoản ghi lúc chiều bị xếp vào giờ tương lai, nằm ở mục Sắp tới và **chưa cộng vào số dư**. Giờ "tôi" có dấu là đại từ; gõ không dấu "toi" chỉ là buổi tối khi đi với "nay/qua" ("tối nay", "toi qua").
 - Bỏ "Tôi/Mình" ở đầu nội dung khoản ("Nhận từ công đoàn MB").
-
----
-
-## Có gì mới trong v102 (so với v101)
-
-- **Khoản thu chuyển sang tab Ví:** nút **Thêm khoản thu** nằm cạnh Đối chiếu số dư ở tab Tài khoản (chỗ nút Trả thẻ trước đây). Form khoản thu mở ngay bên dưới, chọn được ví nhận nếu có nhiều ví.
-- **Tổng quan** bỏ nút Khoản thu; khoản thu vẫn hiện trong thu chi của tháng như cũ.
 
 ---
 
@@ -128,6 +129,7 @@
 
 | Phiên bản | Nội dung chính |
 |---|---|
+| **v104** | Nhãn Tài khoản gọn; 4 nút ghi trên một hàng; Ghi nhanh gọn |
 | **v103** | Sửa: "nhận" là khoản thu; "tôi" không bị hiểu là "tối" |
 | **v102** | Thêm khoản thu ở tab Ví (Tài khoản), bỏ khỏi Tổng quan |
 | **v101** | Bỏ hàng chọn thẻ; thêm thẻ ngay trong Thêm ví; trả thẻ chỉ ở tab thẻ, hiện trong lịch sử Tài khoản |
