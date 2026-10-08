@@ -1,6 +1,17 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v116, ngày 08/10/2026
+**Phiên bản hiện tại:** v117, ngày 08/10/2026
+
+---
+
+## Có gì mới trong v117 (so với v116)
+
+- **Thư viện câu hỏi – trả lời (`thu-vien-cau.js`)** cho Chat: 227 câu mẫu chia 4 phần — ghi khoản (20 kiểu), hỏi số liệu (11 kiểu), câu nối tiếp, trò chuyện và hướng dẫn (26 kiểu) — mỗi kiểu có câu mẫu (có dấu, không dấu, viết tắt) kèm kết quả mong đợi và câu trả lời nên đưa ra.
+- **Chat trả lời được nhiều câu hơn mà không cần AI:** hỏi cách dùng app (ghi, sửa/xoá, hạn mức, thẻ, ví, sao lưu, mã PIN, Trợ lý AI, tag, khoản định kỳ, vay mượn, đọc ảnh, giao diện, cài app), chào hỏi theo buổi, cảm ơn, tạm biệt, khen, báo hiểu sai, than hết tiền, khoe tiết kiệm, xin mẹo tiết kiệm. Câu trả lời có nút gợi ý bấm là hỏi luôn.
+- **Kể chi tiêu mà quên số tiền** ("ăn phở") giờ được hỏi lại "Ăn phở hết bao nhiêu vậy bạn?" thay vì hiện hướng dẫn chung.
+- **Trợ lý AI nhận câu mẫu từ thư viện** trong lời dặn, hiểu đúng cách app mong đợi.
+- Bộ hiểu câu hiểu đúng thêm: "5 khoản lớn nhất tháng này", "ngày nào tiêu nhiều nhất", "tuần này tiêu nhiều hơn tuần trước không", "nhậu bia với bạn 300k" (là chi, không phải bán hàng).
+- Bài thử mới: `node tests-thu-vien.js`.
 
 ---
 
