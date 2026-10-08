@@ -57,4 +57,7 @@ t('đóng học phí 5tr', r => it(r).cat==='hoctap');
 t('chuyển khoản cho chị Lan 200k', r => it(r).kind==='out' && it(r).amt===200000);
 t('Hào trả tiền 870k', r => it(r).kind==='collect');
 t('sáng 8h cafe 35k', r => it(r).amt===35000 && new Date(it(r).t).getHours()===8);
+t('Đóng tiền học cho Mon 500k thi Ngôi sao', r => it(r).kind==='out' && it(r).amt===500000);
+t('Nộp tiền cho cô giáo 300k', r => it(r).kind==='out');
+t('Bố cho 1tr', r => it(r).kind==='in');
 console.log('\nFAILED (thêm):', f);

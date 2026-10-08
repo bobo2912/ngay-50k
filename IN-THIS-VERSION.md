@@ -1,6 +1,14 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v111, ngày 08/10/2026
+**Phiên bản hiện tại:** v112, ngày 08/10/2026
+
+---
+
+## Có gì mới trong v112 (so với v111)
+
+- **Chat hiểu đúng "Đóng tiền học cho Mon 500k" là khoản chi**, không còn ghi thành "Được cho". Câu "X cho …" chỉ là khoản thu khi X là người (mẹ, bố, anh Hai, Hùng…), không phải khi có động từ chi tiêu như đóng, nộp, mua, trả.
+- **Sổ → Tháng:** khi ô tìm dính đỉnh màn hình thì không còn hai góc trắng bên trên.
+- **Menu dưới tự ẩn khi cuộn xuống, cuộn lên thì hiện lại** (như Facebook). Về đầu trang, cuộn tới cuối hoặc đổi tab thì menu luôn hiện. Tab Chat giữ menu cố định vì ô nhập nằm ngay trên.
 
 ---
 
