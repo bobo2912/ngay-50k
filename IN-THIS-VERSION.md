@@ -1,6 +1,12 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v113, ngày 08/10/2026
+**Phiên bản hiện tại:** v114, ngày 08/10/2026
+
+---
+
+## Có gì mới trong v114 (so với v113)
+
+- **Câu chào ở Chat không còn bị khung Số dư ví che một nửa.** Mở Chat giờ chỉ cuộn vừa đủ để tin cuối nằm ngay trên ô nhập; chat ngắn thì đứng yên ở đầu trang, không cuộn tới đáy trang nữa.
 
 ---
 
