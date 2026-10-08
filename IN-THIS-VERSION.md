@@ -1,6 +1,12 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v114, ngày 08/10/2026
+**Phiên bản hiện tại:** v115, ngày 08/10/2026
+
+---
+
+## Có gì mới trong v115 (so với v114)
+
+- **Trang Chat ngắn không còn vuốt được**, nên câu chào không bị khung Số dư ví che dù vuốt lên. Bỏ cách kéo dài thân trang của v111 (trên iPhone làm trang dư ra), thay bằng nền liền một màu ở mọi giao diện; dải mờ sau ô nhập Chat và menu dưới cũng dùng đúng màu này.
 
 ---
 
