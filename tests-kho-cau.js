@@ -79,6 +79,38 @@ K.duLieu().forEach(({ nhom, cau, mong }) => {
   if(!err){ const a = P.assess(cau, r, c); ok++; s.ok++; if(a.local){ local++; s.local++; } }
   else console.log("SAI  [" + nhom + "] " + JSON.stringify(cau) + "\n     " + err.trim() + (r.query ? "\n     → " + JSON.stringify(r.query) : ""));
 });
+/* v125: viết tắt */
+(() => {
+  const know = { ng:{ "highlands":{ c:12, l:"Highlands" }, "phuc long":{ c:3, l:"Phúc Long" }, "ha long":{ c:1, l:"Hạ Long" }, "quan oc co ba":{ c:2, l:"Quán ốc cô Ba" } }, people:[] };
+  const CASES = [
+    /* [câu, alias, mong: note chứa, số viết tắt còn hỏi, ứng viên đầu] */
+    ["uống HL 59k", {}, { note:"Highlands", ask:1, first:"Highlands", cat:"uong" }],
+    ["HL 59k", {}, { note:"Highlands", ask:1, first:"Highlands" }],
+    ["uống HL 59k", { hl:"Highlands" }, { note:"Highlands", ask:0 }],
+    ["uống HL 59k", { hl:"HL" }, { note:"HL", ask:0 }],
+    ["PL 55k", {}, { note:"Phúc Long", ask:1, first:"Phúc Long", cat:"uong" }],
+    ["QOCB 120k", {}, { note:"Quán ốc cô Ba", ask:1, first:"Quán ốc cô Ba" }],
+    ["XYZ 50k", {}, { note:"XYZ", ask:1, first:null }],
+    ["BHX 200k", {}, { note:"Bách hoá xanh", ask:1, cat:"cho" }],
+    ["quẹt thẻ VIB 200k", {}, { ask:0 }],
+    ["ck tiền nhà 4tr", {}, { ask:0 }],
+    ["OK ghi đi", {}, { ask:0 }],
+    ["tháng này HL hết bao nhiêu", { hl:"Highlands" }, { q:"spent", kw:"highlands", ask:0 }],
+    ["tháng này HL hết bao nhiêu", {}, { q:"spent", kw:"highlands", ask:1 }]
+  ];
+  CASES.forEach(([cau, alias, m]) => {
+    n++; const s = stat.viet_tat = stat.viet_tat || { n:0, ok:0, local:0 }; s.n++;
+    const c = Object.assign(ctx(), { know, alias });
+    const r = P.parse(cau, c), it = r.items[0] || {};
+    let err = "";
+    if(m.q){ if(!r.query || r.query.q !== m.q || (m.kw && r.query.kw !== m.kw)) err = "query " + JSON.stringify(r.query); }
+    else if(m.note && !String(it.note || "").includes(m.note)) err = "note " + it.note;
+    if(m.cat && it.cat !== m.cat) err += " cat " + it.cat;
+    if((r.abbr || []).length !== m.ask) err += " hỏi " + (r.abbr || []).length;
+    if(m.first !== undefined && m.ask){ const f = r.abbr[0] && r.abbr[0].cands[0] ? r.abbr[0].cands[0].label : null; if(f !== m.first) err += " ứng viên " + f; }
+    if(!err){ ok++; s.ok++; local++; s.local++; } else console.log("SAI  [viet_tat] " + JSON.stringify(cau) + " " + err);
+  });
+})();
 /* nhánh hội thoại */
 K.branches().forEach(({ nhom, cau, tiep, mong, waitAmt }) => {
   if(only && nhom.indexOf(only) !== 0) return;

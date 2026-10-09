@@ -697,6 +697,58 @@
     FAMILY.forEach(f => { if(low.includes(" " + f + " ") && !kl.includes(" " + f + " ") && !out.some(x => x.toLowerCase() === f)) out.push(f.charAt(0).toUpperCase() + f.slice(1)); });
     return out;
   }
+  /* ---------------- chữ viết tắt (v125) ----------------
+     "uống HL 59k", "tháng này HL hết bao nhiêu": HL là gì?
+     - ctx.alias = { hl:"Highlands" } là viết tắt bạn đã chọn (nằm trong dữ liệu, đi theo file sao lưu) → thay luôn, không hỏi.
+     - chưa biết: tìm ứng viên trong nội dung bạn hay ghi (chữ cái đầu "Phúc Long" = PL, hoặc chữ đọc lướt "Highlands" ⊃ h…l)
+       và bảng viết tắt phổ biến; app đoán ứng viên đầu, kèm nút để bạn chọn lại, chọn rồi thì nhớ. */
+  const ABBR = { hl:["Highlands"], pl:["Phúc Long"], tch:["The Coffee House"], ktn:["Katinat"], sb:["Starbucks"], sbux:["Starbucks"], bhx:["Bách hoá xanh"], st:["Siêu thị"], sp:["Shopee"], lzd:["Lazada"], xsm:["Xanh SM"], tts:["Trà sữa"], ts:["Trà sữa"], bm:["Bánh mì"], mc:["McDonald's"], mcd:["McDonald's"], lt:["Lotteria"], jb:["Jollibee"], gs:["GS25"], ck7:["Circle K"], cck:["Circle K"], bk:["Burger King"], gc:["Gong Cha"], ttđ:["Trà tắc"], tđ:["Tiền điện"], td:["Tiền điện"], tn:["Tiền nước"], hp:["Học phí"], bhyt:["Bảo hiểm y tế"], tcb:["Techcombank"], vcb:["Vietcombank"], ctg:["Vietinbank"], bidv:["BIDV"], dt:["Điện thoại"], sn:["Sinh nhật"], đc:["Đám cưới"] };
+  /* chữ in hoa ngắn nhưng không phải viết tắt cần hỏi */
+  const ABBR_SKIP = new Set(["ok","oke","vib","mb","tp","tpb","ck","tm","k","vnd","atm","id","sms","otp","qr","tv","pc","usb","sim","ps","pr","ai","app","vip","bbq","kfc","cgv","fpt","evn","vnpt","bhd","gym","spa","diy","ib","dm","đm","ko","kp","nt","tk","hn","sg","hcm","dn","vn","usd","eur","jpy"]);
+  const skel = s => s.replace(/[aeiouy]/g, "");
+  function abbrCands(low, ctx){
+    const out = [], seen = new Set(), add = (l, c) => { const k = norm(l).trim(); if(!k || seen.has(k)) return; seen.add(k); out.push({ label:l, c:c || 0 }); };
+    const ng = (ctx && ctx.know && ctx.know.ng) || {};
+    const ent = [];
+    for(const k in ng){
+      const ws = k.split(" "); if(k.length < 3) continue;
+      let ok = false;
+      if(ws.length >= 2 && ws.length === low.length && ws.every((w, i) => w[0] === low[i])) ok = true;                     /* Phúc Long → pl */
+      else if(ws.length === 1 && k[0] === low[0] && k.length > low.length){ let j = 0; for(const ch of skel(k)) if(ch === low[j]) j++; ok = j >= low.length; }   /* Highlands ⊃ h…l */
+      if(ok && !STOPQ.has(k)) ent.push([ng[k].l || k, ng[k].c || 1]);
+    }
+    ent.sort((a, b) => b[1] - a[1]).forEach(([l, c]) => add(l, c));
+    (ABBR[low] || []).forEach(l => add(l, 0));
+    return out.slice(0, 3);
+  }
+  /* các chữ viết tắt trong câu: [{ tok:"HL", low:"hl", label?:"Highlands" (đã biết), cands:[…] }] */
+  function abbrIn(text, ctx){
+    const alias = (ctx && ctx.alias) || {}, out = [];
+    const names = new Set([].concat(((ctx && ctx.cards) || []).map(c => c.name), ((ctx && ctx.wallets) || []).map(w => w.name)).filter(Boolean).flatMap(n => norm(n).split(" ")));
+    String(text).split(/[\s,;.!?:()]+/).forEach(raw => {
+      const t = raw.replace(/^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu, ""); if(!t) return;
+      const low = t.toLowerCase(), nl = norm(t);
+      if(out.some(x => x.low === low)) return;
+      if(alias[low] !== undefined){ out.push({ tok:t, low, label:alias[low], known:true }); return; }
+      if(!/^[\p{L}\d]{2,5}$/u.test(t) || /^\d/.test(t) || ABBR_SKIP.has(low) || ABBR_SKIP.has(nl) || names.has(nl)) return;
+      const upper = t === t.toUpperCase() && /\p{Lu}/u.test(t) && t.length <= 4;
+      if(!(upper || ABBR[low])) return;
+      if(K_UNITS.has(nl) || M_UNITS.has(nl) || COUNTERS.has(nl)) return;
+      out.push({ tok:t, low, cands:abbrCands(low, ctx) });
+    });
+    return out;
+  }
+  /* thay viết tắt bằng tên đầy đủ (đã biết, hoặc ứng viên đầu nếu pickFirst) */
+  function expandAbbr(text, list, pickFirst){
+    let s = String(text);
+    (list || []).forEach(a => {
+      const to = a.known ? a.label : (pickFirst && a.cands && a.cands.length ? a.cands[0].label : null);
+      if(!to || to === a.tok) return;
+      s = s.replace(new RegExp("(^|[^\\p{L}\\p{N}])" + a.tok.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "(?=$|[^\\p{L}\\p{N}])", "gu"), "$1" + to);
+    });
+    return s;
+  }
+
   const FIND_W = / (la khoan gi|la gi|la cai gi|khoan gi|cua cai gi|cho cai gi|tu dau ra|o dau ra|co khoan nao|khoan nao) |^ (tim|tim kiem|tra cuu|tim khoan|kiem tra khoan) /;
   const LAST_W = / (lan cuoi|lan gan nhat|lan gan day nhat|gan day nhat|lan truoc|bao lau roi|bao lau (chua|khong|ko)|may ngay roi|may thang roi|khi nao|hom nao|ngay nao|bua nao) /;
   const COUNT_W = / (may lan|bao nhieu lan|bn lan|so lan|bao lan|may bua|bao nhieu bua|may cuoc|bao nhieu cuoc|may ly|bao nhieu ly|may don|bao nhieu don) /;
@@ -899,10 +951,13 @@
   function stripLead(t){ const m = String(t).match(LEAD); return m && String(t).length - m[0].length >= 4 ? String(t).slice(m[0].length) : t; }
   function parse(text, ctx){
     ctx = ctx || {}; if(!ctx.now) ctx.now = new Date();
-    const raw0 = String(text || "").trim(), raw = stripLead(raw0).trim();
+    const raw0 = String(text || "").trim(), raw1 = stripLead(raw0).trim();
+    /* v125: viết tắt — đã biết thì thay luôn; chưa biết thì tạm hiểu theo ứng viên đầu, app hỏi lại kèm nút chọn */
+    const abbr = abbrIn(raw1, ctx), raw = expandAbbr(raw1, abbr, true);
+    const pend = abbr.filter(a => !a.known);
     if(!raw) return { items:[], query:null, unknown:[] };
     const query = asQuery(raw, ctx);
-    if(query) return { items:[], query, unknown:[] };
+    if(query) return { items:[], query, unknown:[], abbr:pend };
     const items = [], unknown = [];
     let carry = { date:null, hh:null };
     let pendingText = "";
@@ -923,7 +978,7 @@
         if(last.kind !== "in") last.cat = guessTag(extra, ctx);
       }
     }
-    return { items, query:null, unknown };
+    return { items, query:null, unknown, abbr:pend };
   }
 
   /* ---------------- máy tự xử lý được hay cần nhờ AI ----------------
@@ -973,7 +1028,7 @@
   /* đọc số tiền người dùng gõ trong ô sửa ("45k", "1tr2", "45.000") */
   function amountText(s){ const { N } = tokenize(s); const a = amountAt(N, 0); return a ? a.v : (parseInt(String(s).replace(/\D/g, ""), 10) || 0); }
 
-  const api = { parse, stripLead, knownIn, peopleIn, tagWord, assess, refine, amountText, guessTag, norm, _amountAt:amountAt, _clauses:clauses, _tokenize:tokenize };
+  const api = { parse, stripLead, knownIn, peopleIn, tagWord, abbrIn, expandAbbr, abbrCands, assess, refine, amountText, guessTag, norm, _amountAt:amountAt, _clauses:clauses, _tokenize:tokenize };
   if(typeof module !== "undefined" && module.exports) module.exports = api;
   else root.N50KParse = api;
 })(typeof window !== "undefined" ? window : this);
