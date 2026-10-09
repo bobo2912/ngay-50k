@@ -1,6 +1,15 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v124, ngày 09/10/2026
+**Phiên bản hiện tại:** v125, ngày 09/10/2026
+
+---
+
+## Có gì mới trong v125 (so với v124)
+
+- **Hiểu chữ viết tắt và hỏi lại kèm lựa chọn.** Gõ "uống HL 59k", "PL 55k", "tháng này HL hết bao nhiêu": máy tìm "HL" là gì trong chính sổ của bạn (chữ cái đầu như Phúc Long = PL, hoặc đọc lướt như Highlands ⊃ H…L) và bảng viết tắt phổ biến (BHX, TCH, KTN…), tạm hiểu theo khả năng cao nhất rồi hỏi: "Mình hiểu HL là Highlands, đúng không?" kèm nút **Đúng**, các lựa chọn khác (vd Hạ Long), **Giữ nguyên HL**. Bấm một nút là thẻ chờ Ghi / câu trả lời đổi theo ngay.
+- **Nhớ lựa chọn:** chọn rồi thì lần sau gõ HL là hiểu luôn, không hỏi lại. Dạy bằng lời cũng được: "HL là Highlands", "XYZ là quán ốc cô Ba" (thẻ đang chờ cũng tự sửa theo), "quên HL" để bỏ.
+- Không đoán được (vd "XYZ") thì hỏi "XYZ là gì vậy?" thay vì ghi bừa.
+- Xem và xoá các viết tắt đã nhớ ở **Cài đặt → Chat đã học → Viết tắt**. Viết tắt nằm trong dữ liệu chính nên đi theo file sao lưu và gộp được giữa hai máy; Trợ lý AI cũng được báo các viết tắt này.
 
 ---
 
