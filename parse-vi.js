@@ -197,20 +197,25 @@
     if(ctx && ctx.history){ const h = ctx.history(text); if(h) return h; }
     const low = " " + String(text).toLowerCase().replace(/[^\p{L}\p{N}&!.\-/%]+/gu, " ").replace(/\s+/g, " ").trim() + " ";
     const n = " " + norm(text).replace(/[^a-z0-9&!.\-/%]+/g, " ").replace(/\s+/g, " ").trim() + " ";
-    let best = null, bs = 0;
-    const consider = (tag, ti, sc) => { if(sc > bs || (sc === bs && best && ti < best.ti)){ bs = sc; best = { tag, ti }; } };
+    let best = null, bs = 0; const markedText = hasMarks(String(text));
+    const consider = (tag, ti, sc, w) => { if(sc > bs || (sc === bs && best && ti < best.ti)){ bs = sc; best = { tag, ti, w }; } };
     /* nhóm do người dùng tự tạo: tên nhóm xuất hiện trong câu */
     ((ctx && ctx.tags) || []).forEach(t => { const ln = norm(t.label || "").trim(); if(ln.length >= 3 && n.includes(" " + ln + " ")) consider(t.id, -1, ln.length * 2 + 2); });
     for(const d of DICT){
-      if(low.includes(" " + d.w + " ")) consider(d.tag, d.ti, d.weak ? 1 : d.n.length * 2 + 1);
+      if(low.includes(" " + d.w + " ")) consider(d.tag, d.ti, d.weak ? 1 : d.n.length * 2 + 1, d.w);
       else if(!AMBIG.has(d.n) || SAFE_UNMARKED.has(d.n)){
         /* gõ không dấu (hoặc lẫn có dấu, không dấu): so bản bỏ dấu, nhưng chỉ khi đoạn đó trong câu cũng không có dấu */
         const i = n.indexOf(" " + d.n + " ");
-        if(i >= 0){ const seg = low.slice(i + 1, i + 1 + d.n.length); if(!hasMarks(seg) || seg === d.w) consider(d.tag, d.ti, d.weak ? 0.5 : d.n.length * 2); }
+        if(i >= 0){ const seg = low.slice(i + 1, i + 1 + d.n.length); if((!hasMarks(seg) && !(markedText && hasMarks(d.w) && d.n.indexOf(" ") < 0)) || seg === d.w) consider(d.tag, d.ti, d.weak ? 0.5 : d.n.length * 2, d.w); }
       }
     }
+    lastHit = best;
     return best ? best.tag : "khac";
   }
+  /* từ cụ thể vừa dùng để đoán nhóm ("cắt tóc", "lẩu"), để tìm đúng món chứ không cả nhóm */
+  let lastHit = null;
+  const GENERIC_W = new Set(["ăn","uống","mua","chợ","đi chợ","đồ ăn","ăn uống","đồ uống","tiền","đi lại","mua sắm","sức khoẻ","sức khỏe","làm đẹp","học","giải trí","du lịch","con cái","thú cưng","quà","sửa","sửa chữa","nhà","điện thoại","mạng","cước","trưa","sáng","tối","bữa"]);
+  function tagWord(text, ctx){ guessTag(text, ctx); const h = lastHit; return h && h.w && !GENERIC_W.has(h.w) && !WEAK.has(h.w) ? { tag:h.tag, w:h.w } : null; }
 
   /* ---------------- tách câu ---------------- */
   const SPLIT_WORDS = ["va","voi","roi","xong","sau do","con","them","cung","kem"];
@@ -630,6 +635,106 @@
   const SAVE_ASK = / (gi|cai gi|khoan nao|nhom nao|muc nao|o dau|cho nao|the nao|ra sao|lam sao|lam the nao|nen|can|phai|goi y|tu van|bang cach nao|duoc khong|duoc o dau|cach nao|meo) /;
   function saveOf(n){ return SAVE_W.test(n) && SAVE_ASK.test(n) && !/ (tiet kiem|de danh) duoc (roi|nhieu|it|\d)/.test(n) ? true : false; }
 
+  /* ---------------- ngữ cảnh từ dữ liệu của bạn (v124) ----------------
+     App đưa vào ctx.know = { ng:{ "highlands":{c:12,l:"Highlands"}, "bun cha ha":{…} }, people:["Mẹ","Nam",…] }:
+     các cụm 1–4 chữ có trong nội dung khoản đã ghi (đếm số lần), và tên người (khoản vay, người nhận, người thân).
+     Câu hỏi nhắc tới cụm nào trong đó (tên quán, thương hiệu, nội dung riêng) thì lọc đúng theo cụm đó (kw),
+     nhắc tới người nào thì hỏi về người đó. */
+  const BRANDS = new Set(["grab","grab bike","grab car","be","xanh sm","gojek","taxi","shopee","lazada","tiki","tiktok","tiktok shop","sendo","highlands","starbucks","phuc long","katinat","the coffee house","coffee house","cong ca phe","trung nguyen","gong cha","tocotoco","mixue","koi","kfc","lotteria","jollibee","mcdonald","mcdonalds","burger king","domino","pizza hut","winmart","vinmart","coopmart","bach hoa xanh","bhx","lotte mart","aeon","big c","emart","circle k","gs25","7-eleven","ministop","family mart","cgv","lotte cinema","bhd","galaxy cinema","netflix","spotify","youtube","icloud","viettel","vinaphone","mobifone","fpt","evn","petrolimex","pharmacity","long chau","an khang","uniqlo","zara","nike","adidas","vietjet","vietnam airlines","bamboo","agoda","booking","traveloka","airbnb","grabfood","shopeefood","befood","baemin","guardian","watsons","hasaki","fahasa","dien may xanh","the gioi di dong","fpt shop","cellphones","ikea","decathlon","bun dau","pho thin","pho 10"]);
+  const DICTN = new Set(DICT.map(d => d.n));
+  /* chữ dùng để hỏi / chỉ thời gian: không coi là tên nơi, nội dung */
+  const STOPQ = new Set(("tieu chi xai het ton bao nhieu bn thang tuan nam ngay hom nay qua truoc roi mua lan lien ke cac khoan nhung gi nao may o dau cho ai voi va cua minh toi tien tong la khi nao gan nhat cuoi cung lan cuoi trung binh moi mot tim kiem xem liet co khong chua da duoc den toi tu tren duoi hon it nhieu nhat bao lau ve di an uong the tai khoan vi so du con lai sao vay_ nhi a nhe nha oi thi cai gia tri giao dich lich su chuyen gui nhan tra no vay muon dong nop ki ky dot sang trua chieu toi dem cuoi dau ").split(" ").filter(Boolean));
+  const FAMILY = ["mẹ","bố","ba","má","vợ","chồng","ông","bà","ông bà","bố mẹ","ba mẹ","anh hai","chị hai","em gái","em trai","con gái","con trai","sếp"];
+  function knownIn(text, ctx){
+    const know = ctx && ctx.know; if(!know || !know.ng) return null;
+    const O = String(text).replace(/[?!.,:;]/g, " ").split(/\s+/).filter(Boolean), N = O.map(w => clean(norm(w)));
+    let best = null;
+    const cover = new Set();
+    for(let len = Math.min(4, N.length); len >= 2; len--) for(let i = 0; i + len <= N.length; i++){ const ng = N.slice(i, i + len).join(" "); if(DICTN.has(ng) && !BRANDS.has(ng)) for(let j = i; j < i + len; j++) cover.add(j); }
+    for(let len = Math.min(4, N.length); len >= 1 && !best; len--){
+      for(let i = 0; i + len <= N.length; i++){
+        const seg = N.slice(i, i + len), ng = seg.join(" ");
+        if(ng.length < 3 || seg.every(w => STOPQ.has(w) || /^\d/.test(w))) continue;
+        if(STOPQ.has(seg[0]) && len > 1) continue;
+        let inside = true; for(let j = i; j < i + len; j++) if(!cover.has(j)) inside = false;
+        if(inside && !BRANDS.has(ng)) continue;
+        const hit = know.ng[ng]; if(!hit) continue;
+        if(DICTN.has(ng) && !BRANDS.has(ng)) continue;                       /* từ chung ("ăn", "cà phê") để nhóm chi lo */
+        const orig = O.slice(i, i + len).join(" ").toLowerCase(), lab = String(hit.l || "").toLowerCase();
+        if(hasMarks(orig) && hasMarks(lab) && orig !== lab) continue;          /* "năm" không khớp "Nam" */
+        best = { kw:ng, label:hit.l || O.slice(i, i + len).join(" "), c:hit.c || 1 };
+        break;
+      }
+    }
+    return best;
+  }
+  function peopleIn(text, ctx){
+    const names = [].concat(((ctx && ctx.loans) || []).map(l => l.who), ((ctx && ctx.know && ctx.know.people) || []));
+    const low = " " + String(text).toLowerCase().replace(/[?!.,:;]/g, " ").replace(/\s+/g, " ") + " ", n = " " + norm(text).replace(/[?!.,:;]/g, " ").replace(/\s+/g, " ") + " ";
+    const out = [], seen = new Set();
+    names.forEach(nm => {
+      nm = String(nm || "").trim(); if(!nm || seen.has(nm.toLowerCase())) return;
+      const full = norm(nm).trim(), lw = nm.toLowerCase(), last = full.split(" ").pop(), lastO = lw.split(" ").pop();
+      let ok = false;
+      if(low.includes(" " + lw + " ")) ok = true;
+      else if(!hasMarks(low) && n.includes(" " + full + " ")) ok = true;
+      else if(hasMarks(lastO) && lastO.length >= 2 && low.includes(" " + lastO + " ")) ok = true;
+      else { /* "Tuấn béo", "Hùng xe ôm": tên đứng đầu (không phải danh xưng anh/chị/cô…) */
+        const ws = lw.split(" "), f = ws[0], TITLE = ["anh","chị","chi","cô","co","chú","chu","bác","bac","em","ông","ong","bà","ba","cậu","cau","dì","di","mợ","thím","bạn","ban","sếp","sep"];
+        const g = ws.length > 2 && TITLE.includes(f) ? ws[1] : (ws.length > 1 && !TITLE.includes(f) ? f : "");   /* "Cô Lan bán cơm" → "Lan" */
+        const capW = String(text).split(/[\s?!.,:;]+/).filter(w => isCap(w)).map(w => w.toLowerCase());   /* gõ viết hoa "Lan" là tên, không phải "lần" */
+        if(g && g.length >= 2 && (capW.includes(g) || (hasMarks(g) ? low.includes(" " + g + " ") : (!hasMarks(low) && n.includes(" " + g + " ") && !STOPQ.has(g))))) ok = true;
+      }
+      if(!ok && last.length >= 2 && (low.includes(" " + lastO + " ") || (!hasMarks(low) && n.includes(" " + last + " ")))){
+        /* chỉ tên cuối ("Tuấn"): tránh chữ thường trùng ("năm nay", "mai" của ngày mai, "lan" của mấy lần) */
+        const i = n.indexOf(" " + last + " "), after = n.slice(i + last.length + 2).split(" ")[0], before = n.slice(0, i).trim().split(" ").pop();
+        ok = !["nay","ngoai","truoc","sau","roi","toi","nao","nua"].includes(after) && !["moi","mot","1","trong","may","ngay","bao","lan"].includes(before) && !STOPQ.has(last);
+      }
+      if(ok){ seen.add(nm.toLowerCase()); out.push(nm); }
+    });
+    /* người thân ("mẹ", "bố"): bỏ qua nếu chữ đó nằm trong tên quán / nội dung đã biết ("quán bà Tý") */
+    const K = knownIn(text, ctx), kl = K ? " " + String(K.label).toLowerCase() + " " : "";
+    FAMILY.forEach(f => { if(low.includes(" " + f + " ") && !kl.includes(" " + f + " ") && !out.some(x => x.toLowerCase() === f)) out.push(f.charAt(0).toUpperCase() + f.slice(1)); });
+    return out;
+  }
+  const FIND_W = / (la khoan gi|la gi|la cai gi|khoan gi|cua cai gi|cho cai gi|tu dau ra|o dau ra|co khoan nao|khoan nao) |^ (tim|tim kiem|tra cuu|tim khoan|kiem tra khoan) /;
+  const LAST_W = / (lan cuoi|lan gan nhat|lan gan day nhat|gan day nhat|lan truoc|bao lau roi|bao lau (chua|khong|ko)|may ngay roi|may thang roi|khi nao|hom nao|ngay nao|bua nao) /;
+  const COUNT_W = / (may lan|bao nhieu lan|bn lan|so lan|bao lan|may bua|bao nhieu bua|may cuoc|bao nhieu cuoc|may ly|bao nhieu ly|may don|bao nhieu don) /;
+  const AVG_W = / (trung binh|binh quan|tb|moi ngay|moi tuan|moi thang|1 ngay|mot ngay|1 thang|mot thang|1 tuan|mot tuan|hang thang|hang ngay|hang tuan|thuong thang) /;
+  /* câu hỏi lục dữ liệu: trả câu hỏi mới, hoặc null để phần còn lại xử lý */
+  function dataQuery(text, n, ctx, now, amtV, tagOf0){
+    const K = knownIn(text, ctx), P = peopleIn(text, ctx), pr = periodOf(n, now);
+    const tw = tagWord(String(text).replace(/\b(lần|cuối|gần nhất|trung bình|mỗi|tìm|khi nào|bao lâu|rồi|chưa)\b/gi, " "));
+    const subj = q => {
+      if(K){ q.kw = K.kw; q.kwLabel = K.label; }
+      else if(tw && q.q !== "avg"){ q.kw = norm(tw.w); q.kwLabel = tw.w; q.kwSoft = true; }    /* không thấy theo từ thì app lùi về cả nhóm */
+      if(tagOf0 && (!K || q.kwSoft)) q.tag = tagOf0;
+      if(P.length && !K && !tagOf0){ q.who = P[0]; if(P.length > 1) q.whoAll = P; }
+      if(/ (quet the|ca the|the tin dung|bang the) /.test(n) || (/ the /.test(n) && !/ the nao /.test(n))) q.src = "card";
+      return q;
+    };
+    const per = q => { if(pr.period){ q.period = pr.period; if(pr.from){ q.from = pr.from; q.to = pr.to; } } return q; };
+    /* "450k hôm qua là khoản gì", "tìm khoản 1tr2", "có khoản nào 450k không" */
+    if(amtV && FIND_W.test(n)) return per(subj({ q:"find", amt:amtV }));
+    if(amtV) return null;
+    /* "lần cuối đổ xăng khi nào", "bao lâu rồi chưa cắt tóc" */
+    if(LAST_W.test(n) && !/ (nhieu nhat|it nhat|lon nhat|tieu nhieu) /.test(n) && (K || tagOf0 || P.length)) return subj({ q:"last" });
+    /* "tháng này đi grab mấy lần" */
+    if(COUNT_W.test(n) && (K || tagOf0 || P.length || / (tieu|chi|mua|quet|giao dich|khoan) /.test(n))) return per(subj({ q:"count", period:"month" }));
+    /* "trung bình mỗi ngày tiêu bao nhiêu", "mỗi tháng tiền điện bao nhiêu" */
+    if(AVG_W.test(n) && / (bao nhieu|bn|het|ton|tieu|chi|xai|khoang) /.test(n) && !/ (duoc tieu|han muc|nen tieu) /.test(n)){
+      const unit = / (thang|hang thang|thuong thang) /.test(n) ? "month" : / tuan /.test(n) ? "week" : "day";
+      return subj({ q:"avg", unit });
+    }
+    /* "tìm grab", "tìm khoản bún chả", "tra cứu highlands" */
+    const mf = n.match(/^ (?:tim|tim kiem|tra cuu|loc|search) (?:khoan |giao dich |cac khoan |nhung khoan )?(.+?) $/);
+    if(mf){ const q = per({ q:"find" }); if(K){ q.kw = K.kw; q.kwLabel = K.label; } else if(P.length){ q.who = P[0]; } else { q.kw = mf[1].replace(/ (thang nay|thang truoc|tuan nay|hom nay|hom qua|di|nhe|giup|voi)$/g, "").trim(); q.kwLabel = q.kw; } if(tagOf0 && !q.kw) q.tag = tagOf0; return q; }
+    /* "giao dịch với Nam", "đã chuyển cho mẹ bao nhiêu", "Nam đã trả bao nhiêu" (không phải hỏi nợ) */
+    if(P.length && !K && !/ (no|vay|muon) /.test(n) && / (bao nhieu|bn|gi|nhung gi|tong|lich su|giao dich|lan cuoi|khi nao|the nao|ra sao|xem|liet ke|nhung khoan|cac khoan) /.test(n))
+      return per({ q:"person", who:P[0], whoAll:P });
+    return null;
+  }
+
   function asQuery(text, ctx){
     text = String(text).replace(/vậy/gi, "vậy_").replace(/\bvay\s*\??\s*$/i, "vậy_");   /* "sao tiêu nhiều vậy" không phải vay nợ */
     let n = " " + norm(text).replace(/[?!.,:;]/g, " ").replace(/\s+/g, " ") + " ";
@@ -642,12 +747,16 @@
     const now = (ctx && ctx.now) || new Date();
     /* v123: khoản sắp tới, gợi ý tiết kiệm (câu không kèm số tiền) */
     {
-      const T = tokenize(text).N; let hasAmt = false;
-      for(let i = 0; i < T.length; i++){ const a = amountAt(T, i); if(a && !["tren","hon","tu","duoi"].includes(T[i-1])){ hasAmt = true; break; } }
+      const T = tokenize(text).N; let hasAmt = false, amtV = 0;
+      for(let i = 0; i < T.length; i++){ const a = amountAt(T, i); if(a && !["tren","hon","tu","duoi"].includes(T[i-1])){ hasAmt = true; amtV = a.v; break; } }
       if(!hasAmt){
         const up = upcomingOf(n, now); if(up) return up;
         if(saveOf(n)){ const p0 = periodOf(n, now); const q = { q:"save", period:p0.period || "month" }; if(p0.from){ q.from = p0.from; q.to = p0.to; } return q; }
       }
+      /* v124: câu hỏi lục dữ liệu (tìm khoản, lần cuối, mấy lần, trung bình, giao dịch với một người) */
+      const tg0 = (() => { if(/ an uong /.test(n)) return "an+uong"; const g = guessTag(text.replace(/\b(chi tiết|chi tiêu|tiêu|chi|lần|cuối|gần nhất|trung bình|mỗi|tìm)\b/gi, " "), null); return g !== "khac" ? g : null; })();
+      const dq = dataQuery(text, n, ctx, now, amtV, tg0);
+      if(dq) return dq;
     }
     const nq = n.replace(/ gi (do|day|ay|ca) /g, " ");                 /* "200k gì đó" là lời kể, không phải câu hỏi */
     /* v122: "sao tháng này tiêu nhiều vậy" → báo cáo so với kỳ trước (máy tự làm, AI cũng chỉ làm được vậy vì không xem số liệu) */
@@ -681,12 +790,17 @@
       let who = m ? m[1] : m2 ? m2[1].replace(/^(con|da) /, "") : "";
       who = who.replace(/\b(con|da|van)\b/g, " ").trim();
       if(/^(ai|nhung ai|may nguoi|bao nhieu nguoi|ai ma)$/.test(who)) who = "";
-      return { q:"loans", who: who.trim(), dir: m ? "borrow" : m2 ? "lend" : null };
+      let whoAll = null;
+      if(!who){ const P = peopleIn(text, ctx); if(P.length){ who = P[0]; if(P.length > 1) whoAll = P; } }
+      const lq = { q:"loans", who: who.trim(), dir: m ? "borrow" : m2 ? "lend" : null };
+      if(whoAll) lq.whoAll = whoAll;
+      return lq;
     }
     if(/ (ngay nao|hom nao) .*(nhieu nhat|tieu nhieu)/.test(n)) return { q:"topday", period: period || "month" };
     if(wantsReport){
       const q = { q:"report", period: period || "month", src, cardId, tag, group:"tag", list:false, top:0, minAmt:0, kind:"out", compare:false };
       if(qw) q.wid = qw.id;
+      { const K = knownIn(text, ctx); if(K && !(qw && norm(qw.name || "") === K.kw) && !(card && norm(card.name || "").includes(K.kw))){ q.kw = K.kw; q.kwLabel = K.label; q.tag = null; if(q.group === "tag") q.group = "none"; } }
       if(!period) q.noPeriod = true;                        /* không nói kỳ: có thể là câu nối tiếp câu trước */
       if(pr.from){ q.from = pr.from; q.to = pr.to; }
       if(/ (thu nhap|thu vao|thu duoc|khoan thu|kiem duoc|tien ve|nhan duoc) /.test(n)) q.kind = "in";
@@ -709,6 +823,8 @@
     if(/ (tieu|chi|xai|het|ton|an|uong|mua) /.test(n) || tag || period){
       const q = { q:"spent", period: period || "today", tag, src };
       if(qw) q.wid = qw.id;
+      if(!period) q.noPeriod = true;                        /* v124: không nói kỳ, hôm nay chưa có thì app lùi ra tháng này, rồi lần gần nhất */
+      { const K = knownIn(text, ctx); if(K && !(card && norm(card.name || "").includes(K.kw))){ q.kw = K.kw; q.kwLabel = K.label; q.tag = null; } }
       if(pr.from){ q.period = "custom"; q.from = pr.from; q.to = pr.to; }
       return q;
     }
@@ -762,10 +878,12 @@
     if(/ (so voi|so sanh|tang hay giam|nhieu hon khong|it hon khong) /.test(n)){ q.compare = true; changed = true; }
     if(/ (thu nhap|khoan thu|thu vao|tien ve) /.test(n)){ q.kind = "in"; changed = true; }
     else if(q.kind === "in" && / (chi|tieu|xai) /.test(n)){ q.kind = "out"; changed = true; }
-    if(/ an uong /.test(n)){ q.tag = "an+uong"; changed = true; }
+    const K = knownIn(text, ctx);
+    if(K){ q.kw = K.kw; q.kwLabel = K.label; q.tag = null; changed = true; }
+    else if(/ an uong /.test(n)){ q.tag = "an+uong"; delete q.kw; delete q.kwLabel; changed = true; }
     else {
       const g = guessTag(text.replace(/\b(chi tiết|chỉ tính|chỉ|tính|tiêu|chi|thôi|thì sao|còn)\b/gi, " "), null);
-      if(g !== "khac" && !/ (tat ca|bo loc) /.test(n)){ q.tag = g; changed = true; }
+      if(g !== "khac" && !/ (tat ca|bo loc) /.test(n)){ q.tag = g; delete q.kw; delete q.kwLabel; changed = true; }
     }
     /* phải có dấu hiệu nối tiếp, tránh bắt nhầm câu kể chuyện */
     const cue = / (chi|chi tinh|chi xem|chi lay|con|thi sao|the con|vay con|xem|loc|bo|them|nua|thoi|tinh|lay ra|ke ra|liet ke|so voi|theo) /.test(n) || N.length <= 6;
@@ -830,7 +948,7 @@
     const why = [], n = " " + norm(text).replace(/[?!.,;:]/g, " ").replace(/\s+/g, " ") + " ";
     if(!res) res = parse(text, ctx);
     if(res.query){
-      if(res.query.q === "unknown" || (ASK.test(n) && !["save","upcoming"].includes(res.query.q))) why.push("query");
+      if(res.query.q === "unknown" || (ASK.test(n) && !["save","upcoming","find","last","count","avg","person"].includes(res.query.q))) why.push("query");
       return { local:!why.length, why };
     }
     if(!res.items.length){ why.push("noitem"); return { local:false, why }; }
@@ -855,7 +973,7 @@
   /* đọc số tiền người dùng gõ trong ô sửa ("45k", "1tr2", "45.000") */
   function amountText(s){ const { N } = tokenize(s); const a = amountAt(N, 0); return a ? a.v : (parseInt(String(s).replace(/\D/g, ""), 10) || 0); }
 
-  const api = { parse, stripLead, assess, refine, amountText, guessTag, norm, _amountAt:amountAt, _clauses:clauses, _tokenize:tokenize };
+  const api = { parse, stripLead, knownIn, peopleIn, tagWord, assess, refine, amountText, guessTag, norm, _amountAt:amountAt, _clauses:clauses, _tokenize:tokenize };
   if(typeof module !== "undefined" && module.exports) module.exports = api;
   else root.N50KParse = api;
 })(typeof window !== "undefined" ? window : this);
