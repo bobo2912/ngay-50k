@@ -1,6 +1,14 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v127, ngày 09/10/2026
+**Phiên bản hiện tại:** v128, ngày 09/10/2026
+
+---
+
+## Có gì mới trong v128 (so với v127)
+
+- **Mở app không còn hiện thanh "Vừa có thông báo ngân hàng?"** (iPhone không cho app biết có thông báo mới hay chưa trước khi bạn bấm Paste, nên thanh cứ hiện cả khi không có gì mới). Thay bằng nút **📋** nhỏ cạnh ô chat, có tiền trừ thì bấm nút này rồi bấm Paste.
+- Bấm 📋 mà vẫn là thông báo cũ thì chỉ báo "✓ Không có giao dịch mới", không thêm gì vào Chat.
+- Bật / tắt nút 📋 ở Cài đặt → Tự ghi từ thông báo.
 
 ---
 
