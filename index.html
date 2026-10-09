@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v125";
+  var K = "ngay50k:errlog", VER = "v126";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -687,6 +687,9 @@ header .date{font-size:1.65rem; font-weight:800; letter-spacing:-.02em; color:va
 .set-group{border-radius:24px}
 .settings .done{color:var(--note)}
 .update-bar{border-radius:20px; bottom:calc(96px + env(safe-area-inset-bottom,0px))}
+.notif-bar button.nx{background:transparent; color:inherit; padding:6px 4px; opacity:.7}
+.notif-bar{animation:nbIn .25s ease}
+@keyframes nbIn{from{opacity:0; transform:translateY(10px)}}
 .swipe-ind{background:var(--glass-strong); color:var(--ink); border:1px solid var(--glass-border); -webkit-backdrop-filter:blur(16px); backdrop-filter:blur(16px)}
 .swipe-ind.go{background:linear-gradient(180deg,var(--tint-a),var(--tint-b)); color:#fff}
 :focus-visible{outline-color:var(--note)}
@@ -2206,6 +2209,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <button class="set-nav" data-go="setPeople"><span class="nav-t">Người nhận</span><span class="nav-v" id="navPeople"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
         <button class="set-nav" data-go="setTags"><span class="nav-t">Quản lý tag</span><span class="nav-v" id="navTags"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
         <button class="set-nav" data-go="setSync"><span class="nav-t">Sao lưu và đồng bộ</span><span class="nav-v" id="navSync"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+        <button class="set-nav" data-go="setNotif"><span class="nav-t">Tự ghi từ thông báo</span><span class="nav-v" id="navNotif"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
         <button class="set-nav" data-go="setStore"><span class="nav-t">Dung lượng</span><span class="nav-v" id="navStore"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
       </div>
       <h3 class="set-label">Nâng cao</h3>
@@ -2491,6 +2495,25 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
       <p class="inline-ok" id="learnMsg" hidden></p>
     </div>
 
+    <div class="set-page" id="setNotif" hidden>
+      <div class="set-head"><button class="set-back" data-back>‹ Cài đặt</button><h2 tabindex="-1">Tự ghi từ thông báo</h2></div>
+<section class="set-group">
+      <p class="set-now">iPhone không cho app nào tự đọc thông báo của app khác. Cách gần tự động nhất: <b>Phím tắt</b> tự chép thông báo trừ tiền của ngân hàng vào bộ nhớ tạm, bạn mở Tiêu Gọn và bấm <b>Ghi</b> một lần, app tách số tiền, giờ, nội dung và hỏi lại trước khi ghi.</p>
+      <label class="sc-use"><input type="checkbox" id="notifOn"> <span>Mở app thì hiện nút <b>Ghi</b> giao dịch từ thông báo</span></label>
+      <h4 class="sub">Cài một lần trong app Phím tắt</h4>
+      <ol class="sc-steps">
+        <li>Mở <b>Phím tắt</b> → tab <b>Tự động hoá</b> (Automation) → <b>＋</b> → chọn <b>Thông báo</b> (Notification).</li>
+        <li><b>Ứng dụng</b>: chọn app ngân hàng (vd <b>MB Bank</b>). Ở <b>Văn bản chứa</b> (Contains) gõ chữ luôn có trong thông báo trừ tiền, vd <b>GD:</b> hoặc <b>-</b>.</li>
+        <li>Chọn <b>Chạy ngay</b> (Run Immediately), tắt <b>Thông báo khi chạy</b>, bấm <b>Tiếp</b>.</li>
+        <li>Thêm tác vụ <b>Sao chép vào bộ nhớ tạm</b> (Copy to Clipboard), chạm vào ô nội dung, chọn <b>Đầu vào phím tắt</b> (Shortcut Input) → <b>Nội dung</b> (Body) của thông báo.</li>
+        <li>(Tuỳ chọn) thêm <b>Hiện thông báo</b>: "Mở Tiêu Gọn để ghi".</li>
+        <li>Lần sau có tiền trừ: mở Tiêu Gọn → bấm <b>Ghi</b> ở thanh dưới (hoặc Sổ → Ghi chi → <b>Dán thông báo vừa nhận</b>) → iPhone hỏi thì bấm <b>Dán</b> (Paste) → xem lại rồi bấm <b>Ghi</b>.</li>
+      </ol>
+      <p class="set-now">Nếu Phím tắt không cho chọn nội dung thông báo, vẫn còn cách: chụp màn hình thông báo rồi vào Sổ → Ghi chi → <b>Từ ảnh</b>. Thông báo chỉ được đọc trên máy, không gửi đi đâu.</p>
+      <button class="ghost grow" id="notifTest" type="button" style="width:100%; margin-top:6px">Thử đọc bộ nhớ tạm bây giờ</button>
+    </section>
+    </div>
+
     <div class="set-page" id="setStore" hidden>
       <div class="set-head"><button class="set-back" data-back>‹ Cài đặt</button><h2 tabindex="-1">Dung lượng</h2></div>
 <section class="set-group" aria-labelledby="gStore">
@@ -2502,7 +2525,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v125</p>
+      <p class="sync" id="appVersion">Phiên bản v126</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -2737,6 +2760,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
   <div class="chi-pick">
     <button type="button" id="chiManual"><span class="ci" aria-hidden="true">✍️</span><b>Ghi thủ công</b><small>Nhập số tiền, nội dung, chọn tài khoản hoặc thẻ</small></button>
     <button type="button" id="chiPhoto"><span class="ci" aria-hidden="true">📷</span><b>Từ ảnh</b><small>Ảnh chụp hoặc dán thông báo ngân hàng, app tự tách từng giao dịch</small></button>
+    <button type="button" id="chiClip"><span class="ci" aria-hidden="true">📋</span><b>Dán thông báo vừa nhận</b><small>Đọc thông báo ngân hàng đã chép (hoặc Phím tắt đã chép sẵn), app tự tách khoản trừ tiền</small></button>
   </div>
 </div>
 
@@ -3000,9 +3024,10 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
 <datalist id="bankList"></datalist>
 
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
-<script src="parse-vi.js?v=125"></script>
-<script src="thu-vien-cau.js?v=125"></script>
-<script src="lock.js?v=125"></script>
+<div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
+<script src="parse-vi.js?v=126"></script>
+<script src="thu-vien-cau.js?v=126"></script>
+<script src="lock.js?v=126"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -4947,6 +4972,8 @@ function startNgay50k(){
   $("chiBack").onclick = closeChi; $("closeChi").onclick = closeChi;
   $("chiManual").onclick = () => { closeChi(); setTimeout(() => openForm("cash"), 180); };
   $("chiPhoto").onclick = () => { closeChi(); setTimeout(() => openPaste(), 180); };
+  /* v126: đọc bộ nhớ tạm ngay trong lúc bấm (iOS chỉ cho đọc khi người dùng chạm) */
+  $("chiClip").onclick = () => { const pr = clipRead(); closeChi(); notifFromClip(pr); };
   $("toTransfer").onclick = () => { const a = $("amt").value, d = $("desc").value; openForm("transfer"); if(a){ $("amt").value = a; $("amt").dispatchEvent(new Event("input")); } $("desc").value = d; };
   $("cashBtn").onclick = () => openForm("cash");
   $("bankEdit").onclick = () => { bankSummary = false; renderBankSummary(); $("acct").focus({ preventScroll:true }); };
@@ -8988,8 +9015,67 @@ function startNgay50k(){
     $("importCard").scrollIntoView({ behavior:"smooth", block:"nearest" });
   }
 
+  /* ---- v126: ghi giao dịch từ thông báo ngân hàng ----
+     iPhone không cho app đọc thông báo của app khác. Phím tắt (Tự động hoá → Thông báo) chép nội dung
+     thông báo vào bộ nhớ tạm; mở app bấm Ghi thì đọc bộ nhớ tạm, tách khoản trừ tiền bằng parseNotif
+     (chạy trên máy), đưa vào Chat dưới dạng thẻ chờ xác nhận như khi đọc ảnh. */
+  var NOTIF_KEY = "ngay50k:notifOn", NOTIF_LAST = "ngay50k:notifLast", notifTimer = 0, notifHidAt = 0;
+  function notifOn(){ return lsGet(NOTIF_KEY) === "1"; }
+  function txtHash(s){ let h = 5381; for(let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0; return String(h >>> 0); }
+  function clipRead(){
+    try{ if(navigator.clipboard && navigator.clipboard.readText) return navigator.clipboard.readText(); }catch(e){}
+    return Promise.reject(new Error("noclip"));
+  }
+  function notifItems(txt){
+    const raw = [], cs = state.cards || [];
+    parseNotif(txt).forEach(p => {
+      let c = null;
+      if(p.first6 && p.last4) c = cs.find(x => x.first6 === p.first6 && x.last4 === p.last4);
+      if(!c && p.last4) c = cs.find(x => x.last4 === p.last4);
+      raw.push({ kind: c ? "card" : "out", amt:p.amt, note:p.where || "", date:p.day, time:pad(p.hm) + ":" + pad(p.mi), cardId: c ? c.id : null });
+    });
+    return aiClean({ items:raw, reply:"" });
+  }
+  function notifBot(html){ chat.msgs.push({ id:uid(), role:"bot", html, t:Date.now() }); }
+  async function notifFromClip(pr){
+    hideNotifBar();
+    let txt = null;
+    try{ txt = String(await (pr || clipRead()) || "").trim(); }catch(e){ txt = null; }
+    if(!chat) chatLoad();
+    if(settingsOpen) closeSettings();
+    showTab("chat");
+    if(txt == null) notifBot("Mình chưa đọc được bộ nhớ tạm. Khi iPhone hỏi thì bấm <b>Dán</b> (Paste) nhé, hoặc nhấn giữ ô chat → Dán thông báo vào rồi gửi.");
+    else if(!txt) notifBot("Bộ nhớ tạm đang trống. Kiểm tra lại Phím tắt có bước <b>Sao chép vào bộ nhớ tạm</b> chưa nhé (Cài đặt → Tự ghi từ thông báo).");
+    else notifToChat(txt);
+    chatSave(); renderChat(); chatScrollEnd(true);
+  }
+  function notifToChat(txt){
+    const one = txt.replace(/\s+/g, " ");
+    chat.msgs.push({ id:uid(), role:"me", text:"📋 Thông báo ngân hàng: " + (one.length > 140 ? one.slice(0, 140) + "…" : one), t:Date.now() });
+    const r = notifItems(txt), h = txtHash(txt), seen = lsGet(NOTIF_LAST) === h;
+    if(r.items.length){
+      lsSet(NOTIF_LAST, h);
+      const intro = (seen ? "<i>Thông báo này bạn đã đưa vào một lần rồi.</i> " : "") + "Mình đọc được " + r.items.length + " khoản trừ tiền, bạn xem lại rồi bấm Ghi nhé:" + dupNote(r.items);
+      chat.msgs.push({ id:uid(), role:"bot", items:r.items, intro, introHtml:true, status:r.items.map(() => "pending"), refs:r.items.map(() => null), t:Date.now(), src:"local" });
+    } else notifBot("Mình không thấy khoản trừ tiền nào trong nội dung này. Tiền vào thì bạn gõ ví dụ <b>nhận 500k lương</b> nhé.");
+  }
+  function hideNotifBar(){ clearTimeout(notifTimer); const b = $("notifBar"); if(b) b.hidden = true; }
+  function showNotifBar(){
+    if(!notifOn() || !$("updateBar").hidden || settingsOpen) return;
+    $("notifBar").hidden = false; clearTimeout(notifTimer); notifTimer = setTimeout(hideNotifBar, 20000);
+  }
+  $("notifGo").onclick = () => notifFromClip(clipRead());
+  $("notifX").onclick = hideNotifBar;
+  $("notifTest").onclick = () => notifFromClip(clipRead());
+  $("notifOn").addEventListener("change", e => { lsSet(NOTIF_KEY, e.target.checked ? "1" : "0"); });
+  document.addEventListener("visibilitychange", () => {
+    if(document.hidden){ notifHidAt = Date.now(); hideNotifBar(); return; }
+    if(notifHidAt && Date.now() - notifHidAt > 3000) showNotifBar();
+  });
+  setTimeout(showNotifBar, 600);
+
   /* ---- settings navigation ---- */
-  const SET_PAGES = ["setHome","setLock","setBank","setStart","setAI","setTheme","setBudget","setRecur","setPeople","setTags","setTagOne","setSync","setStore","setLearn"];
+  const SET_PAGES = ["setHome","setLock","setBank","setStart","setAI","setTheme","setBudget","setRecur","setPeople","setTags","setTagOne","setSync","setStore","setLearn","setNotif"];
   let setPage = "setHome";
   function showSetPage(id, back){
     setPage = id;
@@ -9007,6 +9093,7 @@ function startNgay50k(){
     if(id === "setLearn") renderLearn();
     if(id === "setLock") renderLockSet();
     if(id === "setBank") renderBanks("setBanks", true);
+    if(id === "setNotif") $("notifOn").checked = notifOn();
   }
   /* v118: trang Chat đã học */
   const MISS_WHY = { noitem:"không tìm ra khoản nào", query:"câu hỏi khó", leftover:"thừa chữ không có số tiền", numbers:"nhiều số tiền hơn số khoản", words:"có chữ khó (chia, sửa, %…)", card:"không rõ thẻ nào", who:"không rõ người vay", long:"câu dài", khong_hieu:"máy không hiểu", sai:"bạn báo máy hiểu sai" };
@@ -9069,6 +9156,7 @@ function startNgay50k(){
     $("navPeople").textContent = (state.contacts || []).length ? (state.contacts.length + " người") : "chưa có ai";
     const last = Number(lsGet(BK_KEY)) || 0;
     $("navSync").textContent = last ? agoText(last) : "chưa sao lưu";
+    $("navNotif").textContent = notifOn() ? "Bật" : "Tắt";
     $("navStore").textContent = $("storData").textContent === "–" ? "" : $("storData").textContent;
     $("appVersionHome").textContent = $("appVersion").textContent;
     if(!updChecked){ updChecked = true; checkUpdate(true); }

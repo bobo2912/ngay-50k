@@ -1,6 +1,14 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v125, ngày 09/10/2026
+**Phiên bản hiện tại:** v126, ngày 09/10/2026
+
+---
+
+## Có gì mới trong v126 (so với v125)
+
+- **Ghi từ thông báo ngân hàng (gần tự động):** cài một lần Phím tắt → Tự động hoá → **Thông báo** (app MB Bank…) → **Sao chép vào bộ nhớ tạm**. Mở Tiêu Gọn, thanh dưới hỏi "Vừa có thông báo ngân hàng?" → bấm **Ghi** → app đọc bộ nhớ tạm, tách khoản trừ tiền (trên máy) và đưa vào Chat để xác nhận. Khoản khớp số thẻ thì thành quẹt thẻ.
+- Sổ → **Ghi chi** có thêm lựa chọn **Dán thông báo vừa nhận**.
+- Cài đặt → **Tự ghi từ thông báo**: bật/tắt thanh nhắc khi mở app, hướng dẫn từng bước, nút thử đọc bộ nhớ tạm. Dán lại cùng một thông báo thì app nhắc là đã đưa vào rồi.
 
 ---
 
