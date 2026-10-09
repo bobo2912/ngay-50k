@@ -27,7 +27,7 @@ function checkItem(it, w){
 function checkQ(q, w){
   if(!q) return "không hiểu là câu hỏi";
   const bad = [];
-  ["q","period","tag","src","group","list","top","compare","minAmt"].forEach(k => { if(w[k] !== undefined && q[k] !== w[k]) bad.push(k + " " + JSON.stringify(q[k])); });
+  ["q","period","tag","src","group","list","top","compare","minAmt","only"].forEach(k => { if(w[k] !== undefined && q[k] !== w[k]) bad.push(k + " " + JSON.stringify(q[k])); });
   if(w.kind_q && q.kind !== w.kind_q) bad.push("kind " + q.kind);
   return bad.join(", ");
 }
