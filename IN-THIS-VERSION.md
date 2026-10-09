@@ -1,6 +1,17 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v122, ngày 09/10/2026
+**Phiên bản hiện tại:** v123, ngày 09/10/2026
+
+---
+
+## Có gì mới trong v123 (so với v122)
+
+- **Hỏi khoản sắp tới / dự kiến, máy tự trả lời:** "có khoản dự kiến cho vay nào không", "các ngày tới sau hôm nay có gì", "từ nay tới cuối tháng có khoản chi nào", "tuần sau phải trả gì", "sắp đến hạn khoản nào", "tháng sau có khoản thu nào". App gom từ nay tới cuối tháng (hoặc tuần sau, tháng sau, N ngày tới): khoản chi / thu / quẹt thẻ ghi trước ngày, cho vay / đi vay hẹn ngày, hạn trả của khoản vay còn dở, khoản định kỳ chưa tới ngày. Trả lời theo ngày, tổng sắp chi / sắp thu và số dư ví dự kiến. Hỏi tiếp "còn tháng sau thì sao", "chỉ khoản cho vay thôi" được.
+- **Ghi trước khoản tương lai qua Chat:** "ngày 20 dự kiến cho Nam vay 2tr", "ngày mai đóng tiền điện 700k", "thứ 2 tuần sau trả tiền nhà", "sẽ cho Nam vay 1tr vào ngày 15", "Hào hẹn ngày 25 trả 500k" ghi đúng ngày sắp tới (trước đây bị lùi về tháng trước). Tới ngày mới trừ vào số dư.
+- **"Nên tiết kiệm gì"** (cả "vậy nên…", "tháng này nên…", "nên cắt giảm khoản nào", "làm sao để tiết kiệm"): 5 nhóm chi nhiều nhất kỳ này với số tiền, %, tăng / giảm so với kỳ trước, mẹo riêng từng nhóm, số tiền bớt được và tổng có thể để dành. Đầu tháng ít dữ liệu thì lấy 30 ngày qua.
+- **Câu sửa lại** kiểu "Sai rồi, ý tôi là …", "không phải, ý mình là …" giờ hiểu phần sau thay vì chỉ xin lỗi.
+- Sửa: "phải trả tiền nhà 4tr" là khoản chi (trước bị hiểu thành được trả nợ).
+- Kho câu mẫu thêm 200+ câu hỏi khoản sắp tới và tiết kiệm: 4.546 câu, máy tự hiểu đúng hết.
 
 ---
 

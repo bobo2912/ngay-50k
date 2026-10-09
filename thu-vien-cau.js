@@ -290,6 +290,30 @@
         ["tháng này thu nhập những gì", { q:"report", kind_q:"in" }],
         ["liệt kê khoản thu tháng trước", { q:"report", period:"lastmonth", kind_q:"in" }]
       ]},
+    { id:"hoi_sap_toi", ten:"Khoản sắp tới, dự kiến", y_nghia:"Khoản có ngày từ nay tới cuối tháng (hoặc tuần sau, tháng sau…): chi / thu ghi trước ngày, cho vay / vay dự kiến, hạn trả nợ, khoản định kỳ chưa tới ngày.",
+      tra_loi:"Danh sách theo ngày + tổng sắp chi / sắp thu + số dư ví dự kiến; không có thì nói rõ và chỉ cách ghi trước.",
+      mau:[
+        ["Có khoản dự kiến cho vay nào không", { q:"upcoming", only:"lend" }],
+        ["Sai rồi ý tôi là trong các ngày tới sau hôm nay", { q:"upcoming" }],
+        ["từ nay tới cuối tháng có khoản chi nào không", { q:"upcoming", only:"out" }],
+        ["tuần sau phải trả gì", { q:"upcoming" }],
+        ["sắp tới có khoản nào đến hạn không", { q:"upcoming", only:"due" }],
+        ["tháng sau có khoản thu nào không", { q:"upcoming", only:"in" }],
+        ["ngày mai có gì phải trả không", { q:"upcoming" }],
+        ["các ngày tới có giao dịch gì", { q:"upcoming" }],
+        ["du kien cuoi thang co khoan nao", { q:"upcoming" }]
+      ]},
+    { id:"hoi_tiet_kiem", ten:"Nên tiết kiệm gì", y_nghia:"Lấy 5 nhóm chi nhiều nhất kỳ này, so kỳ trước, kèm mẹo và số tiền bớt được.",
+      tra_loi:"5 nhóm chi nhiều nhất (số tiền, %, tăng/giảm), mẹo từng nhóm, tổng có thể để dành.",
+      mau:[
+        ["Nên tiết kiệm gì", { q:"save", period:"month" }],
+        ["Vậy nên tiết kiệm gì", { q:"save", period:"month" }],
+        ["Tháng này nên tiết kiệm gì", { q:"save", period:"month" }],
+        ["nên cắt giảm khoản nào", { q:"save" }],
+        ["làm sao để tiết kiệm", { q:"save" }],
+        ["tuần này nên bớt tiêu cái gì", { q:"save", period:"week" }],
+        ["nen tiet kiem o dau", { q:"save" }]
+      ]},
     { id:"hoi_ngay", ten:"Ngày tiêu nhiều nhất", y_nghia:"Ngày chi lớn nhất trong kỳ.",
       tra_loi:"\"Tháng này bạn chi nhiều nhất ngày {d}: {x}.\"",
       mau:[
@@ -311,7 +335,10 @@
         ["tháng này tiêu gì", "liệt kê ra", { q:"report", list:true }],
         ["hôm nay tiêu bao nhiêu", "hôm qua thì sao", { q:"spent", period:"yesterday" }],
         ["tháng này tiêu gì", "nhóm ăn thôi", { q:"report", tag:"an" }],
-        ["tháng này tiêu gì", "so với tháng trước", { q:"report", period:"month", compare:true }]
+        ["tháng này tiêu gì", "so với tháng trước", { q:"report", period:"month", compare:true }],
+        ["có khoản dự kiến nào không", "còn tuần sau thì sao", { q:"upcoming" }],
+        ["có khoản dự kiến nào không", "chỉ khoản cho vay thôi", { q:"upcoming", only:"lend" }],
+        ["từ nay tới cuối tháng có khoản chi nào không", "tháng sau thì sao", { q:"upcoming", only:"out" }]
       ]}
   ];
 
@@ -430,23 +457,23 @@
       vi_du:["bạn làm được gì", "help", "hướng dẫn", "dùng app thế nào"],
       tra_loi:["Mình làm được mấy việc này:\n• <b>Ghi chi tiêu</b> bằng lời: <i>trưa ăn phở 45k</i>, <i>grab 28k, trà sữa 35k</i>\n• <b>Quẹt thẻ, trả thẻ</b>: <i>quẹt thẻ VIB 1tr2</i>, <i>trả thẻ 3 triệu</i>\n• <b>Thu nhập, vay mượn</b>: <i>nhận lương 15tr</i>, <i>cho Nam vay 500k</i>\n• <b>Hỏi số liệu</b>: <i>hôm nay tiêu bao nhiêu</i>, <i>tháng này tiêu gì</i>, <i>5 khoản lớn nhất</i>, <i>ai còn nợ mình</i>\n• <b>Đọc ảnh</b> thông báo ngân hàng\nHỏi cách dùng cũng được, ví dụ <i>sao lưu thế nào</i>."],
       goi_y:["hôm nay tiêu bao nhiêu", "tháng này tiêu gì"] },
-    { id:"cam_on", ten:"Cảm ơn, đồng ý", uu_tien:"truoc",
+    { id:"cam_on", nhuong_hoi:true, ten:"Cảm ơn, đồng ý", uu_tien:"truoc",
       khop:["^ (cam on|cam ơn|cmon|thanks|thank|tks|thx|ty) ", "^ (ok|oke|okay|okie|uh|uk|u|da|vang|duoc roi|dc roi|tot|on roi|hay|chuan|dung roi) $"],
       vi_du:["cảm ơn", "thanks bạn", "ok", "được rồi"],
       tra_loi:["Có gì cứ nhắn mình nhé 💪", "Không có gì, cần gì cứ gọi mình 😊", "Ok bạn, mình ở đây nha."] },
-    { id:"chao", ten:"Chào hỏi", uu_tien:"truoc",
+    { id:"chao", nhuong_hoi:true, ten:"Chào hỏi", uu_tien:"truoc",
       khop:["^ (chao|xin chao|hi|hello|helo|alo|hey|yo|chao ban|chao em|e oi|ban oi|oi) ", "^ (chao buoi )?(sang|trua|chieu|toi) (vui|tot lanh) "],
       vi_du:["chào bạn", "hello", "alo", "chào buổi sáng"],
       tra_loi:["{chao} 😊 Hôm nay bạn tiêu gì rồi, kể mình nghe với.", "{chao}! Có khoản nào cần ghi không?"] },
-    { id:"tam_biet", ten:"Tạm biệt", uu_tien:"truoc",
+    { id:"tam_biet", nhuong_hoi:true, ten:"Tạm biệt", uu_tien:"truoc",
       khop:["^ (bye|bai|tam biet|pp|di ngu|ngu ngon|good night|gn|hen gap lai) "],
       vi_du:["bye", "ngủ ngon nha", "tạm biệt"],
       tra_loi:["Tạm biệt bạn, mai nhớ kể mình nghe chi tiêu nhé 👋", "Ngủ ngon nha 🌙"] },
-    { id:"khen", ten:"Khen", uu_tien:"truoc",
+    { id:"khen", nhuong_hoi:true, ten:"Khen", uu_tien:"truoc",
       khop:["^ (gioi|hay|tuyet|xuat sac|good|nice|qua da|dinh|pro|10 diem|thong minh)( qua| that| ghe| the| lam)? ", " (ban|em|app) (gioi|hay|tuyet|thong minh|xin|dinh)( qua| that| ghe| lam)? "],
       vi_du:["giỏi quá", "app hay thật", "bạn thông minh ghê"],
       tra_loi:["Hihi cảm ơn bạn 🥰 Ghi đều tay là mình tính càng chuẩn đó."] },
-    { id:"che_sai", ten:"Báo máy hiểu sai", uu_tien:"truoc",
+    { id:"che_sai", nhuong_hoi:true, ten:"Báo máy hiểu sai", uu_tien:"truoc",
       khop:["^ (sai|sai roi|nham|nham roi|khong dung|ko dung|k dung|hieu sai|hieu nham|khong phai|ko phai|ngu|do ngu|toi qua) ", " (sai roi|hieu sai|hieu nham|ghi sai|nhan sai) "],
       vi_du:["sai rồi", "hiểu nhầm rồi", "không phải"],
       tra_loi:["Xin lỗi bạn 🙏 Bạn chạm vào thẻ để sửa số tiền, nội dung, ngày hay nhóm rồi mới bấm Ghi. Nếu lỡ Ghi rồi thì bấm <b>Hoàn tác</b> trên thẻ. Có Trợ lý AI thì bấm <b>Phân tích lại bằng AI</b>, hoặc nhắn lại câu rõ hơn, ví dụ <i>quẹt thẻ VIB 500k mua áo</i>."] },
@@ -462,9 +489,9 @@
       vi_du:["hôm nay không tiêu gì", "tuần này tiết kiệm được"],
       tra_loi:["Tuyệt vời 🎉 Giữ phong độ nhé! Muốn xem còn bao nhiêu thì hỏi <b>hôm nay còn bao nhiêu?</b>"],
       goi_y:["hôm nay còn bao nhiêu?"] },
-    { id:"loi_khuyen", ten:"Xin lời khuyên tiết kiệm", uu_tien:"truoc", ai:true,
+    { id:"loi_khuyen", nhuong_hoi:true, ten:"Xin lời khuyên tiết kiệm", uu_tien:"truoc", ai:true,
       khop:[" (lam sao|cach|meo|bi quyet|lam the nao) .*(tiet kiem|bot tieu|giam chi|de danh|du tien|khong vuot) ", " (co nen|nen) (mua|chi|tieu|vay|tra gop|dau tu) ", " (tu van|goi y|loi khuyen) "],
-      vi_du:["làm sao để tiết kiệm", "có nên mua iphone không", "tư vấn giúp mình"],
+      vi_du:["có nên mua iphone không", "tư vấn giúp mình"],
       tra_loi:["Mình không xem được hết hoàn cảnh của bạn, nhưng vài mẹo hay dùng:\n• Ghi đủ mọi khoản trong 2–3 tuần để thấy tiền đi đâu (<b>tháng này tiêu gì</b>)\n• Đặt hạn mức ngày vừa sức và cố giữ, hôm nào dư thì để dành\n• Món lớn: chờ 2–3 ngày rồi mới mua, so với số dư và nợ thẻ\n• Trả thẻ đủ trước hạn để khỏi mất lãi\nBật Trợ lý AI (Cài đặt) nếu muốn bàn kỹ hơn."],
       goi_y:["tháng này tiêu gì"] },
 
@@ -511,6 +538,7 @@
     const t = match(text);
     const howTo = new RegExp(HOW).test(n);
     let use = null;
+    if(t && t.nhuong_hoi && realQ && q.q !== "spent") return null;     /* v123: "sai rồi, ý tôi là …", "cảm ơn, tháng này tiêu gì" → trả lời câu hỏi */
     if(t && t.uu_tien === "truoc" && (!items || t.de_khoan || (t.id.indexOf("hd_") === 0 && howTo))) use = t;
     else if(t && t.uu_tien === "sau" && !items && !realQ) use = t;
     if(use){

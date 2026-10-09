@@ -94,8 +94,17 @@
     };
     let date = null, hh = null, mm = null; const drop = new Set();
     const at = (i, words) => words.every((w, k) => N[i+k] === w);
+    /* v123: câu nói về khoản sắp tới ("dự kiến", "sẽ", "sắp", "định", "hẹn", "tuần sau"…): "ngày 20", "thứ 6" hiểu là sắp tới, không lùi về trước */
+    const oL = i => O && O[i] ? clean(O[i]).toLowerCase() : "";
+    const fut = N.some((w, i) => (w === "du" && (N[i+1] === "kien" || N[i+1] === "tinh")) || (w === "ke" && N[i+1] === "hoach") || ["sẽ","sắp","định","hẹn"].includes(oL(i)) || (w === "tuan" && (N[i+1] === "sau" || N[i+1] === "toi")) || (w === "thang" && (N[i+1] === "sau" || N[i+1] === "toi")));
+    if(fut) N.forEach((w, i) => { if((w === "du" && (N[i+1] === "kien" || N[i+1] === "tinh")) || (w === "ke" && N[i+1] === "hoach")) drop.add(i).add(i+1); if(["sẽ","sắp","định"].includes(oL(i))) drop.add(i); });
     for(let i = 0; i < N.length; i++){
       const w = N[i];
+      /* ngày mai, sáng mai, tối mai; ngày kia / ngày mốt (không nhầm "chị Mai") */
+      if((at(i, ["ngay","mai"]) || (PARTS[w] !== undefined && N[i+1] === "mai")) && !isCap(clean(O ? O[i+1] || "" : ""))){
+        date = keyOf(addDays(now, 1)); drop.add(i).add(i+1); if(PARTS[w] !== undefined && hh === null) hh = PARTS[w]; i++; continue;
+      }
+      if(at(i, ["ngay","kia"]) || (w === "ngay" && oL(i+1) === "mốt") || oL(i) === "mốt"){ date = keyOf(addDays(now, 2)); drop.add(i); if(w === "ngay") drop.add(i+1); continue; }
       if(w === "hnay" || w === "homnay" || at(i, ["hum","nay"])){ date = keyOf(now); drop.add(i); if(w === "hum") drop.add(i+1); }
       else if(w === "nay" && ["luc","vua","ban","khi","hoi"].includes(N[i-1]) || (w === "xong" && N[i-1] === "vua" && i === N.length - 1)){ if(!date) date = keyOf(now); drop.add(i).add(i-1); }
       else if(w === "hqua" || w === "homqua" || at(i, ["hum","qua"])){ date = keyOf(addDays(now, -1)); drop.add(i); if(w === "hum") drop.add(i+1); }
@@ -118,9 +127,12 @@
           const len = key.split(" ").length, target = WDAY[key];
           let back = (now.getDay() - target + 7) % 7;
           const tuanTruoc = N[i+len] === "tuan" && N[i+len+1] === "truoc";
+          const tuanSau = N[i+len] === "tuan" && (N[i+len+1] === "sau" || N[i+len+1] === "toi");
           if(tuanTruoc) back += 7;
-          date = keyOf(addDays(now, -back));
-          for(let k = 0; k < len + (tuanTruoc ? 2 : 0); k++) drop.add(i+k);
+          if(tuanSau){ const wdN = (now.getDay() + 6) % 7, wdT = (target + 6) % 7; date = keyOf(addDays(now, 7 - wdN + wdT)); }
+          else if(fut){ date = keyOf(addDays(now, (target - now.getDay() + 7) % 7 || 7)); }
+          else date = keyOf(addDays(now, -back));
+          for(let k = 0; k < len + (tuanTruoc || tuanSau ? 2 : 0); k++) drop.add(i+k);
           if(N[i+len] === "tuan" && N[i+len+1] === "nay"){ drop.add(i+len).add(i+len+1); }
         }
       }
@@ -132,7 +144,9 @@
       else if(w === "ngay" && /^\d{1,2}$/.test(N[i+1] || "") && !K_UNITS.has(N[i+2] || "")){
         const dd = parseInt(N[i+1], 10);
         let d = new Date(now.getFullYear(), now.getMonth(), dd);
-        if(d > now) d = new Date(now.getFullYear(), now.getMonth() - 1, dd);
+        const today0 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        if(fut){ if(d < today0) d = new Date(now.getFullYear(), now.getMonth() + 1, dd); }
+        else if(d > now) d = new Date(now.getFullYear(), now.getMonth() - 1, dd);
         if(dd >= 1 && dd <= 31){ date = keyOf(d); drop.add(i).add(i+1); }
       }
       else if(/^\d{1,2}(h|:)\d{0,2}$/.test(w) || (/^\d{1,2}$/.test(w) && (N[i+1] === "gio" || N[i+1] === "h"))){
@@ -238,7 +252,7 @@
   }
 
   /* ---------------- người, thẻ, khoản vay ---------------- */
-  const FILLER = new Set(["minh","toi","tao","em","anh_","tien","no","them","lai","cho","vay","muon","cua","tu","het","mat","ton","la","duoc","da","vua","moi","nay","qua","roi","xong","di","ve","khoan","so","tra","gui","hoan","bang","qua_","ck","chuyen","khoan_","the","mot","it","ay","do","nhe","nha","a","ah","ha","nhe!","thi"]);
+  const FILLER = new Set(["phai","can","se","sap","dinh","minh","toi","tao","em","anh_","tien","no","them","lai","cho","vay","muon","cua","tu","het","mat","ton","la","duoc","da","vua","moi","nay","qua","roi","xong","di","ve","khoan","so","tra","gui","hoan","bang","qua_","ck","chuyen","khoan_","the","mot","it","ay","do","nhe","nha","a","ah","ha","nhe!","thi"]);
   function nameFrom(O, N, from, to, drop){
     const w = [];
     for(let i = Math.max(0, from); i < Math.min(N.length, to); i++){
@@ -447,7 +461,7 @@
         const it0 = traIdx; let s0 = it0 + 1; while(N[s0] === "tien" || N[s0] === "cho") s0++;
         const restTxt = O.slice(s0).filter((w, i) => !/\d/.test(w)).join(" ");
         /* trước "trả" có người khác ("con trả tiền học") thì còn mơ hồ: không tự quyết */
-        const beforeMe = N.slice(0, it0).every(w => ["minh","toi","em","tao","hom","nay","qua","sang","trua","toi","chieu","vua"].includes(w));
+        const beforeMe = N.slice(0, it0).every((w, i) => ["minh","toi","em","tao","hom","nay","qua","sang","trua","toi","chieu","vua","phai","can","se","sap","dinh","mai","ngay","du","kien","moi","da"].includes(w) || drop.has(i));
         const isDrink = !hasMarks(clean(O[it0])) && DRINK2.has("tra " + (N[it0+1] || ""));   /* "tra dao" (trà đào) gõ không dấu */
         if(!isDrink && (N.includes("the") || (beforeMe && restTxt && guessTag(restTxt, ctx) !== "khac"))){ payFor = true; drop.add(it0); }
       }
@@ -582,6 +596,40 @@
     if(/ hom nay | hnay | nay /.test(n)) return { period:"today" };
     return { period:null };
   }
+  /* ---------------- khoản sắp tới & gợi ý tiết kiệm (v123) ----------------
+     "có khoản dự kiến cho vay nào không", "từ nay tới cuối tháng có khoản chi nào", "tuần sau phải trả gì"
+       → { q:"upcoming", from, to, only:"lend"|"borrow"|"out"|"in"|"due"|null, label }
+     "nên tiết kiệm gì", "tháng này nên cắt giảm khoản nào" → { q:"save", period } */
+  const UP_STRONG = / (du kien|du tinh|sap toi|sap den|sap phai|sap co|sap chi|sap tra|sap thu|sap nhan|sap cho vay|cac ngay toi|nhung ngay toi|may ngay toi|ngay toi|thoi gian toi|sau hom nay|tu nay (den|toi)|tu hom nay (den|toi)|tu mai (den|toi)|den cuoi thang|toi cuoi thang|het thang|con lai cua thang|nhung ngay con lai|den han|toi han|sap den han|tuan toi|tuan sau|thang toi|thang sau|ngay mai|\d{1,3} ngay toi|lich (chi|tra|thu|no)|ke hoach (chi|tra|thu)|se (phai )?(chi|tra|thu|nhan|cho vay|vay)|chua toi|chua den) /;
+  const UP_ASK = / (gi|nao|khong|ko|chua|nhung|cac|co|bao nhieu|bn|xem|liet ke|ke|lich|khoan|giao dich|phai|can|ai|nhi|dau) /;
+  function upcomingOf(n, now){
+    if(!UP_STRONG.test(n) || !UP_ASK.test(n)) return null;
+    if(/ (co nen|nen (mua|chi|tieu|vay|dau tu|tra gop)|du doan|uoc tinh|bao nhieu la du|nen tieu bao nhieu) /.test(n)) return null;   /* xin lời khuyên, dự đoán: để AI */
+    const d0 = new Date(now.getFullYear(), now.getMonth(), now.getDate()), k = d => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+    const add = (d, x) => { const y = new Date(d); y.setDate(y.getDate() + x); return y; };
+    const wd = (d0.getDay() + 6) % 7;                                           /* 0 = thứ Hai */
+    let from = d0, to = new Date(now.getFullYear(), now.getMonth() + 1, 0), label = "từ nay đến hết " + to.getDate() + "/" + (to.getMonth() + 1);
+    let m;
+    if(/ (tuan sau|tuan toi) /.test(n)){ from = add(d0, 7 - wd); to = add(from, 6); label = "tuần sau"; }
+    else if(/ (thang sau|thang toi) /.test(n)){ from = new Date(now.getFullYear(), now.getMonth() + 1, 1); to = new Date(now.getFullYear(), now.getMonth() + 2, 0); label = "tháng sau"; }
+    else if(/ (cuoi tuan) /.test(n)){ from = add(d0, Math.max(0, 5 - wd)); to = add(d0, 6 - wd); label = "cuối tuần này"; }
+    else if(/ tuan nay /.test(n)){ to = add(d0, 6 - wd); label = "từ nay đến hết tuần"; }
+    else if(/ ngay mai /.test(n) && !/ (tu|sau) ngay mai /.test(n)){ from = add(d0, 1); to = from; label = "ngày mai"; }
+    else if((m = n.match(/ (\d{1,3}) ngay toi /))){ to = add(d0, +m[1]); label = m[1] + " ngày tới"; }
+    else if(/ nam nay /.test(n)){ to = new Date(now.getFullYear(), 11, 31); label = "từ nay đến hết năm"; }
+    let only = null;
+    if(/ cho (minh|toi|em|tao) (vay|muon) /.test(n)) only = "borrow";
+    else if(/ cho ([a-z]+ ){0,3}(vay|muon) /.test(n)) only = "lend";
+    else if(/ (di vay|vay|muon) /.test(n)) only = "borrow";
+    else if(/ (den han|toi han|tra no|no phai tra|phai tra no|thu no|doi no) /.test(n)) only = "due";
+    else if(/ (khoan thu|thu nhap|tien ve|se nhan|sap nhan|luong ve|duoc nhan) /.test(n)) only = "in";
+    else if(/ (khoan chi|chi tieu|phai chi|se chi|sap chi|thanh toan|phai tra tien|dong tien|hoa don) /.test(n)) only = "out";
+    return { q:"upcoming", from:k(from), to:k(to), only, label };
+  }
+  const SAVE_W = / (tiet kiem|bot tieu|giam chi|giam tieu|cat giam|cat bot|bot chi|chi it lai|tieu it lai|de danh|thắt lung|that lung buoc bung|bot lai|cat chi) /;
+  const SAVE_ASK = / (gi|cai gi|khoan nao|nhom nao|muc nao|o dau|cho nao|the nao|ra sao|lam sao|lam the nao|nen|can|phai|goi y|tu van|bang cach nao|duoc khong|duoc o dau|cach nao|meo) /;
+  function saveOf(n){ return SAVE_W.test(n) && SAVE_ASK.test(n) && !/ (tiet kiem|de danh) duoc (roi|nhieu|it|\d)/.test(n) ? true : false; }
+
   function asQuery(text, ctx){
     text = String(text).replace(/vậy/gi, "vậy_").replace(/\bvay\s*\??\s*$/i, "vậy_");   /* "sao tiêu nhiều vậy" không phải vay nợ */
     let n = " " + norm(text).replace(/[?!.,:;]/g, " ").replace(/\s+/g, " ") + " ";
@@ -592,6 +640,15 @@
     if(!mayQ) n = n.replace(/ may /g, " may_ ");
     if(/^ (so du|so du vi|kiem tra so du|check so du|xem so du|so du tai khoan|so du tk) $/.test(n) || /^ so du [a-z]+ $/.test(n)) n = n.replace(/ $/, " bao nhieu ");
     const now = (ctx && ctx.now) || new Date();
+    /* v123: khoản sắp tới, gợi ý tiết kiệm (câu không kèm số tiền) */
+    {
+      const T = tokenize(text).N; let hasAmt = false;
+      for(let i = 0; i < T.length; i++){ const a = amountAt(T, i); if(a && !["tren","hon","tu","duoi"].includes(T[i-1])){ hasAmt = true; break; } }
+      if(!hasAmt){
+        const up = upcomingOf(n, now); if(up) return up;
+        if(saveOf(n)){ const p0 = periodOf(n, now); const q = { q:"save", period:p0.period || "month" }; if(p0.from){ q.from = p0.from; q.to = p0.to; } return q; }
+      }
+    }
     const nq = n.replace(/ gi (do|day|ay|ca) /g, " ");                 /* "200k gì đó" là lời kể, không phải câu hỏi */
     /* v122: "sao tháng này tiêu nhiều vậy" → báo cáo so với kỳ trước (máy tự làm, AI cũng chỉ làm được vậy vì không xem số liệu) */
     const why = /^ (sao|tai sao|vi sao|lam sao ma) .*(tieu|chi|xai|het|ton).*(nhieu|qua|the|vay_|du vay)/.test(nq) || /^ (sao|tai sao|vi sao) .*(nhieu|tang) /.test(nq);
@@ -663,6 +720,19 @@
      "tháng trước thì sao", "theo ngày", "liệt kê ra", "nhóm ăn thôi", "so với tháng trước".
      refine(text, prev, ctx) → câu hỏi trước với điều kiện mới thay vào, hoặc null nếu không phải câu nối tiếp. */
   function refine(text, prev, ctx){
+    /* v123: nối tiếp câu hỏi khoản sắp tới: "còn tuần sau thì sao", "chỉ khoản cho vay thôi", "tháng sau?" */
+    if(prev && prev.q === "upcoming"){
+      const n0 = " " + norm(stripLead(text)).replace(/[?!.,:;]/g, " ").replace(/\s+/g, " ") + " ";
+      if(n0.trim().split(" ").length > 12) return null;
+      const now0 = (ctx && ctx.now) || new Date();
+      const up = upcomingOf(n0 + "du kien co khoan nao ", now0);
+      if(!up) return null;
+      const hasRange = / (tuan sau|tuan toi|thang sau|thang toi|cuoi tuan|tuan nay|ngay mai|nam nay|\d{1,3} ngay toi|cuoi thang|het thang) /.test(n0);
+      const q = Object.assign({}, prev);
+      if(hasRange){ q.from = up.from; q.to = up.to; q.label = up.label; }
+      if(up.only) q.only = up.only; else if(/ (tat ca|het|moi khoan|cac khoan) /.test(n0)) q.only = null;
+      return (hasRange || up.only || q.only !== prev.only) ? q : null;
+    }
     if(!prev || !(prev.q === "report" || prev.q === "spent" || prev.q === "card")) return null;
     ctx = ctx || {}; const now = ctx.now || new Date();
     const n = " " + norm(text).replace(/[?!.,:;]/g, " ").replace(/\s+/g, " ") + " ";
@@ -706,9 +776,12 @@
   }
 
   /* ---------------- đầu vào chính ---------------- */
+  /* v123: "Sai rồi ý tôi là trong các ngày tới", "không phải, ý mình là …" → chỉ hiểu phần sau */
+  const LEAD = /^\s*(?:(?:sai|nhầm|nham|không phải|khong phai|ko phải|ko phai|k phải|chưa đúng|chua dung|không đúng|khong dung)(?:\s+(?:rồi|roi|r|nha|nhé|nhe))?[\s,.!:;-]*)?(?:(?:ý|y)\s+(?:tôi|toi|mình|minh|em|tao|là|la)(?:\s+(?:là|la|muốn hỏi|muon hoi|hỏi|hoi))?|(?:tôi|toi|mình|minh|em)\s+(?:muốn hỏi|muon hoi|hỏi là|hoi la|định hỏi|dinh hoi)|tức là|tuc la|nghĩa là|nghia la|à mà|a ma)[\s,.:;-]+/i;
+  function stripLead(t){ const m = String(t).match(LEAD); return m && String(t).length - m[0].length >= 4 ? String(t).slice(m[0].length) : t; }
   function parse(text, ctx){
     ctx = ctx || {}; if(!ctx.now) ctx.now = new Date();
-    const raw = String(text || "").trim();
+    const raw0 = String(text || "").trim(), raw = stripLead(raw0).trim();
     if(!raw) return { items:[], query:null, unknown:[] };
     const query = asQuery(raw, ctx);
     if(query) return { items:[], query, unknown:[] };
@@ -757,7 +830,7 @@
     const why = [], n = " " + norm(text).replace(/[?!.,;:]/g, " ").replace(/\s+/g, " ") + " ";
     if(!res) res = parse(text, ctx);
     if(res.query){
-      if(res.query.q === "unknown" || ASK.test(n)) why.push("query");
+      if(res.query.q === "unknown" || (ASK.test(n) && !["save","upcoming"].includes(res.query.q))) why.push("query");
       return { local:!why.length, why };
     }
     if(!res.items.length){ why.push("noitem"); return { local:false, why }; }
@@ -782,7 +855,7 @@
   /* đọc số tiền người dùng gõ trong ô sửa ("45k", "1tr2", "45.000") */
   function amountText(s){ const { N } = tokenize(s); const a = amountAt(N, 0); return a ? a.v : (parseInt(String(s).replace(/\D/g, ""), 10) || 0); }
 
-  const api = { parse, assess, refine, amountText, guessTag, norm, _amountAt:amountAt, _clauses:clauses, _tokenize:tokenize };
+  const api = { parse, stripLead, assess, refine, amountText, guessTag, norm, _amountAt:amountAt, _clauses:clauses, _tokenize:tokenize };
   if(typeof module !== "undefined" && module.exports) module.exports = api;
   else root.N50KParse = api;
 })(typeof window !== "undefined" ? window : this);

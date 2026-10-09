@@ -408,6 +408,18 @@
     ["momo còn bao nhiêu", "số dư momo", "zalopay còn bao nhiêu", "techcombank còn bao nhiêu"].forEach(t => add("hoi_sodu", vary(t), { q:"balance" }));
     ["ai nợ mình", "ai còn nợ mình", "mình đang nợ ai", "mình còn nợ ai", "những ai nợ tiền mình", "ai đang nợ tôi", "tôi nợ ai", "hào nợ bao nhiêu", "chú dũng còn nợ bao nhiêu", "mình nợ anh tuấn bao nhiêu", "còn nợ lan bao nhiêu", "nợ nần thế nào"].forEach(t => add("hoi_no", vary(t), { q:"loans" }));
     ["thẻ tháng này bao nhiêu", "tháng này quẹt thẻ bao nhiêu", "nợ thẻ bao nhiêu", "thẻ tín dụng tháng này tiêu bao nhiêu", "quẹt thẻ bao nhiêu rồi"].forEach(t => add("hoi_the", vary(t), { q:"card" }));
+    /* v123: khoản sắp tới, dự kiến */
+    const UP_WHEN = ["từ nay đến cuối tháng", "từ nay tới cuối tháng", "các ngày tới", "những ngày tới", "sắp tới", "thời gian tới", "từ hôm nay đến hết tháng", "tuần sau", "tháng sau", "7 ngày tới", "sau hôm nay", "dự kiến"];
+    const UP_WHAT = [["có khoản nào", null], ["có khoản chi nào", "out"], ["có khoản cho vay nào", "lend"], ["có khoản thu nào", "in"], ["có khoản nào đến hạn", "due"], ["có giao dịch gì", null], ["có gì phải trả", null], ["phải chi những gì", "out"], ["có khoản dự kiến nào", null], ["sẽ cho ai vay", "lend"], ["có khoản đi vay nào", "borrow"]];
+    UP_WHEN.forEach(w => UP_WHAT.forEach(([x, only]) => {
+      const tail = pick([" không", " không?", "", " ko", " chưa", " nhỉ"]);
+      const cau = r() < 0.5 ? w + " " + x + tail : x + " " + w + tail;
+      add("hoi_sap_toi", vary(cau), Object.assign({ q:"upcoming" }, only ? { only } : {}));
+    }));
+    ["sai rồi ý tôi là trong các ngày tới", "ý mình là từ nay tới cuối tháng có khoản nào không", "không phải, ý tôi là các khoản dự kiến", "tức là sắp tới có khoản chi nào không", "ý là những ngày tới sau hôm nay"].forEach(t => add("hoi_sap_toi", vary(t), { q:"upcoming" }));
+    /* v123: nên tiết kiệm gì */
+    const SV = ["nên tiết kiệm gì", "nên tiết kiệm cái gì", "nên cắt giảm khoản nào", "nên bớt tiêu cái gì", "tiết kiệm ở đâu được", "làm sao để tiết kiệm", "cắt bớt khoản nào", "nên giảm chi nhóm nào", "gợi ý tiết kiệm", "nên tiết kiệm ở đâu", "làm thế nào để bớt tiêu", "tư vấn tiết kiệm giúp mình"];
+    [["", "month"], ["tháng này ", "month"], ["tuần này ", "week"], ["vậy ", "month"], ["thế ", "month"], ["tháng trước ", "lastmonth"]].forEach(([p0, per]) => SV.forEach(t => add("hoi_tiet_kiem", vary(p0 + t + pick(["", "?", " nhỉ", " vậy"])), { q:"save", period:per })));
     TU_NHIEN.forEach(([c, m]) => add("tu_nhien", c, m));
     return out;
   }

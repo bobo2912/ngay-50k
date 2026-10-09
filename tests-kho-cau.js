@@ -20,7 +20,7 @@ function checkItem(it, w){
 function checkQ(q, w){
   if(!q) return "không hiểu là câu hỏi";
   const bad = [];
-  ["q","period","tag","compare"].forEach(k => { if(w[k] !== undefined && q[k] !== w[k]) bad.push(k + " " + JSON.stringify(q[k])); });
+  ["q","period","tag","compare","only"].forEach(k => { if(w[k] !== undefined && q[k] !== w[k]) bad.push(k + " " + JSON.stringify(q[k])); });
   return bad.join(", ");
 }
 const show = r => r.query ? "Q " + JSON.stringify(r.query) : r.items.map(i => i.kind + "|" + i.amt + "|" + i.note + "|" + (i.cat || "") + "|" + i.date + (i.cardId ? "|" + i.cardId : "") + (i.loanId ? "|" + i.loanId : "") + (i.w ? "|w=" + i.w : "") + (i.split ? "|chia" + i.split : "")).join(" ; ") || "(không có khoản)";

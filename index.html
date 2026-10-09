@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v122";
+  var K = "ngay50k:errlog", VER = "v123";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -1585,6 +1585,7 @@ body.searching .ledger-head{background:var(--top-c)}
 /* nhãn nguồn câu trả lời (v92): ✦ AI hoặc ⚡ Máy */
 .src-tag{display:inline-flex; align-items:center; gap:3px; margin:0 6px 0 0; padding:1px 7px; border-radius:999px; font-size:.66rem; font-weight:700; font-style:normal; letter-spacing:.02em; line-height:1.5; vertical-align:2px; white-space:nowrap}
 .src-tag.ai-mark{color:var(--note); background:var(--note-soft)}
+.msg .up{color:var(--over); font-weight:600}
 .src-tag.local-mark{color:var(--muted); background:color-mix(in srgb, var(--muted) 12%, transparent)}
 .learn-row{cursor:default}
 .learn-row .t small{white-space:normal}
@@ -2499,7 +2500,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v122</p>
+      <p class="sync" id="appVersion">Phiên bản v123</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -2997,9 +2998,9 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
 <datalist id="bankList"></datalist>
 
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
-<script src="parse-vi.js?v=122"></script>
-<script src="thu-vien-cau.js?v=122"></script>
-<script src="lock.js?v=122"></script>
+<script src="parse-vi.js?v=123"></script>
+<script src="thu-vien-cau.js?v=123"></script>
+<script src="lock.js?v=123"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -5290,9 +5291,134 @@ function startNgay50k(){
   function map2arr(list, q){ const g = q.group === "none" ? "tag" : q.group, m = {}; list.forEach(x => { const k = rptGroupKey(x, g); m[k] = (m[k] || 0) + x.amt; }); return Object.entries(m); }
 
   /* nhớ câu hỏi chi tiêu gần nhất để hiểu câu nối tiếp ("chỉ tính từ tài khoản", "tháng trước thì sao") */
-  function rememberQ(q){ if(chat && q && (q.q === "report" || q.q === "spent" || q.q === "card")){ chat.lastQ = Object.assign({}, q); } }
+  function rememberQ(q){ if(chat && q && (q.q === "report" || q.q === "spent" || q.q === "card" || q.q === "upcoming")){ chat.lastQ = Object.assign({}, q); } }
+  /* ---------- v123: khoản sắp tới (dự kiến) ----------
+     Gom mọi thứ có ngày từ bây giờ tới cuối khoảng hỏi: khoản chi / quẹt thẻ / khoản thu / chuyển ví / trả thẻ ghi trước ngày,
+     khoản vay lập hoặc vay thêm, trả nợ ghi trước ngày, hạn trả của khoản vay còn dở, và khoản định kỳ chưa tới ngày. */
+  const fmtD = k => (+String(k).slice(8, 10)) + "/" + (+String(k).slice(5, 7));
+  function upcomingList(from, to){
+    const out = [], now = Date.now(), tk = todayKey();
+    const later = (k, t) => k > tk || (k === tk && (t || 0) > now);
+    const inR = k => k >= from && k <= to;
+    const push = (k, o) => { if(inR(k)) out.push(Object.assign({ k }, o)); };
+    for(const k in state.days) (state.days[k] || []).forEach(it => { if(later(k, it.t) && !it.rc) push(k, { kind:"out", icon:tagOf(it.cat).icon, name:it.note || tagOf(it.cat).label, amt:+it.amt || 0, sign:-1 }); });
+    for(const k in state.cardTx) (state.cardTx[k] || []).forEach(it => { if(later(k, it.t) && !it.rc) push(k, { kind:"out", icon:"💳", name:(it.where || "Quẹt thẻ") + (cardName(it.cardId) ? " · thẻ " + cardName(it.cardId) : ""), amt:+it.amt || 0, sign:0 }); });
+    for(const k in state.income) (state.income[k] || []).forEach(it => { if(later(k, it.t)) push(k, { kind:"in", icon:"💰", name:it.note || (INC.find(x => x.id === it.cat) || INC[INC.length - 1]).label, amt:+it.amt || 0, sign:1 }); });
+    (state.cardPay || []).forEach(p => { if(later(p.date, p.t)) push(p.date, { kind:"out", icon:"💳", name:"Trả thẻ" + (cardName(p.cardId) ? " " + cardName(p.cardId) : ""), amt:+p.amt || 0, sign:-1 }); });
+    (state.xfer || []).forEach(x => { if(later(x.date, x.t)) push(x.date, { kind:"xfer", icon:"🔁", name:walletName(x.from || MAIN_W) + " → " + walletName(x.to || MAIN_W), amt:+x.amt || 0, sign:0 }); });
+    state.loans.forEach(l => {
+      const lend = l.type === "lend", who = l.who || "?";
+      if(later(l.date, l.t)) push(l.date, { kind:lend ? "lend" : "borrow", icon:"🤝", name:lend ? "Cho " + who + " vay" : "Vay " + who, amt:+l.amt || 0, sign:lend ? -1 : 1 });
+      (l.draws || []).forEach(d => { if(later(d.date, d.t)) push(d.date, { kind:lend ? "lend" : "borrow", icon:"🤝", name:lend ? "Cho " + who + " vay thêm" : "Vay thêm " + who, amt:+d.amt || 0, sign:lend ? -1 : 1 }); });
+      (l.payments || []).forEach(p => { if(later(p.date, p.t)) push(p.date, { kind:lend ? "in" : "due", icon:"🤝", name:lend ? who + " trả bạn" : "Trả nợ " + who, amt:+p.amt || 0, sign:lend ? 1 : -1 }); });
+      const left = leftOf(l);
+      if(l.due && l.due >= tk && left > 0) push(l.due, { kind:"due", icon:"⏰", name:lend ? who + " đến hạn trả bạn" : "Đến hạn trả " + who, amt:left, sign:lend ? 1 : -1, due:true, lend });
+    });
+    /* khoản định kỳ: tự ghi khi tới ngày, nên ngày sau hôm nay là dự kiến */
+    recurList().forEach(r => {
+      if(!r.amt || !r.day) return;
+      const a = new Date(from + "T00:00:00"), b = new Date(to + "T00:00:00");
+      for(let m = new Date(a.getFullYear(), a.getMonth(), 1); m <= b; m = new Date(m.getFullYear(), m.getMonth() + 1, 1)){
+        const dim = new Date(m.getFullYear(), m.getMonth() + 1, 0).getDate(), key = m.getFullYear() + "-" + pad(m.getMonth() + 1) + "-" + pad(Math.min(+r.day, dim));
+        if(key <= tk || (r.from && key < r.from)) continue;
+        const card = r.card && cardOf(r.card);
+        push(key, { kind:"out", icon:card ? "💳" : tagOf(r.cat).icon, name:(r.name || "Khoản định kỳ") + " (định kỳ" + (card ? ", thẻ " + card.name : "") + ")", amt:+r.amt || 0, sign:card ? 0 : -1 });
+      }
+    });
+    return out.sort((x, y) => x.k.localeCompare(y.k) || y.amt - x.amt);
+  }
+  function upcomingAnswer(q){
+    const tk = todayKey(), from = q.from && q.from > tk ? q.from : tk, to = q.to || keyOf(new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0));
+    const all = upcomingList(from, to), lbl = q.label || "sắp tới";
+    const ONLY = { lend:["lend"], borrow:["borrow"], due:["due"], "in":["in"], out:["out"] };
+    const NAME = { lend:"khoản cho vay", borrow:"khoản đi vay", due:"khoản đến hạn trả nợ", "in":"khoản thu", out:"khoản chi" };
+    const list = q.only ? all.filter(x => ONLY[q.only].includes(x.kind) || (q.only === "due" && x.due)) : all;
+    const dd = k => { const d = new Date(k + "T00:00:00"); return (k === tk ? "Hôm nay" : DOW[d.getDay()] + " " + d.getDate() + "/" + (d.getMonth() + 1)); };
+    const line = x => "• " + dd(x.k) + " · " + x.icon + " " + esc(x.name) + " · <b>" + fmt(x.amt) + "</b>";
+    const sum = xs => {
+      const outT = xs.filter(x => x.sign < 0).reduce((a, x) => a + x.amt, 0), inT = xs.filter(x => x.sign > 0).reduce((a, x) => a + x.amt, 0), cardT = xs.filter(x => x.sign === 0 && x.kind === "out").reduce((a, x) => a + x.amt, 0);
+      const parts = [];
+      if(outT) parts.push("sắp chi <b>" + fmt(outT) + "</b>");
+      if(cardT) parts.push("quẹt thẻ " + fmt(cardT));
+      if(inT) parts.push("sắp thu <b>" + fmt(inT) + "</b>");
+      let t = parts.length ? "Tổng: " + parts.join(", ") + "." : "";
+      const T = walletsTotal();
+      if(T.any && (outT || inT)) t += " Số dư ví hiện " + sMoney(T.cash) + ", sau các khoản này còn khoảng <b>" + sMoney(T.cash - outT + inT) + "</b>.";
+      return t;
+    };
+    const fromTxt = from === tk ? "" : "";
+    let h = "";
+    if(q.only && !list.length){
+      h = "Không có " + NAME[q.only] + " dự kiến nào " + lbl + fromTxt + ".";
+      if(all.length) h += "\nNhưng có " + all.length + " khoản khác:\n" + all.slice(0, 12).map(line).join("\n") + (all.length > 12 ? "\n… và " + (all.length - 12) + " khoản nữa." : "") + "\n" + sum(all);
+    } else if(!list.length){
+      h = "Chưa có khoản nào dự kiến " + lbl + ".";
+    } else {
+      h = (q.only ? "Có <b>" + list.length + "</b> " + NAME[q.only] + " dự kiến " : "Có <b>" + list.length + "</b> khoản dự kiến ") + lbl + ":\n" + list.slice(0, 15).map(line).join("\n") + (list.length > 15 ? "\n… và " + (list.length - 15) + " khoản nữa." : "") + "\n" + sum(list);
+    }
+    if(!all.length) h += "\n<i>Muốn ghi trước một khoản thì nhắn kèm ngày, ví dụ \u201cngày 20 cho Nam vay 2tr\u201d, \u201cngày mai đóng tiền điện 700k\u201d. Hạn trả của khoản vay đặt ở tab Khoản vay; khoản lặp lại hằng tháng ở Cài đặt → Khoản định kỳ.</i>";
+    return h;
+  }
+  /* ---------- v123: nên tiết kiệm gì → 5 nhóm chi nhiều nhất trong kỳ, so với kỳ trước, mẹo theo nhóm ---------- */
+  const SAVE_TIP = {
+    an:"Nấu ở nhà hoặc mang cơm vài bữa mỗi tuần; đặt đồ ăn online thường đắt hơn 20–30% vì phí ship và giá app.",
+    uong:"Cà phê, trà sữa nhỏ mà đều: bớt 1–2 ly mỗi tuần, hoặc pha ở nhà.",
+    dilai:"Gom việc để đi một chuyến, đi xe buýt / xe máy khi được, đặt xe giờ thấp điểm.",
+    xang:"Gom các chuyến đi, kiểm tra lốp và bảo dưỡng đúng hạn để xe đỡ hao xăng.",
+    cho:"Lên danh sách trước khi đi chợ / siêu thị, mua theo tuần, tránh mua theo khuyến mãi khi chưa cần.",
+    muasam:"Chờ 2–3 ngày trước khi mua món không cần gấp; bỏ bớt món trong giỏ Shopee/Lazada.",
+    nha:"Khoản cố định, khó cắt; xem lại phí dịch vụ, đồ gia dụng mua thêm có thật cần không.",
+    diennuoc:"Tắt điều hoà / bình nóng lạnh khi không dùng, để điều hoà 26–27°C.",
+    dienthoai:"Rà các gói cước, gói data, dịch vụ đăng ký (iCloud, Netflix…) đang trả mà ít dùng.",
+    suckhoe:"Khoản nên giữ; có thể so giá thuốc giữa các nhà thuốc, dùng bảo hiểm y tế khi khám.",
+    lamdep:"Giãn lịch làm tóc / nail, dùng hết mỹ phẩm đang có rồi mới mua thêm.",
+    hoctap:"Khoản đầu tư cho bản thân; tìm tài liệu miễn phí, sách cũ, khoá học giảm giá.",
+    giaitri:"Huỷ dịch vụ ít xem, chọn suất chiếu ngày thường, tìm chỗ chơi miễn phí.",
+    dulich:"Đặt vé / phòng sớm, đi ngày thường, so giá vài trang trước khi đặt.",
+    concai:"Mua đồ dùng cho bé theo thùng / combo, xin lại đồ cũ từ người quen.",
+    thucung:"Mua thức ăn, cát theo bao lớn, đặt định kỳ để được giá tốt.",
+    hieuhy:"Đặt sẵn một mức mừng / quà cố định mỗi tháng, đừng vượt.",
+    tuthien:"Khoản tuỳ tâm; đặt một mức cố định mỗi tháng nếu muốn.",
+    suachua:"Bảo dưỡng định kỳ để tránh hỏng lớn; hỏi giá vài nơi trước khi sửa.",
+    khac:"Nhiều khoản đang ở nhóm Khác: gắn nhóm cho chúng để biết tiền đi đâu."
+  };
+  const SAVE_FIXED = new Set(["nha","diennuoc","hoctap","suckhoe","concai","tuthien"]);
+  function saveAnswer(q){
+    let [a, b, lbl] = q.period === "custom" && q.from ? [q.from, q.to, "kỳ này"] : rangeOf(q.period || "month");
+    const days = Math.round((new Date(b + "T12:00:00") - new Date(a + "T12:00:00")) / 86400000) + 1;
+    /* đầu tháng ít dữ liệu: lấy 30 ngày gần nhất */
+    if((q.period || "month") === "month" && days < 7){ const d = new Date(); d.setDate(d.getDate() - 29); a = keyOf(d); b = todayKey(); lbl = "30 ngày qua"; }
+    const by = {}, add = (cat, v) => { cat = cat || "khac"; by[cat] = (by[cat] || 0) + v; };
+    const tk = todayKey();
+    for(const k in state.days) if(k >= a && k <= b && k <= tk) (state.days[k] || []).forEach(it => add(it.cat, +it.amt || 0));
+    for(const k in state.cardTx) if(k >= a && k <= b && k <= tk) (state.cardTx[k] || []).forEach(it => add(it.cat, +it.amt || 0));
+    const total = Object.values(by).reduce((x, y) => x + y, 0);
+    if(!total) return "Chưa có khoản chi nào " + lbl + " để gợi ý. Ghi chi tiêu vài ngày rồi hỏi lại mình nhé.";
+    /* kỳ trước cùng số ngày để so */
+    const span = Math.round((new Date(b + "T12:00:00") - new Date(a + "T12:00:00")) / 86400000) + 1;
+    const pa = new Date(a + "T12:00:00"); pa.setDate(pa.getDate() - span); const pb = new Date(a + "T12:00:00"); pb.setDate(pb.getDate() - 1);
+    const prev = {}; const A = keyOf(pa), B = keyOf(pb);
+    for(const k in state.days) if(k >= A && k <= B) (state.days[k] || []).forEach(it => { const c = it.cat || "khac"; prev[c] = (prev[c] || 0) + (+it.amt || 0); });
+    for(const k in state.cardTx) if(k >= A && k <= B) (state.cardTx[k] || []).forEach(it => { const c = it.cat || "khac"; prev[c] = (prev[c] || 0) + (+it.amt || 0); });
+    const top = Object.entries(by).sort((x, y) => y[1] - x[1]).slice(0, 5);
+    let save = 0;
+    const rows = top.map(([cat, v], i) => {
+      const t = tagOf(cat), pct = Math.round(v * 100 / total), p = prev[cat] || 0;
+      const cut = Math.round(v * (SAVE_FIXED.has(cat) ? 0.05 : 0.2) / 1000) * 1000; save += cut;
+      const cmp = p ? (v > p * 1.1 ? " · <span class=\"up\">↑ " + Math.round((v - p) * 100 / p) + "% so với kỳ trước</span>" : v < p * 0.9 ? " · ↓ " + Math.round((p - v) * 100 / p) + "% so với kỳ trước" : " · ngang kỳ trước") : "";
+      return (i + 1) + ". " + t.icon + " <b>" + esc(t.label) + "</b>: " + fmt(v) + " (" + pct + "%)" + cmp + "\n   " + (SAVE_TIP[cat] || "Xem lại các khoản trong nhóm này, khoản nào bớt được thì bớt.") + (cut ? " Bớt " + (SAVE_FIXED.has(cat) ? "5" : "20") + "% ≈ <b>" + fmt(cut) + "</b>." : "");
+    });
+    const rose = top.filter(([c, v]) => prev[c] && v > prev[c] * 1.1 && !SAVE_FIXED.has(c)).map(([c]) => tagOf(c).label.toLowerCase());
+    let h = "Đây là 5 nhóm bạn chi nhiều nhất " + lbl + " (tổng chi " + fmt(total) + "), nên tiết kiệm từ đây:\n" + rows.join("\n");
+    if(rose.length) h += "\nĐáng chú ý nhất: <b>" + esc(rose.join(", ")) + "</b> đang tăng so với kỳ trước.";
+    if(save) h += "\nNếu bớt được như trên, " + lbl + " bạn để dành thêm khoảng <b>" + fmt(save) + "</b>.";
+    h += '<button type="button" class="chat-q" data-say="tháng này so với tháng trước">So với tháng trước ›</button><button type="button" class="chat-q" data-say="5 khoản lớn nhất tháng này">5 khoản lớn nhất ›</button>';
+    return h;
+  }
   function answer(q){
     rememberQ(q);
+    if(q.q === "upcoming") return upcomingAnswer(q);
+    if(q.q === "save") return saveAnswer(q);
     if(q.q === "report") return report(q);
     if(q.q === "spent"){
       const [a, b, lbl] = qRange(q);
@@ -5821,6 +5947,9 @@ function startNgay50k(){
       "  tag hoặc tags: id nhóm trong nhom_chi khi hỏi về một/vài nhóm (ăn uống = \"an+uong\"). kw: từ khoá nơi/nội dung (\"grab\", \"shopee\", \"cà phê\") khi hỏi về một nơi cụ thể. minAmt: chỉ khoản từ số tiền này.",
       "  group: tag (theo nhóm, mặc định) | day | week | month | place (theo nơi chi/nội dung, \"tiêu ở đâu\") | src (tài khoản hay thẻ) | none (danh sách phẳng). list: true khi muốn liệt kê từng khoản. top: N khi hỏi N khoản lớn nhất (kèm group none). compare: true khi so với kỳ trước, hỏi tăng/giảm, hoặc hỏi vì sao tiêu nhiều.",
       "- left (hôm nay còn tiêu được bao nhiêu), balance (số dư), loans (ai nợ/mình nợ ai, who nếu hỏi một người), card (tổng chi thẻ, nợ thẻ), topday (ngày tiêu nhiều nhất).",
+      "- upcoming: hỏi khoản SẮP TỚI / DỰ KIẾN (từ nay tới cuối tháng, các ngày tới, tuần sau, sắp đến hạn, sắp cho vay…). Trường: from, to (yyyy-mm-dd, mặc định hôm nay → cuối tháng), only: lend|borrow|due|in|out nếu chỉ hỏi một loại.",
+      "- save: hỏi NÊN TIẾT KIỆM GÌ / cắt giảm khoản nào (app tự lấy 5 nhóm chi nhiều nhất kèm mẹo). period mặc định month.",
+      "Khoản người dùng kể có ngày TƯƠNG LAI (\"ngày 20 cho Nam vay 2tr\", \"ngày mai đóng tiền điện\", \"dự kiến…\") thì ghi đúng ngày tương lai đó, không lùi về tháng trước.",
       "Ví dụ: \"tháng rồi tiêu gì\" → report lastmonth group tag. \"tháng này tiêu gì từ tài khoản\" → report month src tk. \"liệt kê các khoản grab tuần này\" → report week kw grab group none list true. \"sao tháng này tiêu nhiều thế\" → report month compare true. \"5 khoản lớn nhất tháng 9\" → report custom from/to tháng 9 top 5 group none.",
       "CÂU NỐI TIẾP: nếu câu mới chỉ thêm hoặc đổi một điều kiện của câu hỏi trước (cau_hoi_truoc trong ngữ cảnh, hoặc lượt trước trong hội thoại) như \"chỉ tính từ tài khoản\", \"còn thẻ thì sao\", \"tháng trước thì sao\", \"theo ngày\", \"liệt kê ra\", \"nhóm ăn thôi\" thì trả query = cau_hoi_truoc với điều kiện mới thay vào, giữ nguyên các điều kiện còn lại.",
       "Câu chào hỏi, tâm sự, hoặc thiếu số tiền: items rỗng, reply hỏi lại ngắn gọn (vd hỏi số tiền). Không bịa số tiền.",
@@ -5936,7 +6065,13 @@ function startNgay50k(){
       return it;
     }).filter(Boolean);
     let query = null;
-    if(o.query && typeof o.query === "object" && ["spent","left","balance","loans","card","topday","report"].includes(o.query.q)){
+    if(o.query && typeof o.query === "object" && ["upcoming","save"].includes(o.query.q)){
+      /* v123: khoản sắp tới / gợi ý tiết kiệm: máy tự tính khoảng ngày nếu AI không đưa */
+      const Q = o.query, isK = v => /^\d{4}-\d{2}-\d{2}$/.test(v || "");
+      if(Q.q === "save") query = { q:"save", period:["week","month","lastmonth","year"].includes(Q.period) ? Q.period : "month" };
+      else { const now = new Date(), eom = keyOf(new Date(now.getFullYear(), now.getMonth() + 1, 0)); query = { q:"upcoming", from:isK(Q.from) ? Q.from : todayKey(), to:isK(Q.to) ? Q.to : eom, only:["lend","borrow","due","in","out"].includes(Q.only) ? Q.only : null }; query.label = query.to === eom && query.from <= todayKey() ? "từ nay đến hết " + (+eom.slice(8)) + "/" + (+eom.slice(5, 7)) : "từ " + fmtD(query.from) + " đến " + fmtD(query.to); }
+    }
+    else if(o.query && typeof o.query === "object" && ["spent","left","balance","loans","card","topday","report"].includes(o.query.q)){
       const Q = o.query, isK = v => /^\d{4}-\d{2}-\d{2}$/.test(v || "");
       query = { q:Q.q, period:["today","yesterday","week","lastweek","month","lastmonth","year","custom"].includes(Q.period) ? Q.period : (Q.q === "card" || Q.q === "topday" || Q.q === "report" ? "month" : "today"),
         tag:Q.tag === "an+uong" || tagIds.includes(Q.tag) ? Q.tag : null, who:String(Q.who || "").trim(),
@@ -6050,6 +6185,7 @@ function startNgay50k(){
       if(it.split && it.total) parts.push("Chia " + it.split + ": mình ghi phần của bạn <b>" + fmt(it.amt) + "</b>. Bạn trả cả bill " + fmt(it.total) + " thì bấm:" + say("mình trả hết"));
       if(it.cardGuess && (state.cards || []).length > 1){ const others = (state.cards || []).filter(c => c.id !== it.cardId).slice(0, 3); parts.push("Mình chọn thẻ <b>" + esc(cardName(it.cardId)) + "</b> (bạn hay quẹt nhất). Thẻ khác:" + others.map(c => say("thẻ " + c.name)).join("")); }
       if(["lend","borrow"].includes(it.kind) && !it.loanId && !String(it.who || "").trim()) parts.push(it.kind === "lend" ? "Cho ai vay vậy? Nhắn tên là được." : "Vay của ai vậy? Nhắn tên là được.");
+      if(it.date > todayKey()) parts.push("Khoản này ghi cho ngày <b>" + fmtD(it.date) + "</b> (sắp tới): tới ngày mới trừ vào số dư, hỏi “có khoản dự kiến nào không” là thấy.");
       if(it.calc && /qty|disc/.test(it.calc)) parts.push("Mình đã tính ra <b>" + fmt(it.amt) + "</b>" + (/qty/.test(it.calc) ? " (theo số lượng × đơn giá)" : "") + (/disc/.test(it.calc) ? " (đã trừ giảm giá)" : "") + ".");
     });
     if(!parts.length) return "";
