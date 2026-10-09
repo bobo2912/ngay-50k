@@ -54,6 +54,31 @@ L.TROCHUYEN.forEach(t => t.vi_du.forEach(v => [v, K.strip(v), v.charAt(0).toUppe
   if(got && got.id === t.id){ ok++; st.ok++; local++; st.local++; }
   else console.log("SAI  [tro_chuyen] " + JSON.stringify(cau) + " → " + (got ? got.id : "null") + " (mong " + t.id + ") " + show(r));
 })));
+/* v124: câu hỏi lục dữ liệu, có từ điển riêng */
+K.duLieu().forEach(({ nhom, cau, mong }) => {
+  if(only && nhom.indexOf(only) !== 0) return;
+  n++; const s = stat[nhom] = stat[nhom] || { n:0, ok:0, local:0 }; s.n++;
+  const c = Object.assign(ctx(), { know:K.KNOW, loans:K.CTX.loans.concat([{ id:"l9", type:"lend", who:"Nam" }, { id:"l8", type:"lend", who:"Tuấn béo" }]) });
+  const r = P.parse(cau, c);
+  let err = "";
+  if(mong.q){
+    const q = r.query;
+    if(!q) err = "không hiểu là câu hỏi → " + show(r);
+    else {
+      if(q.q !== mong.q) err += "q " + q.q + " ";
+      if(mong.kw && q.kw !== mong.kw) err += "kw " + JSON.stringify(q.kw) + " ";
+      if(mong.tag && q.tag !== mong.tag) err += "tag " + q.tag + " ";
+      if(mong.period && q.period !== mong.period) err += "period " + q.period + " ";
+      if(mong.amt && q.amt !== mong.amt) err += "amt " + q.amt + " ";
+      if(mong.unit && q.unit !== mong.unit) err += "unit " + q.unit + " ";
+    }
+  } else {
+    const it = r.items[0];
+    if(r.query) err = "nhầm thành câu hỏi " + r.query.q; else if(!it || it.kind !== mong.kind || it.amt !== mong.amt) err = show(r);
+  }
+  if(!err){ const a = P.assess(cau, r, c); ok++; s.ok++; if(a.local){ local++; s.local++; } }
+  else console.log("SAI  [" + nhom + "] " + JSON.stringify(cau) + "\n     " + err.trim() + (r.query ? "\n     → " + JSON.stringify(r.query) : ""));
+});
 /* nhánh hội thoại */
 K.branches().forEach(({ nhom, cau, tiep, mong, waitAmt }) => {
   if(only && nhom.indexOf(only) !== 0) return;

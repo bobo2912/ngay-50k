@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v123";
+  var K = "ngay50k:errlog", VER = "v124";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -2500,7 +2500,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v123</p>
+      <p class="sync" id="appVersion">Phiên bản v124</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -2998,9 +2998,9 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
 <datalist id="bankList"></datalist>
 
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
-<script src="parse-vi.js?v=123"></script>
-<script src="thu-vien-cau.js?v=123"></script>
-<script src="lock.js?v=123"></script>
+<script src="parse-vi.js?v=124"></script>
+<script src="thu-vien-cau.js?v=124"></script>
+<script src="lock.js?v=124"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -5097,7 +5097,7 @@ function startNgay50k(){
     const use = {}, last = {}, from = keyOf(new Date(Date.now() - 60 * 86400000));
     for(const k in state.cardTx){ if(k < from) continue; (state.cardTx[k] || []).forEach(it => { const c = it.cardId; if(!c) return; use[c] = (use[c] || 0) + 1; last[c] = Math.max(last[c] || 0, it.t || 0); }); }
     const defaultCard = Object.keys(use).filter(id => (state.cards || []).some(c => c.id === id)).sort((a, b) => use[b] - use[a] || last[b] - last[a])[0] || (((state.cards || [])[0]) || {}).id || null;
-    return { now:new Date(), defaultCard, tags:(state.tags || []).filter(t => t && t.id && t.label).map(t => ({ id:t.id, label:t.label })), cards:(state.cards || []).map(c => ({ id:c.id, name:c.name || "" })), loans,
+    return { now:new Date(), know:chatKnow(), defaultCard, tags:(state.tags || []).filter(t => t && t.id && t.label).map(t => ({ id:t.id, label:t.label })), cards:(state.cards || []).map(c => ({ id:c.id, name:c.name || "" })), loans,
       wallets:(state.wallets || []).filter(w => !w.off).map(w => ({ id:w.id, name:w.name || "" })),
       history: text => { const k = String(text).trim().toLowerCase(); return recent[k] || ""; } };
   }
@@ -5415,8 +5415,176 @@ function startNgay50k(){
     h += '<button type="button" class="chat-q" data-say="tháng này so với tháng trước">So với tháng trước ›</button><button type="button" class="chat-q" data-say="5 khoản lớn nhất tháng này">5 khoản lớn nhất ›</button>';
     return h;
   }
+  /* =================== v124: LỤC DỮ LIỆU THEO NGỮ CẢNH ===================
+     Từ điển riêng dựng từ sổ của bạn (nội dung đã ghi, tên người) để bộ hiểu câu nhận ra "Highlands", "quán bà Tý", "Mon", "Nam"…
+     và các câu trả lời tìm khoản, lần cuối, mấy lần, trung bình, giao dịch với một người. Mọi thứ tính trên máy. */
+  let knowCache = null, knowAt = -1;
+  function chatKnow(){
+    if(knowCache && knowAt === state.updated) return knowCache;
+    const P = window.N50KParse, ng = {}, people = new Set();
+    const addNote = txt => {
+      const O = String(txt || "").replace(/[?!.,:;()"“”]/g, " ").split(/\s+/).filter(w => w && !/^\d/.test(w));
+      const N = O.map(w => P.norm(w));
+      const seen = new Set();
+      for(let i = 0; i < N.length; i++) for(let len = 1; len <= 4 && i + len <= N.length; len++){
+        const key = N.slice(i, i + len).join(" "); if(key.length < 3 || seen.has(key)) continue; seen.add(key);
+        const e = ng[key] || (ng[key] = { c:0, l:O.slice(i, i + len).join(" ") }); e.c++;
+      }
+    };
+    for(const k in state.days) (state.days[k] || []).forEach(it => addNote(it.note));
+    for(const k in state.cardTx) (state.cardTx[k] || []).forEach(it => addNote(it.where));
+    for(const k in state.income) (state.income[k] || []).forEach(it => addNote(it.note));
+    (state.contacts || []).forEach(c => { if(c.name) people.add(String(c.name).trim()); });
+    (state.recur || []).forEach(r => addNote(r.name));
+    knowCache = { ng, people:[...people] }; knowAt = state.updated;
+    return knowCache;
+  }
+  /* mọi giao dịch thành một danh sách phẳng để tìm */
+  function allRecs(){
+    const out = [];
+    for(const k in state.days) (state.days[k] || []).forEach(it => out.push({ k, t:it.t || 0, kind:"out", amt:+it.amt || 0, name:it.note || tagOf(it.cat).label, cat:it.cat || "khac", w:wOf(it), cash:it.src === "cash" }));
+    for(const k in state.cardTx) (state.cardTx[k] || []).forEach(it => out.push({ k, t:it.t || 0, kind:"card", amt:+it.amt || 0, name:it.where || tagOf(it.cat).label, cat:it.cat || "khac", cardId:it.cardId }));
+    for(const k in state.income) (state.income[k] || []).forEach(it => out.push({ k, t:it.t || 0, kind:"in", amt:+it.amt || 0, name:it.note || (INC.find(x => x.id === it.cat) || INC[INC.length - 1]).label, cat:"in:" + (it.cat || "khac"), w:wOf(it) }));
+    state.loans.forEach(l => {
+      const lend = l.type === "lend", who = l.who || "";
+      out.push({ k:l.date || todayKey(), t:l.t || 0, kind:lend ? "lend" : "borrow", amt:+l.amt || 0, name:lend ? "Cho " + who + " vay" : "Vay " + who, who, cat:"loan" });
+      (l.draws || []).forEach(d => out.push({ k:d.date, t:d.t || 0, kind:lend ? "lend" : "borrow", amt:+d.amt || 0, name:lend ? "Cho " + who + " vay thêm" : "Vay thêm " + who, who, cat:"loan" }));
+      (l.payments || []).forEach(p => out.push({ k:p.date, t:p.t || 0, kind:lend ? "collect" : "repay", amt:+p.amt || 0, name:lend ? who + " trả bạn" : "Trả nợ " + who, who, cat:"loan" }));
+    });
+    (state.cardPay || []).forEach(p => out.push({ k:p.date, t:p.t || 0, kind:"cardpay", amt:+p.amt || 0, name:"Trả thẻ" + (cardName(p.cardId) ? " " + cardName(p.cardId) : ""), cat:"cardpay" }));
+    (state.xfer || []).forEach(x => out.push({ k:x.date, t:x.t || 0, kind:"xfer", amt:+x.amt || 0, name:walletName(x.from || MAIN_W) + " → " + walletName(x.to || MAIN_W), cat:"xfer" }));
+    return out.filter(r => r.amt > 0 && /^\d{4}-\d{2}-\d{2}$/.test(r.k));
+  }
+  const RK_ICON = { lend:"🤝", borrow:"🤝", collect:"🤝", repay:"🤝", cardpay:"💳", xfer:"🔁" };
+  function recIcon(r){ return r.kind === "in" ? "💰" : RK_ICON[r.kind] || tagOf(r.cat).icon; }
+  function recSrc(r){ return r.kind === "card" ? (cardName(r.cardId) ? "thẻ " + cardName(r.cardId) : "thẻ") : r.w && r.w !== MAIN_W ? walletName(r.w) : r.cash ? "tiền mặt" : ""; }
+  function recLine(r){ const d = new Date(r.k + "T12:00:00"), s = recSrc(r); return "• " + DOW[d.getDay()] + " " + dm(r.k) + (r.k.slice(0, 4) !== todayKey().slice(0, 4) ? "/" + r.k.slice(0, 4) : "") + " · " + recIcon(r) + " " + esc(r.name) + " · <b>" + (r.kind === "in" || r.kind === "collect" || r.kind === "borrow" ? "+" : "") + fmt(r.amt) + "</b>" + (s ? " · " + esc(s) : ""); }
+  function kAgo(k){ return Math.round((new Date(todayKey() + "T12:00:00") - new Date(k + "T12:00:00")) / 86400000); }
+  function agoTxt(k){ const n = kAgo(k); return n === 0 ? "hôm nay" : n === 1 ? "hôm qua" : n < 0 ? "còn " + (-n) + " ngày nữa" : n + " ngày trước"; }
+  /* lọc theo chủ đề câu hỏi: từ khoá (nội dung), người, nhóm, nguồn tiền */
+  function recFilter(q, opts){
+    const P = window.N50KParse, kw = q.kw ? P.norm(q.kw).trim() : "", tags = rptTags(q);
+    const who = q.who ? String(q.who).trim() : "", whoN = P.norm(who).trim(), whoL = who.toLowerCase(), whoMarked = /[^\x00-\x7f]/.test(P.norm(who) === who.toLowerCase() ? "" : who);
+    return r => {
+      if(opts && opts.spend && !(r.kind === "out" || r.kind === "card")) return false;
+      if(q.src === "card" && r.kind !== "card") return false;
+      if(q.src === "tk" && r.kind === "card") return false;
+      if(kw && !(" " + P.norm(r.name) + " ").includes(" " + kw + " ") && !(r.who && P.norm(r.who).includes(kw))) return false;
+      if(tags && !tags.includes(r.cat)) return false;
+      if(who){
+        if(r.who){ const w = P.norm(r.who); if(!(w === whoN || w.split(" ").pop() === whoN.split(" ").pop() || w.includes(whoN))) return false; }
+        else { const nm = String(r.name).toLowerCase(); if(!(whoMarked ? (" " + nm + " ").includes(" " + whoL + " ") : (" " + P.norm(r.name) + " ").includes(" " + whoN + " "))) return false; }
+      }
+      return true;
+    };
+  }
+  function subjTxt(q){ return q.kwLabel ? "\u201c" + esc(q.kwLabel) + "\u201d" : q.who ? esc(q.who) : q.tag === "an+uong" ? "ăn uống" : q.tag ? "nhóm " + esc(tagOf(q.tag).label) : "chi tiêu"; }
+  /* lọc; nếu từ khoá chỉ là đoán (kwSoft) mà không ra gì thì lùi về cả nhóm */
+  function recPick(q, list, opts){
+    let out = list.filter(recFilter(q, opts));
+    if(!out.length && q.kwSoft && q.tag){ const q2 = Object.assign({}, q, { kw:"", kwLabel:"" }); out = list.filter(recFilter(q2, opts)); if(out.length){ q.kw = ""; q.kwLabel = ""; } }
+    return out;
+  }
+  function findAnswer(q){
+    let list = allRecs();
+    let lbl = "";
+    if(q.period){ const [a, b, l] = qRange(q); list = list.filter(r => r.k >= a && r.k <= b); lbl = " " + l; }
+    let hit = recPick(q, list).sort((x, y) => y.k.localeCompare(x.k) || y.t - x.t);
+    if(q.amt){
+      const exact = hit.filter(r => r.amt === q.amt);
+      if(exact.length) return (exact.length === 1 ? "Khoản " + fmt(q.amt) + lbl + " là:\n" : "Có <b>" + exact.length + "</b> khoản " + fmt(q.amt) + lbl + ":\n") + exact.slice(0, 8).map(recLine).join("\n") + (exact.length > 8 ? "\n… và " + (exact.length - 8) + " khoản nữa." : "");
+      const near = hit.filter(r => Math.abs(r.amt - q.amt) <= q.amt * 0.1).sort((x, y) => Math.abs(x.amt - q.amt) - Math.abs(y.amt - q.amt) || y.k.localeCompare(x.k)).slice(0, 5);
+      return "Không có khoản nào đúng " + fmt(q.amt) + lbl + "." + (near.length ? " Số tiền gần nhất:\n" + near.map(recLine).join("\n") : (q.period ? '<button type="button" class="chat-q" data-say="tìm khoản ' + esc(fmt(q.amt)) + '">Tìm trong mọi ngày ›</button>' : ""));
+    }
+    if(!hit.length) return "Không thấy khoản nào khớp " + subjTxt(q) + lbl + " trong sổ.";
+    const sum = hit.filter(r => r.kind === "out" || r.kind === "card").reduce((a, r) => a + r.amt, 0);
+    return "Có <b>" + hit.length + "</b> khoản khớp " + subjTxt(q) + lbl + (sum ? ", tổng chi " + fmt(sum) : "") + ". Gần nhất:\n" + hit.slice(0, 8).map(recLine).join("\n") + (hit.length > 8 ? "\n… và " + (hit.length - 8) + " khoản nữa." : "");
+  }
+  function lastAnswer(q){
+    const tk = todayKey(), hit = recPick(q, allRecs().filter(r => r.k <= tk), { spend:!q.who }).sort((x, y) => y.k.localeCompare(x.k) || y.t - x.t);
+    if(!hit.length) return "Chưa thấy khoản " + subjTxt(q) + " nào trong sổ.";
+    const r = hit[0], d = new Date(r.k + "T12:00:00");
+    let h = "Lần gần nhất " + subjTxt(q) + ": <b>" + ["Chủ nhật","Thứ hai","Thứ ba","Thứ tư","Thứ năm","Thứ sáu","Thứ bảy"][d.getDay()] + " " + dm(r.k) + "</b> (" + agoTxt(r.k) + ")\n" + recLine(r);
+    const days = [...new Set(hit.map(x => x.k))];
+    if(days.length >= 2) h += "\nTrước đó: " + days.slice(1, 4).map(dm).join(", ") + ".";
+    if(days.length >= 3){
+      const span = Math.min(6, days.length - 1), gaps = []; for(let i = 0; i < span; i++) gaps.push(kAgo(days[i + 1]) - kAgo(days[i]));
+      const avg = Math.round(gaps.reduce((a, x) => a + x, 0) / gaps.length);
+      if(avg >= 1){ const nx = new Date(r.k + "T12:00:00"); nx.setDate(nx.getDate() + avg); h += "\nTrung bình khoảng <b>" + avg + " ngày</b> một lần" + (keyOf(nx) >= tk ? ", theo nhịp đó lần tới vào khoảng " + dm(keyOf(nx)) + "." : "."); }
+    }
+    return h;
+  }
+  function countAnswer(q){
+    const [a, b, lbl] = qRange(q), base = allRecs();
+    const hit = recPick(q, base.filter(r => r.k >= a && r.k <= b), { spend:!q.who });
+    const tot = hit.reduce((x, r) => x + r.amt, 0);
+    const [pa, pb] = prevRange(a, b), prev = base.filter(r => r.k >= pa && r.k <= pb).filter(recFilter(q, { spend:!q.who }));
+    let h = lbl.charAt(0).toUpperCase() + lbl.slice(1) + " " + subjTxt(q) + ": <b>" + hit.length + " lần</b>" + (tot ? ", tổng " + fmt(tot) + (hit.length > 1 ? ", trung bình " + fmt(Math.round(tot / hit.length)) + "/lần" : "") : "") + ".";
+    if(prev.length || hit.length) h += " Kỳ trước: " + prev.length + " lần" + (prev.length ? " (" + fmt(prev.reduce((x, r) => x + r.amt, 0)) + ")" : "") + ".";
+    if(hit.length) h += '<button type="button" class="chat-q" data-q="' + esc(JSON.stringify({ q:"report", period:q.period || "month", from:q.from, to:q.to, kw:q.kw || "", tag:q.kw ? null : q.tag || null, src:q.src || "all", group:"none", list:true })) + '">Liệt kê từng lần ›</button>';
+    return h;
+  }
+  function avgAnswer(q){
+    const tk = todayKey(), base = allRecs().filter(recFilter(q, { spend:true })), now = new Date();
+    const sumIn = (a, b) => base.filter(r => r.k >= a && r.k <= b).reduce((x, r) => x + r.amt, 0);
+    if(q.unit === "month"){
+      const rows = [];
+      for(let i = 3; i >= 1; i--){ const a = new Date(now.getFullYear(), now.getMonth() - i, 1), b = new Date(now.getFullYear(), now.getMonth() - i + 1, 0); rows.push([a.getMonth() + 1, sumIn(keyOf(a), keyOf(b))]); }
+      const used = rows.filter(x => x[1] > 0);
+      const cur = sumIn(keyOf(new Date(now.getFullYear(), now.getMonth(), 1)), tk);
+      if(!used.length) return cur ? "Mới có dữ liệu tháng này: " + subjTxt(q) + " đến nay " + fmt(cur) + "." : "Chưa đủ dữ liệu " + subjTxt(q) + " để tính trung bình tháng.";
+      const avg = Math.round(used.reduce((a, x) => a + x[1], 0) / used.length);
+      return "Trung bình mỗi tháng " + subjTxt(q) + ": <b>" + fmt(avg) + "</b> (" + used.length + " tháng gần nhất: " + rows.map(([m, v]) => "T" + m + " " + fmt(v)).join(", ") + ").\nTháng này đến nay " + fmt(cur) + (avg ? " (" + Math.round(cur * 100 / avg) + "% mức trung bình)." : ".");
+    }
+    if(q.unit === "week"){
+      const wd = (now.getDay() + 6) % 7, rows = [];
+      for(let i = 8; i >= 1; i--){ const a = new Date(now); a.setDate(a.getDate() - wd - 7 * i); const b = new Date(a); b.setDate(b.getDate() + 6); rows.push(sumIn(keyOf(a), keyOf(b))); }
+      const used = rows.filter(v => v > 0); if(!used.length) return "Chưa đủ dữ liệu " + subjTxt(q) + " để tính trung bình tuần.";
+      return "Trung bình mỗi tuần " + subjTxt(q) + ": <b>" + fmt(Math.round(used.reduce((a, v) => a + v, 0) / used.length)) + "</b> (" + used.length + " tuần có chi trong 8 tuần qua).";
+    }
+    const a = new Date(now); a.setDate(a.getDate() - 29);
+    const firstK = base.length ? base.reduce((m, r) => r.k < m ? r.k : m, tk) : tk, from = keyOf(a) > firstK ? keyOf(a) : firstK;
+    const n = Math.max(1, kAgo(from) + 1), tot = sumIn(from, tk);
+    if(!tot) return "Chưa có khoản chi " + subjTxt(q) + " nào trong 30 ngày qua.";
+    const avg = Math.round(tot / n);
+    return "Trung bình mỗi ngày " + subjTxt(q) + ": <b>" + fmt(avg) + "</b> (" + n + " ngày qua, tổng " + fmt(tot) + ")." + (!q.tag && !q.kw && state.budget ? (avg > state.budget ? " Cao hơn hạn mức " + fmt(state.budget) + "/ngày khoảng " + fmt(avg - state.budget) + "." : " Dưới hạn mức " + fmt(state.budget) + "/ngày 👍") : "");
+  }
+  function personAnswer(q){
+    const names = q.whoAll && q.whoAll.length > 1 ? q.whoAll : null;
+    if(names) return "Bạn muốn xem ai?" + names.slice(0, 4).map(nm => '<button type="button" class="chat-q" data-say="giao dịch với ' + esc(nm) + '">' + esc(nm) + ' ›</button>').join("");
+    const who = q.who, P = window.N50KParse, wn = P.norm(who);
+    const ls = state.loans.filter(l => { const w = P.norm(l.who || ""); return w === wn || w.split(" ").pop() === wn.split(" ").pop() || w.includes(wn); });
+    let h = "";
+    ls.forEach(l => { const left = leftOf(l); h += (l.type === "lend" ? "🤝 Bạn cho " + esc(l.who) + " vay " + fmt(totalOf(l)) + ", đã trả " + fmt(paidOf(l)) + (left ? ", <b>còn nợ bạn " + fmt(left) + "</b>" : ", đã trả hết 👍") : "🤝 Bạn vay " + esc(l.who) + " " + fmt(totalOf(l)) + ", đã trả " + fmt(paidOf(l)) + (left ? ", <b>bạn còn nợ " + fmt(left) + "</b>" : ", đã trả hết 👍")) + (l.due && left ? " · hạn " + dm(l.due) : "") + ".\n"; });
+    let list = allRecs(); let lbl = "";
+    if(q.period){ const [a, b, l] = qRange(q); list = list.filter(r => r.k >= a && r.k <= b); lbl = " " + l; }
+    const hit = list.filter(recFilter({ who })).filter(r => !r.who).sort((x, y) => y.k.localeCompare(x.k) || y.t - x.t);
+    if(hit.length){
+      const out = hit.filter(r => r.kind === "out" || r.kind === "card").reduce((a, r) => a + r.amt, 0), inn = hit.filter(r => r.kind === "in").reduce((a, r) => a + r.amt, 0);
+      h += "Các khoản có nhắc tới " + esc(who) + lbl + ": " + hit.length + " khoản" + (out ? ", chi " + fmt(out) : "") + (inn ? ", nhận " + fmt(inn) : "") + ".\n" + hit.slice(0, 6).map(recLine).join("\n");
+    }
+    return h.trim() || "Không thấy khoản nào với " + esc(who) + lbl + " trong sổ.";
+  }
+  /* câu chưa rõ: lục dữ liệu xem câu nhắc tới ai / cái gì, đưa vài câu hỏi để bạn chọn */
+  function clarifyHtml(text){
+    try{
+      const P = window.N50KParse, c = chatCtx(), K = P.knownIn(text, c), ppl = P.peopleIn(text, c), tw = P.tagWord(text, c);
+      const opts = [];
+      ppl.slice(0, 3).forEach(nm => { opts.push("giao dịch với " + nm); if(state.loans.some(l => P.norm(l.who || "").includes(P.norm(nm).split(" ").pop()) && leftOf(l) > 0)) opts.push(nm + " còn nợ bao nhiêu"); });
+      const subj = K ? K.label : tw ? tw.w : "";
+      if(subj){ opts.push("tháng này " + subj + " hết bao nhiêu", "lần cuối " + subj + " khi nào", "tìm " + subj); }
+      if(!opts.length) return "";
+      const what = [ppl.length ? ppl.slice(0, 3).join(", ") : "", subj].filter(Boolean).join(" / ");
+      return "Bạn muốn biết gì về <b>" + esc(what) + "</b>?" + [...new Set(opts)].slice(0, 5).map(o => '<button type="button" class="chat-q" data-say="' + esc(o) + '">' + esc(o) + ' ›</button>').join("");
+    }catch(e){ return ""; }
+  }
   function answer(q){
     rememberQ(q);
+    if(q.q === "find") return findAnswer(q);
+    if(q.q === "last") return lastAnswer(q);
+    if(q.q === "count") return countAnswer(q);
+    if(q.q === "avg") return avgAnswer(q);
+    if(q.q === "person") return personAnswer(q);
     if(q.q === "upcoming") return upcomingAnswer(q);
     if(q.q === "save") return saveAnswer(q);
     if(q.q === "report") return report(q);
@@ -5424,14 +5592,23 @@ function startNgay50k(){
       const [a, b, lbl] = qRange(q);
       const tags = q.tag === "an+uong" ? ["an","uong"] : q.tag ? [q.tag] : null;
       if(q.wid) return report(Object.assign({}, q, { q:"report", group:"tag" }));   /* v98: hỏi chi theo ví → báo cáo lọc ví */
-      const r = spentIn(a, b, tags), src = q.src || "all";
+      let r = spentIn(a, b, tags); const src = q.src || "all";
+      if(q.kw){ const xs = rptTx(a, b, q); r = { acc:xs.filter(x => x.src !== "card").reduce((s, x) => s + x.amt, 0), card:xs.filter(x => x.src === "card").reduce((s, x) => s + x.amt, 0) }; }
       const tot = src === "tk" ? r.acc : src === "card" ? r.card : r.acc + r.card;
-      const what = (q.tag === "an+uong" ? " cho ăn uống" : q.tag ? " cho " + tagOf(q.tag).label.toLowerCase() : "") + (src === "tk" ? " từ tài khoản" : src === "card" ? " bằng thẻ" : "");
+      /* v124: không nói kỳ mà hôm nay chưa có ("tiền điện bao nhiêu") → lùi ra tháng này, rồi lần gần nhất */
+      if(!tot && q.noPeriod && q.period === "today" && (tags || q.kw)){
+        const m = Object.assign({}, q, { period:"month", noPeriod:false }), [ma, mb] = qRange(m);
+        const mt = q.kw ? rptTx(ma, mb, m).reduce((s, x) => s + x.amt, 0) : (sp => sp.acc + sp.card)(spentIn(ma, mb, tags));
+        if(mt) return "Hôm nay chưa có. " + answer(m);
+        return lastAnswer(Object.assign({}, q, { q:"last" })).replace(/^Lần gần nhất/, "Tháng này chưa có. Lần gần nhất");
+      }
+      const what = (q.kwLabel ? " cho “" + esc(q.kwLabel) + "”" : q.tag === "an+uong" ? " cho ăn uống" : q.tag ? " cho " + tagOf(q.tag).label.toLowerCase() : "") + (src === "tk" ? " từ tài khoản" : src === "card" ? " bằng thẻ" : "");
       let t = tot ? lbl.charAt(0).toUpperCase() + lbl.slice(1) + " bạn đã chi" + what + " <b>" + fmt(tot) + "</b>" + (src === "all" && r.card ? " (tài khoản " + fmt(r.acc) + ", thẻ " + fmt(r.card) + ")" : "") + "."
                   : "Chưa thấy khoản chi nào" + what + " " + lbl + ".";
       if(q.period === "today" && !tags && src === "all") t += " " + todayLeftText();
       /* nút xem chi tiết: mở báo cáo gom nhóm ngay trên máy, không tốn AI */
-      if(tot) t += '<button type="button" class="chat-q" data-q="' + esc(JSON.stringify(Object.assign({}, q, { q:"report", group:"tag" }))) + '">Xem chi tiết từng khoản ›</button>';
+      if(tot) t += '<button type="button" class="chat-q" data-q="' + esc(JSON.stringify(Object.assign({}, q, { q:"report", group:q.kw ? "none" : "tag", list:!!q.kw }))) + '">Xem chi tiết từng khoản ›</button>';
+      else if(tags || q.kw){ const lh = lastAnswer(Object.assign({}, q, { q:"last" })); if(!/^Chưa thấy/.test(lh)) t += "\n" + lh.split("\n")[0]; }
       return t;
     }
     if(q.q === "left"){ const T = walletsTotal(); return todayLeftText() + (T.any ? " Số dư " + (multiW() ? "các ví" : "ví") + ": <b>" + sMoney(T.cash) + "</b>." : ""); }
@@ -5463,8 +5640,8 @@ function startNgay50k(){
     if(q.q === "loans"){
       const open = state.loans.filter(l => leftOf(l) > 0);
       if(q.who){
-        const P = window.N50KParse, n = P.norm(q.who);
-        const hit = open.filter(l => { const w = P.norm(l.who || ""); return w.includes(n) || n.includes(w) || w.split(" ").pop() === n.split(" ").pop(); });
+        const P = window.N50KParse, names = (q.whoAll && q.whoAll.length ? q.whoAll : [q.who]).map(x => P.norm(x));
+        const hit = open.filter(l => { const w = P.norm(l.who || ""); return names.some(n => w.includes(n) || n.includes(w) || w.split(" ").pop() === n.split(" ").pop()); });
         if(!hit.length) return "Mình không thấy khoản vay nào còn dở với " + esc(q.who) + ".";
         return hit.map(l => esc(l.who) + (l.type === "lend" ? " còn nợ bạn <b>" : ": bạn còn nợ <b>") + fmt(leftOf(l)) + "</b>").join(". ") + ".";
       }
@@ -5474,7 +5651,7 @@ function startNgay50k(){
       return "Bạn đang nợ <b>" + fmt(owe) + "</b>, người khác nợ bạn <b>" + fmt(owed) + "</b>." +
         "\n" + open.slice(0, 6).map(l => "• " + esc(l.who) + (l.type === "lend" ? " nợ bạn " : ": bạn nợ ") + fmt(leftOf(l))).join("\n");
     }
-    return HELP;
+    return clarifyHtml(q.text || "") || HELP;
   }
   const HELP = "Mình chưa hiểu câu này 😅 Bạn thử kể kiểu:\n• trưa ăn phở 45k\n• quẹt thẻ VIB 1tr2 mua giày\n• cho chú Dũng vay 500k, Hào trả 870k\n• nhận lương 15 triệu\n• tài khoản còn 5 triệu 8\nHoặc hỏi: hôm nay tiêu bao nhiêu, ai còn nợ mình?";
 
@@ -5948,6 +6125,8 @@ function startNgay50k(){
       "  group: tag (theo nhóm, mặc định) | day | week | month | place (theo nơi chi/nội dung, \"tiêu ở đâu\") | src (tài khoản hay thẻ) | none (danh sách phẳng). list: true khi muốn liệt kê từng khoản. top: N khi hỏi N khoản lớn nhất (kèm group none). compare: true khi so với kỳ trước, hỏi tăng/giảm, hoặc hỏi vì sao tiêu nhiều.",
       "- left (hôm nay còn tiêu được bao nhiêu), balance (số dư), loans (ai nợ/mình nợ ai, who nếu hỏi một người), card (tổng chi thẻ, nợ thẻ), topday (ngày tiêu nhiều nhất).",
       "- upcoming: hỏi khoản SẮP TỚI / DỰ KIẾN (từ nay tới cuối tháng, các ngày tới, tuần sau, sắp đến hạn, sắp cho vay…). Trường: from, to (yyyy-mm-dd, mặc định hôm nay → cuối tháng), only: lend|borrow|due|in|out nếu chỉ hỏi một loại.",
+      "- find: tìm khoản theo số tiền (amt) / nội dung, tên quán (kw) / người (who), có thể kèm period. last: lần gần nhất làm gì (kw hoặc tag). count: mấy lần trong kỳ (kw/tag, period). avg: trung bình mỗi ngày/tuần/tháng (unit: day|week|month, kw/tag). person: mọi giao dịch và khoản vay với một người (who).",
+      "  kw là chữ đúng như người dùng hay ghi trong nội dung (xem noi_dung_quen, vd \"Highlands\", \"quán bà Tý\"), không dịch, không thêm.",
       "- save: hỏi NÊN TIẾT KIỆM GÌ / cắt giảm khoản nào (app tự lấy 5 nhóm chi nhiều nhất kèm mẹo). period mặc định month.",
       "Khoản người dùng kể có ngày TƯƠNG LAI (\"ngày 20 cho Nam vay 2tr\", \"ngày mai đóng tiền điện\", \"dự kiến…\") thì ghi đúng ngày tương lai đó, không lùi về tháng trước.",
       "Ví dụ: \"tháng rồi tiêu gì\" → report lastmonth group tag. \"tháng này tiêu gì từ tài khoản\" → report month src tk. \"liệt kê các khoản grab tuần này\" → report week kw grab group none list true. \"sao tháng này tiêu nhiều thế\" → report month compare true. \"5 khoản lớn nhất tháng 9\" → report custom from/to tháng 9 top 5 group none.",
@@ -6065,7 +6244,20 @@ function startNgay50k(){
       return it;
     }).filter(Boolean);
     let query = null;
-    if(o.query && typeof o.query === "object" && ["upcoming","save"].includes(o.query.q)){
+    if(o.query && typeof o.query === "object" && ["find","last","count","avg","person"].includes(o.query.q)){
+      const Q = o.query, isK = v => /^\d{4}-\d{2}-\d{2}$/.test(v || "");
+      query = { q:Q.q };
+      if(Q.kw) { query.kw = String(Q.kw).slice(0, 60); query.kwLabel = query.kw; }
+      if(Q.who) query.who = String(Q.who).slice(0, 60);
+      if(Q.tag === "an+uong" || tagIds.includes(Q.tag)) query.tag = Q.tag;
+      if(Number(Q.amt) > 0) query.amt = Math.round(Number(Q.amt));
+      if(["day","week","month"].includes(Q.unit)) query.unit = Q.unit; else if(Q.q === "avg") query.unit = "day";
+      if(["today","yesterday","week","lastweek","month","lastmonth","year"].includes(Q.period)) query.period = Q.period;
+      else if(Q.period === "custom" && isK(Q.from) && isK(Q.to)){ query.period = "custom"; query.from = Q.from; query.to = Q.to; }
+      else if(Q.q === "count") query.period = "month";
+      if(Q.q === "person" && !query.who) query = null;
+    }
+    else if(o.query && typeof o.query === "object" && ["upcoming","save"].includes(o.query.q)){
       /* v123: khoản sắp tới / gợi ý tiết kiệm: máy tự tính khoảng ngày nếu AI không đưa */
       const Q = o.query, isK = v => /^\d{4}-\d{2}-\d{2}$/.test(v || "");
       if(Q.q === "save") query = { q:"save", period:["week","month","lastmonth","year"].includes(Q.period) ? Q.period : "month" };
@@ -6162,6 +6354,8 @@ function startNgay50k(){
   function localEnough(text, res){
     if(res && res.learned) return true;
     const lt = libTalk(text, res); if(lt) return !lt.ai;
+    /* v124: câu cụt chỉ nhắc một tên người / tên quán ("Tuấn", "Highlands?") → hỏi lại theo dữ liệu trên máy, không cần AI */
+    if(res && !res.items.length && (!res.query || res.query.q === "unknown") && String(text).trim().split(/\s+/).length <= 4 && clarifyHtml(text)) return true;
     if(GREET.test(text) || THANKS.test(text)) return true;
     try{ return window.N50KParse.assess(text, res, chatCtx()).local; }catch(e){ return false; }
   }
@@ -6252,6 +6446,7 @@ function startNgay50k(){
       out.push({ id:uid(), role:"bot", html:lt.html + chips, t:Date.now() });
       return out;
     }
+    if(res.query && res.query.q === "unknown") res.query.text = text;
     if(res.query) out.push({ id:uid(), role:"bot", html:answer(res.query), q:res.query, t:Date.now() });
     else if(res.items.length){
       const hint = itemHints(res.items);
@@ -6260,7 +6455,7 @@ function startNgay50k(){
     }
     else if(/^(chào|chao|hi|hello|alo|xin chào|hey)\b/i.test(text)) out.push({ id:uid(), role:"bot", html:"Chào bạn 😊 Hôm nay bạn tiêu gì rồi, kể mình nghe với.", t:Date.now() });
     else if(/^(cảm ơn|cam on|thanks|thank|ok|oke|okay|được rồi)\b/i.test(text)) out.push({ id:uid(), role:"bot", html:"Có gì cứ nhắn mình nhé 💪", t:Date.now() });
-    else out.push({ id:uid(), role:"bot", html:HELP, t:Date.now() });
+    else out.push({ id:uid(), role:"bot", html:clarifyHtml(text) || HELP, t:Date.now() });
     return out;
   }
   var aiBusy = false;

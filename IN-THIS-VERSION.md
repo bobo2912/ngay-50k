@@ -1,6 +1,24 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v123, ngày 09/10/2026
+**Phiên bản hiện tại:** v124, ngày 09/10/2026
+
+---
+
+## Có gì mới trong v124 (so với v123)
+
+- **Chat hiểu ngữ cảnh từ chính sổ của bạn.** App dựng một từ điển riêng từ nội dung bạn đã ghi (tên quán, thương hiệu, cách gọi riêng như "quán bà Tý", "tiền học Mon") và tên người (khoản vay, người nhận, người thân). Câu hỏi nhắc tới cái nào thì lọc đúng cái đó, không lấy cả nhóm: "tháng này Highlands hết bao nhiêu" chỉ tính Highlands, không tính mọi đồ uống.
+- **Kiểu hỏi mới, máy tự trả lời:**
+  - Tìm khoản: "450k hôm qua là khoản gì", "tìm khoản 1tr2" (không đúng số thì đưa các khoản gần số đó), "tìm quán bà Tý".
+  - Lần cuối: "lần cuối cắt tóc khi nào", "bao lâu rồi chưa đi quán bà Tý": ngày gần nhất, các lần trước, nhịp trung bình và lần tới dự kiến.
+  - Mấy lần: "tháng này đi grab mấy lần": số lần, tổng, trung bình mỗi lần, so với kỳ trước, nút liệt kê.
+  - Trung bình: "trung bình mỗi ngày tiêu bao nhiêu" (so với hạn mức), "mỗi tháng tiền điện bao nhiêu" (3 tháng gần nhất và tháng này đang ở mức bao nhiêu %).
+  - Theo người: "đã gửi mẹ bao nhiêu", "Nam đã trả bao nhiêu", "giao dịch với Nam": khoản vay với người đó và mọi khoản có nhắc tên.
+- **Tự làm rõ khi câu thiếu ý:**
+  - Không nói kỳ ("tiền điện bao nhiêu"): hôm nay chưa có thì lấy tháng này, tháng này chưa có thì báo lần gần nhất.
+  - Câu cụt chỉ có tên ("Tuấn", "Lan"): app tìm trong sổ xem là ai và đưa nút chọn ("giao dịch với Anh Tuấn", "Tuấn béo còn nợ bao nhiêu"…). Trùng tên nhiều người thì nêu đủ.
+  - Hỏi tiếp chỉ bằng tên quán ("còn Highlands?") thì đổi đúng sang quán đó.
+- Sửa: "hôm qua" không còn bị đoán là nhóm Hiếu hỷ (lẫn với "quà"); "Tuấn" không lẫn với "tuần", "Lan" viết hoa không lẫn với "lần"; chữ trong tên quán ("quán bà Tý", "Hà Nội") không bị hiểu là người thân.
+- Kho câu mẫu thêm 102 câu hỏi lục dữ liệu: 4.648 câu, máy tự hiểu đúng hết.
 
 ---
 

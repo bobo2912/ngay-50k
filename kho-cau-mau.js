@@ -457,7 +457,51 @@
       .forEach(([a, b, v, c]) => out.push({ nhom:"nhanh_hoitien", cau:a, tiep:b, mong:{ act:"new", amt:v, cat:c }, waitAmt:true }));
     return out;
   }
-  const api = { ITEMS, CTX, build, branches, strip };
+
+  /* ---------- v124: câu hỏi lục dữ liệu, với từ điển riêng giả lập (nội dung đã ghi, tên người) ---------- */
+  const KNOW = { ng:{}, people:["Cô Lan bán cơm"] };
+  ["Highlands","Quán bà Tý","Bún chả Hà Nội","Grab","Tiền học Mon","Gửi mẹ","Cắt tóc","Shopee","Phở Thìn","Cơm văn phòng","Katinat","Tiền điện"].forEach(t => {
+    const O = t.split(" "), N = O.map(strip).map(w => w.toLowerCase());
+    for(let i = 0; i < N.length; i++) for(let l = 1; l <= 4 && i + l <= N.length; l++){ const k = N.slice(i, i + l).join(" "); if(k.length >= 3) KNOW.ng[k] = { c:5, l:O.slice(i, i + l).join(" ") }; }
+  });
+  function duLieu(seed){
+    const r = rng((seed || 20261009) + 11), pick = a => a[Math.floor(r() * a.length)], out = [];
+    const add = (nhom, cau, mong) => out.push({ nhom, cau, mong });
+    const vary = s => r() < 0.3 ? strip(s) : s;
+    const PLACES = [["Highlands","highlands"],["quán bà Tý","quan ba ty"],["Katinat","katinat"],["Phở Thìn","pho thin"],["Bún chả Hà Nội","bun cha ha noi"]];
+    const PER = [["tháng này","month"],["tuần này","week"],["tháng trước","lastmonth"],["hôm nay","today"]];
+    PLACES.forEach(([p, kw]) => {
+      PER.forEach(([w, per]) => {
+        add("dl_tong", pick([w + " " + p + " hết bao nhiêu", w + " đi " + p + " bao nhiêu tiền", w + " chi cho " + p + " bao nhiêu", "tổng tiền " + p + " " + w]), { q:"spent", period:per, kw });
+        add("dl_dem", pick([w + " đi " + p + " mấy lần", w + " ăn " + p + " bao nhiêu lần", "mấy lần " + p + " " + w]), { q:"count", period:per, kw });
+      });
+      add("dl_cuoi", pick(["lần cuối đi " + p + " khi nào", "lần gần nhất " + p + " là hôm nào", "bao lâu rồi chưa đi " + p, p + " lần cuối khi nào"]), { q:"last", kw });
+      add("dl_tim", pick(["tìm " + p, "tìm khoản " + p, "tra cứu " + p]), { q:"find", kw });
+      add("dl_lietke", pick(["liệt kê các khoản " + p + " tháng này", "tháng này " + p + " những khoản nào"]), { q:"report", kw });
+      add("dl_tb", pick(["trung bình mỗi tháng " + p + " bao nhiêu", "mỗi tháng đi " + p + " hết bao nhiêu"]), { q:"avg", kw });
+    });
+    [["cắt tóc","lamdep"],["đổ xăng","xang"],["ăn lẩu","an"],["đi spa","lamdep"],["mua thuốc","suckhoe"],["xem phim","giaitri"],["đi chợ","cho"],["thay nhớt","suachua"]].forEach(([t, tag]) => {
+      add("dl_cuoi", pick(["lần cuối " + t + " khi nào", "bao lâu rồi chưa " + t, "lần gần nhất " + t + " hết bao nhiêu", t + " lần trước khi nào"]), { q:"last", tag });
+      add("dl_dem", pick(["tháng này " + t + " mấy lần", t + " bao nhiêu lần tháng này", "tuần này " + t + " mấy lần"]), { q:"count", tag });
+    });
+    [["tiền điện","diennuoc","month"],["ăn uống","an+uong","month"],["xăng","xang","month"],["cà phê","uong","day"],["grab","dilai","week"]].forEach(([t, tag, unit]) => {
+      add("dl_tb", pick(["trung bình mỗi " + (unit === "month" ? "tháng" : unit === "week" ? "tuần" : "ngày") + " " + t + " bao nhiêu", "mỗi " + (unit === "month" ? "tháng" : unit === "week" ? "tuần" : "ngày") + " " + t + " hết bao nhiêu"]), { q:"avg", unit });
+    });
+    ["trung bình mỗi ngày tiêu bao nhiêu", "bình quân 1 ngày chi bao nhiêu", "mỗi tháng tiêu hết bao nhiêu", "trung bình mỗi tuần xài bao nhiêu"].forEach(t => add("dl_tb", vary(t), { q:"avg" }));
+    [450000, 1200000, 59000, 35000, 2000000].forEach(v => {
+      const a = v >= 1000000 ? (v / 1000000) + "tr" : (v / 1000) + "k";
+      add("dl_tien", pick([a + " hôm qua là khoản gì", "khoản " + a + " là gì", "tìm khoản " + a, "có khoản nào " + a + " không", a + " tuần trước là cái gì"]), { q:"find", amt:v });
+    });
+    [["Nam","person"],["Anh Tuấn","person"],["mẹ","person"],["Lan","person"]].forEach(([p]) => {
+      add("dl_nguoi", pick(["giao dịch với " + p, "đã chuyển cho " + p + " bao nhiêu", p + " đã trả bao nhiêu", "lịch sử với " + p, "tháng này gửi " + p + " bao nhiêu"]), { q:"person" });
+    });
+    add("dl_no", "Tuấn còn nợ bao nhiêu", { q:"loans" });
+    add("dl_no", "Nam còn nợ mình bao nhiêu", { q:"loans" });
+    /* câu kể chi tiêu có tên quán / tên người: vẫn là ghi khoản, không phải câu hỏi */
+    [["Highlands 59k", 59000], ["quán bà Tý 60k", 60000], ["gửi mẹ 1tr", 1000000], ["katinat 45k", 45000], ["Phở Thìn 70k", 70000], ["tiền học Mon 2tr", 2000000]].forEach(([t, v]) => add("dl_ghi", t, { kind:"out", amt:v }));
+    return out;
+  }
+  const api = { ITEMS, CTX, build, branches, duLieu, KNOW, strip };
   if(typeof module !== "undefined" && module.exports) module.exports = api;
   else root.N50KKho = api;
 })(typeof window !== "undefined" ? window : this);
