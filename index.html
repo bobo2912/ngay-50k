@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v126";
+  var K = "ngay50k:errlog", VER = "v127";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -689,6 +689,7 @@ header .date{font-size:1.65rem; font-weight:800; letter-spacing:-.02em; color:va
 .update-bar{border-radius:20px; bottom:calc(96px + env(safe-area-inset-bottom,0px))}
 .notif-bar button.nx{background:transparent; color:inherit; padding:6px 4px; opacity:.7}
 .notif-bar{animation:nbIn .25s ease}
+.notif-bar.say button{display:none}
 @keyframes nbIn{from{opacity:0; transform:translateY(10px)}}
 .swipe-ind{background:var(--glass-strong); color:var(--ink); border:1px solid var(--glass-border); -webkit-backdrop-filter:blur(16px); backdrop-filter:blur(16px)}
 .swipe-ind.go{background:linear-gradient(180deg,var(--tint-a),var(--tint-b)); color:#fff}
@@ -2525,7 +2526,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v126</p>
+      <p class="sync" id="appVersion">Phiên bản v127</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3025,9 +3026,9 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
 
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=126"></script>
-<script src="thu-vien-cau.js?v=126"></script>
-<script src="lock.js?v=126"></script>
+<script src="parse-vi.js?v=127"></script>
+<script src="thu-vien-cau.js?v=127"></script>
+<script src="lock.js?v=127"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -5706,6 +5707,15 @@ function startNgay50k(){
     let ref = { kind:it.kind, id, day:k };
     const wv = it.w && it.w !== MAIN_W && walletById(it.w) ? { w:it.w } : {};     /* v98: ví của khoản */
     if(it.kind === "out"){ (state.days[k] = state.days[k] || []).push(Object.assign({ id, amt:it.amt, cat:it.cat || "khac", note:it.note || "", t }, wv)); }
+    /* v127: khoản đọc từ thông báo ngân hàng có số dư sau giao dịch (SD) → đặt mốc số dư ngay sau giao dịch đó (khoản ghi sau mốc vẫn được tính) */
+    if(it.kind === "out" && it.sd > 0){
+      const wid = wv.w || MAIN_W, a = balAnchor(wid), at = t + 1000;
+      if(!a || (a.t || 0) < at){
+        const r = balCalc(null, wid), b = Object.assign({ id:uid(), amt:it.sd, t:at, src:"notif" }, wv);
+        if(r){ b.book = Math.round(r.bal); if(!wv.w) b.card = r.debt; } else if(!wv.w) b.card = 0;
+        (state.bals = state.bals || []).push(b); ref.balId = b.id;
+      }
+    }
     else if(it.kind === "card"){ (state.cardTx[k] = state.cardTx[k] || []).push({ id, amt:it.amt, where:it.note || "Chi thẻ", cardId:it.cardId || null, cat:it.cat || "", t }); }
     else if(it.kind === "in"){ (state.income[k] = state.income[k] || []).push(Object.assign({ id, amt:it.amt, cat:it.cat || "khac", note:it.note || "", t }, wv)); }
     else if(it.kind === "xfer"){ (state.xfer = state.xfer || []).push({ id, amt:it.amt, from:it.from || MAIN_W, to:it.to || MAIN_W, date:k, t, note:it.note || "" }); }
@@ -5727,6 +5737,7 @@ function startNgay50k(){
   }
   function uncommit(ref){
     const drop = (bag) => { if(!bag[ref.day]) return; bag[ref.day] = bag[ref.day].filter(x => x.id !== ref.id); if(!bag[ref.day].length) delete bag[ref.day]; };
+    if(ref.balId) state.bals = (state.bals || []).filter(x => x.id !== ref.balId);
     if(ref.kind === "out") drop(state.days);
     else if(ref.kind === "card") drop(state.cardTx);
     else if(ref.kind === "in") drop(state.income);
@@ -8418,7 +8429,8 @@ function startNgay50k(){
     };
     /* a card number: 6 first + 4 last, or only the 4 last */
     const cardOf = s => {
-      let m = s.match(/(\d{6})\s*[^\d\s]{0,10}\s*(\d{4})(?!\d)/);
+      if(/^\s*(?:DEN|ĐẾN|TO|T[oớ]i|TK\s?nh[aậ]n|STK\s?nh[aậ]n|Ng[uư][oờ]i\s?nh[aậ]n|Beneficiary)\b/i.test(s)) return null;   /* v127: số tài khoản người nhận không phải số thẻ */
+      let m = s.match(/(\d{6})\s*[^\d\s]{1,10}\s*(\d{4})(?!\d)/);
       if(m) return { first6:m[1], last4:m[2] };
       m = s.match(/(?:\*{2,}|x{3,}|X{3,}|•{2,}|\.{3,})\s?(\d{4})(?!\d)/);
       if(m) return { first6:"", last4:m[1] };
@@ -8470,6 +8482,15 @@ function startNgay50k(){
       if(x.length < 2 && fallback) x = cleanWhere(fallback, "");
       return x.length < 2 ? "Chi bằng thẻ" : x;
     };
+    /* nội dung ND: bỏ mã giao dịch ở cuối (vd "D25H8MQF/8921…", "FT2528…") và tiền tố mã của ngân hàng (MBCT, MBVCB.123…) */
+    const cleanND = t => {
+      let x = String(t || "").split(/\.{3,}|…/)[0].replace(/\s+/g, " ").trim();
+      x = x.replace(/^(?:MBCT|IBFT|MBVCB\.\S+|FT\d{6,}\S*|\d{6,})\s+/i, "");
+      for(let i = 0; i < 3; i++) x = x.replace(/[\s\-.,;]+(?:\S*\/\S*|(?=\S*\d)(?=\S*[A-Za-z])[A-Za-z0-9]{6,}|\d{6,})\s*$/, "").trim();
+      x = x.replace(/^[\s\-:]+|[\s\-:]+$/g, "");
+      if(x.length > 78){ x = x.slice(0, 78); x = x.slice(0, Math.max(40, x.lastIndexOf(" "))).replace(/\s*\([^)]*$/, "").trim(); }
+      return x;
+    };
     const NDRE = /(?:\bt[aạ]i\b|\bmerchant\b|\bn[^\s]{1,2}i\s?dung|\bNDung\b|\bND\b|\bRef\b[:\s]*[A-Z0-9.\-]{4,})[:\s]+\S/i;
     const whereOf = s => {
       let m = s.match(/(?:\bt[aạ]i\b|\bmerchant\b)[:\s]+(.{2,60}?)(?=\s+(?:l[uú]c|ng[aà]y|v[aà]o)\b|\.\s|[;|]|$)/i);
@@ -8516,14 +8537,14 @@ function startNgay50k(){
       let card = { first6:"", last4:"" }, cur = null;
       const flush = () => {
         if(cur && cur.amt >= 1000){
-          cur.where = cleanWhere(cur.where, cur.raw);
+          cur.where = cur.nd ? cleanND(cur.nd) || cleanWhere(cur.where, cur.raw) : cleanWhere(cur.where, cur.raw);
           if(cur.hm == null){ cur.hm = 12; cur.mi = 0; }
           if(!cur.day) cur.day = todayKey();
           out.push(cur);
         }
         cur = null;
       };
-      const rec = () => cur || (cur = { amt:0, where:"", day:"", hm:null, mi:0, first6:card.first6, last4:card.last4, raw:"", pick:true });
+      const rec = () => cur || (cur = { amt:0, sd:0, nd:"", where:"", day:"", hm:null, mi:0, first6:card.first6, last4:card.last4, raw:"", pick:true });
       segs.forEach(seg => {
         const s = seg.trim(); if(s.length < 2) return;
         const c = cardOf(s);
@@ -8533,6 +8554,11 @@ function startNgay50k(){
           if(cur){ cur.first6 = c.first6; cur.last4 = c.last4; }
         }
         const balSeg = isBalSeg(s);
+        /* v127: "ND: …" là nội dung giao dịch → ghi chú; "SD: …" là số dư sau giao dịch → cập nhật số dư */
+        const ndM = s.match(/^(?:n[^\s]{1,2}i\s?dung(?: giao d[iị]ch)?|NDung|ND|Description|Remark)\s*[:：]\s*(.+)$/i);
+        if(ndM){ const r = rec(); if(!r.nd) r.nd = ndM[1]; }
+        const sdM = s.match(/^(?:SD|S\.D|s[oố]\s?d[uư](?:\s?(?:kh[aả]\s?d[uụ]ng|hi[eệ]n\s?t[aạ]i|c[uu]ối))?|Balance|Available balance)\s*[:：]?\s*([\d][\d.,]{2,})\s*(?:vnd|vnđ|đ|d)?\b/i);
+        if(sdM && !/^\s?-/.test(sdM[1])){ const v = vnAmount(sdM[1]); if(v > 0){ const r = rec(); if(!r.sd) r.sd = v; } }
         if(!CREDIT.test(s)){
           amtsOf(s).forEach(h => {
             const before = s.slice(Math.max(0, h.at - 26), h.at);
@@ -9019,9 +9045,8 @@ function startNgay50k(){
      iPhone không cho app đọc thông báo của app khác. Phím tắt (Tự động hoá → Thông báo) chép nội dung
      thông báo vào bộ nhớ tạm; mở app bấm Ghi thì đọc bộ nhớ tạm, tách khoản trừ tiền bằng parseNotif
      (chạy trên máy), đưa vào Chat dưới dạng thẻ chờ xác nhận như khi đọc ảnh. */
-  var NOTIF_KEY = "ngay50k:notifOn", NOTIF_LAST = "ngay50k:notifLast", notifTimer = 0, notifHidAt = 0;
+  var NOTIF_KEY = "ngay50k:notifOn", notifTimer = 0, notifHidAt = 0;
   function notifOn(){ return lsGet(NOTIF_KEY) === "1"; }
-  function txtHash(s){ let h = 5381; for(let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0; return String(h >>> 0); }
   function clipRead(){
     try{ if(navigator.clipboard && navigator.clipboard.readText) return navigator.clipboard.readText(); }catch(e){}
     return Promise.reject(new Error("noclip"));
@@ -9032,30 +9057,58 @@ function startNgay50k(){
       let c = null;
       if(p.first6 && p.last4) c = cs.find(x => x.first6 === p.first6 && x.last4 === p.last4);
       if(!c && p.last4) c = cs.find(x => x.last4 === p.last4);
-      raw.push({ kind: c ? "card" : "out", amt:p.amt, note:p.where || "", date:p.day, time:pad(p.hm) + ":" + pad(p.mi), cardId: c ? c.id : null });
+      raw.push({ kind: c ? "card" : "out", amt:p.amt, note:p.where || "", date:p.day, time:pad(p.hm) + ":" + pad(p.mi), cardId: c ? c.id : null, sd:p.sd || 0 });
     });
-    return aiClean({ items:raw, reply:"" });
+    const r = aiClean({ items:raw, reply:"" });
+    /* v127: giữ số dư sau giao dịch (SD) để khi bấm Ghi thì cập nhật luôn số dư Tài khoản; nk = dấu vân tay của giao dịch để không đưa vào hai lần */
+    r.items.forEach((it, i) => {
+      const src = raw[i] || {};
+      if(it.kind === "out" && src.sd > 0) it.sd = src.sd;
+      it.nk = [it.kind, it.amt, it.date, src.time || "", src.sd || 0].join("|");
+    });
+    return r;
+  }
+  var NOTIF_SEEN = "ngay50k:notifSeen";
+  function notifSeenList(){ try{ const a = JSON.parse(lsGet(NOTIF_SEEN) || "[]"); return Array.isArray(a) ? a : []; }catch(e){ return []; } }
+  function notifSeenAdd(keys){ const a = notifSeenList().filter(k => !keys.includes(k)).concat(keys); lsSet(NOTIF_SEEN, JSON.stringify(a.slice(-300))); }
+  /* đã có trong sổ chưa: cùng số tiền, cùng ngày, lệch không quá 2 phút */
+  function notifInBook(it){
+    const bag = it.kind === "card" ? state.cardTx[it.date] : state.days[it.date];
+    return (bag || []).some(x => x.amt === it.amt && Math.abs(recTime(it.date, x.t) - it.t) <= 120000);
   }
   function notifBot(html){ chat.msgs.push({ id:uid(), role:"bot", html, t:Date.now() }); }
+  function notifSay(text){
+    const b = $("notifBar"), p = b.querySelector("p"), old = p.dataset.t || (p.dataset.t = p.textContent);
+    p.textContent = text; b.classList.add("say"); b.hidden = false; clearTimeout(notifTimer);
+    notifTimer = setTimeout(() => { b.hidden = true; b.classList.remove("say"); p.textContent = old; }, 2600);
+  }
   async function notifFromClip(pr){
-    hideNotifBar();
     let txt = null;
     try{ txt = String(await (pr || clipRead()) || "").trim(); }catch(e){ txt = null; }
+    hideNotifBar();
     if(!chat) chatLoad();
+    const r = txt ? notifItems(txt) : null;
+    if(r && r.items.length){
+      const seen = notifSeenList(), fresh = r.items.filter(it => !seen.includes(it.nk) && !notifInBook(it));
+      notifSeenAdd(r.items.map(it => it.nk));
+      if(!fresh.length){ notifSay("✓ Không có giao dịch mới, thông báo gần nhất đã ghi rồi"); return; }
+      r.items = fresh;
+    }
     if(settingsOpen) closeSettings();
     showTab("chat");
     if(txt == null) notifBot("Mình chưa đọc được bộ nhớ tạm. Khi iPhone hỏi thì bấm <b>Dán</b> (Paste) nhé, hoặc nhấn giữ ô chat → Dán thông báo vào rồi gửi.");
     else if(!txt) notifBot("Bộ nhớ tạm đang trống. Kiểm tra lại Phím tắt có bước <b>Sao chép vào bộ nhớ tạm</b> chưa nhé (Cài đặt → Tự ghi từ thông báo).");
-    else notifToChat(txt);
+    else notifToChat(txt, r);
     chatSave(); renderChat(); chatScrollEnd(true);
   }
-  function notifToChat(txt){
+  function notifToChat(txt, r){
     const one = txt.replace(/\s+/g, " ");
     chat.msgs.push({ id:uid(), role:"me", text:"📋 Thông báo ngân hàng: " + (one.length > 140 ? one.slice(0, 140) + "…" : one), t:Date.now() });
-    const r = notifItems(txt), h = txtHash(txt), seen = lsGet(NOTIF_LAST) === h;
+    r = r || notifItems(txt);
     if(r.items.length){
-      lsSet(NOTIF_LAST, h);
-      const intro = (seen ? "<i>Thông báo này bạn đã đưa vào một lần rồi.</i> " : "") + "Mình đọc được " + r.items.length + " khoản trừ tiền, bạn xem lại rồi bấm Ghi nhé:" + dupNote(r.items);
+      const last = r.items.filter(it => it.sd).sort((a, b) => b.t - a.t)[0];
+      const intro = "Mình đọc được " + r.items.length + " khoản trừ tiền, bạn xem lại rồi bấm Ghi nhé" +
+        (last ? ". Ghi xong, số dư <b>Tài khoản</b> cập nhật theo SD: <b>" + fmt(last.sd) + "</b>" : "") + ":" + dupNote(r.items);
       chat.msgs.push({ id:uid(), role:"bot", items:r.items, intro, introHtml:true, status:r.items.map(() => "pending"), refs:r.items.map(() => null), t:Date.now(), src:"local" });
     } else notifBot("Mình không thấy khoản trừ tiền nào trong nội dung này. Tiền vào thì bạn gõ ví dụ <b>nhận 500k lương</b> nhé.");
   }

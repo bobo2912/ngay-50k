@@ -1,6 +1,14 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v126, ngày 09/10/2026
+**Phiên bản hiện tại:** v127, ngày 09/10/2026
+
+---
+
+## Có gì mới trong v127 (so với v126)
+
+- **Đọc thông báo MB Bank chuẩn hơn:** ghi chú lấy đúng phần sau **ND:** (bỏ mã giao dịch ở cuối và tiền tố MBCT), nên app tự đoán nhóm theo nội dung (vd THANH TOAN QR HIGHLANDS → Uống). Số tài khoản người nhận (DEN:) không còn bị nhầm là số thẻ.
+- **Cập nhật số dư theo SD:** khoản đọc từ thông báo có "SD: …" thì bấm Ghi là số dư Tài khoản đặt theo đúng số dư ngân hàng sau giao dịch đó (khoản ghi sau thời điểm đó vẫn được tính). Hoàn tác thì bỏ luôn mốc số dư này.
+- **Không ghi trùng:** mỗi giao dịch đã đọc được nhớ lại (số tiền, giờ, số dư sau giao dịch); mở app dán lại cùng thông báo thì chỉ báo "Không có giao dịch mới", không thêm thẻ vào Chat.
 
 ---
 
