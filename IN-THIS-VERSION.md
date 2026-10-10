@@ -1,6 +1,12 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v139, ngày 10/10/2026
+**Phiên bản hiện tại:** v140, ngày 10/10/2026
+
+---
+
+## Có gì mới trong v140 (so với v139)
+
+- Thanh hiện sau khi quay lại từ phím tắt TieuGon gọn một dòng: "📋 Đã lấy thông báo" + nút **Dán**.
 
 ---
 
