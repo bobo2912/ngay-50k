@@ -1,6 +1,13 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v140, ngày 10/10/2026
+**Phiên bản hiện tại:** v141, ngày 10/10/2026
+
+---
+
+## Có gì mới trong v141 (so với v140)
+
+- **Ghi từ thông báo không phải rời app:** bấm **📋** là bảng chọn tệp của iPhone hiện ngay trên Tiêu Gọn, chạm tệp **TieuGon.txt** (lần sau nằm sẵn ở mục Gần đây) là app đọc và tách giao dịch luôn. Không còn mở app Phím tắt, không qua bộ nhớ tạm, không có bước Paste. Phím tắt thứ hai "TieuGon" không cần nữa (có thể xoá).
+- Cài đặt → Tự ghi từ thông báo: hướng dẫn mới, nút "Chọn tệp thử"; bỏ chọn "📋 đọc từ tệp" để quay lại cách dán bộ nhớ tạm.
 
 ---
 
