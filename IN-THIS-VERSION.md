@@ -1,6 +1,12 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v133, ngày 10/10/2026
+**Phiên bản hiện tại:** v134, ngày 10/10/2026
+
+---
+
+## Có gì mới trong v134 (so với v133)
+
+- **Sửa: hỏi "Hôm qua tiêu gì" khi còn thẻ chờ Ghi (vd dòng số dư của thông báo ngân hàng) bị hiểu thành "đổi ngày" của thẻ đó.** Câu nào tự nó là câu hỏi (hôm qua tiêu gì, tháng này tiêu bao nhiêu, lần cuối… khi nào) giờ luôn được trả lời như câu hỏi; chỉ câu ngắn kiểu "hôm qua chứ", "50k chứ", "thẻ VIB" mới là sửa thẻ đang chờ.
 
 ---
 
