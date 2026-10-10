@@ -1,6 +1,12 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v134, ngày 10/10/2026
+**Phiên bản hiện tại:** v135, ngày 10/10/2026
+
+---
+
+## Có gì mới trong v135 (so với v134)
+
+- Kết quả **dán từ thông báo ngân hàng (📋)** cũng có nút **"↻ Chưa đúng? Phân tích lại bằng AI"**: bấm thì gửi đúng các dòng thông báo của giao dịch mới cho Trợ lý AI đọc lại (khoản đã Ghi được giữ nguyên). Thông báo đọc lại bằng AI không bị đưa vào danh sách "câu máy chưa hiểu".
 
 ---
 
