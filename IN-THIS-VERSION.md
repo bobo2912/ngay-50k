@@ -1,6 +1,14 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v128, ngày 09/10/2026
+**Phiên bản hiện tại:** v129, ngày 10/10/2026
+
+---
+
+## Có gì mới trong v129 (so với v128)
+
+- **Tiền vào (+) là khoản thu:** thông báo "GD: +491,997VND" giờ thành thẻ **Khoản thu** (nội dung lấy từ ND:, có chữ lương / thưởng thì tự chọn nhóm).
+- **Cập nhật số dư là thẻ riêng:** ghi giao dịch không còn tự đổi số dư. Thông báo có "SD:" thì app thêm một thẻ **Số dư thật** ở cuối (lấy SD của giao dịch mới nhất), bấm Ghi thẻ đó mới cập nhật số dư Tài khoản. Nút "Ghi tất cả" không gồm thẻ số dư.
+- **Nhiều biến động cùng lúc:** dán nhiều thông báo một lần thì mỗi dòng là một giao dịch (chi và thu), giao dịch đã ghi tự bỏ qua, chỉ một thẻ số dư theo giao dịch mới nhất. Cài đặt → Tự ghi từ thông báo có thêm bước Phím tắt để nối thông báo mới vào bộ nhớ tạm thay vì đè lên.
 
 ---
 
