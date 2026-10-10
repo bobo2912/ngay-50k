@@ -1,6 +1,13 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v149, ngày 10/10/2026
+**Phiên bản hiện tại:** v150, ngày 10/10/2026
+
+---
+
+## Có gì mới trong v150 (so với v149)
+
+- **File sao lưu mang theo phần Tự ghi từ thông báo:** bật/tắt, địa chỉ Google Sheet, **mã bí mật** (khôi phục sang máy mới vẫn khớp Apps Script, không phải triển khai lại), mốc đã lấy và danh sách giao dịch đã hiện (máy mới không hiện lại giao dịch cũ). Khôi phục gộp mốc/danh sách chứ không đè; file cũ chưa có phần này thì giữ cài đặt đang có.
+- Giao dịch đã ghi từ thông báo (có dấu vân tay trong sổ) không bao giờ hiện lại, kể cả sau khi khôi phục sao lưu.
 
 ---
 

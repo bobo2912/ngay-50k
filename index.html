@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v149";
+  var K = "ngay50k:errlog", VER = "v150";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -2486,7 +2486,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <div class="field"><label for="bkPw2"><span>Nhập lại mật khẩu</span></label><input id="bkPw2" class="inp" type="password" autocomplete="new-password" autocapitalize="off" spellcheck="false"></div>
         <p class="set-now">Dùng cho Xuất file sao lưu và Sao lưu nhanh. App không lưu mật khẩu này, quên thì file không mở được. File CSV không có mật khẩu.</p>
       </div>
-      <p class="set-now">File sao lưu gồm mọi khoản đã ghi và toàn bộ cài đặt: giao diện, ngân hàng, trợ lý AI <b>kể cả khoá API</b>, lịch sử Chat. Mã PIN / Face ID không đi theo file. Vì có khoá API, nên bật mật khẩu file nếu cất file ở nơi người khác xem được.</p>
+      <p class="set-now">File sao lưu gồm mọi khoản đã ghi và toàn bộ cài đặt: giao diện, ngân hàng, trợ lý AI <b>kể cả khoá API</b>, lịch sử Chat, Tự ghi từ thông báo (địa chỉ Google Sheet và <b>mã bí mật</b>). Mã PIN / Face ID không đi theo file. Vì có khoá API và mã bí mật, nên bật mật khẩu file nếu cất file ở nơi người khác xem được.</p>
 
       <h4 class="sub">Sao lưu nhanh bằng Phím tắt <button class="ib" type="button" data-info="infoSc" aria-expanded="false" aria-label="Cách cài">i</button></h4>
       <p class="set-now">Bấm nút, bảng chia sẻ hiện lên, chạm vào phím tắt của bạn. Phím tắt chạy ngay trong app, lưu file vào iCloud Drive theo ngày, không rời app.</p>
@@ -2604,7 +2604,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v149</p>
+      <p class="sync" id="appVersion">Phiên bản v150</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3105,9 +3105,9 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
 <input type="file" id="notifFileIn" accept=".txt,text/plain" hidden>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=149"></script>
-<script src="thu-vien-cau.js?v=149"></script>
-<script src="lock.js?v=149"></script>
+<script src="parse-vi.js?v=150"></script>
+<script src="thu-vien-cau.js?v=150"></script>
+<script src="lock.js?v=150"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -9295,7 +9295,7 @@ function startNgay50k(){
     const incoming = normalize(obj.data);
     pending = { incoming, merged: mergeStates(state, incoming), settings: hasSetBackup(obj.settings) ? obj.settings : null };
     const when = obj.exportedAt ? fmtStamp(obj.exportedAt) : "";
-    $("importInfo").textContent = (label || "File") + (when ? " xuất lúc " + when : "") + ", gồm " + summarize(incoming) + (pending.settings ? ", kèm cài đặt" + (pending.settings.ai ? " và khoá API AI" : "") : "") + ".";
+    $("importInfo").textContent = (label || "File") + (when ? " xuất lúc " + when : "") + ", gồm " + summarize(incoming) + (pending.settings ? ", kèm cài đặt" + (pending.settings.ai ? " và khoá API AI" : "") + (pending.settings.ls && pending.settings.ls["ngay50k:relayUrl"] ? ", Tự ghi từ thông báo" : "") : "") + ".";
     $("importPreview").textContent = "Gộp sẽ " + diffText(diffCount(state, pending.merged)) + ". Khoản mới ghi trên máy này vẫn được giữ.";
     delete $("replaceBtn").dataset.armed;
     $("replaceBtn").textContent = "Thay toàn bộ";
@@ -9358,6 +9358,7 @@ function startNgay50k(){
      v145: chỉ so với khoản ghi tay (khoản ghi từ thông báo mang dấu vân tay nk riêng), mỗi khoản ghi tay chỉ khớp một thông báo */
   function notifInBook(it, used){
     const bag = it.kind === "card" ? state.cardTx[it.date] : it.kind === "in" ? state.income[it.date] : state.days[it.date];
+    if((bag || []).some(x => x.nk && (x.nk === it.nk || x.nk === it.nkB))) return true;   /* v150: đã ghi từ thông báo (vd sau khi khôi phục sao lưu) */
     const x = (bag || []).find(x => !x.nk && !(used && used.has(x.id)) && x.amt === it.amt && Math.abs(recTime(it.date, x.t) - it.t) <= 120000);
     if(x && used) used.add(x.id);
     return !!x;
@@ -9951,22 +9952,31 @@ function startNgay50k(){
   /* nội dung file sao lưu; bật mật khẩu thì mã hoá. Trả về null nếu mật khẩu chưa hợp lệ. */
   /* v113: file sao lưu mang theo cả cài đặt: giao diện, màn mở đầu, ngân hàng, trợ lý AI (kể cả khoá API), chi phí AI,
      sao lưu nhanh, ví hay dùng, và lịch sử Chat. Không mang mã PIN / Face ID (gắn với từng máy). */
-  const SET_LS = ["ngay50k-theme","ngay50k:home","ngay50k:bank","ngay50k:aiUse","ngay50k:aiBudget","ngay50k:aiSaved","ngay50k:usdVnd","ngay50k:scUse","ngay50k:lastW"];
+  /* v150: thêm phần Tự ghi từ thông báo: bật/tắt, URL Google Sheet, mã bí mật (phải giữ để khớp Apps Script), bản mã */
+  const SET_LS = ["ngay50k-theme","ngay50k:home","ngay50k:bank","ngay50k:aiUse","ngay50k:aiBudget","ngay50k:aiSaved","ngay50k:usdVnd","ngay50k:scUse","ngay50k:lastW",
+    "ngay50k:notifOn","ngay50k:relayUrl","ngay50k:relayKey","ngay50k:relayV"];
   function backupSettings(){
     const ls = {}; SET_LS.forEach(k => { const v = lsGet(k); if(v != null) ls[k] = v; });
     const out = { ls };
+    /* mốc đã lấy tới đâu + các giao dịch đã từng hiện: để máy mới không hiện lại giao dịch cũ */
+    const at = lsGet("ngay50k:relayAt"); if(at) out.relayAt = at;
+    const seen = notifSeenList(); if(seen.length) out.notifSeen = seen;
     const ai = N50K.get("ngay50k:ai"); if(ai) out.ai = ai;
     const ch = N50K.get("ngay50k:chat"); if(ch) out.chat = ch;
     return out;
   }
   function restoreSettings(st, full){
     if(!st || typeof st !== "object") return;
-    if(st.ls && typeof st.ls === "object") SET_LS.forEach(k => { if(typeof st.ls[k] === "string") lsSet(k, st.ls[k]); else if(full) try{ localStorage.removeItem(k); }catch(e){} });
+    if(st.ls && typeof st.ls === "object") SET_LS.forEach(k => { if(typeof st.ls[k] === "string") lsSet(k, st.ls[k]); else if(full && k.indexOf("ngay50k:relay") !== 0 && k !== "ngay50k:notifOn") try{ localStorage.removeItem(k); }catch(e){} });   /* file cũ chưa có phần thông báo thì giữ cài đặt đang có */
     if(typeof st.ai === "string") N50K.set("ngay50k:ai", st.ai);
+    /* gộp chứ không đè: lấy mốc muộn hơn, cộng dồn danh sách đã thấy (khôi phục trên chính máy này không làm hiện lại giao dịch) */
+    if(st.relayAt && Number(st.relayAt) > (Number(lsGet("ngay50k:relayAt")) || 0)) lsSet("ngay50k:relayAt", String(st.relayAt));
+    if(Array.isArray(st.notifSeen) && st.notifSeen.length) notifSeenAdd(st.notifSeen.map(String));
     /* lịch sử Chat: thay toàn bộ thì lấy theo file; gộp thì chỉ lấy khi máy này chưa có tin nào */
     if(typeof st.chat === "string"){ if(!chat) chatLoad(); if(full || !chat.msgs.length){ N50K.set("ngay50k:chat", st.chat); chat = null; } }
     try{ curTheme = localStorage.getItem(THEME_KEY) || "auto"; }catch(e){ curTheme = "auto"; }
     applyTheme(curTheme); applyHome(); aiBadge();
+    try{ renderClipBtn(); renderRelaySet(); }catch(e){}
   }
   function hasSetBackup(st){ return !!(st && typeof st === "object" && (st.ls || st.ai || st.chat)); }
   async function backupText(){
