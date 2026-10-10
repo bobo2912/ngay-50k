@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v135";
+  var K = "ngay50k:errlog", VER = "v136";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -2552,7 +2552,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v135</p>
+      <p class="sync" id="appVersion">Phiên bản v136</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3052,9 +3052,9 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
 
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=135"></script>
-<script src="thu-vien-cau.js?v=135"></script>
-<script src="lock.js?v=135"></script>
+<script src="parse-vi.js?v=136"></script>
+<script src="thu-vien-cau.js?v=136"></script>
+<script src="lock.js?v=136"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -6732,7 +6732,21 @@ function startNgay50k(){
         const imgs = await imgsForAI(files);
         r = await aiCall("Đọc các giao dịch trừ tiền trong ảnh chụp thông báo ngân hàng này, mỗi giao dịch một khoản." + (text && text !== "(ảnh)" ? "\n" + text : ""), null, imgs);
       } else { if(wasLocal && !group.some(x => x.notif)) missAdd(text, ["sai"]); r = await aiCall(text); }
+      /* v136: thông báo ngân hàng: AI đọc cả đoạn, chỉ giữ giao dịch mới của lần dán này */
+      const nm = group.find(x => x.notif && x.nkNew);
+      if(nm && r && Array.isArray(r.items)){
+        const seen = new Set(notifSeenList()), fresh = new Set(nm.nkNew);
+        const n0 = r.items.length;
+        r.items = r.items.filter(it => {
+          if(!["out","in","card"].includes(it.kind)) return it.kind !== "bal";
+          const d = new Date(it.t || Date.now()), k = [it.kind === "in" ? "+" : "-", it.amt, it.date, pad(d.getHours()) + ":" + pad(d.getMinutes())].join("|");
+          return fresh.has(k) || !seen.has(k);
+        });
+        const cut = n0 - r.items.length;
+        if(cut > 0) r.reply = r.items.length ? "Mình đọc lại bằng AI được " + r.items.length + " giao dịch mới (bỏ qua " + cut + " giao dịch đã dán trước đó)." : "AI đọc lại không thấy giao dịch mới nào (" + cut + " giao dịch đã dán trước đó).";
+      }
       msgs = tagRetry(aiMsgs(r, files ? "" : text), text);
+      if(nm) msgs.forEach(x => { if(x.items){ x.notif = true; x.nkNew = nm.nkNew; } });
       if(files) retryImgs[msgs[0].grp] = files;
       if(wasLocal && !files){ const v = aiSavedGet(), mk = todayKey().slice(0, 7); if(v[mk] > 0){ v[mk]--; lsSet(AI_SAVED_KEY, JSON.stringify(v)); } }
     }catch(e){
@@ -9196,9 +9210,7 @@ function startNgay50k(){
       notifSeenAdd([...got]);
       if(!fresh.length){ notifSay("✓ Không có giao dịch mới"); return; }
       r.all = r.items; r.items = fresh;
-      /* v135: các dòng thông báo có giao dịch mới, để nút "Phân tích lại bằng AI" gửi đúng phần này */
-      const fk = new Set(fresh.map(it => it.nk));
-      r.lines = txt.split(/\r?\n/).filter(l => l.trim() && notifItems(l).items.some(it => fk.has(it.nk)));
+
     }
     if(settingsOpen) closeSettings();
     showTab("chat");
@@ -9215,9 +9227,9 @@ function startNgay50k(){
       const intro = "Mình đọc được " + what + (items1 => items1 > 1 ? ", chạm vào dòng nếu cần sửa rồi bấm <b>Ghi tất cả</b>" : ", bạn xem lại rồi bấm Ghi nhé")(r.items.length) +
         (bal ? ". Dòng <b>🏦 Số dư</b> ở cuối ghi riêng" : "") + "." + dupNote(r.items);
       const items = bal ? r.items.concat([bal]) : r.items;
-      const lines = (r.lines && r.lines.length ? r.lines : [txt]).join("\n").slice(0, 4000);
-      chat.msgs.push(...tagRetry([{ id:uid(), role:"bot", notif:true, items, intro, introHtml:true, status:items.map(() => "pending"), refs:items.map(() => null), t:Date.now(), src:"local" }],
-        "Đây là thông báo biến động số dư ngân hàng. Mỗi giao dịch là một khoản: số tiền có dấu - là chi (trừ tiền), dấu + là khoản thu (tiền vào); ghi chú lấy phần sau ND:; ngày giờ lấy theo thông báo; bỏ qua số dư SD và số tài khoản.\n" + lines));
+      /* v136: "Phân tích lại bằng AI" gửi nguyên cả đoạn thông báo đã dán; kết quả AI lọc bỏ các giao dịch đã từng dán trước đó */
+      chat.msgs.push(...tagRetry([{ id:uid(), role:"bot", notif:true, nkNew:r.items.map(it => it.nk), items, intro, introHtml:true, status:items.map(() => "pending"), refs:items.map(() => null), t:Date.now(), src:"local" }],
+        "Đây là nguyên văn thông báo biến động số dư của ngân hàng (có thể gồm nhiều thông báo, mỗi dòng một thông báo). Mỗi giao dịch là một khoản: số tiền có dấu - là chi (trừ tiền), dấu + là khoản thu (tiền vào); ghi chú lấy phần sau ND:; ngày giờ lấy đúng theo thông báo; SD là số dư sau giao dịch, không phải khoản chi hay thu.\n\n" + txt.slice(0, 12000)));
     } else notifBot("Mình không thấy giao dịch nào (số tiền có dấu − hoặc +) trong nội dung này.");
   }
   function hideNotifBar(){ clearTimeout(notifTimer); const b = $("notifBar"); if(b) b.hidden = true; }
