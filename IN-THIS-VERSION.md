@@ -1,6 +1,15 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v138, ngày 10/10/2026
+**Phiên bản hiện tại:** v139, ngày 10/10/2026
+
+---
+
+## Có gì mới trong v139 (so với v138)
+
+- **Thông báo ngân hàng lưu vào tệp, không đụng bộ nhớ tạm:** Phím tắt tự động hoá giờ dùng **Append to Text File** ghi từng thông báo vào iCloud Drive/Shortcuts/TieuGon.txt. Bạn copy gì khác trong lúc chưa mở app cũng không mất thông báo, và dán ở app khác không bị dính nội dung ngân hàng.
+- Bấm **📋** cạnh ô chat → app mở phím tắt **TieuGon** (chép tệp vào bộ nhớ tạm) → bấm **◀ Tiêu Gọn** để quay lại → thanh dưới hiện **Dán** → Paste → xem lại rồi Ghi. Trong 2 phút sau đó bấm 📋 là dán luôn.
+- Giao dịch cũ hơn 35 ngày trong tệp được bỏ qua; giao dịch đã ghi / đã bỏ vẫn không hiện lại.
+- Cài đặt → Tự ghi từ thông báo: hướng dẫn cài 2 phím tắt, đổi tên phím tắt, nút "Thử chạy phím tắt"; bỏ chọn "Lấy thông báo từ tệp" để quay về cách cũ (chép thẳng vào bộ nhớ tạm). Sổ → Ghi chi → "Dán thông báo vừa nhận" vẫn dán thẳng bộ nhớ tạm.
 
 ---
 
