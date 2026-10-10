@@ -708,6 +708,8 @@
     if(/(^|\s)đừng(\s|$)/i.test(String(text)) || (N_SKIP.test(n) && !/(^|\s)đúng(\s|$)/i.test(String(text)))) return { act:"skip", say:"" };
     if(N_SAVE.test(n) || (strongSave && words.every(w => SAVEW.has(w)) && !words.some(w => ["khong","ko","k","sai","bo","huy","thoi"].includes(w)))) return { act:"save", say:"" };
     if(N_SKIP.test(n)) return { act:"skip", say:"" };
+    /* câu tự nó là một câu hỏi ("hôm qua tiêu gì", "tháng này tiêu bao nhiêu") thì trả lời câu hỏi, không coi là sửa thẻ đang chờ */
+    try{ const rq = P.parse(text, ctx); if(rq.query && rq.query.q !== "unknown") return null; }catch(e){}
     const k = khuon(text, P), cards = (ctx && ctx.cards) || [], wallets = (ctx && ctx.wallets) || [];
     const rest = k.key.split(" ").filter(w => w && w !== "#");
     const fixOnly = rest.every(w => N_FIXW.has(w));

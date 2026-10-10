@@ -450,7 +450,7 @@
     [["cho vay 500k", "Nam"], ["vay 2tr", "anh Bình"], ["cho mượn 300k", "chị Hoa"]].forEach(([a, b]) => add(a, b, { act:"set", f:{ who:true } }));
     /* không phải câu nối: câu chi tiêu mới, câu hỏi */
     [["trưa ăn phở 45k", "cafe 30k"], ["cafe 30k", "grab 28k về nhà"], ["grab 28k", "hôm nay tiêu bao nhiêu"], ["mua áo 250k", "trà sữa 35k và bánh 20k"], ["siêu thị 420k", "nhận lương 15tr"],
-     ["bún chả 40k", "tháng này tiêu gì"], ["cắt tóc 80k", "cho Nam vay 500k"], ["cafe 30k", "đổ xăng 70k"], ["trà sữa 35k", "ai nợ mình"], ["tiền điện 650k", "tiền nước 120k"]]
+     ["bún chả 40k", "tháng này tiêu gì"], ["trưa ăn phở 45k", "Hôm qua tiêu gì"], ["cafe 30k", "hôm qua tiêu bao nhiêu"], ["grab 28k", "hôm kia chi những gì"], ["mua áo 250k", "thứ 2 tiêu gì"], ["tiền điện 650k", "hôm nay còn bao nhiêu"], ["cafe 30k", "lần cuối cắt tóc khi nào"], ["cắt tóc 80k", "cho Nam vay 500k"], ["cafe 30k", "đổ xăng 70k"], ["trà sữa 35k", "ai nợ mình"], ["tiền điện 650k", "tiền nước 120k"]]
       .forEach(([a, b]) => add(a, b, { act:"none" }));
     /* hỏi số tiền: bot hỏi "ăn phở hết bao nhiêu?" → trả lời */
     [["ăn phở", "45k", 45000, "an"], ["đổ xăng", "70 nghìn", 70000, "xang"], ["mua giày", "hết 1tr2", 1200000, "muasam"], ["cafe", "29k", 29000, "uong"], ["cắt tóc", "80.000", 80000, "lamdep"], ["grab", "mất 32k", 32000, "dilai"]]
