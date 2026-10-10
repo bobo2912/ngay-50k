@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v142";
+  var K = "ngay50k:errlog", VER = "v143";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -311,6 +311,7 @@ ul{list-style:none; margin:0; padding:0}
 .seg{display:grid; grid-template-columns:1fr 1fr; gap:4px; background:var(--bg); border:1.5px solid var(--line); border-radius:10px; padding:3px}
 .seg button{border:0; background:transparent; border-radius:8px; padding:7px; font-weight:600; font-size:.85rem; color:var(--muted)}
 .seg button[aria-pressed="true"]{background:var(--ink); color:var(--bg)}
+.seg.seg3{grid-template-columns:1fr 1fr 1fr}
 .loan{background:var(--surface); border:1.5px solid var(--line); border-radius:14px; padding:12px 14px; margin-top:10px}
 .loan-top{display:flex; justify-content:space-between; align-items:flex-start; gap:10px}
 .loan-top > div:first-child{flex:1; min-width:0}
@@ -2534,11 +2535,17 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
     <div class="set-page" id="setNotif" hidden>
       <div class="set-head"><button class="set-back" data-back>‹ Cài đặt</button><h2 tabindex="-1">Tự ghi từ thông báo</h2></div>
 <section class="set-group">
-      <p class="set-now">iPhone không cho app nào tự đọc thông báo của app khác. Cách gần tự động nhất: <b>Phím tắt</b> lưu từng thông báo biến động số dư của ngân hàng vào tệp <b>TieuGon.txt</b> trên iCloud Drive (không đụng bộ nhớ tạm). Khi muốn ghi, bấm nút <b>📋</b> cạnh ô chat và chọn tệp đó ngay trong app, không phải rời app; app tách số tiền, giờ, nội dung và hỏi lại trước khi ghi, giao dịch đã ghi tự bỏ qua.</p>
+      <p class="set-now">iPhone không cho app nào tự đọc thông báo của app khác, nên cần <b>Phím tắt</b> (automation khi MB Bank báo biến động số dư) chuyển hộ. Chọn một cách bên dưới; nút <b>📋</b> cạnh ô chat sẽ làm theo cách đó. Giao dịch đã ghi hoặc đã bỏ không bao giờ hiện lại.</p>
       <label class="sc-use"><input type="checkbox" id="notifOn"> <span>Hiện nút <b>📋</b> cạnh ô chat để ghi từ thông báo</span></label>
-      <label class="sc-use"><input type="checkbox" id="notifFile"> <span>📋 đọc từ tệp TieuGon.txt <span class="opt">(bỏ chọn: dán từ bộ nhớ tạm)</span></span></label>
+      <h4 class="sub">Cách đang dùng</h4>
+      <div class="seg seg3" id="notifModeSeg" role="group" aria-label="Cách lấy thông báo">
+        <button type="button" data-m="relay" aria-pressed="false">Google Sheet</button>
+        <button type="button" data-m="file" aria-pressed="false">Chọn tệp</button>
+        <button type="button" data-m="clip" aria-pressed="false">Bộ nhớ tạm</button>
+      </div>
+      <p class="set-now" id="notifModeNote"></p>
 
-      <h4 class="sub">Tự động hoàn toàn qua Google Sheet của bạn <span class="opt">(khuyên dùng)</span></h4>
+      <div data-mode="relay">
       <p class="set-now" id="relayState"></p>
       <ol class="sc-steps">
         <li>Mở <b>sheets.new</b> (nên làm trên máy tính) để tạo một Google Sheet mới, đặt tên vd "Tiêu Gọn".</li>
@@ -2553,7 +2560,9 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
       <pre class="errlog" id="relayCode" hidden></pre>
       <p class="set-now">Thông báo đi qua Google Sheet trong tài khoản Google của chính bạn, chỉ ai có cả địa chỉ /exec lẫn mã bí mật mới đọc được. Sheet tự giữ khoảng 500 thông báo gần nhất.</p>
 
-      <h4 class="sub">Cách khác (không cần mạng): Phím tắt lưu vào tệp, 📋 chọn tệp</h4>
+      </div>
+
+      <div data-mode="file">
       <ol class="sc-steps">
         <li><b>Phím tắt</b> → tab <b>Tự động hoá</b> → <b>＋</b> → <b>Thông báo</b> (Notification). Chọn app ngân hàng (vd <b>MB Bank</b>), thêm bộ lọc <b>Title contains</b> "Thông báo biến động số dư".</li>
         <li>Bật <b>Automation</b>, tắt <b>Notify</b> và <b>Confirm Before Run</b>.</li>
@@ -2566,7 +2575,17 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <li>Xem lại các giao dịch mới rồi bấm <b>Ghi</b>.</li>
       </ol>
       <p class="set-now">Giao dịch cũ hơn 35 ngày trong tệp được bỏ qua. Không dùng Phím tắt thì vẫn có thể chụp màn hình thông báo rồi vào Sổ → Ghi chi → <b>Từ ảnh</b>.</p>
-      <div class="set-row" style="margin-top:6px"><button class="ghost grow" id="notifPick" type="button">Chọn tệp thử</button><button class="ghost grow" id="notifTest" type="button">Dán bộ nhớ tạm</button></div>
+        <div class="set-row" style="margin-top:6px"><button class="ghost grow" id="notifPick" type="button">Chọn tệp thử</button></div>
+      </div>
+
+      <div data-mode="clip">
+      <ol class="sc-steps">
+        <li>Trong automation MB Bank của Phím tắt dùng tác vụ <b>Copy to Clipboard</b> với <b>Shortcut Input → Body</b> (hoặc Get Clipboard + Text + Copy để nối thêm).</li>
+        <li>Khi ghi: bấm <b>📋</b> → iPhone hỏi thì bấm <b>Paste</b> → xem lại rồi Ghi.</li>
+      </ol>
+      <p class="set-now">Nhược điểm: copy văn bản khác trước khi mở app thì mất thông báo cũ; dán ở app khác có thể dính nội dung ngân hàng.</p>
+      <div class="set-row" style="margin-top:6px"><button class="ghost grow" id="notifTest" type="button">Dán bộ nhớ tạm thử</button></div>
+      </div>
     </section>
     </div>
 
@@ -2581,7 +2600,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v142</p>
+      <p class="sync" id="appVersion">Phiên bản v143</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3082,9 +3101,9 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
 <input type="file" id="notifFileIn" accept=".txt,text/plain" hidden>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=142"></script>
-<script src="thu-vien-cau.js?v=142"></script>
-<script src="lock.js?v=142"></script>
+<script src="parse-vi.js?v=143"></script>
+<script src="thu-vien-cau.js?v=143"></script>
+<script src="lock.js?v=143"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -9365,7 +9384,8 @@ function startNgay50k(){
   /* v141: chế độ tệp, không rời app: Phím tắt tự động hoá lưu thông báo vào tệp TieuGon.txt trên iCloud Drive.
      Bấm 📋 → bảng chọn tệp của iPhone mở ngay trên app → chạm TieuGon.txt → app đọc tệp, không qua bộ nhớ tạm. */
   var NOTIF_MODE = "ngay50k:notifMode";
-  function notifFileMode(){ return lsGet(NOTIF_MODE) !== "clip"; }
+  /* v143: chọn 1 trong 3 cách: relay (Google Sheet, tự động) / file (chọn tệp) / clip (bộ nhớ tạm) */
+  function notifMode(){ const m = lsGet(NOTIF_MODE); return m === "relay" || m === "file" || m === "clip" ? m : (relayUrl() ? "relay" : "file"); }
   /* v142: tự động qua Google Sheet của người dùng: Phím tắt gửi (POST) nội dung thông báo lên Apps Script web app của họ;
      mở app / quay lại app thì app hỏi (GET) các thông báo mới từ lần trước, tách giao dịch, hiện sẵn thẻ chờ Ghi. Không tốn chạm. */
   var RELAY_URL = "ngay50k:relayUrl", RELAY_KEY = "ngay50k:relayKey", RELAY_AT = "ngay50k:relayAt", relayLast = 0, relayBusy = false;
@@ -9387,7 +9407,7 @@ function startNgay50k(){
     } finally { clearTimeout(to); }
   }
   async function relayPull(auto){
-    if(relayBusy || !relayUrl() || !notifOn()) return;
+    if(relayBusy || !relayUrl() || !notifOn() || notifMode() !== "relay") return;
     if(auto && (navigator.onLine === false || Date.now() - relayLast < 15000)) return;
     relayBusy = true; relayLast = Date.now();
     try{
@@ -9407,8 +9427,9 @@ function startNgay50k(){
     b.classList.remove("say"); b.hidden = false; clearTimeout(notifTimer); notifTimer = setTimeout(hideNotifBar, 30000);
   }
   $("chatClip").onclick = () => {
-    if(relayUrl()) relayPull(false);
-    else if(notifFileMode()) $("notifFileIn").click();
+    const m = notifMode();
+    if(m === "relay"){ if(relayUrl()) relayPull(false); else notifSay("Chưa kết nối Google Sheet: Cài đặt → Tự ghi từ thông báo"); }
+    else if(m === "file") $("notifFileIn").click();
     else notifFromClip(clipRead());
   };
   $("notifFileIn").addEventListener("change", e => {
@@ -9418,7 +9439,15 @@ function startNgay50k(){
   });
   $("notifGo").onclick = () => { const f = notifGoFn; notifGoFn = null; hideNotifBar(); if(f) f(); else notifFromClip(clipRead()); };
   $("notifPick").onclick = () => $("notifFileIn").click();
-  $("notifFile").addEventListener("change", e => { lsSet(NOTIF_MODE, e.target.checked ? "file" : "clip"); });
+  function renderNotifMode(){
+    const m = notifMode();
+    document.querySelectorAll("#notifModeSeg button").forEach(b => b.setAttribute("aria-pressed", b.dataset.m === m ? "true" : "false"));
+    document.querySelectorAll("#setNotif [data-mode]").forEach(d => { d.hidden = d.dataset.mode !== m; });
+    $("notifModeNote").innerHTML = m === "relay" ? "Mở app là giao dịch mới <b>tự hiện</b>, không cần chạm. Cần cài Google Sheet một lần (bên dưới) và có mạng."
+      : m === "file" ? "Bấm 📋 → chạm tệp <b>TieuGon.txt</b> trong bảng chọn tệp (lần sau ở mục Gần đây). Không cần mạng, không rời app."
+      : "Bấm 📋 → bấm <b>Paste</b>. Nhanh nhưng dễ mất thông báo khi bạn copy thứ khác.";
+  }
+  document.querySelectorAll("#notifModeSeg button").forEach(b => b.onclick = () => { lsSet(NOTIF_MODE, b.dataset.m); renderNotifMode(); });
   /* cài đặt Google Sheet */
   function relayScript(){
     return [
@@ -9452,7 +9481,7 @@ function startNgay50k(){
     $("relayKey").textContent = relayKey();
     $("relayState").textContent = relayUrl() ? "Đang bật: mở app là tự lấy giao dịch mới." : "Chưa kết nối.";
   }
-  $("relayUrl").addEventListener("change", e => { lsSet(RELAY_URL, e.target.value.trim()); lsSet(RELAY_AT, String(Date.now() - 2 * 86400000)); renderRelaySet(); });
+  $("relayUrl").addEventListener("change", e => { lsSet(RELAY_URL, e.target.value.trim()); lsSet(RELAY_AT, String(Date.now() - 2 * 86400000)); if(relayUrl()){ lsSet(NOTIF_MODE, "relay"); renderNotifMode(); } renderRelaySet(); });
   $("relayCopy").onclick = async () => {
     try{ await navigator.clipboard.writeText(relayScript()); $("relayCopy").textContent = "Đã chép mã ✓"; }
     catch(e){ $("relayCode").hidden = false; $("relayCode").textContent = relayScript(); }
@@ -9495,7 +9524,7 @@ function startNgay50k(){
     if(id === "setLearn") renderLearn();
     if(id === "setLock") renderLockSet();
     if(id === "setBank") renderBanks("setBanks", true);
-    if(id === "setNotif"){ $("notifOn").checked = notifOn(); $("notifFile").checked = notifFileMode(); renderRelaySet(); }
+    if(id === "setNotif"){ $("notifOn").checked = notifOn(); renderNotifMode(); renderRelaySet(); }
   }
   /* v118: trang Chat đã học */
   const MISS_WHY = { noitem:"không tìm ra khoản nào", query:"câu hỏi khó", leftover:"thừa chữ không có số tiền", numbers:"nhiều số tiền hơn số khoản", words:"có chữ khó (chia, sửa, %…)", card:"không rõ thẻ nào", who:"không rõ người vay", long:"câu dài", khong_hieu:"máy không hiểu", sai:"bạn báo máy hiểu sai" };
