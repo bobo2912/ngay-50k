@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v145";
+  var K = "ngay50k:errlog", VER = "v146";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -2568,6 +2568,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
       <div class="field"><label for="relayUrl"><span>URL ứng dụng web (đuôi /exec)</span></label><input id="relayUrl" class="inp" inputmode="url" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="https://script.google.com/macros/s/…/exec"></div>
       <p class="set-now">Mã bí mật: <b id="relayKey" style="font-family:ui-monospace,monospace; letter-spacing:.5px"></b> <button class="ib" type="button" id="relayKeyCopy" style="width:auto; padding:0 10px">Chép mã</button></p>
       <div class="set-row"><button class="ghost grow" id="relayCopy" type="button">Chép mã Apps Script</button><button class="ghost grow" id="relayTest" type="button">Kiểm tra</button></div>
+      <p class="set-now" id="relayTestMsg" role="status" aria-live="polite" hidden></p>
       <pre class="errlog" id="relayCode" hidden></pre>
       <p class="set-now">Thông báo đi qua Google Sheet trong tài khoản Google của chính bạn, chỉ ai có cả địa chỉ /exec lẫn mã bí mật mới đọc được. Sheet tự giữ khoảng 1.000 thông báo gần nhất. Xoá trắng ô URL để thôi dùng Google Sheet. Không dùng Sheet thì tệp TieuGon.txt lớn dần, lâu lâu có thể xoá trong app Tệp (giao dịch đã ghi không bị ảnh hưởng).</p>
 
@@ -2587,7 +2588,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v145</p>
+      <p class="sync" id="appVersion">Phiên bản v146</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3088,9 +3089,9 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
 <input type="file" id="notifFileIn" accept=".txt,text/plain" hidden>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=145"></script>
-<script src="thu-vien-cau.js?v=145"></script>
-<script src="lock.js?v=145"></script>
+<script src="parse-vi.js?v=146"></script>
+<script src="thu-vien-cau.js?v=146"></script>
+<script src="lock.js?v=146"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -9530,13 +9531,24 @@ function startNgay50k(){
     setTimeout(() => { $("relayCopy").textContent = "Chép mã Apps Script"; }, 2500);
   };
   $("relayKeyCopy").onclick = async () => { try{ await navigator.clipboard.writeText(relayKey()); $("relayKeyCopy").textContent = "Đã chép ✓"; setTimeout(() => { $("relayKeyCopy").textContent = "Chép mã"; }, 2000); }catch(e){} };
+  /* v146: kết quả Kiểm tra hiện ngay dưới nút (trước đây hiện ở đầu trang, ngoài màn hình nên trông như nút không chạy) */
   $("relayTest").onclick = async () => {
-    lsSet(RELAY_URL, $("relayUrl").value.trim());
-    const st = $("relayState");
-    if(!relayUrl()){ st.textContent = "Địa chỉ phải bắt đầu bằng https://script.google.com/…"; return; }
-    st.textContent = "Đang kiểm tra…";
-    try{ const it = await relayFetch(); st.textContent = "✓ Kết nối được. Trong Sheet có " + it.length + " thông báo mới từ lần lấy trước." + (relayOld() ? " Mã Apps Script đang là bản cũ: chép mã mới, dán đè và triển khai phiên bản mới để gửi bù khi mất mạng." : ""); }
-    catch(e){ st.textContent = e && e.message === "key" ? "Kết nối được nhưng mã bí mật không khớp: chép lại mã Apps Script và triển khai lại." : "Không kết nối được. Kiểm tra lại địa chỉ /exec và quyền truy cập \"Anyone\"."; }
+    const btn = $("relayTest"), st = $("relayTestMsg"), u = $("relayUrl").value.trim();
+    const say = t => { st.textContent = t; st.hidden = false; };
+    if(btn.disabled) return;
+    if(u !== (lsGet(RELAY_URL) || "")){ lsSet(RELAY_URL, u); lsSet(RELAY_AT, String(Date.now() - 2 * 86400000)); }
+    if(!u){ say("Chưa có địa chỉ: dán URL ứng dụng web (đuôi /exec) vào ô ở trên."); renderRelaySet(); return; }
+    if(!relayUrl()){ say("Địa chỉ phải bắt đầu bằng https://script.google.com/… (chép ở bước Triển khai, không phải link trang Sheet)."); renderRelaySet(); return; }
+    if(!/\/exec(\?|$)/.test(u)){ say(/\/dev(\?|$)/.test(u) ? "Đây là địa chỉ thử (/dev), chỉ chạy khi đăng nhập trên máy tính. Hãy dùng URL ứng dụng web có đuôi /exec." : "Địa chỉ cần có đuôi /exec. Chép đúng dòng \"URL ứng dụng web\" sau khi Triển khai."); return; }
+    if(navigator.onLine === false){ say("Máy đang mất mạng, có mạng rồi bấm Kiểm tra lại nhé."); return; }
+    btn.disabled = true; btn.textContent = "Đang kiểm tra…"; say("Đang kết nối tới Google Sheet…");
+    try{
+      const it = await relayFetch();
+      say("✓ Kết nối được. Trong Sheet có " + it.length + " thông báo chưa lấy." + (relayOld() ? " ⚠️ Mã Apps Script là bản cũ: chép mã mới, dán đè và triển khai phiên bản mới." : ""));
+    }catch(e){
+      say(e && e.message === "key" ? "Kết nối được nhưng mã bí mật không khớp: bấm Chép mã Apps Script, dán đè vào TG Relay rồi triển khai phiên bản mới."
+        : "Không kết nối được. Kiểm tra: URL đúng đuôi /exec, lúc triển khai chọn Ai có quyền truy cập = \"Bất kỳ ai\", và đã bấm Cho phép khi Google hỏi quyền.");
+    } finally { btn.disabled = false; btn.textContent = "Kiểm tra"; renderRelaySet(); }
   };
   document.addEventListener("visibilitychange", () => { if(!document.hidden) setTimeout(() => relayPull(true), 600); });
   window.addEventListener("online", () => relayPull(true));

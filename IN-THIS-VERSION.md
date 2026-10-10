@@ -1,6 +1,12 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v145, ngày 10/10/2026
+**Phiên bản hiện tại:** v146, ngày 10/10/2026
+
+---
+
+## Có gì mới trong v146 (so với v145)
+
+- Cài đặt → Tự ghi từ thông báo: bấm **Kiểm tra** giờ hiện kết quả ngay dưới nút (trước đây hiện ở đầu trang, ngoài màn hình nên trông như nút không chạy); nút đổi thành "Đang kiểm tra…" trong lúc chờ. Báo rõ khi URL là /dev, thiếu /exec, là link trang Sheet, hoặc máy đang mất mạng.
 
 ---
 
