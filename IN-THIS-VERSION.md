@@ -1,6 +1,13 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v130, ngày 10/10/2026
+**Phiên bản hiện tại:** v131, ngày 10/10/2026
+
+---
+
+## Có gì mới trong v131 (so với v130)
+
+- **Chống trùng theo số tiền + thời gian:** giao dịch nào đã từng dán vào app (đã Ghi, đã Bỏ, hay đã ghi rồi xoá trong Sổ) thì lần sau dán không hiện lại nữa. Nhận diện bằng tiền vào/ra, số tiền, ngày và giờ:phút. Cùng một thông báo bị chép nhiều lần trong bộ nhớ tạm cũng chỉ tính một.
+- **Bong bóng dán gọn hơn:** không in cả bộ nhớ tạm (vốn chứa cả thông báo cũ), chỉ liệt kê các giao dịch mới, vd "+10.000đ · 00:55", "−20.000đ · 01:05".
 
 ---
 

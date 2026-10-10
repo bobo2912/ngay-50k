@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v130";
+  var K = "ngay50k:errlog", VER = "v131";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -2529,7 +2529,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v130</p>
+      <p class="sync" id="appVersion">Phiên bản v131</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3029,9 +3029,9 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
 
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=130"></script>
-<script src="thu-vien-cau.js?v=130"></script>
-<script src="lock.js?v=130"></script>
+<script src="parse-vi.js?v=131"></script>
+<script src="thu-vien-cau.js?v=131"></script>
+<script src="lock.js?v=131"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -9070,7 +9070,9 @@ function startNgay50k(){
     r.items.forEach((it, i) => {
       const src = raw[i] || {};
       if(src.sd > 0 && it.kind !== "card") it.sd = src.sd;
-      it.nk = [it.kind, it.amt, it.date, src.time || "", src.sd || 0].join("|");
+      /* v131: dấu vân tay = tiền vào/ra + số tiền + ngày + giờ:phút (đã từng dán là không đưa lại, kể cả khi đã xoá trong Sổ) */
+      it.nk = [it.kind === "in" ? "+" : "-", it.amt, it.date, src.time || ""].join("|");
+      it.nk0 = [it.kind, it.amt, it.date, src.time || "", src.sd || 0].join("|");     /* kiểu cũ (v127–v130) */
     });
     return r;
   }
@@ -9087,7 +9089,7 @@ function startNgay50k(){
   }
   var NOTIF_SEEN = "ngay50k:notifSeen";
   function notifSeenList(){ try{ const a = JSON.parse(lsGet(NOTIF_SEEN) || "[]"); return Array.isArray(a) ? a : []; }catch(e){ return []; } }
-  function notifSeenAdd(keys){ const a = notifSeenList().filter(k => !keys.includes(k)).concat(keys); lsSet(NOTIF_SEEN, JSON.stringify(a.slice(-300))); }
+  function notifSeenAdd(keys){ const a = notifSeenList().filter(k => !keys.includes(k)).concat(keys); lsSet(NOTIF_SEEN, JSON.stringify(a.slice(-1500))); }
   /* đã có trong sổ chưa: cùng số tiền, cùng ngày, lệch không quá 2 phút */
   function notifInBook(it){
     const bag = it.kind === "card" ? state.cardTx[it.date] : it.kind === "in" ? state.income[it.date] : state.days[it.date];
@@ -9106,8 +9108,13 @@ function startNgay50k(){
     if(!chat) chatLoad();
     const r = txt ? notifItems(txt) : null;
     if(r && r.items.length){
-      const seen = notifSeenList(), fresh = r.items.filter(it => !seen.includes(it.nk) && !notifInBook(it));
-      notifSeenAdd(r.items.map(it => it.nk));
+      const seen = new Set(notifSeenList()), got = new Set();
+      const fresh = r.items.filter(it => {
+        if(got.has(it.nk)) return false;                 /* cùng một thông báo bị chép nhiều lần trong bộ nhớ tạm */
+        got.add(it.nk);
+        return !seen.has(it.nk) && !seen.has(it.nk0) && !notifInBook(it);
+      });
+      notifSeenAdd([...got]);
       if(!fresh.length){ notifSay("✓ Không có giao dịch mới"); return; }
       r.all = r.items; r.items = fresh;
     }
@@ -9119,9 +9126,10 @@ function startNgay50k(){
     chatSave(); renderChat(); chatScrollEnd(true);
   }
   function notifToChat(txt, r){
-    const one = txt.replace(/\s+/g, " ");
-    chat.msgs.push({ id:uid(), role:"me", text:"📋 Thông báo ngân hàng: " + (one.length > 140 ? one.slice(0, 140) + "…" : one), t:Date.now() });
     r = r || notifItems(txt);
+    /* v131: bong bóng chỉ liệt kê giao dịch mới (bộ nhớ tạm có thể chứa cả các thông báo cũ đã ghi) */
+    const lines = r.items.map(it => (it.kind === "in" ? "+" : "−") + fmt(it.amt) + " · " + pad(new Date(it.t).getHours()) + ":" + pad(new Date(it.t).getMinutes()) + (it.date !== todayKey() ? " " + fmtD(it.date) : ""));
+    chat.msgs.push({ id:uid(), role:"me", text:"📋 Thông báo ngân hàng mới" + (lines.length ? ":\n" + lines.join("\n") : ""), t:Date.now() });
     if(r.items.length){
       const nOut = r.items.filter(it => it.kind !== "in").length, nIn = r.items.length - nOut, bal = notifBalItem(r.all || r.items);
       const what = nOut && nIn ? nOut + " khoản chi, " + nIn + " khoản thu" : nIn ? nIn + " khoản thu (tiền vào)" : nOut + " khoản trừ tiền";
