@@ -1,6 +1,14 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v147, ngày 10/10/2026
+**Phiên bản hiện tại:** v148, ngày 10/10/2026
+
+---
+
+## Có gì mới trong v148 (so với v147)
+
+- Mở / quay lại app là bắt đầu lấy thông báo số dư mới nhất sau 0,1 giây.
+- Trong lúc lấy: cạnh **Số dư ví** hiện vòng xoay **"Đang cập nhật"**, nút 📋 nhấp nháy; xong thì hiện **✓ Đã cập nhật** hoặc **✓ Có giao dịch mới** rồi tự ẩn. Các lần hỏi lại sau 4/10/20 giây chạy ngầm.
+- Lời báo không còn nhắc "Google Sheet" (chỉ còn trong phần cài đặt); bong bóng tự nhận ghi "📋 Thông báo số dư mới".
 
 ---
 
