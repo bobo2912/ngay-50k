@@ -1,6 +1,13 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v131, ngày 10/10/2026
+**Phiên bản hiện tại:** v132, ngày 10/10/2026
+
+---
+
+## Có gì mới trong v132 (so với v131)
+
+- Câu chào Chat trở lại: **"Chào bạn! Hôm nay bạn thế nào?"**
+- Bấm 📋 mà chưa dán được, bộ nhớ tạm trống hoặc không có giao dịch ngân hàng thì chỉ báo thoáng ở dưới màn hình, không chèn câu hướng dẫn vào Chat nữa.
 
 ---
 
