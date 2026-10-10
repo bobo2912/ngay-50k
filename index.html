@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v143";
+  var K = "ngay50k:errlog", VER = "v144";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -2535,57 +2535,43 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
     <div class="set-page" id="setNotif" hidden>
       <div class="set-head"><button class="set-back" data-back>‹ Cài đặt</button><h2 tabindex="-1">Tự ghi từ thông báo</h2></div>
 <section class="set-group">
-      <p class="set-now">iPhone không cho app nào tự đọc thông báo của app khác, nên cần <b>Phím tắt</b> (automation khi MB Bank báo biến động số dư) chuyển hộ. Chọn một cách bên dưới; nút <b>📋</b> cạnh ô chat sẽ làm theo cách đó. Giao dịch đã ghi hoặc đã bỏ không bao giờ hiện lại.</p>
+      <p class="set-now">iPhone không cho app nào tự đọc thông báo của app khác, nên cần một automation của <b>Phím tắt</b> chuyển hộ mỗi khi MB Bank báo biến động số dư.</p>
       <label class="sc-use"><input type="checkbox" id="notifOn"> <span>Hiện nút <b>📋</b> cạnh ô chat để ghi từ thông báo</span></label>
-      <h4 class="sub">Cách đang dùng</h4>
-      <div class="seg seg3" id="notifModeSeg" role="group" aria-label="Cách lấy thông báo">
-        <button type="button" data-m="relay" aria-pressed="false">Google Sheet</button>
-        <button type="button" data-m="file" aria-pressed="false">Chọn tệp</button>
-        <button type="button" data-m="clip" aria-pressed="false">Bộ nhớ tạm</button>
-      </div>
-      <p class="set-now" id="notifModeNote"></p>
-
-      <div data-mode="relay">
       <p class="set-now" id="relayState"></p>
+
+      <h4 class="sub">App lấy thông báo theo thứ tự</h4>
       <ol class="sc-steps">
-        <li>Mở <b>sheets.new</b> (nên làm trên máy tính) để tạo một Google Sheet mới, đặt tên vd "Tiêu Gọn".</li>
-        <li>Menu <b>Tiện ích mở rộng → Apps Script</b> (Extensions → Apps Script). Xoá hết mã có sẵn, dán mã từ nút <b>Chép mã Apps Script</b> bên dưới, bấm Lưu 💾.</li>
-        <li><b>Triển khai → Triển khai mới</b> (Deploy → New deployment) → bánh răng chọn <b>Ứng dụng web</b> (Web app) → Thực thi với tư cách <b>Tôi</b> (Me), Ai có quyền truy cập <b>Bất kỳ ai</b> (Anyone) → Triển khai → cấp quyền → chép <b>URL ứng dụng web</b> (đuôi <b>/exec</b>) dán vào ô dưới, bấm <b>Kiểm tra</b>.</li>
-        <li>Trong automation MB Bank của Phím tắt, thêm tác vụ <b>Get Contents of URL</b>: URL dán địa chỉ /exec; bấm ⌄ → Method <b>POST</b>, Request Body <b>JSON</b>, thêm 2 trường kiểu Text: <b>k</b> = mã bí mật bên dưới, <b>t</b> = <b>Shortcut Input → Body</b>. Có thể giữ tác vụ Append to Text File làm dự phòng.</li>
-        <li>Xong. Mở app (hoặc quay lại app) là giao dịch mới tự hiện sẵn trong Chat; bấm 📋 để lấy ngay.</li>
+        <li><b>Có mạng + đã kết nối Google Sheet</b>: mở app là tự lấy, bấm 📋 để lấy ngay.</li>
+        <li><b>Chưa kết nối Google Sheet hoặc mất mạng</b>: bấm 📋 → <b>Paste</b>, dán từ bộ nhớ tạm.</li>
+        <li><b>Dán không được, không có giao dịch hay không đúng</b>: thanh dưới có nút <b>Chọn tệp</b> để đọc thẳng tệp <b>TieuGon.txt</b>.</li>
+      </ol>
+      <p class="set-now">Giao dịch đã ghi hoặc đã bỏ không bao giờ hiện lại; giao dịch cũ hơn 35 ngày được bỏ qua.</p>
+
+      <h4 class="sub">Phần A (bắt buộc): automation "TG · Lưu thông báo MB"</h4>
+      <ol class="sc-steps">
+        <li><b>Phím tắt</b> → tab <b>Tự động hoá</b> → <b>＋</b> → <b>Thông báo</b> (Notification) → app <b>MB Bank</b> → <b>Add Filter</b>: <b>Title contains</b> "Thông báo biến động số dư". Bật <b>Automation</b>, tắt <b>Notify</b>.</li>
+        <li>Tác vụ 1 <b>Append to Text File</b>: nội dung <b>Shortcut Input → Body</b> (chưa thấy Body thì đổi Type sang Notification); chạm chữ thư mục chọn folder iCloud của bạn; <b>File Path</b> = <b>TieuGon.txt</b>; bật <b>Make New Line</b>.</li>
+        <li>Tác vụ 2 <b>Get File from Folder</b>: cùng folder đó, path <b>TieuGon.txt</b>, tắt <b>Error If Not Found</b>.</li>
+        <li>Tác vụ 3 <b>Copy to Clipboard</b>: nội dung <b>File</b> (Type <b>Text</b>), bật <b>Local Only</b>, để trống Expire At.</li>
+        <li>(Nếu dùng Google Sheet) Tác vụ 4, <b>luôn để cuối cùng</b>: <b>Get Contents of URL</b> như Phần B.</li>
+        <li>Chạm tên ở trên cùng, đặt tên <b>TG · Lưu thông báo MB</b>. Phím tắt cũ tên "TieuGon" (nếu có) thì xoá đi.</li>
+      </ol>
+
+      <h4 class="sub">Phần B (tuỳ chọn, để tự động hoàn toàn): Google Sheet</h4>
+      <ol class="sc-steps">
+        <li>Mở <b>sheets.new</b> (nên làm trên máy tính), tạo Sheet tên <b>TG · Thông báo ngân hàng</b>.</li>
+        <li>Menu <b>Tiện ích mở rộng → Apps Script</b>, đặt tên dự án <b>TG Relay</b>, xoá hết mã có sẵn, dán mã từ nút <b>Chép mã Apps Script</b> bên dưới, bấm Lưu.</li>
+        <li><b>Triển khai → Triển khai mới</b> → bánh răng chọn <b>Ứng dụng web</b> → Thực thi với tư cách <b>Tôi</b>, Ai có quyền truy cập <b>Bất kỳ ai</b> → Triển khai → cấp quyền (gặp "chưa xác minh" thì Nâng cao → Đi tới…) → chép <b>URL ứng dụng web</b> (đuôi /exec) dán vào ô dưới, bấm <b>Kiểm tra</b>.</li>
+        <li>Trong automation <b>TG · Lưu thông báo MB</b>, thêm tác vụ cuối <b>Get Contents of URL</b>: URL = địa chỉ /exec; ⌄ → Method <b>POST</b>, Request Body <b>JSON</b>, thêm 2 trường Text: <b>k</b> = mã bí mật bên dưới, <b>t</b> = <b>Shortcut Input → Body</b>.</li>
       </ol>
       <div class="field"><label for="relayUrl"><span>URL ứng dụng web (đuôi /exec)</span></label><input id="relayUrl" class="inp" inputmode="url" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="https://script.google.com/macros/s/…/exec"></div>
       <p class="set-now">Mã bí mật: <b id="relayKey" style="font-family:ui-monospace,monospace; letter-spacing:.5px"></b> <button class="ib" type="button" id="relayKeyCopy" style="width:auto; padding:0 10px">Chép mã</button></p>
       <div class="set-row"><button class="ghost grow" id="relayCopy" type="button">Chép mã Apps Script</button><button class="ghost grow" id="relayTest" type="button">Kiểm tra</button></div>
       <pre class="errlog" id="relayCode" hidden></pre>
-      <p class="set-now">Thông báo đi qua Google Sheet trong tài khoản Google của chính bạn, chỉ ai có cả địa chỉ /exec lẫn mã bí mật mới đọc được. Sheet tự giữ khoảng 500 thông báo gần nhất.</p>
+      <p class="set-now">Thông báo đi qua Google Sheet trong tài khoản Google của chính bạn, chỉ ai có cả địa chỉ /exec lẫn mã bí mật mới đọc được. Sheet tự giữ khoảng 500 thông báo gần nhất. Xoá trắng ô URL để thôi dùng Google Sheet.</p>
 
-      </div>
-
-      <div data-mode="file">
-      <ol class="sc-steps">
-        <li><b>Phím tắt</b> → tab <b>Tự động hoá</b> → <b>＋</b> → <b>Thông báo</b> (Notification). Chọn app ngân hàng (vd <b>MB Bank</b>), thêm bộ lọc <b>Title contains</b> "Thông báo biến động số dư".</li>
-        <li>Bật <b>Automation</b>, tắt <b>Notify</b> và <b>Confirm Before Run</b>.</li>
-        <li>Thêm tác vụ <b>Append to Text File</b>: nội dung chọn <b>Shortcut Input → Body</b> (đổi Type sang Notification nếu chưa thấy Body); chạm chữ thư mục để chọn folder iCloud bạn muốn; <b>File Path</b> gõ <b>TieuGon.txt</b>; bật <b>Make New Line</b>.</li>
-      </ol>
-      <h4 class="sub">Khi ghi</h4>
-      <ol class="sc-steps">
-        <li>Bấm <b>📋</b> cạnh ô chat → bảng chọn tệp hiện ngay trên app.</li>
-        <li>Lần đầu: vào iCloud Drive → folder đã chọn → chạm <b>TieuGon.txt</b>. Các lần sau tệp nằm ngay ở mục <b>Gần đây</b> (Recents), chạm một lần là xong.</li>
-        <li>Xem lại các giao dịch mới rồi bấm <b>Ghi</b>.</li>
-      </ol>
-      <p class="set-now">Giao dịch cũ hơn 35 ngày trong tệp được bỏ qua. Không dùng Phím tắt thì vẫn có thể chụp màn hình thông báo rồi vào Sổ → Ghi chi → <b>Từ ảnh</b>.</p>
-        <div class="set-row" style="margin-top:6px"><button class="ghost grow" id="notifPick" type="button">Chọn tệp thử</button></div>
-      </div>
-
-      <div data-mode="clip">
-      <ol class="sc-steps">
-        <li>Trong automation MB Bank của Phím tắt dùng tác vụ <b>Copy to Clipboard</b> với <b>Shortcut Input → Body</b> (hoặc Get Clipboard + Text + Copy để nối thêm).</li>
-        <li>Khi ghi: bấm <b>📋</b> → iPhone hỏi thì bấm <b>Paste</b> → xem lại rồi Ghi.</li>
-      </ol>
-      <p class="set-now">Nhược điểm: copy văn bản khác trước khi mở app thì mất thông báo cũ; dán ở app khác có thể dính nội dung ngân hàng.</p>
-      <div class="set-row" style="margin-top:6px"><button class="ghost grow" id="notifTest" type="button">Dán bộ nhớ tạm thử</button></div>
-      </div>
+      <h4 class="sub">Thử</h4>
+      <div class="set-row"><button class="ghost grow" id="notifTest" type="button">Dán thử</button><button class="ghost grow" id="notifPick" type="button">Chọn tệp thử</button></div>
     </section>
     </div>
 
@@ -2600,7 +2586,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v143</p>
+      <p class="sync" id="appVersion">Phiên bản v144</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3100,10 +3086,10 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
 
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
 <input type="file" id="notifFileIn" accept=".txt,text/plain" hidden>
-<div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=143"></script>
-<script src="thu-vien-cau.js?v=143"></script>
-<script src="lock.js?v=143"></script>
+<div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
+<script src="parse-vi.js?v=144"></script>
+<script src="thu-vien-cau.js?v=144"></script>
+<script src="lock.js?v=144"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -9333,10 +9319,11 @@ function startNgay50k(){
     if(!chat) chatLoad();
     if(auto && !txt) return;
     /* v132: không đọc được / bộ nhớ tạm trống → chỉ báo thoáng ở dưới, không chèn câu hướng dẫn vào Chat */
-    if(txt == null){ notifSay(src === "file" ? "Chưa đọc được tệp, thử chọn lại nhé" : "Chưa dán được. Bấm 📋 rồi chọn Paste nhé"); return; }
-    if(!txt){ notifSay(src === "file" ? "Tệp chưa có thông báo nào" : "Bộ nhớ tạm đang trống"); return; }
+    const viaFile = () => notifBarAct(txt == null ? "Chưa dán được" : !txt ? "Bộ nhớ tạm trống" : "Không thấy giao dịch trong bộ nhớ tạm", "Chọn tệp", notifPickFile, "Dán lại", () => notifFromClip(clipRead(), "clip"));
+    if(txt == null){ if(src === "file") notifSay("Chưa đọc được tệp, thử chọn lại nhé"); else viaFile(); return; }
+    if(!txt){ if(src === "file") notifSay("Tệp chưa có thông báo nào"); else viaFile(); return; }
     const r = notifItems(txt);
-    if(!r.items.length){ if(auto) return; notifSay(src === "file" ? "Không thấy giao dịch ngân hàng trong tệp" : "Không thấy giao dịch ngân hàng trong bộ nhớ tạm"); return; }
+    if(!r.items.length){ if(auto) return; if(src === "file") notifSay("Không thấy giao dịch ngân hàng trong tệp"); else viaFile(); return; }
     if(r.items.length){
       const seen = new Set(notifSeenList()), got = new Set();
       const fresh = r.items.filter(it => {
@@ -9346,7 +9333,7 @@ function startNgay50k(){
         return !seen.has(it.nk) && !seen.has(it.nk0) && !notifInBook(it);
       });
       notifSeenAdd([...got]);
-      if(!fresh.length){ if(!auto) notifSay("✓ Không có giao dịch mới"); return; }
+      if(!fresh.length){ if(auto) return; if(src === "clip") notifBarAct("✓ Không có giao dịch mới", "Chọn tệp", notifPickFile, null, null, 8000); else notifSay("✓ Không có giao dịch mới"); return; }
       r.all = r.items; r.items = fresh;
 
     }
@@ -9383,9 +9370,6 @@ function startNgay50k(){
   $("chatClip").addEventListener("pointerdown", e => e.preventDefault());   /* giữ nguyên bàn phím / tiêu điểm */
   /* v141: chế độ tệp, không rời app: Phím tắt tự động hoá lưu thông báo vào tệp TieuGon.txt trên iCloud Drive.
      Bấm 📋 → bảng chọn tệp của iPhone mở ngay trên app → chạm TieuGon.txt → app đọc tệp, không qua bộ nhớ tạm. */
-  var NOTIF_MODE = "ngay50k:notifMode";
-  /* v143: chọn 1 trong 3 cách: relay (Google Sheet, tự động) / file (chọn tệp) / clip (bộ nhớ tạm) */
-  function notifMode(){ const m = lsGet(NOTIF_MODE); return m === "relay" || m === "file" || m === "clip" ? m : (relayUrl() ? "relay" : "file"); }
   /* v142: tự động qua Google Sheet của người dùng: Phím tắt gửi (POST) nội dung thông báo lên Apps Script web app của họ;
      mở app / quay lại app thì app hỏi (GET) các thông báo mới từ lần trước, tách giao dịch, hiện sẵn thẻ chờ Ghi. Không tốn chạm. */
   var RELAY_URL = "ngay50k:relayUrl", RELAY_KEY = "ngay50k:relayKey", RELAY_AT = "ngay50k:relayAt", relayLast = 0, relayBusy = false;
@@ -9407,47 +9391,40 @@ function startNgay50k(){
     } finally { clearTimeout(to); }
   }
   async function relayPull(auto){
-    if(relayBusy || !relayUrl() || !notifOn() || notifMode() !== "relay") return;
+    if(relayBusy || !relayUrl() || !notifOn()) return;
     if(auto && (navigator.onLine === false || Date.now() - relayLast < 15000)) return;
     relayBusy = true; relayLast = Date.now();
     try{
       const items = await relayFetch();
       if(items.length){ lsSet(RELAY_AT, String(Math.max.apply(null, items.map(x => Number(x.at) || 0)))); }
       await notifFromClip(Promise.resolve(items.map(x => String(x.t || "")).join("\n")), "relay", auto);
-      if(!items.length && !auto) notifSay("✓ Không có giao dịch mới");
+      if(!items.length && !auto) notifBarAct("✓ Không có giao dịch mới", "Dán", () => notifFromClip(clipRead(), "clip"), "Chọn tệp", notifPickFile, 8000);
     }catch(e){
-      if(!auto) notifSay(e && e.message === "key" ? "Mã bí mật không khớp với Apps Script" : "Chưa kết nối được Google Sheet, thử lại sau");
+      if(!auto) notifBarAct(e && e.message === "key" ? "Mã bí mật không khớp Apps Script" : "Chưa lấy được từ Google Sheet", "Dán", () => notifFromClip(clipRead(), "clip"), "Chọn tệp", notifPickFile);
     } finally { relayBusy = false; }
   }
-  var notifGoFn = null;
-  function notifBarAct(text, btn, fn){
+  var notifGoFn = null, notifGo2Fn = null;
+  function notifBarAct(text, btn, fn, btn2, fn2, ms){
     const b = $("notifBar"), p = b.querySelector("p");
     if(!p.dataset.t) p.dataset.t = p.textContent;
     p.textContent = text; $("notifGo").textContent = btn; notifGoFn = fn;
-    b.classList.remove("say"); b.hidden = false; clearTimeout(notifTimer); notifTimer = setTimeout(hideNotifBar, 30000);
+    $("notifGo2").hidden = !btn2; if(btn2) $("notifGo2").textContent = btn2; notifGo2Fn = fn2 || null;
+    b.classList.remove("say"); b.hidden = false; clearTimeout(notifTimer); notifTimer = setTimeout(hideNotifBar, ms || 30000);
   }
+  function notifPickFile(){ $("notifFileIn").click(); }
   $("chatClip").onclick = () => {
-    const m = notifMode();
-    if(m === "relay"){ if(relayUrl()) relayPull(false); else notifSay("Chưa kết nối Google Sheet: Cài đặt → Tự ghi từ thông báo"); }
-    else if(m === "file") $("notifFileIn").click();
-    else notifFromClip(clipRead());
+    /* v144: có mạng + có Google Sheet → lấy từ Sheet; không thì dán bộ nhớ tạm; hỏng thì có nút Chọn tệp */
+    if(relayUrl() && navigator.onLine !== false) relayPull(false);
+    else notifFromClip(clipRead(), "clip");
   };
   $("notifFileIn").addEventListener("change", e => {
     const f = e.target.files && e.target.files[0]; e.target.value = "";
     if(!f) return;
     notifFromClip(f.text(), "file");
   });
-  $("notifGo").onclick = () => { const f = notifGoFn; notifGoFn = null; hideNotifBar(); if(f) f(); else notifFromClip(clipRead()); };
+  $("notifGo").onclick = () => { const f = notifGoFn; notifGoFn = notifGo2Fn = null; hideNotifBar(); if(f) f(); else notifFromClip(clipRead(), "clip"); };
+  $("notifGo2").onclick = () => { const f = notifGo2Fn; notifGoFn = notifGo2Fn = null; hideNotifBar(); if(f) f(); };
   $("notifPick").onclick = () => $("notifFileIn").click();
-  function renderNotifMode(){
-    const m = notifMode();
-    document.querySelectorAll("#notifModeSeg button").forEach(b => b.setAttribute("aria-pressed", b.dataset.m === m ? "true" : "false"));
-    document.querySelectorAll("#setNotif [data-mode]").forEach(d => { d.hidden = d.dataset.mode !== m; });
-    $("notifModeNote").innerHTML = m === "relay" ? "Mở app là giao dịch mới <b>tự hiện</b>, không cần chạm. Cần cài Google Sheet một lần (bên dưới) và có mạng."
-      : m === "file" ? "Bấm 📋 → chạm tệp <b>TieuGon.txt</b> trong bảng chọn tệp (lần sau ở mục Gần đây). Không cần mạng, không rời app."
-      : "Bấm 📋 → bấm <b>Paste</b>. Nhanh nhưng dễ mất thông báo khi bạn copy thứ khác.";
-  }
-  document.querySelectorAll("#notifModeSeg button").forEach(b => b.onclick = () => { lsSet(NOTIF_MODE, b.dataset.m); renderNotifMode(); });
   /* cài đặt Google Sheet */
   function relayScript(){
     return [
@@ -9479,9 +9456,9 @@ function startNgay50k(){
   function renderRelaySet(){
     $("relayUrl").value = lsGet(RELAY_URL) || "";
     $("relayKey").textContent = relayKey();
-    $("relayState").textContent = relayUrl() ? "Đang bật: mở app là tự lấy giao dịch mới." : "Chưa kết nối.";
+    $("relayState").innerHTML = relayUrl() ? "Đang dùng: <b>Google Sheet</b> (tự lấy khi mở app; mất mạng thì dán bộ nhớ tạm)." : "Đang dùng: <b>dán bộ nhớ tạm</b> (chưa kết nối Google Sheet), dự phòng chọn tệp.";
   }
-  $("relayUrl").addEventListener("change", e => { lsSet(RELAY_URL, e.target.value.trim()); lsSet(RELAY_AT, String(Date.now() - 2 * 86400000)); if(relayUrl()){ lsSet(NOTIF_MODE, "relay"); renderNotifMode(); } renderRelaySet(); });
+  $("relayUrl").addEventListener("change", e => { lsSet(RELAY_URL, e.target.value.trim()); lsSet(RELAY_AT, String(Date.now() - 2 * 86400000)); renderRelaySet(); });
   $("relayCopy").onclick = async () => {
     try{ await navigator.clipboard.writeText(relayScript()); $("relayCopy").textContent = "Đã chép mã ✓"; }
     catch(e){ $("relayCode").hidden = false; $("relayCode").textContent = relayScript(); }
@@ -9501,7 +9478,7 @@ function startNgay50k(){
   setTimeout(() => relayPull(true), 1500);
   renderClipBtn();
   $("notifX").onclick = hideNotifBar;
-  $("notifTest").onclick = () => notifFromClip(clipRead());
+  $("notifTest").onclick = () => notifFromClip(clipRead(), "clip");
   $("notifOn").addEventListener("change", e => { lsSet(NOTIF_KEY, e.target.checked ? "1" : "0"); renderClipBtn(); });
   document.addEventListener("visibilitychange", () => { if(document.hidden) hideNotifBar(); });
 
@@ -9524,7 +9501,7 @@ function startNgay50k(){
     if(id === "setLearn") renderLearn();
     if(id === "setLock") renderLockSet();
     if(id === "setBank") renderBanks("setBanks", true);
-    if(id === "setNotif"){ $("notifOn").checked = notifOn(); renderNotifMode(); renderRelaySet(); }
+    if(id === "setNotif"){ $("notifOn").checked = notifOn(); renderRelaySet(); }
   }
   /* v118: trang Chat đã học */
   const MISS_WHY = { noitem:"không tìm ra khoản nào", query:"câu hỏi khó", leftover:"thừa chữ không có số tiền", numbers:"nhiều số tiền hơn số khoản", words:"có chữ khó (chia, sửa, %…)", card:"không rõ thẻ nào", who:"không rõ người vay", long:"câu dài", khong_hieu:"máy không hiểu", sai:"bạn báo máy hiểu sai" };
