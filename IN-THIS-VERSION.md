@@ -1,6 +1,13 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v143, ngày 10/10/2026
+**Phiên bản hiện tại:** v144, ngày 10/10/2026
+
+---
+
+## Có gì mới trong v144 (so với v143)
+
+- **📋 tự chọn cách lấy thông báo:** có mạng và đã kết nối Google Sheet → lấy từ Sheet (mở app cũng tự lấy); chưa có Sheet hoặc mất mạng → dán bộ nhớ tạm; dán không được / bộ nhớ tạm trống / không có giao dịch → thanh dưới có nút **Chọn tệp** đọc thẳng TieuGon.txt (kèm "Dán lại"); Sheet lỗi → nút **Dán** và **Chọn tệp**. Bỏ mục chọn 3 cách.
+- Cài đặt → Tự ghi từ thông báo: hướng dẫn một automation duy nhất **"TG · Lưu thông báo MB"** (Append to Text File → Get File → Copy to Clipboard → [Get Contents of URL cho Google Sheet, luôn để cuối]); Sheet đặt tên **"TG · Thông báo ngân hàng"**, dự án Apps Script **"TG Relay"**. Dòng trạng thái cho biết đang dùng cách nào.
 
 ---
 
