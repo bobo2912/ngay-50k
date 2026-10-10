@@ -1,6 +1,12 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v142, ngày 10/10/2026
+**Phiên bản hiện tại:** v143, ngày 10/10/2026
+
+---
+
+## Có gì mới trong v143 (so với v142)
+
+- Cài đặt → Tự ghi từ thông báo gọn lại: chọn **một** trong 3 cách ở mục **Cách đang dùng** (Google Sheet · Chọn tệp · Bộ nhớ tạm), chỉ hiện hướng dẫn của cách đang chọn; nút 📋 làm đúng theo cách đó. Dán URL Google Sheet hợp lệ thì tự chuyển sang cách Google Sheet.
 
 ---
 
