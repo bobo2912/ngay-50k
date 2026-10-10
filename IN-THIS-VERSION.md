@@ -1,6 +1,17 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v144, ngày 10/10/2026
+**Phiên bản hiện tại:** v145, ngày 10/10/2026
+
+---
+
+## Có gì mới trong v145 (so với v144)
+
+- **Đọc nội dung ND đúng hơn:** số tiền trong ND (vd "tra Lan 500,000") không còn bị tách thành giao dịch thứ hai; ngày giờ trong ND không đè ngày giờ giao dịch; ND bị ngắt xuống dòng hoặc có dấu | được nối lại đủ; bỏ dấu " thừa khi lấy từ Google Sheet.
+- **Đọc được số dư nằm giữa câu** (Vietcombank, ACB, VPBank, BIDV, Cake…) và nhận "GD: <chữ>" là nội dung (ACB).
+- **Hai giao dịch thật giống nhau cùng phút không còn bị gộp:** dấu vân tay chống trùng có thêm số dư SD; khoản ghi từ thông báo nhớ dấu vân tay, chỉ khoản ghi tay mới được so "đã có trong sổ" và mỗi khoản ghi tay chỉ khớp một thông báo.
+- **Google Sheet không còn mất thông báo lúc iPhone mất mạng:** phím tắt gửi cả tệp TieuGon.txt, Apps Script (bản mã 2) bỏ dòng đã có, trả TG_OK để phím tắt xoá tệp; tệp không lớn dần. Lấy từng trang 300 dòng tới hết. Có khoá tránh hai thông báo ghi cùng lúc.
+- Đã dùng Sheet thì không cần chép vào bộ nhớ tạm nữa (không ghi đè thứ đang copy); 📋 lúc mất mạng mở thẳng chọn tệp. Câu báo nói đúng nguồn (Sheet / bộ nhớ tạm / tệp); Cài đặt báo khi mã Apps Script còn là bản cũ.
+- Bài thử mới `node tests-notif.js` (20 mẫu thông báo).
 
 ---
 

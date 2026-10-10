@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v144";
+  var K = "ngay50k:errlog", VER = "v145";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -2541,9 +2541,9 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
 
       <h4 class="sub">App lấy thông báo theo thứ tự</h4>
       <ol class="sc-steps">
-        <li><b>Có mạng + đã kết nối Google Sheet</b>: mở app là tự lấy, bấm 📋 để lấy ngay.</li>
-        <li><b>Chưa kết nối Google Sheet hoặc mất mạng</b>: bấm 📋 → <b>Paste</b>, dán từ bộ nhớ tạm.</li>
-        <li><b>Dán không được, không có giao dịch hay không đúng</b>: thanh dưới có nút <b>Chọn tệp</b> để đọc thẳng tệp <b>TieuGon.txt</b>.</li>
+        <li><b>Đã kết nối Google Sheet, có mạng</b>: mở app là tự lấy, bấm 📋 để lấy ngay. Thông báo đến lúc iPhone mất mạng sẽ được gửi bù ở thông báo sau.</li>
+        <li><b>Đã kết nối Google Sheet, mất mạng</b>: bấm 📋 là mở chọn tệp <b>TieuGon.txt</b> (chỉ còn các thông báo chưa gửi được lên Sheet).</li>
+        <li><b>Chưa kết nối Google Sheet</b>: bấm 📋 → <b>Paste</b>, dán từ bộ nhớ tạm; dán không được thì thanh dưới có nút <b>Chọn tệp</b>.</li>
       </ol>
       <p class="set-now">Giao dịch đã ghi hoặc đã bỏ không bao giờ hiện lại; giao dịch cũ hơn 35 ngày được bỏ qua.</p>
 
@@ -2552,8 +2552,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <li><b>Phím tắt</b> → tab <b>Tự động hoá</b> → <b>＋</b> → <b>Thông báo</b> (Notification) → app <b>MB Bank</b> → <b>Add Filter</b>: <b>Title contains</b> "Thông báo biến động số dư". Bật <b>Automation</b>, tắt <b>Notify</b>.</li>
         <li>Tác vụ 1 <b>Append to Text File</b>: nội dung <b>Shortcut Input → Body</b> (chưa thấy Body thì đổi Type sang Notification); chạm chữ thư mục chọn folder iCloud của bạn; <b>File Path</b> = <b>TieuGon.txt</b>; bật <b>Make New Line</b>.</li>
         <li>Tác vụ 2 <b>Get File from Folder</b>: cùng folder đó, path <b>TieuGon.txt</b>, tắt <b>Error If Not Found</b>.</li>
-        <li>Tác vụ 3 <b>Copy to Clipboard</b>: nội dung <b>File</b> (Type <b>Text</b>), bật <b>Local Only</b>, để trống Expire At.</li>
-        <li>(Nếu dùng Google Sheet) Tác vụ 4, <b>luôn để cuối cùng</b>: <b>Get Contents of URL</b> như Phần B.</li>
+        <li>Tác vụ 3, <b>chỉ khi không dùng Google Sheet</b>: <b>Copy to Clipboard</b>: nội dung <b>File</b> (Type <b>Text</b>), bật <b>Local Only</b>, để trống Expire At. Dùng Google Sheet thì bỏ tác vụ này (để thông báo không ghi đè thứ bạn đang copy) và làm tiếp Phần B.</li>
         <li>Chạm tên ở trên cùng, đặt tên <b>TG · Lưu thông báo MB</b>. Phím tắt cũ tên "TieuGon" (nếu có) thì xoá đi.</li>
       </ol>
 
@@ -2562,13 +2561,15 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <li>Mở <b>sheets.new</b> (nên làm trên máy tính), tạo Sheet tên <b>TG · Thông báo ngân hàng</b>.</li>
         <li>Menu <b>Tiện ích mở rộng → Apps Script</b>, đặt tên dự án <b>TG Relay</b>, xoá hết mã có sẵn, dán mã từ nút <b>Chép mã Apps Script</b> bên dưới, bấm Lưu.</li>
         <li><b>Triển khai → Triển khai mới</b> → bánh răng chọn <b>Ứng dụng web</b> → Thực thi với tư cách <b>Tôi</b>, Ai có quyền truy cập <b>Bất kỳ ai</b> → Triển khai → cấp quyền (gặp "chưa xác minh" thì Nâng cao → Đi tới…) → chép <b>URL ứng dụng web</b> (đuôi /exec) dán vào ô dưới, bấm <b>Kiểm tra</b>.</li>
-        <li>Trong automation <b>TG · Lưu thông báo MB</b>, thêm tác vụ cuối <b>Get Contents of URL</b>: URL = địa chỉ /exec; ⌄ → Method <b>POST</b>, Request Body <b>JSON</b>, thêm 2 trường Text: <b>k</b> = mã bí mật bên dưới, <b>t</b> = <b>Shortcut Input → Body</b>.</li>
+        <li>Trong automation <b>TG · Lưu thông báo MB</b>, sau tác vụ 2 thêm <b>Get Contents of URL</b>: URL = địa chỉ /exec; ⌄ → Method <b>POST</b>, Request Body <b>JSON</b>, thêm 2 trường Text: <b>k</b> = mã bí mật bên dưới, <b>t</b> = biến <b>File</b> (tệp lấy ở tác vụ 2, không phải Body). Gửi cả tệp để thông báo nào lỡ lúc mất mạng được gửi bù; Sheet tự bỏ dòng trùng.</li>
+        <li>Thêm <b>If</b>: <b>Contents of URL</b> <b>is</b> <b>TG_OK</b>. Bên trong If: thêm <b>Text</b> gõ một dấu cách, rồi <b>Save File</b>: tắt Ask Where to Save, chọn cùng folder, Subpath <b>TieuGon.txt</b>, bật <b>Overwrite If File Exists</b>. Tệp chỉ được xoá khi Sheet đã nhận, nên không lớn dần và không mất thông báo.</li>
+        <li>Đã cài Sheet từ bản trước v145: chép lại mã Apps Script, dán đè rồi <b>Triển khai → Quản lý triển khai → ✎ → Phiên bản mới</b> (giữ nguyên URL), sau đó sửa phím tắt như 2 bước trên.</li>
       </ol>
       <div class="field"><label for="relayUrl"><span>URL ứng dụng web (đuôi /exec)</span></label><input id="relayUrl" class="inp" inputmode="url" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="https://script.google.com/macros/s/…/exec"></div>
       <p class="set-now">Mã bí mật: <b id="relayKey" style="font-family:ui-monospace,monospace; letter-spacing:.5px"></b> <button class="ib" type="button" id="relayKeyCopy" style="width:auto; padding:0 10px">Chép mã</button></p>
       <div class="set-row"><button class="ghost grow" id="relayCopy" type="button">Chép mã Apps Script</button><button class="ghost grow" id="relayTest" type="button">Kiểm tra</button></div>
       <pre class="errlog" id="relayCode" hidden></pre>
-      <p class="set-now">Thông báo đi qua Google Sheet trong tài khoản Google của chính bạn, chỉ ai có cả địa chỉ /exec lẫn mã bí mật mới đọc được. Sheet tự giữ khoảng 500 thông báo gần nhất. Xoá trắng ô URL để thôi dùng Google Sheet.</p>
+      <p class="set-now">Thông báo đi qua Google Sheet trong tài khoản Google của chính bạn, chỉ ai có cả địa chỉ /exec lẫn mã bí mật mới đọc được. Sheet tự giữ khoảng 1.000 thông báo gần nhất. Xoá trắng ô URL để thôi dùng Google Sheet. Không dùng Sheet thì tệp TieuGon.txt lớn dần, lâu lâu có thể xoá trong app Tệp (giao dịch đã ghi không bị ảnh hưởng).</p>
 
       <h4 class="sub">Thử</h4>
       <div class="set-row"><button class="ghost grow" id="notifTest" type="button">Dán thử</button><button class="ghost grow" id="notifPick" type="button">Chọn tệp thử</button></div>
@@ -2586,7 +2587,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v144</p>
+      <p class="sync" id="appVersion">Phiên bản v145</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3087,9 +3088,9 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
 <input type="file" id="notifFileIn" accept=".txt,text/plain" hidden>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=144"></script>
-<script src="thu-vien-cau.js?v=144"></script>
-<script src="lock.js?v=144"></script>
+<script src="parse-vi.js?v=145"></script>
+<script src="thu-vien-cau.js?v=145"></script>
+<script src="lock.js?v=145"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -5853,9 +5854,10 @@ function startNgay50k(){
     const t = it.t || Date.now(), id = uid();
     let ref = { kind:it.kind, id, day:k };
     const wv = it.w && it.w !== MAIN_W && walletById(it.w) ? { w:it.w } : {};     /* v98: ví của khoản */
-    if(it.kind === "out"){ (state.days[k] = state.days[k] || []).push(Object.assign({ id, amt:it.amt, cat:it.cat || "khac", note:it.note || "", t }, wv)); }
-    else if(it.kind === "card"){ (state.cardTx[k] = state.cardTx[k] || []).push({ id, amt:it.amt, where:it.note || "Chi thẻ", cardId:it.cardId || null, cat:it.cat || "", t }); }
-    else if(it.kind === "in"){ (state.income[k] = state.income[k] || []).push(Object.assign({ id, amt:it.amt, cat:it.cat || "khac", note:it.note || "", t }, wv)); }
+    const nkv = it.nk ? { nk:it.nk } : {};                                          /* v145: khoản ghi từ thông báo ngân hàng nhớ dấu vân tay */
+    if(it.kind === "out"){ (state.days[k] = state.days[k] || []).push(Object.assign({ id, amt:it.amt, cat:it.cat || "khac", note:it.note || "", t }, wv, nkv)); }
+    else if(it.kind === "card"){ (state.cardTx[k] = state.cardTx[k] || []).push(Object.assign({ id, amt:it.amt, where:it.note || "Chi thẻ", cardId:it.cardId || null, cat:it.cat || "", t }, nkv)); }
+    else if(it.kind === "in"){ (state.income[k] = state.income[k] || []).push(Object.assign({ id, amt:it.amt, cat:it.cat || "khac", note:it.note || "", t }, wv, nkv)); }
     else if(it.kind === "xfer"){ (state.xfer = state.xfer || []).push({ id, amt:it.amt, from:it.from || MAIN_W, to:it.to || MAIN_W, date:k, t, note:it.note || "" }); }
     else if(it.kind === "lend" || it.kind === "borrow"){
       const l = it.loanId ? getLoan(it.loanId) : null;
@@ -6857,7 +6859,8 @@ function startNgay50k(){
       /* v136: thông báo ngân hàng: AI đọc cả đoạn, chỉ giữ giao dịch mới của lần dán này */
       const nm = group.find(x => x.notif && x.nkNew);
       if(nm && r && Array.isArray(r.items)){
-        const seen = new Set(notifSeenList()), fresh = new Set(nm.nkNew);
+        /* v145: dấu vân tay mới có thêm SD ở cuối; AI không trả SD nên so theo phần đầu (dấu|tiền|ngày|giờ) */
+        const seen = new Set(notifSeenList().map(k => { const p = String(k).split("|"); return (p[0] === "+" || p[0] === "-") && p.length === 5 ? p.slice(0, 4).join("|") : k; })), fresh = new Set(nm.nkNew);
         const n0 = r.items.length;
         r.items = r.items.filter(it => {
           if(!["out","in","card"].includes(it.kind)) return it.kind !== "bal";
@@ -8713,6 +8716,22 @@ function startNgay50k(){
       }
       return "";
     };
+    /* v145: nội dung giao dịch (ND) chỉ là ghi chú: không tìm số tiền, ngày giờ hay số dư trong đó */
+    const ND_LBL = /(?:^|[\s.,;|(])(?:n[^\s]{1,2}i\s?dung(?:\s?giao\s?d[iị]ch)?|NDung|ND|Description|Remark|Di[eễ]n\s?gi[aả]i)\s*[:：]\s*/i;
+    const FIELD_HEAD = /^\s*[^\s:：]{1,14}(?:\s[^\s:：]{1,10}){0,2}\s*[:：]/;
+    const ND_END = /[\s.,;]\s*(?:SD|S\.D|S[oố]\s?d[uư]|GD|PS|TK|Th[oờ]i\s?gian|Ng[aà]y|Balance)\s*[:：]/i;
+    const splitND = s => {
+      const m = ND_LBL.exec(s);
+      if(!m) return { main:s, nd:null };
+      let nd = s.slice(m.index + m[0].length), rest = "";
+      const nl = nd.indexOf("\n");
+      if(nl >= 0){ rest = nd.slice(nl + 1); nd = nd.slice(0, nl); }
+      const e = nd.match(ND_END);
+      if(e){ rest = nd.slice(e.index) + (rest ? "\n" + rest : ""); nd = nd.slice(0, e.index); }
+      return { main:(s.slice(0, m.index) + " " + rest).trim(), nd:nd.trim() };
+    };
+    /* số dư nằm giữa câu, vd "... lúc 12:30. Số dư 5,000,000 VND. ..." */
+    const SD_ANY = /(?:^|[\s.,;|(])(?:SD|S\.D|S[oố]\s?d[uư](?:\s?(?:kh[aả]\s?d[uụ]ng|hi[eệ]n\s?t[aạ]i|cu[oố]i|m[oớ]i))?|Balance|Available balance)\s*[:：]?\s*(\d[\d.,]{2,})\s*(?:vnd|vnđ|đ|d)?(?!\d)/i;
     /* thông báo ngân hàng hay viết cả giao dịch trên một dòng, ngăn bằng dấu | */
     const isStart = l =>
       l.indexOf("|") >= 0 ||                          /* v129: nhiều thông báo dán liền nhau, mỗi dòng có "|" là một thông báo */
@@ -8724,13 +8743,23 @@ function startNgay50k(){
       .replace(/(VN[DĐ])\s*[|IlJj!\]\)}]+(?![a-zà-ỹđ])\s*/gi, "$1|")
       .replace(/(\d)\s*[\]\)}]\s*(?=[A-ZĐ][A-Za-zĐ])/g, "$1|");
     const raw = fixSep(text).split(/\r?\n/)
-      .map(l => l.replace(/\s+/g, " ").trim()).filter(l => l.length > 1);
+      .map(l => l.replace(/\s+/g, " ").trim().replace(/^["“”]+|["“”,]+$/g, "").trim()).filter(l => l.length > 1);   /* v145: bỏ dấu " bao quanh (dòng lấy từ Google Sheet) */
     const groups = []; let g = null;
     raw.forEach(l => { if(!g || isStart(l)){ g = []; groups.push(g); } g.push(l); });
     const blocks = [];
     groups.forEach(lines => {
       const txt = lines.join("\n");                    /* giữ xuống dòng: nội dung (ND) chỉ lấy tới hết dòng của nó */
-      if(txt.indexOf("|") >= 0){ blocks.push(txt.split("|")); return; }
+      if(txt.indexOf("|") >= 0){
+        /* v145: dòng bị ngắt giữa chừng (không mở đầu bằng "Nhãn:") là phần tiếp theo của trường trước, vd ND dài */
+        const parts = txt.split("|").map(p => p.replace(/\n(?!\s*[^\s:：]{1,14}(?:\s[^\s:：]{1,10}){0,2}\s*[:：])/g, " "));
+        const segs = [];
+        let inND = false;
+        parts.forEach(p => {
+          if(inND && segs.length && !FIELD_HEAD.test(p) && !amtsOf(p).length){ segs[segs.length-1] += " | " + p.trim(); return; }   /* ND có dấu | */
+          segs.push(p); inND = ND_LBL.test(p) && !/\n/.test(p.slice(p.search(ND_LBL)));
+        });
+        blocks.push(segs); return;
+      }
       const segs = [];
       lines.forEach(l => {
         const lastHas = segs.length ? amtsOf(segs[segs.length-1]).length > 0 : false;
@@ -8746,16 +8775,18 @@ function startNgay50k(){
       const flush = () => {
         if(cur && cur.amt >= 1000){
           cur.where = cur.nd ? cleanND(cur.nd) || cleanWhere(cur.where, cur.raw) : cleanWhere(cur.where, cur.raw);
-          if(cur.hm == null){ cur.hm = 12; cur.mi = 0; }
-          if(!cur.day) cur.day = todayKey();
+          if(cur.hm == null){ if(cur.ndT){ cur.hm = cur.ndT.hm; cur.mi = cur.ndT.mi; } else { cur.hm = 12; cur.mi = 0; } }
+          if(!cur.day) cur.day = cur.ndDay || todayKey();   /* ngày trong ND chỉ dùng khi thông báo không có ngày nào khác */
+          delete cur.ndDay; delete cur.ndT; delete cur.ndWeak;
           out.push(cur);
         }
         cur = null;
       };
-      const rec = () => cur || (cur = { amt:0, sd:0, nd:"", where:"", day:"", hm:null, mi:0, first6:card.first6, last4:card.last4, raw:"", pick:true });
+      const rec = () => cur || (cur = { amt:0, sd:0, nd:"", where:"", day:"", hm:null, mi:0, first6:card.first6, last4:card.last4, raw:"", pick:true, ndDay:"", ndT:null });
       segs.forEach(seg => {
-        const s = seg.trim(); if(s.length < 2) return;
-        const c = cardOf(s);
+        const s0 = seg.trim(); if(s0.length < 2) return;
+        const sp = splitND(s0), s = sp.main;
+        const c = s ? cardOf(s) : null;
         if(c){
           if(cur && cur.amt) flush();
           card = c;
@@ -8763,10 +8794,13 @@ function startNgay50k(){
         }
         const balSeg = isBalSeg(s);
         /* v127: "ND: …" là nội dung giao dịch → ghi chú; "SD: …" là số dư sau giao dịch → cập nhật số dư */
-        const ndM = s.match(/^(?:n[^\s]{1,2}i\s?dung(?: giao d[iị]ch)?|NDung|ND|Description|Remark)\s*[:：]\s*(.+)$/i);
-        if(ndM){ const r = rec(); if(!r.nd) r.nd = ndM[1]; }
+        if(sp.nd){ const r = rec(); if(!r.nd || r.ndWeak){ r.nd = sp.nd; r.ndWeak = false; } const nd0 = dayOf(sp.nd), nt0 = timeOf(sp.nd); if(nd0 && !r.ndDay) r.ndDay = nd0; if(nt0 && !r.ndT) r.ndT = nt0; }
+        /* ACB…: "GD: CK DEN NGUYEN VAN B" (GD theo sau là chữ, không phải số tiền) cũng là nội dung */
+        const gdM = !sp.nd && s.match(/(?:^|[\s.,;|])GD\s*[:：](?!\s*[+\-]?\s?\d)\s*([^.;|\n]{3,70})/i);
+        if(gdM){ const r = rec(); if(!r.nd){ r.nd = gdM[1]; r.ndWeak = true; } }
         const sdM = s.match(/^(?:SD|S\.D|s[oố]\s?d[uư](?:\s?(?:kh[aả]\s?d[uụ]ng|hi[eệ]n\s?t[aạ]i|c[uu]ối))?|Balance|Available balance)\s*[:：]?\s*([\d][\d.,]{2,})\s*(?:vnd|vnđ|đ|d)?\b/i);
-        if(sdM && !/^\s?-/.test(sdM[1])){ const v = vnAmount(sdM[1]); if(v > 0){ const r = rec(); if(!r.sd) r.sd = v; } }
+        const sdA = sdM || s.match(SD_ANY);
+        if(sdA && !/^\s?-/.test(sdA[1])){ const v = vnAmount(sdA[1]); if(v > 0){ const r = rec(); if(!r.sd) r.sd = v; } }
         const credSeg = CREDIT.test(s);
         if(!credSeg || opt.credit){
           amtsOf(s).forEach(h => {
@@ -8792,7 +8826,7 @@ function startNgay50k(){
         if(d){ const r = rec(); r.day = d; if(t){ r.hm = t.hm; r.mi = t.mi; } }
         else if(t){ const r = rec(); if(r.hm == null){ r.hm = t.hm; r.mi = t.mi; } }
         if(!balSeg || NDRE.test(s)){ const w = whereOf(s); if(w){ const r = rec(), strong = NDRE.test(s); if(!r.where || (strong && !r.whereStrong)){ r.where = w; r.whereStrong = strong; } } }
-        const r2 = rec(); r2.raw = (r2.raw ? r2.raw + " " : "") + s;
+        const r2 = rec(); r2.raw = (r2.raw ? r2.raw + " " : "") + s0;
       });
       flush();
     });
@@ -9282,7 +9316,9 @@ function startNgay50k(){
       const src = raw[i] || {};
       if(src.sd > 0 && it.kind !== "card") it.sd = src.sd;
       /* v131: dấu vân tay = tiền vào/ra + số tiền + ngày + giờ:phút (đã từng dán là không đưa lại, kể cả khi đã xoá trong Sổ) */
-      it.nk = [it.kind === "in" ? "+" : "-", it.amt, it.date, src.time || ""].join("|");
+      it.nkB = [it.kind === "in" ? "+" : "-", it.amt, it.date, src.time || ""].join("|");
+      /* v145: thêm số dư SD vào dấu vân tay: hai giao dịch thật cùng số tiền, cùng phút vẫn có SD khác nhau */
+      it.nk = src.sd > 0 ? it.nkB + "|" + src.sd : it.nkB;
       it.nk0 = [it.kind, it.amt, it.date, src.time || "", src.sd || 0].join("|");     /* kiểu cũ (v127–v130) */
     });
     return r;
@@ -9301,10 +9337,13 @@ function startNgay50k(){
   var NOTIF_SEEN = "ngay50k:notifSeen";
   function notifSeenList(){ try{ const a = JSON.parse(lsGet(NOTIF_SEEN) || "[]"); return Array.isArray(a) ? a : []; }catch(e){ return []; } }
   function notifSeenAdd(keys){ const a = notifSeenList().filter(k => !keys.includes(k)).concat(keys); lsSet(NOTIF_SEEN, JSON.stringify(a.slice(-1500))); }
-  /* đã có trong sổ chưa: cùng số tiền, cùng ngày, lệch không quá 2 phút */
-  function notifInBook(it){
+  /* đã có trong sổ chưa: cùng số tiền, cùng ngày, lệch không quá 2 phút.
+     v145: chỉ so với khoản ghi tay (khoản ghi từ thông báo mang dấu vân tay nk riêng), mỗi khoản ghi tay chỉ khớp một thông báo */
+  function notifInBook(it, used){
     const bag = it.kind === "card" ? state.cardTx[it.date] : it.kind === "in" ? state.income[it.date] : state.days[it.date];
-    return (bag || []).some(x => x.amt === it.amt && Math.abs(recTime(it.date, x.t) - it.t) <= 120000);
+    const x = (bag || []).find(x => !x.nk && !(used && used.has(x.id)) && x.amt === it.amt && Math.abs(recTime(it.date, x.t) - it.t) <= 120000);
+    if(x && used) used.add(x.id);
+    return !!x;
   }
   function notifBot(html){ chat.msgs.push({ id:uid(), role:"bot", html, t:Date.now() }); }
   function notifSay(text){
@@ -9319,18 +9358,20 @@ function startNgay50k(){
     if(!chat) chatLoad();
     if(auto && !txt) return;
     /* v132: không đọc được / bộ nhớ tạm trống → chỉ báo thoáng ở dưới, không chèn câu hướng dẫn vào Chat */
-    const viaFile = () => notifBarAct(txt == null ? "Chưa dán được" : !txt ? "Bộ nhớ tạm trống" : "Không thấy giao dịch trong bộ nhớ tạm", "Chọn tệp", notifPickFile, "Dán lại", () => notifFromClip(clipRead(), "clip"));
+    const viaFile = () => src === "relay"
+      ? notifBarAct("Google Sheet có thông báo nhưng không thấy giao dịch", "Chọn tệp", notifPickFile, "Dán", () => notifFromClip(clipRead(), "clip"))
+      : notifBarAct(txt == null ? "Chưa dán được" : !txt ? "Bộ nhớ tạm trống" : "Không thấy giao dịch trong bộ nhớ tạm", "Chọn tệp", notifPickFile, "Dán lại", () => notifFromClip(clipRead(), "clip"));
     if(txt == null){ if(src === "file") notifSay("Chưa đọc được tệp, thử chọn lại nhé"); else viaFile(); return; }
-    if(!txt){ if(src === "file") notifSay("Tệp chưa có thông báo nào"); else viaFile(); return; }
+    if(!txt){ if(src === "file") notifSay(relayUrl() ? "Tệp trống: thông báo đã lên Google Sheet, có mạng app sẽ tự lấy" : "Tệp chưa có thông báo nào"); else viaFile(); return; }
     const r = notifItems(txt);
     if(!r.items.length){ if(auto) return; if(src === "file") notifSay("Không thấy giao dịch ngân hàng trong tệp"); else viaFile(); return; }
     if(r.items.length){
-      const seen = new Set(notifSeenList()), got = new Set();
+      const seen = new Set(notifSeenList()), got = new Set(), used = new Set();
       const fresh = r.items.filter(it => {
         if(got.has(it.nk)) return false;                 /* cùng một thông báo bị chép nhiều lần trong bộ nhớ tạm */
         got.add(it.nk);
         if(it.date && it.date < keyOf(new Date(Date.now() - 35 * 86400000))) return false;   /* v139: tệp lưu lâu, bỏ giao dịch quá cũ */
-        return !seen.has(it.nk) && !seen.has(it.nk0) && !notifInBook(it);
+        return !seen.has(it.nk) && !seen.has(it.nkB) && !seen.has(it.nk0) && !notifInBook(it, used);
       });
       notifSeenAdd([...got]);
       if(!fresh.length){ if(auto) return; if(src === "clip") notifBarAct("✓ Không có giao dịch mới", "Chọn tệp", notifPickFile, null, null, 8000); else notifSay("✓ Không có giao dịch mới"); return; }
@@ -9359,7 +9400,7 @@ function startNgay50k(){
         (bal ? ". Dòng <b>🏦 Số dư</b> ở cuối ghi riêng" : "") + "." + dupNote(r.items);
       const items = bal ? r.items.concat([bal]) : r.items;
       /* v136: "Phân tích lại bằng AI" gửi nguyên cả đoạn thông báo đã dán; kết quả AI lọc bỏ các giao dịch đã từng dán trước đó */
-      chat.msgs.push(...tagRetry([{ id:uid(), role:"bot", notif:true, nkNew:r.items.map(it => it.nk), items, intro, introHtml:true, status:items.map(() => "pending"), refs:items.map(() => null), t:Date.now(), src:"local" }],
+      chat.msgs.push(...tagRetry([{ id:uid(), role:"bot", notif:true, nkNew:r.items.map(it => it.nkB), items, intro, introHtml:true, status:items.map(() => "pending"), refs:items.map(() => null), t:Date.now(), src:"local" }],
         "Đây là nguyên văn thông báo biến động số dư của ngân hàng (có thể gồm nhiều thông báo, mỗi dòng một thông báo). Mỗi giao dịch là một khoản: số tiền có dấu - là chi (trừ tiền), dấu + là khoản thu (tiền vào); ghi chú lấy phần sau ND:; ngày giờ lấy đúng theo thông báo; SD là số dư sau giao dịch, không phải khoản chi hay thu.\n\n" + txt.slice(0, 12000)));
     } else notifBot("Mình không thấy giao dịch nào (số tiền có dấu − hoặc +) trong nội dung này.");
   }
@@ -9379,28 +9420,41 @@ function startNgay50k(){
     if(!k){ const a = "abcdefghijkmnpqrstuvwxyz23456789"; k = ""; const r = new Uint32Array(10); (crypto.getRandomValues ? crypto.getRandomValues(r) : r.forEach((_, i) => r[i] = Math.random() * 1e9)); r.forEach(x => k += a[x % a.length]); lsSet(RELAY_KEY, k); }
     return k;
   }
+  var RELAY_V = "ngay50k:relayV";
   async function relayFetch(){
     const u = relayUrl(); if(!u) throw new Error("nourl");
-    const since = Number(lsGet(RELAY_AT)) || 0;
-    const ctl = window.AbortController ? new AbortController() : null, to = setTimeout(() => ctl && ctl.abort(), 15000);
-    try{
-      const r = await fetch(u + (u.indexOf("?") >= 0 ? "&" : "?") + "k=" + encodeURIComponent(relayKey()) + "&since=" + since, { cache:"no-store", signal: ctl ? ctl.signal : undefined });
-      const j = await r.json();
+    let since = Number(lsGet(RELAY_AT)) || 0;
+    const all = [];
+    /* v145: Sheet trả từng trang 300 dòng (more = còn nữa); lấy tiếp tới hết, tối đa 10 trang */
+    for(let page = 0; page < 10; page++){
+      const ctl = window.AbortController ? new AbortController() : null, to = setTimeout(() => ctl && ctl.abort(), 15000);
+      let j;
+      try{
+        const r = await fetch(u + (u.indexOf("?") >= 0 ? "&" : "?") + "k=" + encodeURIComponent(relayKey()) + "&since=" + since, { cache:"no-store", signal: ctl ? ctl.signal : undefined });
+        j = await r.json();
+      } finally { clearTimeout(to); }
       if(!j || !j.ok) throw new Error(j && j.err === "key" ? "key" : "bad");
-      return j.items || [];
-    } finally { clearTimeout(to); }
+      lsSet(RELAY_V, String(j.v || 1));
+      const items = j.items || [];
+      all.push(...items);
+      if(!j.more || !items.length) break;
+      since = Math.max.apply(null, items.map(x => Number(x.at) || 0));
+    }
+    return all;
   }
+  function relayOld(){ return relayUrl() && lsGet(RELAY_V) === "1"; }
   async function relayPull(auto){
     if(relayBusy || !relayUrl() || !notifOn()) return;
     if(auto && (navigator.onLine === false || Date.now() - relayLast < 15000)) return;
     relayBusy = true; relayLast = Date.now();
     try{
       const items = await relayFetch();
-      if(items.length){ lsSet(RELAY_AT, String(Math.max.apply(null, items.map(x => Number(x.at) || 0)))); }
-      await notifFromClip(Promise.resolve(items.map(x => String(x.t || "")).join("\n")), "relay", auto);
-      if(!items.length && !auto) notifBarAct("✓ Không có giao dịch mới", "Dán", () => notifFromClip(clipRead(), "clip"), "Chọn tệp", notifPickFile, 8000);
+      if(items.length){
+        lsSet(RELAY_AT, String(Math.max.apply(null, items.map(x => Number(x.at) || 0))));
+        await notifFromClip(Promise.resolve(items.map(x => String(x.t || "")).join("\n")), "relay", auto);
+      } else if(!auto) notifBarAct("✓ Không có giao dịch mới trên Google Sheet", "Chọn tệp", notifPickFile, "Dán", () => notifFromClip(clipRead(), "clip"), 8000);
     }catch(e){
-      if(!auto) notifBarAct(e && e.message === "key" ? "Mã bí mật không khớp Apps Script" : "Chưa lấy được từ Google Sheet", "Dán", () => notifFromClip(clipRead(), "clip"), "Chọn tệp", notifPickFile);
+      if(!auto) notifBarAct(e && e.message === "key" ? "Mã bí mật không khớp Apps Script" : "Chưa lấy được từ Google Sheet", "Chọn tệp", notifPickFile, "Dán", () => notifFromClip(clipRead(), "clip"));
     } finally { relayBusy = false; }
   }
   var notifGoFn = null, notifGo2Fn = null;
@@ -9413,8 +9467,9 @@ function startNgay50k(){
   }
   function notifPickFile(){ $("notifFileIn").click(); }
   $("chatClip").onclick = () => {
-    /* v144: có mạng + có Google Sheet → lấy từ Sheet; không thì dán bộ nhớ tạm; hỏng thì có nút Chọn tệp */
-    if(relayUrl() && navigator.onLine !== false) relayPull(false);
+    /* v144: có mạng + có Google Sheet → lấy từ Sheet; không thì dán bộ nhớ tạm; hỏng thì có nút Chọn tệp.
+       v145: có Google Sheet mà mất mạng → mở chọn tệp luôn (phím tắt kiểu Sheet không chép vào bộ nhớ tạm nữa) */
+    if(relayUrl()){ if(navigator.onLine !== false) relayPull(false); else notifPickFile(); }
     else notifFromClip(clipRead(), "clip");
   };
   $("notifFileIn").addEventListener("change", e => {
@@ -9427,21 +9482,31 @@ function startNgay50k(){
   $("notifPick").onclick = () => $("notifFileIn").click();
   /* cài đặt Google Sheet */
   function relayScript(){
+    /* v145 (bản mã 2): nhận cả tệp TieuGon.txt, mỗi dòng một thông báo, bỏ dòng đã có (gửi bù thông báo lỡ lúc mất mạng);
+       trả chữ TG_OK để phím tắt biết mà xoá tệp; khoá tránh hai thông báo ghi cùng lúc; trả từng trang 300 dòng (more) */
     return [
-      "// Tiêu Gọn – nhận thông báo ngân hàng từ Phím tắt và trả cho app (chỉ bạn biết địa chỉ + mã bí mật)",
+      "// Tiêu Gọn – nhận thông báo ngân hàng từ Phím tắt và trả cho app (chỉ bạn biết địa chỉ + mã bí mật). Bản mã 2",
       "var SECRET = '" + relayKey() + "';",
+      "var KEEP = 1000;",
       "function sheet_(){ var ss = SpreadsheetApp.getActiveSpreadsheet(); return ss.getSheetByName('ThongBao') || ss.insertSheet('ThongBao'); }",
       "function out_(o){ return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }",
+      "function txt_(t){ return ContentService.createTextOutput(t); }",
       "function doPost(e){",
       "  var d = {};",
       "  try{ d = JSON.parse(e.postData.contents); }catch(err){ d = e.parameter || {}; }",
-      "  if(String(d.k) !== SECRET) return out_({ ok:false, err:'key' });",
-      "  var t = String(d.t || '').trim();",
-      "  if(!t) return out_({ ok:false, err:'empty' });",
-      "  var sh = sheet_();",
-      "  sh.appendRow([Date.now(), t]);",
-      "  if(sh.getLastRow() > 600) sh.deleteRows(1, 100);",
-      "  return out_({ ok:true });",
+      "  if(String(d.k) !== SECRET) return txt_('TG_KEY');",
+      "  var lines = String(d.t || '').split(/\\r?\\n/).map(function(x){ return x.trim(); }).filter(function(x){ return x; });",
+      "  if(!lines.length) return txt_('TG_OK');",
+      "  var lock = LockService.getScriptLock(); lock.waitLock(20000);",
+      "  try{",
+      "    var sh = sheet_(), n = sh.getLastRow(), rows = n ? sh.getRange(1, 1, n, 2).getValues() : [], have = {};",
+      "    rows.forEach(function(r){ have[String(r[1])] = 1; });",
+      "    var at = Math.max(Date.now(), n ? Number(rows[n - 1][0]) + 1 : 0), add = [];",
+      "    lines.forEach(function(x){ if(have[x]) return; have[x] = 1; add.push([at++, x]); });",
+      "    if(add.length) sh.getRange(n + 1, 1, add.length, 2).setNumberFormat('@').setValues(add.map(function(r){ return [String(r[0]), r[1]]; }));",
+      "    if(n + add.length > KEEP + 200) sh.deleteRows(1, n + add.length - KEEP);",
+      "    return txt_('TG_OK');",
+      "  } finally { lock.releaseLock(); }",
       "}",
       "function doGet(e){",
       "  var p = e.parameter || {};",
@@ -9449,14 +9514,14 @@ function startNgay50k(){
       "  var since = Number(p.since || 0), sh = sheet_(), n = sh.getLastRow();",
       "  var rows = n ? sh.getRange(1, 1, n, 2).getValues() : [];",
       "  var items = rows.filter(function(r){ return Number(r[0]) > since; }).map(function(r){ return { at:Number(r[0]), t:String(r[1]) }; });",
-      "  return out_({ ok:true, items:items.slice(-300) });",
+      "  return out_({ ok:true, v:2, items:items.slice(0, 300), more:items.length > 300 });",
       "}"
     ].join("\n");
   }
   function renderRelaySet(){
     $("relayUrl").value = lsGet(RELAY_URL) || "";
     $("relayKey").textContent = relayKey();
-    $("relayState").innerHTML = relayUrl() ? "Đang dùng: <b>Google Sheet</b> (tự lấy khi mở app; mất mạng thì dán bộ nhớ tạm)." : "Đang dùng: <b>dán bộ nhớ tạm</b> (chưa kết nối Google Sheet), dự phòng chọn tệp.";
+    $("relayState").innerHTML = relayUrl() ? "Đang dùng: <b>Google Sheet</b> (tự lấy khi mở app; mất mạng thì chọn tệp)." + (relayOld() ? " ⚠️ Mã Apps Script là bản cũ, nên chép mã mới và triển khai lại." : "") : "Đang dùng: <b>dán bộ nhớ tạm</b> (chưa kết nối Google Sheet), dự phòng chọn tệp.";
   }
   $("relayUrl").addEventListener("change", e => { lsSet(RELAY_URL, e.target.value.trim()); lsSet(RELAY_AT, String(Date.now() - 2 * 86400000)); renderRelaySet(); });
   $("relayCopy").onclick = async () => {
@@ -9470,7 +9535,7 @@ function startNgay50k(){
     const st = $("relayState");
     if(!relayUrl()){ st.textContent = "Địa chỉ phải bắt đầu bằng https://script.google.com/…"; return; }
     st.textContent = "Đang kiểm tra…";
-    try{ const it = await relayFetch(); st.textContent = "✓ Kết nối được. Trong Sheet có " + it.length + " thông báo mới từ lần lấy trước."; }
+    try{ const it = await relayFetch(); st.textContent = "✓ Kết nối được. Trong Sheet có " + it.length + " thông báo mới từ lần lấy trước." + (relayOld() ? " Mã Apps Script đang là bản cũ: chép mã mới, dán đè và triển khai phiên bản mới để gửi bù khi mất mạng." : ""); }
     catch(e){ st.textContent = e && e.message === "key" ? "Kết nối được nhưng mã bí mật không khớp: chép lại mã Apps Script và triển khai lại." : "Không kết nối được. Kiểm tra lại địa chỉ /exec và quyền truy cập \"Anyone\"."; }
   };
   document.addEventListener("visibilitychange", () => { if(!document.hidden) setTimeout(() => relayPull(true), 600); });
