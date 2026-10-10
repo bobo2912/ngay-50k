@@ -1,6 +1,13 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v141, ngày 10/10/2026
+**Phiên bản hiện tại:** v142, ngày 10/10/2026
+
+---
+
+## Có gì mới trong v142 (so với v141)
+
+- **Tự động hoàn toàn qua Google Sheet của bạn:** Phím tắt (automation MB Bank) gửi nội dung thông báo lên một Apps Script trong tài khoản Google của bạn; **mở app hoặc quay lại app là giao dịch mới tự hiện sẵn** trong Chat để bấm Ghi, không cần chạm gì thêm (đang ở màn khác thì có thanh "N giao dịch mới · Xem"). Bấm 📋 để lấy ngay.
+- Cài đặt → Tự ghi từ thông báo: hướng dẫn từng bước, nút **Chép mã Apps Script** (đã gắn sẵn mã bí mật riêng), ô dán URL /exec, nút **Kiểm tra**. Cách chọn tệp vẫn còn làm phương án không cần mạng.
 
 ---
 
