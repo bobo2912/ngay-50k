@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v147";
+  var K = "ngay50k:errlog", VER = "v148";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -1204,6 +1204,19 @@ html{scroll-padding-top:var(--head-h, 100px)}
 .chat-chip b{color:var(--ink); font-weight:700}
 .chat-chip .ch{margin-left:auto; color:var(--muted)}
 .chat-chip[hidden]{display:none}
+/* v148: đang lấy thông báo số dư mới nhất */
+.chat-chip .csync{margin-left:auto; align-self:center; line-height:1; display:inline-flex; align-items:center; gap:6px; font-size:.76rem; color:var(--note); font-weight:600; animation:syncIn .2s ease}
+.chat-chip .csync[hidden]{display:none}
+.chat-chip .csync:not([hidden]) + .ch{margin-left:4px}
+.chat-chip .csync i{width:11px; height:11px; border-radius:50%; border:2px solid currentColor; border-right-color:transparent; animation:syncSpin .7s linear infinite}
+.chat-chip .csync.done{color:var(--ok)}
+.chat-chip .csync.done i{border:0; width:auto; height:auto; animation:none}
+.chat-chip .csync.done i::before{content:"✓"; font-style:normal}
+#chatClip.busy svg{animation:syncPulse 1s ease-in-out infinite; color:var(--note)}
+@keyframes syncSpin{to{transform:rotate(360deg)}}
+@keyframes syncPulse{50%{opacity:.35}}
+@keyframes syncIn{from{opacity:0}}
+@media (prefers-reduced-motion: reduce){ .chat-chip .csync i{animation-duration:2s} #chatClip.busy svg{animation:none} }
 /* màn chat: ô Số dư ví dính ngay dưới thanh đầu trang */
 #tab-chat > #chatToWallet{position:sticky; top:calc(var(--head-h, 100px) + 8px); z-index:29; margin-top:4px; background:var(--glass-strong); background:color-mix(in srgb, var(--flat) 97%, transparent);
   -webkit-backdrop-filter:blur(16px); backdrop-filter:blur(16px)}
@@ -1832,7 +1845,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
   <!-- ================= TAB: TRÒ CHUYỆN ================= -->
   <div id="tab-chat" role="tabpanel">
     <div class="chip-veil" aria-hidden="true"></div>
-    <button type="button" class="chat-chip" id="chatToWallet"><span>Số dư ví</span><b class="num" id="chatBal">–</b><span class="ai-badge" id="chatAI" hidden></span><span class="ch" aria-hidden="true">›</span></button>
+    <button type="button" class="chat-chip" id="chatToWallet"><span>Số dư ví</span><b class="num" id="chatBal">–</b><span class="ai-badge" id="chatAI" hidden></span><span class="csync" id="chatSync" role="status" hidden><i aria-hidden="true"></i><span>Đang cập nhật</span></span><span class="ch" aria-hidden="true">›</span></button>
     <div class="chat-log" id="chatLog" aria-live="polite"></div>
     <div class="chat-dock" id="chatDock">
       <div class="chat-sugg" id="chatSugg"></div>
@@ -2588,7 +2601,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v147</p>
+      <p class="sync" id="appVersion">Phiên bản v148</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3089,9 +3102,9 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
 <input type="file" id="notifFileIn" accept=".txt,text/plain" hidden>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=147"></script>
-<script src="thu-vien-cau.js?v=147"></script>
-<script src="lock.js?v=147"></script>
+<script src="parse-vi.js?v=148"></script>
+<script src="thu-vien-cau.js?v=148"></script>
+<script src="lock.js?v=148"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -9360,10 +9373,10 @@ function startNgay50k(){
     if(auto && !txt) return;
     /* v132: không đọc được / bộ nhớ tạm trống → chỉ báo thoáng ở dưới, không chèn câu hướng dẫn vào Chat */
     const viaFile = () => src === "relay"
-      ? notifBarAct("Google Sheet có thông báo nhưng không thấy giao dịch", "Chọn tệp", notifPickFile, "Dán", () => notifFromClip(clipRead(), "clip"))
+      ? notifBarAct("Có thông báo mới nhưng chưa đọc được giao dịch", "Chọn tệp", notifPickFile, "Dán", () => notifFromClip(clipRead(), "clip"))
       : notifBarAct(txt == null ? "Chưa dán được" : !txt ? "Bộ nhớ tạm trống" : "Không thấy giao dịch trong bộ nhớ tạm", "Chọn tệp", notifPickFile, "Dán lại", () => notifFromClip(clipRead(), "clip"));
     if(txt == null){ if(src === "file") notifSay("Chưa đọc được tệp, thử chọn lại nhé"); else viaFile(); return; }
-    if(!txt){ if(src === "file") notifSay(relayUrl() ? "Tệp trống: thông báo đã lên Google Sheet, có mạng app sẽ tự lấy" : "Tệp chưa có thông báo nào"); else viaFile(); return; }
+    if(!txt){ if(src === "file") notifSay(relayUrl() ? "Chưa có giao dịch mới, có mạng app sẽ tự cập nhật" : "Tệp chưa có thông báo nào"); else viaFile(); return; }
     const r = notifItems(txt);
     if(!r.items.length){ if(auto) return; if(src === "file") notifSay("Không thấy giao dịch ngân hàng trong tệp"); else viaFile(); return; }
     if(r.items.length){
@@ -9381,19 +9394,19 @@ function startNgay50k(){
     }
     /* v142: tự lấy khi mở app: đang ở Chat thì hiện luôn, ở màn khác thì báo thanh "N giao dịch mới · Xem" */
     if(auto && (settingsOpen || currentTab !== "chat")){
-      notifToChat(txt, r); chatSave(); renderChat();
+      notifToChat(txt, r, src); chatSave(); renderChat();
       notifBarAct("📋 " + r.items.length + " giao dịch mới từ ngân hàng", "Xem", () => { if(settingsOpen) closeSettings(); showTab("chat"); chatScrollEnd(true); });
       return;
     }
     if(settingsOpen) closeSettings();
     showTab("chat");
-    notifToChat(txt, r);
+    notifToChat(txt, r, src);
     chatSave(); renderChat(); chatScrollEnd(true);
   }
-  function notifToChat(txt, r){
+  function notifToChat(txt, r, src){
     r = r || notifItems(txt);
     /* v131: bong bóng chỉ liệt kê giao dịch mới (bộ nhớ tạm có thể chứa cả các thông báo cũ đã ghi) */
-    chat.msgs.push({ id:uid(), role:"me", text:"📋 Dán thông báo ngân hàng" + (r.items.length > 1 ? " · " + r.items.length + " giao dịch mới" : ""), t:Date.now() });
+    chat.msgs.push({ id:uid(), role:"me", text:(src === "relay" ? "📋 Thông báo số dư mới" : "📋 Dán thông báo ngân hàng") + (r.items.length > 1 ? " · " + r.items.length + " giao dịch mới" : ""), t:Date.now() });
     if(r.items.length){
       const nOut = r.items.filter(it => it.kind !== "in").length, nIn = r.items.length - nOut, bal = notifBalItem(r.all || r.items);
       const what = nOut && nIn ? nOut + " khoản chi, " + nIn + " khoản thu" : nIn ? nIn + " khoản thu (tiền vào)" : nOut + " khoản trừ tiền";
@@ -9444,22 +9457,37 @@ function startNgay50k(){
     return all;
   }
   function relayOld(){ const v = Number(lsGet(RELAY_V) || 0); return !!relayUrl() && v > 0 && v < 3; }
-  async function relayPull(auto, force){
+  /* v148: dấu hiệu "Đang cập nhật" cạnh Số dư ví + nút 📋 nhấp nháy trong lúc lấy thông báo số dư mới nhất */
+  var syncT = 0, syncAt = 0;
+  function syncShow(state){
+    const el = $("chatSync"), lb = el && el.querySelector("span"); if(!el) return;
+    clearTimeout(syncT);
+    if(state === "busy"){ el.className = "csync"; lb.textContent = "Đang cập nhật"; el.hidden = false; $("chatClip").classList.add("busy"); syncAt = Date.now(); return; }
+    $("chatClip").classList.remove("busy");
+    syncT = setTimeout(() => {
+      if(state === "off"){ el.hidden = true; return; }
+      el.className = "csync done"; lb.textContent = state === "new" ? "Có giao dịch mới" : "Đã cập nhật"; el.hidden = false;
+      syncT = setTimeout(() => { el.hidden = true; }, 1600);
+    }, Math.max(0, 400 - (Date.now() - syncAt)));          /* hiện ít nhất 0,4 giây cho khỏi nháy */
+  }
+  async function relayPull(auto, force, quiet){
     if(relayBusy || !relayUrl() || !notifOn()) return -1;
     if(auto && (navigator.onLine === false || (!force && Date.now() - relayLast < 15000))) return -1;
     relayBusy = true; relayLast = Date.now();
-    if(!auto) notifSay("Đang lấy từ Google Sheet…");
+    if(!quiet) syncShow("busy");
     let items = [];
     try{
       items = await relayFetch();
       if(items.length){
         lsSet(RELAY_AT, String(Math.max.apply(null, items.map(x => Number(x.at) || 0))));
         await notifFromClip(Promise.resolve(items.map(x => String(x.t || "")).join("\n")), "relay", auto);
-      } else if(!auto) notifBarAct("✓ Không có giao dịch mới trên Google Sheet", "Chọn tệp", notifPickFile, "Dán", () => notifFromClip(clipRead(), "clip"), 8000);
+      } else if(!auto) notifBarAct("✓ Không có giao dịch mới", "Chọn tệp", notifPickFile, "Dán", () => notifFromClip(clipRead(), "clip"), 6000);
     }catch(e){
-      if(!auto) notifBarAct(e && e.message === "key" ? "Mã bí mật không khớp Apps Script" : "Chưa lấy được từ Google Sheet", "Chọn tệp", notifPickFile, "Dán", () => notifFromClip(clipRead(), "clip"));
+      if(!quiet) syncShow("off");
+      if(!auto) notifBarAct(e && e.message === "key" ? "Chưa kết nối được, xem lại trong Cài đặt" : "Chưa cập nhật được giao dịch mới", "Chọn tệp", notifPickFile, "Dán", () => notifFromClip(clipRead(), "clip"));
       return -1;
     } finally { relayBusy = false; }
+    if(!quiet) syncShow(items.length ? "new" : "none");
     return items.length;
   }
   /* v147: mở / quay lại app → hỏi Sheet ngay; chưa có gì thì hỏi lại sau 4, 10 và 20 giây
@@ -9472,7 +9500,7 @@ function startNgay50k(){
     relayBurstT.forEach(clearTimeout); relayBurstT = [];
     const step = async i => {
       if(document.hidden) return;
-      const n = await relayPull(true, true);
+      const n = await relayPull(true, true, i > 0);         /* chỉ lần đầu hiện "Đang cập nhật", các lần hỏi lại chạy ngầm */
       if(n > 0) { relayBurstT.forEach(clearTimeout); relayBurstT = []; }
     };
     step(0);
@@ -9573,9 +9601,9 @@ function startNgay50k(){
         : "Không kết nối được. Kiểm tra: URL đúng đuôi /exec, lúc triển khai chọn Ai có quyền truy cập = \"Bất kỳ ai\", và đã bấm Cho phép khi Google hỏi quyền.");
     } finally { btn.disabled = false; btn.textContent = "Kiểm tra"; renderRelaySet(); }
   };
-  document.addEventListener("visibilitychange", () => { if(!document.hidden) setTimeout(relayBurst, 150); else { relayBurstT.forEach(clearTimeout); relayBurstT = []; } });
+  document.addEventListener("visibilitychange", () => { if(!document.hidden) setTimeout(relayBurst, 100); else { relayBurstT.forEach(clearTimeout); relayBurstT = []; } });
   window.addEventListener("online", () => relayPull(true));
-  setTimeout(relayBurst, 300);
+  setTimeout(relayBurst, 100);
   renderClipBtn();
   $("notifX").onclick = hideNotifBar;
   $("notifTest").onclick = () => notifFromClip(clipRead(), "clip");
