@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v138";
+  var K = "ngay50k:errlog", VER = "v139";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -2534,20 +2534,32 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
     <div class="set-page" id="setNotif" hidden>
       <div class="set-head"><button class="set-back" data-back>‹ Cài đặt</button><h2 tabindex="-1">Tự ghi từ thông báo</h2></div>
 <section class="set-group">
-      <p class="set-now">iPhone không cho app nào tự đọc thông báo của app khác. Cách gần tự động nhất: <b>Phím tắt</b> tự chép thông báo trừ tiền của ngân hàng vào bộ nhớ tạm, bạn mở Tiêu Gọn và bấm nút <b>📋</b> cạnh ô chat, app tách số tiền, giờ, nội dung và hỏi lại trước khi ghi.</p>
+      <p class="set-now">iPhone không cho app nào tự đọc thông báo của app khác. Cách gần tự động nhất: <b>Phím tắt</b> lưu từng thông báo biến động số dư của ngân hàng vào một <b>tệp riêng</b> (không đụng bộ nhớ tạm, bạn copy gì khác cũng không mất). Khi mở Tiêu Gọn, bấm nút <b>📋</b> cạnh ô chat để lấy các thông báo đó về, app tách số tiền, giờ, nội dung và hỏi lại trước khi ghi; giao dịch đã ghi tự bỏ qua.</p>
       <label class="sc-use"><input type="checkbox" id="notifOn"> <span>Hiện nút <b>📋</b> cạnh ô chat để ghi từ thông báo</span></label>
-      <h4 class="sub">Cài một lần trong app Phím tắt</h4>
+      <label class="sc-use"><input type="checkbox" id="notifFile"> <span>Lấy thông báo từ tệp qua phím tắt <b>TieuGon</b> <span class="opt">(khuyên dùng)</span></span></label>
+
+      <h4 class="sub">Phím tắt 1: tự lưu thông báo (Tự động hoá)</h4>
       <ol class="sc-steps">
-        <li>Mở <b>Phím tắt</b> → tab <b>Tự động hoá</b> (Automation) → <b>＋</b> → chọn <b>Thông báo</b> (Notification).</li>
-        <li><b>Ứng dụng</b>: chọn app ngân hàng (vd <b>MB Bank</b>). Ở <b>Văn bản chứa</b> (Contains) gõ chữ luôn có trong thông báo trừ tiền, vd <b>GD:</b> hoặc <b>-</b>.</li>
-        <li>Chọn <b>Chạy ngay</b> (Run Immediately), tắt <b>Thông báo khi chạy</b>, bấm <b>Tiếp</b>.</li>
-        <li>Thêm tác vụ <b>Sao chép vào bộ nhớ tạm</b> (Copy to Clipboard), chạm vào ô nội dung, chọn <b>Đầu vào phím tắt</b> (Shortcut Input) → <b>Nội dung</b> (Body) của thông báo.</li>
-        <li>(Nên làm, để không sót khi có nhiều giao dịch liền nhau) chèn trước bước chép: <b>Lấy bộ nhớ tạm</b> (Get Clipboard), rồi <b>Văn bản</b> (Text) gồm <b>Bộ nhớ tạm</b>, xuống dòng, <b>Nội dung</b> (Body); bước chép đổi sang chép ô <b>Văn bản</b> đó. Thông báo mới được nối thêm thay vì đè lên thông báo trước; app tự bỏ qua giao dịch đã ghi.</li>
-        <li>(Tuỳ chọn) thêm <b>Hiện thông báo</b>: "Mở Tiêu Gọn để ghi".</li>
-        <li>Lần sau có tiền trừ: mở Tiêu Gọn → bấm nút <b>📋</b> cạnh ô chat (hoặc Sổ → Ghi chi → <b>Dán thông báo vừa nhận</b>) → iPhone hỏi thì bấm <b>Dán</b> (Paste) → xem lại rồi bấm <b>Ghi</b>.</li>
+        <li><b>Phím tắt</b> → tab <b>Tự động hoá</b> → <b>＋</b> → <b>Thông báo</b> (Notification). Chọn app ngân hàng (vd <b>MB Bank</b>), thêm bộ lọc <b>Title contains</b> "Thông báo biến động số dư".</li>
+        <li>Bật <b>Automation</b>, tắt <b>Notify</b> và <b>Confirm Before Run</b>.</li>
+        <li>Thêm tác vụ <b>Append to Text File</b> (Thêm vào tệp văn bản): nội dung chọn <b>Shortcut Input → Body</b>; ô <b>File Path</b> gõ <b>TieuGon.txt</b>; bật <b>Make New Line</b>.</li>
+        <li>Xoá các tác vụ cũ <b>Get Clipboard / Text / Copy to Clipboard</b> nếu có.</li>
       </ol>
-      <p class="set-now">Nếu Phím tắt không cho chọn nội dung thông báo, vẫn còn cách: chụp màn hình thông báo rồi vào Sổ → Ghi chi → <b>Từ ảnh</b>. Thông báo chỉ được đọc trên máy, không gửi đi đâu.</p>
-      <button class="ghost grow" id="notifTest" type="button" style="width:100%; margin-top:6px">Thử đọc bộ nhớ tạm bây giờ</button>
+      <h4 class="sub">Phím tắt 2: tên <b>TieuGon</b> (để app gọi)</h4>
+      <ol class="sc-steps">
+        <li>Tab <b>Phím tắt</b> → <b>＋</b> tạo phím tắt mới, đặt tên đúng <b>TieuGon</b>.</li>
+        <li>Thêm <b>Get File</b> (Lấy tệp): <b>File Path</b> gõ <b>TieuGon.txt</b>, tắt <b>Error If Not Found</b>.</li>
+        <li>Thêm <b>Copy to Clipboard</b>: nội dung là <b>File</b> vừa lấy, bật <b>Local Only</b>.</li>
+      </ol>
+      <h4 class="sub">Khi ghi</h4>
+      <ol class="sc-steps">
+        <li>Bấm <b>📋</b> cạnh ô chat → app mở phím tắt TieuGon (lần đầu iPhone hỏi thì bấm <b>Mở</b>).</li>
+        <li>Phím tắt chạy xong, bấm <b>◀ Tiêu Gọn</b> ở góc trên bên trái để quay lại.</li>
+        <li>Bấm <b>Dán</b> ở thanh dưới → iPhone hỏi thì bấm <b>Paste</b> → xem lại rồi bấm <b>Ghi</b>.</li>
+      </ol>
+      <div class="field"><label for="notifScName"><span>Tên phím tắt 2</span></label><input id="notifScName" class="inp" autocapitalize="off" spellcheck="false" placeholder="TieuGon"></div>
+      <p class="set-now">Tệp TieuGon.txt nằm trong iCloud Drive → thư mục Shortcuts, chỉ bạn xem được. Giao dịch cũ hơn 35 ngày trong tệp được bỏ qua. Không dùng Phím tắt thì vẫn có thể chụp màn hình thông báo rồi vào Sổ → Ghi chi → <b>Từ ảnh</b>.</p>
+      <div class="set-row" style="margin-top:6px"><button class="ghost grow" id="notifRun" type="button">Thử chạy phím tắt</button><button class="ghost grow" id="notifTest" type="button">Dán bộ nhớ tạm</button></div>
     </section>
     </div>
 
@@ -2562,7 +2574,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v138</p>
+      <p class="sync" id="appVersion">Phiên bản v139</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3062,9 +3074,9 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
 
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=138"></script>
-<script src="thu-vien-cau.js?v=138"></script>
-<script src="lock.js?v=138"></script>
+<script src="parse-vi.js?v=139"></script>
+<script src="thu-vien-cau.js?v=139"></script>
+<script src="lock.js?v=139"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -9302,6 +9314,7 @@ function startNgay50k(){
       const fresh = r.items.filter(it => {
         if(got.has(it.nk)) return false;                 /* cùng một thông báo bị chép nhiều lần trong bộ nhớ tạm */
         got.add(it.nk);
+        if(it.date && it.date < keyOf(new Date(Date.now() - 35 * 86400000))) return false;   /* v139: tệp lưu lâu, bỏ giao dịch quá cũ */
         return !seen.has(it.nk) && !seen.has(it.nk0) && !notifInBook(it);
       });
       notifSeenAdd([...got]);
@@ -9331,11 +9344,35 @@ function startNgay50k(){
   }
   function hideNotifBar(){ clearTimeout(notifTimer); const b = $("notifBar"); if(b) b.hidden = true; }
 
-  $("notifGo").onclick = () => notifFromClip(clipRead());
   /* v128: không tự hiện thanh khi mở app nữa (iPhone không cho biết có thông báo mới hay chưa); dùng nút 📋 cạnh ô chat */
   function renderClipBtn(){ $("chatClip").hidden = !notifOn(); }
   $("chatClip").addEventListener("pointerdown", e => e.preventDefault());   /* giữ nguyên bàn phím / tiêu điểm */
-  $("chatClip").onclick = () => notifFromClip(clipRead());
+  /* v139: chế độ tệp: Phím tắt tự động hoá lưu thông báo vào iCloud Drive/Shortcuts/TieuGon.txt (không đụng bộ nhớ tạm).
+     Bấm 📋 → mở phím tắt "TieuGon" chép tệp vào bộ nhớ tạm → quay lại app → bấm Dán. Trong 2 phút sau khi gọi phím tắt, 📋 dán luôn. */
+  var NOTIF_MODE = "ngay50k:notifMode", NOTIF_SC = "ngay50k:notifSc", notifPull = 0;
+  function notifFileMode(){ return lsGet(NOTIF_MODE) !== "clip"; }
+  function notifScName(){ return (lsGet(NOTIF_SC) || "").trim() || "TieuGon"; }
+  function notifRunSc(){
+    notifPull = Date.now();
+    try{ location.href = "shortcuts://run-shortcut?name=" + encodeURIComponent(notifScName()); }catch(e){}
+  }
+  function showPullBar(){
+    const b = $("notifBar"), p = b.querySelector("p");
+    if(!p.dataset.t) p.dataset.t = p.textContent;
+    p.textContent = "📋 Đã lấy thông báo, bấm Dán để ghi"; $("notifGo").textContent = "Dán";
+    b.classList.remove("say"); b.hidden = false; clearTimeout(notifTimer); notifTimer = setTimeout(hideNotifBar, 90000);
+  }
+  $("chatClip").onclick = () => {
+    if(notifFileMode() && Date.now() - notifPull > 120000) notifRunSc();
+    else { notifPull = 0; notifFromClip(clipRead()); }
+  };
+  $("notifGo").onclick = () => { notifPull = 0; notifFromClip(clipRead()); };
+  document.addEventListener("visibilitychange", () => {
+    if(!document.hidden && notifPull && Date.now() - notifPull < 180000) setTimeout(showPullBar, 250);
+  });
+  $("notifRun").onclick = () => notifRunSc();
+  $("notifFile").addEventListener("change", e => { lsSet(NOTIF_MODE, e.target.checked ? "file" : "clip"); });
+  $("notifScName").addEventListener("change", e => { lsSet(NOTIF_SC, e.target.value.trim()); });
   renderClipBtn();
   $("notifX").onclick = hideNotifBar;
   $("notifTest").onclick = () => notifFromClip(clipRead());
@@ -9361,7 +9398,7 @@ function startNgay50k(){
     if(id === "setLearn") renderLearn();
     if(id === "setLock") renderLockSet();
     if(id === "setBank") renderBanks("setBanks", true);
-    if(id === "setNotif") $("notifOn").checked = notifOn();
+    if(id === "setNotif"){ $("notifOn").checked = notifOn(); $("notifFile").checked = notifFileMode(); $("notifScName").value = lsGet(NOTIF_SC) || ""; }
   }
   /* v118: trang Chat đã học */
   const MISS_WHY = { noitem:"không tìm ra khoản nào", query:"câu hỏi khó", leftover:"thừa chữ không có số tiền", numbers:"nhiều số tiền hơn số khoản", words:"có chữ khó (chia, sửa, %…)", card:"không rõ thẻ nào", who:"không rõ người vay", long:"câu dài", khong_hieu:"máy không hiểu", sai:"bạn báo máy hiểu sai" };
