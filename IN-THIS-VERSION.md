@@ -1,6 +1,15 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v132, ngày 10/10/2026
+**Phiên bản hiện tại:** v133, ngày 10/10/2026
+
+---
+
+## Có gì mới trong v133 (so với v132)
+
+- **Nhiều giao dịch hiện gọn trong một khung:** dán nhiều thông báo (hoặc kể nhiều khoản một lúc) thì mỗi giao dịch là **một dòng** có số thứ tự, nội dung, nhóm, giờ; số tiền **chi màu đỏ (−)**, **thu màu xanh (+)**. Chạm một dòng để mở thẻ sửa đầy đủ, "Thu gọn ▲" để đóng lại. Khung thông báo có tiêu đề "📋 Thông báo ngân hàng · N giao dịch".
+- Dòng **🏦 Số dư sau giao dịch** nằm cuối khung, tách riêng bằng nền nhạt, chạm để cập nhật số dư; "Ghi tất cả" không gồm dòng này.
+- Khoản đã ghi / đã bỏ vẫn ở đúng chỗ trong danh sách với dấu ✓ và nút Hoàn tác / Khôi phục.
+- Bong bóng dán chỉ ghi "📋 Dán thông báo ngân hàng · N giao dịch mới".
 
 ---
 
