@@ -1,6 +1,13 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v146, ngày 10/10/2026
+**Phiên bản hiện tại:** v147, ngày 10/10/2026
+
+---
+
+## Có gì mới trong v147 (so với v146)
+
+- **Nhận giao dịch từ Google Sheet nhanh hơn:** mở / quay lại app là hỏi Sheet gần như ngay (0,15–0,3 giây thay vì 0,6–1,5 giây, bỏ giới hạn 15 giây giữa hai lần); chưa có gì thì tự hỏi lại sau 4, 10 và 20 giây (phím tắt có thể chưa gửi xong), rời app thì dừng. Bấm 📋 hiện "Đang lấy từ Google Sheet…".
+- **Apps Script bản mã 3:** khi không có gì mới thì trả lời ngay, không mở Sheet (nhanh hơn rõ rệt); lúc nhận thông báo chỉ so 400 dòng gần nhất để bỏ trùng. Cài đặt nhắc khi mã còn là bản cũ.
 
 ---
 

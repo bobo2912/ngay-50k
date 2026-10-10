@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v146";
+  var K = "ngay50k:errlog", VER = "v147";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -2588,7 +2588,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v146</p>
+      <p class="sync" id="appVersion">Phiên bản v147</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3089,9 +3089,9 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
 <input type="file" id="notifFileIn" accept=".txt,text/plain" hidden>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=146"></script>
-<script src="thu-vien-cau.js?v=146"></script>
-<script src="lock.js?v=146"></script>
+<script src="parse-vi.js?v=147"></script>
+<script src="thu-vien-cau.js?v=147"></script>
+<script src="lock.js?v=147"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -9443,20 +9443,40 @@ function startNgay50k(){
     }
     return all;
   }
-  function relayOld(){ return relayUrl() && lsGet(RELAY_V) === "1"; }
-  async function relayPull(auto){
-    if(relayBusy || !relayUrl() || !notifOn()) return;
-    if(auto && (navigator.onLine === false || Date.now() - relayLast < 15000)) return;
+  function relayOld(){ const v = Number(lsGet(RELAY_V) || 0); return !!relayUrl() && v > 0 && v < 3; }
+  async function relayPull(auto, force){
+    if(relayBusy || !relayUrl() || !notifOn()) return -1;
+    if(auto && (navigator.onLine === false || (!force && Date.now() - relayLast < 15000))) return -1;
     relayBusy = true; relayLast = Date.now();
+    if(!auto) notifSay("Đang lấy từ Google Sheet…");
+    let items = [];
     try{
-      const items = await relayFetch();
+      items = await relayFetch();
       if(items.length){
         lsSet(RELAY_AT, String(Math.max.apply(null, items.map(x => Number(x.at) || 0))));
         await notifFromClip(Promise.resolve(items.map(x => String(x.t || "")).join("\n")), "relay", auto);
       } else if(!auto) notifBarAct("✓ Không có giao dịch mới trên Google Sheet", "Chọn tệp", notifPickFile, "Dán", () => notifFromClip(clipRead(), "clip"), 8000);
     }catch(e){
       if(!auto) notifBarAct(e && e.message === "key" ? "Mã bí mật không khớp Apps Script" : "Chưa lấy được từ Google Sheet", "Chọn tệp", notifPickFile, "Dán", () => notifFromClip(clipRead(), "clip"));
+      return -1;
     } finally { relayBusy = false; }
+    return items.length;
+  }
+  /* v147: mở / quay lại app → hỏi Sheet ngay; chưa có gì thì hỏi lại sau 4, 10 và 20 giây
+     (thông báo vừa đến thì phím tắt có thể chưa gửi xong lên Sheet). Rời app thì dừng. */
+  var relayBurstT = [], relayBurstAt = 0;
+  function relayBurst(){
+    if(!relayUrl() || !notifOn() || navigator.onLine === false) return;
+    if(Date.now() - relayBurstAt < 3000) return;
+    relayBurstAt = Date.now();
+    relayBurstT.forEach(clearTimeout); relayBurstT = [];
+    const step = async i => {
+      if(document.hidden) return;
+      const n = await relayPull(true, true);
+      if(n > 0) { relayBurstT.forEach(clearTimeout); relayBurstT = []; }
+    };
+    step(0);
+    [4000, 10000, 20000].forEach(ms => relayBurstT.push(setTimeout(() => step(ms), ms)));
   }
   var notifGoFn = null, notifGo2Fn = null;
   function notifBarAct(text, btn, fn, btn2, fn2, ms){
@@ -9486,7 +9506,7 @@ function startNgay50k(){
     /* v145 (bản mã 2): nhận cả tệp TieuGon.txt, mỗi dòng một thông báo, bỏ dòng đã có (gửi bù thông báo lỡ lúc mất mạng);
        trả chữ TG_OK để phím tắt biết mà xoá tệp; khoá tránh hai thông báo ghi cùng lúc; trả từng trang 300 dòng (more) */
     return [
-      "// Tiêu Gọn – nhận thông báo ngân hàng từ Phím tắt và trả cho app (chỉ bạn biết địa chỉ + mã bí mật). Bản mã 2",
+      "// Tiêu Gọn – nhận thông báo ngân hàng từ Phím tắt và trả cho app (chỉ bạn biết địa chỉ + mã bí mật). Bản mã 3",
       "var SECRET = '" + relayKey() + "';",
       "var KEEP = 1000;",
       "function sheet_(){ var ss = SpreadsheetApp.getActiveSpreadsheet(); return ss.getSheetByName('ThongBao') || ss.insertSheet('ThongBao'); }",
@@ -9500,22 +9520,25 @@ function startNgay50k(){
       "  if(!lines.length) return txt_('TG_OK');",
       "  var lock = LockService.getScriptLock(); lock.waitLock(20000);",
       "  try{",
-      "    var sh = sheet_(), n = sh.getLastRow(), rows = n ? sh.getRange(1, 1, n, 2).getValues() : [], have = {};",
+      "    var sh = sheet_(), n = sh.getLastRow(), from = Math.max(1, n - 399), rows = n ? sh.getRange(from, 1, n - from + 1, 2).getValues() : [], have = {};",
       "    rows.forEach(function(r){ have[String(r[1])] = 1; });",
-      "    var at = Math.max(Date.now(), n ? Number(rows[n - 1][0]) + 1 : 0), add = [];",
+      "    var at = Math.max(Date.now(), rows.length ? Number(rows[rows.length - 1][0]) + 1 : 0), add = [];",
       "    lines.forEach(function(x){ if(have[x]) return; have[x] = 1; add.push([at++, x]); });",
       "    if(add.length) sh.getRange(n + 1, 1, add.length, 2).setNumberFormat('@').setValues(add.map(function(r){ return [String(r[0]), r[1]]; }));",
       "    if(n + add.length > KEEP + 200) sh.deleteRows(1, n + add.length - KEEP);",
+      "    if(add.length) PropertiesService.getScriptProperties().setProperty('lastAt', String(add[add.length - 1][0]));",
       "    return txt_('TG_OK');",
       "  } finally { lock.releaseLock(); }",
       "}",
       "function doGet(e){",
       "  var p = e.parameter || {};",
       "  if(String(p.k) !== SECRET) return out_({ ok:false, err:'key' });",
-      "  var since = Number(p.since || 0), sh = sheet_(), n = sh.getLastRow();",
+      "  var since = Number(p.since || 0), last = PropertiesService.getScriptProperties().getProperty('lastAt');",
+      "  if(last && Number(last) <= since) return out_({ ok:true, v:3, items:[], more:false });   // không có gì mới: trả ngay, không mở Sheet",
+      "  var sh = sheet_(), n = sh.getLastRow();",
       "  var rows = n ? sh.getRange(1, 1, n, 2).getValues() : [];",
       "  var items = rows.filter(function(r){ return Number(r[0]) > since; }).map(function(r){ return { at:Number(r[0]), t:String(r[1]) }; });",
-      "  return out_({ ok:true, v:2, items:items.slice(0, 300), more:items.length > 300 });",
+      "  return out_({ ok:true, v:3, items:items.slice(0, 300), more:items.length > 300 });",
       "}"
     ].join("\n");
   }
@@ -9550,9 +9573,9 @@ function startNgay50k(){
         : "Không kết nối được. Kiểm tra: URL đúng đuôi /exec, lúc triển khai chọn Ai có quyền truy cập = \"Bất kỳ ai\", và đã bấm Cho phép khi Google hỏi quyền.");
     } finally { btn.disabled = false; btn.textContent = "Kiểm tra"; renderRelaySet(); }
   };
-  document.addEventListener("visibilitychange", () => { if(!document.hidden) setTimeout(() => relayPull(true), 600); });
+  document.addEventListener("visibilitychange", () => { if(!document.hidden) setTimeout(relayBurst, 150); else { relayBurstT.forEach(clearTimeout); relayBurstT = []; } });
   window.addEventListener("online", () => relayPull(true));
-  setTimeout(() => relayPull(true), 1500);
+  setTimeout(relayBurst, 300);
   renderClipBtn();
   $("notifX").onclick = hideNotifBar;
   $("notifTest").onclick = () => notifFromClip(clipRead(), "clip");
