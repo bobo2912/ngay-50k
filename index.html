@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v128";
+  var K = "ngay50k:errlog", VER = "v129";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -2509,6 +2509,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <li><b>Ứng dụng</b>: chọn app ngân hàng (vd <b>MB Bank</b>). Ở <b>Văn bản chứa</b> (Contains) gõ chữ luôn có trong thông báo trừ tiền, vd <b>GD:</b> hoặc <b>-</b>.</li>
         <li>Chọn <b>Chạy ngay</b> (Run Immediately), tắt <b>Thông báo khi chạy</b>, bấm <b>Tiếp</b>.</li>
         <li>Thêm tác vụ <b>Sao chép vào bộ nhớ tạm</b> (Copy to Clipboard), chạm vào ô nội dung, chọn <b>Đầu vào phím tắt</b> (Shortcut Input) → <b>Nội dung</b> (Body) của thông báo.</li>
+        <li>(Nên làm, để không sót khi có nhiều giao dịch liền nhau) chèn trước bước chép: <b>Lấy bộ nhớ tạm</b> (Get Clipboard), rồi <b>Văn bản</b> (Text) gồm <b>Bộ nhớ tạm</b>, xuống dòng, <b>Nội dung</b> (Body); bước chép đổi sang chép ô <b>Văn bản</b> đó. Thông báo mới được nối thêm thay vì đè lên thông báo trước; app tự bỏ qua giao dịch đã ghi.</li>
         <li>(Tuỳ chọn) thêm <b>Hiện thông báo</b>: "Mở Tiêu Gọn để ghi".</li>
         <li>Lần sau có tiền trừ: mở Tiêu Gọn → bấm nút <b>📋</b> cạnh ô chat (hoặc Sổ → Ghi chi → <b>Dán thông báo vừa nhận</b>) → iPhone hỏi thì bấm <b>Dán</b> (Paste) → xem lại rồi bấm <b>Ghi</b>.</li>
       </ol>
@@ -2528,7 +2529,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v128</p>
+      <p class="sync" id="appVersion">Phiên bản v129</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3028,9 +3029,9 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
 
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=128"></script>
-<script src="thu-vien-cau.js?v=128"></script>
-<script src="lock.js?v=128"></script>
+<script src="parse-vi.js?v=129"></script>
+<script src="thu-vien-cau.js?v=129"></script>
+<script src="lock.js?v=129"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -5709,15 +5710,6 @@ function startNgay50k(){
     let ref = { kind:it.kind, id, day:k };
     const wv = it.w && it.w !== MAIN_W && walletById(it.w) ? { w:it.w } : {};     /* v98: ví của khoản */
     if(it.kind === "out"){ (state.days[k] = state.days[k] || []).push(Object.assign({ id, amt:it.amt, cat:it.cat || "khac", note:it.note || "", t }, wv)); }
-    /* v127: khoản đọc từ thông báo ngân hàng có số dư sau giao dịch (SD) → đặt mốc số dư ngay sau giao dịch đó (khoản ghi sau mốc vẫn được tính) */
-    if(it.kind === "out" && it.sd > 0){
-      const wid = wv.w || MAIN_W, a = balAnchor(wid), at = t + 1000;
-      if(!a || (a.t || 0) < at){
-        const r = balCalc(null, wid), b = Object.assign({ id:uid(), amt:it.sd, t:at, src:"notif" }, wv);
-        if(r){ b.book = Math.round(r.bal); if(!wv.w) b.card = r.debt; } else if(!wv.w) b.card = 0;
-        (state.bals = state.bals || []).push(b); ref.balId = b.id;
-      }
-    }
     else if(it.kind === "card"){ (state.cardTx[k] = state.cardTx[k] || []).push({ id, amt:it.amt, where:it.note || "Chi thẻ", cardId:it.cardId || null, cat:it.cat || "", t }); }
     else if(it.kind === "in"){ (state.income[k] = state.income[k] || []).push(Object.assign({ id, amt:it.amt, cat:it.cat || "khac", note:it.note || "", t }, wv)); }
     else if(it.kind === "xfer"){ (state.xfer = state.xfer || []).push({ id, amt:it.amt, from:it.from || MAIN_W, to:it.to || MAIN_W, date:k, t, note:it.note || "" }); }
@@ -5731,7 +5723,7 @@ function startNgay50k(){
     }
     else if(it.kind === "cardpay"){ const rec = { id, amt:it.amt, date:k, t }; if(it.cardId) rec.cardId = it.cardId; if(wv.w) rec.from = wv.w; (state.cardPay = state.cardPay || []).push(rec); }
     else if(it.kind === "bal"){
-      const r = balCalc(null, wv.w || MAIN_W), rec = Object.assign({ id, amt:it.amt, t:Date.now() }, wv);
+      const r = balCalc(null, wv.w || MAIN_W), rec = Object.assign({ id, amt:it.amt, t:it.balAt || Date.now() }, wv);   /* v129: số dư từ thông báo ngân hàng đặt mốc ngay sau giao dịch */
       if(r){ rec.book = Math.round(r.bal); if(!wv.w) rec.card = r.debt; } else if(!wv.w) rec.card = 0;
       (state.bals = state.bals || []).push(rec); ref.book = rec.book;
     }
@@ -5879,17 +5871,18 @@ function startNgay50k(){
     if(m.items){
       const box = document.createElement("div"); box.className = "prop";
       const intro = document.createElement("div"); intro.className = "msg bot";
-      const pend = m.status.filter(s => s === "pending").length;
+      /* v129: thẻ số dư từ thông báo ngân hàng là lệnh riêng, không nằm trong "Ghi tất cả" */
+      const sep = i => !!(m.items[i] && m.items[i].balAt), pend = m.status.filter((s, i) => s === "pending" && !sep(i)).length;
       if(m.introHtml) intro.innerHTML = m.intro; else intro.innerHTML = (m.intro ? esc(m.intro) + "\n" : "") + (m.items.length > 1 ? "Mình hiểu là có <b>" + m.items.length + " khoản</b>, bạn xem lại rồi bấm Ghi nhé:" : (m.intro ? "Bạn xem lại rồi bấm Ghi nhé:" : "Mình hiểu vậy, đúng không?"));
       if(m.ai) markAI(intro); else if(m.src === "local" || m.src === "learn") markLocal(intro, m.src === "learn");
       box.appendChild(intro);
       m.items.forEach((_, i) => box.appendChild(cardEl(m, i)));
       if(pend > 1){
         const all = document.createElement("div"); all.className = "prop-all";
-        const okAll = m.items.every((it, i) => m.status[i] !== "pending" || !validate(it));
+        const okAll = m.items.every((it, i) => m.status[i] !== "pending" || sep(i) || !validate(it));
         all.innerHTML = '<button type="button">Ghi tất cả (' + pend + ")</button>";
         all.querySelector("button").disabled = !okAll;
-        all.querySelector("button").onclick = () => saveItems(m, m.items.map((_, i) => i));
+        all.querySelector("button").onclick = () => saveItems(m, m.items.map((_, i) => i).filter(i => !sep(i)));
         box.appendChild(all);
       }
       if(m.retry) retryBtn(m, box);
@@ -8414,7 +8407,8 @@ function startNgay50k(){
     const n = parseInt(t.replace(/[^\d]/g, ""), 10);
     return isNaN(n) ? 0 : n;
   }
-  function parseNotif(text){
+  function parseNotif(text, opt){
+    opt = opt || {};   /* opt.credit: lấy cả tiền vào (+) thành khoản thu (v129, dùng cho thông báo dán từ Phím tắt) */
     const out = [];
     const BAL_LBL = /(^|[\s|(\[])(sd|s\.d|s[oốồộ]\s?d[uưứự]|balance|available|h[aạàâ]n\s?m[^\s:|]{1,3}c|c[oòơớ]n\s?l[aạ]i|kh[aả]\s?d[uụ]ng|d[uư]\s?n[oợ])(\b|[\s:.])/i;
     const CREDIT = /(ghi có|ghi co|nhận tiền|nhan tien|nhận được|hoàn tiền|hoan tien|refund|credited|tiền vào|tien vao)/i;
@@ -8510,6 +8504,7 @@ function startNgay50k(){
     };
     /* thông báo ngân hàng hay viết cả giao dịch trên một dòng, ngăn bằng dấu | */
     const isStart = l =>
+      l.indexOf("|") >= 0 ||                          /* v129: nhiều thông báo dán liền nhau, mỗi dòng có "|" là một thông báo */
       /^(thông báo|thong bao|biến động|bien dong)/i.test(l) ||
       /(yesterday|hôm qua|hom qua)\s*,?\s*\d{1,2}:\d{2}/i.test(l) ||
       /\d{1,2}:\d{2}\s?(am|pm)\s*$/i.test(l);
@@ -8561,22 +8556,25 @@ function startNgay50k(){
         if(ndM){ const r = rec(); if(!r.nd) r.nd = ndM[1]; }
         const sdM = s.match(/^(?:SD|S\.D|s[oố]\s?d[uư](?:\s?(?:kh[aả]\s?d[uụ]ng|hi[eệ]n\s?t[aạ]i|c[uu]ối))?|Balance|Available balance)\s*[:：]?\s*([\d][\d.,]{2,})\s*(?:vnd|vnđ|đ|d)?\b/i);
         if(sdM && !/^\s?-/.test(sdM[1])){ const v = vnAmount(sdM[1]); if(v > 0){ const r = rec(); if(!r.sd) r.sd = v; } }
-        if(!CREDIT.test(s)){
+        const credSeg = CREDIT.test(s);
+        if(!credSeg || opt.credit){
           amtsOf(s).forEach(h => {
             const before = s.slice(Math.max(0, h.at - 26), h.at);
             const minus = /^\s?-/.test(h.raw);
             /* "SD TK 0011 -120,000VND" (kiểu Vietcombank): số có dấu trừ là tiền giao dịch dù dòng mở đầu bằng "số dư" */
             if(balSeg && !minus) return;
             if(minus ? /(sd|s[oố]\s?d[uư]|balance)\s*[:：]?\s*$/i.test(before) : (BAL_LBL.test(before) && /[:\s]$/.test(before))) return;
-            if(/\+\s?$/.test(before) || /^\s?\+/.test(h.raw)) return;
+            const plus = /\+\s?$/.test(before) || /^\s?\+/.test(h.raw);
+            if(plus && !opt.credit) return;
+            const inc = plus || (credSeg && !minus);
             const amt = vnAmount(h.raw);
             if(amt < 1000) return;
             const r = rec();
             if(r.amt){
               const keep = { day:r.day, hm:r.hm, mi:r.mi };
               flush();
-              const n = rec(); n.amt = amt; n.day = keep.day; n.hm = keep.hm; n.mi = keep.mi;
-            } else r.amt = amt;
+              const n = rec(); n.amt = amt; n.inc = inc; n.day = keep.day; n.hm = keep.hm; n.mi = keep.mi;
+            } else { r.amt = amt; r.inc = inc; }
           });
         }
         const d = dayOf(s), t = timeOf(s);
@@ -9055,27 +9053,42 @@ function startNgay50k(){
   }
   function notifItems(txt){
     const raw = [], cs = state.cards || [];
-    parseNotif(txt).forEach(p => {
+    parseNotif(txt, { credit:true }).forEach(p => {
+      const time = pad(p.hm) + ":" + pad(p.mi), base = { amt:p.amt, note:p.where === "Chi bằng thẻ" ? "" : (p.where || ""), date:p.day, time, sd:p.sd || 0 };
+      if(p.inc){                                     /* v129: "+" là tiền vào → khoản thu */
+        const n = window.N50KParse.norm(base.note);
+        raw.push(Object.assign(base, { kind:"in", cat:/\bluong\b|salary/.test(n) ? "luong" : /\bthuong\b|bonus/.test(n) ? "thuong" : "khac" }));
+        return;
+      }
       let c = null;
       if(p.first6 && p.last4) c = cs.find(x => x.first6 === p.first6 && x.last4 === p.last4);
       if(!c && p.last4) c = cs.find(x => x.last4 === p.last4);
-      raw.push({ kind: c ? "card" : "out", amt:p.amt, note:p.where || "", date:p.day, time:pad(p.hm) + ":" + pad(p.mi), cardId: c ? c.id : null, sd:p.sd || 0 });
+      raw.push(Object.assign(base, { kind: c ? "card" : "out", cardId: c ? c.id : null, note:base.note || (c ? "Chi bằng thẻ" : "") }));
     });
     const r = aiClean({ items:raw, reply:"" });
-    /* v127: giữ số dư sau giao dịch (SD) để khi bấm Ghi thì cập nhật luôn số dư Tài khoản; nk = dấu vân tay của giao dịch để không đưa vào hai lần */
+    /* nk = dấu vân tay của giao dịch để không đưa vào hai lần; sd = số dư sau giao dịch (đề xuất cập nhật số dư thành thẻ riêng) */
     r.items.forEach((it, i) => {
       const src = raw[i] || {};
-      if(it.kind === "out" && src.sd > 0) it.sd = src.sd;
+      if(src.sd > 0 && it.kind !== "card") it.sd = src.sd;
       it.nk = [it.kind, it.amt, it.date, src.time || "", src.sd || 0].join("|");
     });
     return r;
+  }
+  /* v129: thẻ "Số dư thật" riêng, lấy SD của giao dịch mới nhất; bấm Ghi mới cập nhật, mốc đặt ngay sau giao dịch đó */
+  function notifBalItem(items){
+    const last = items.filter(it => it.sd > 0).sort((a, b) => b.t - a.t)[0];
+    if(!last) return null;
+    const hm = new Date(last.t), b = aiClean({ items:[{ kind:"bal", amt:last.sd, date:last.date, time:pad(hm.getHours()) + ":" + pad(hm.getMinutes()) }] }).items[0];
+    if(!b) return null;
+    b.balAt = last.t + 1000; b.note = "Số dư sau giao dịch " + pad(hm.getHours()) + ":" + pad(hm.getMinutes());
+    return b;
   }
   var NOTIF_SEEN = "ngay50k:notifSeen";
   function notifSeenList(){ try{ const a = JSON.parse(lsGet(NOTIF_SEEN) || "[]"); return Array.isArray(a) ? a : []; }catch(e){ return []; } }
   function notifSeenAdd(keys){ const a = notifSeenList().filter(k => !keys.includes(k)).concat(keys); lsSet(NOTIF_SEEN, JSON.stringify(a.slice(-300))); }
   /* đã có trong sổ chưa: cùng số tiền, cùng ngày, lệch không quá 2 phút */
   function notifInBook(it){
-    const bag = it.kind === "card" ? state.cardTx[it.date] : state.days[it.date];
+    const bag = it.kind === "card" ? state.cardTx[it.date] : it.kind === "in" ? state.income[it.date] : state.days[it.date];
     return (bag || []).some(x => x.amt === it.amt && Math.abs(recTime(it.date, x.t) - it.t) <= 120000);
   }
   function notifBot(html){ chat.msgs.push({ id:uid(), role:"bot", html, t:Date.now() }); }
@@ -9108,11 +9121,13 @@ function startNgay50k(){
     chat.msgs.push({ id:uid(), role:"me", text:"📋 Thông báo ngân hàng: " + (one.length > 140 ? one.slice(0, 140) + "…" : one), t:Date.now() });
     r = r || notifItems(txt);
     if(r.items.length){
-      const last = r.items.filter(it => it.sd).sort((a, b) => b.t - a.t)[0];
-      const intro = "Mình đọc được " + r.items.length + " khoản trừ tiền, bạn xem lại rồi bấm Ghi nhé" +
-        (last ? ". Ghi xong, số dư <b>Tài khoản</b> cập nhật theo SD: <b>" + fmt(last.sd) + "</b>" : "") + ":" + dupNote(r.items);
-      chat.msgs.push({ id:uid(), role:"bot", items:r.items, intro, introHtml:true, status:r.items.map(() => "pending"), refs:r.items.map(() => null), t:Date.now(), src:"local" });
-    } else notifBot("Mình không thấy khoản trừ tiền nào trong nội dung này. Tiền vào thì bạn gõ ví dụ <b>nhận 500k lương</b> nhé.");
+      const nOut = r.items.filter(it => it.kind !== "in").length, nIn = r.items.length - nOut, bal = notifBalItem(r.items);
+      const what = nOut && nIn ? nOut + " khoản chi, " + nIn + " khoản thu" : nIn ? nIn + " khoản thu (tiền vào)" : nOut + " khoản trừ tiền";
+      const intro = "Mình đọc được " + what + ", bạn xem lại rồi bấm Ghi nhé" +
+        (bal ? ". Thẻ cuối là <b>số dư sau giao dịch</b>, bấm Ghi nếu muốn cập nhật số dư Tài khoản" : "") + ":" + dupNote(r.items);
+      const items = bal ? r.items.concat([bal]) : r.items;
+      chat.msgs.push({ id:uid(), role:"bot", items, intro, introHtml:true, status:items.map(() => "pending"), refs:items.map(() => null), t:Date.now(), src:"local" });
+    } else notifBot("Mình không thấy giao dịch nào (số tiền có dấu − hoặc +) trong nội dung này.");
   }
   function hideNotifBar(){ clearTimeout(notifTimer); const b = $("notifBar"); if(b) b.hidden = true; }
 
