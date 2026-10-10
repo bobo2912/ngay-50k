@@ -1,6 +1,13 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v129, ngày 10/10/2026
+**Phiên bản hiện tại:** v130, ngày 10/10/2026
+
+---
+
+## Có gì mới trong v130 (so với v129)
+
+- **Thẻ Số dư thật lấy theo thông báo gần nhất:** khi dán nhiều thông báo, số dư lấy từ giao dịch muộn nhất; các giao dịch cùng phút thì lấy thông báo đến sau (nằm cuối bộ nhớ tạm). Trước đây giao dịch cùng phút bị lấy nhầm thông báo đầu tiên.
+- Thông báo mới nhất đã được ghi trước đó vẫn được dùng để tính số dư, không bị bỏ qua.
 
 ---
 

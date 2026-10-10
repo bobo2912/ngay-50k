@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v129";
+  var K = "ngay50k:errlog", VER = "v130";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -2529,7 +2529,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v129</p>
+      <p class="sync" id="appVersion">Phiên bản v130</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3029,9 +3029,9 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
 
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=129"></script>
-<script src="thu-vien-cau.js?v=129"></script>
-<script src="lock.js?v=129"></script>
+<script src="parse-vi.js?v=130"></script>
+<script src="thu-vien-cau.js?v=130"></script>
+<script src="lock.js?v=130"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -9076,7 +9076,9 @@ function startNgay50k(){
   }
   /* v129: thẻ "Số dư thật" riêng, lấy SD của giao dịch mới nhất; bấm Ghi mới cập nhật, mốc đặt ngay sau giao dịch đó */
   function notifBalItem(items){
-    const last = items.filter(it => it.sd > 0).sort((a, b) => b.t - a.t)[0];
+    /* v130: lấy thông báo gần nhất: giờ muộn nhất; cùng phút thì thông báo nằm sau trong bộ nhớ tạm (Phím tắt nối thông báo mới xuống cuối) */
+    let last = null;
+    items.forEach((it, i) => { if(it.sd > 0 && (!last || it.t >= last.t)) last = it; });
     if(!last) return null;
     const hm = new Date(last.t), b = aiClean({ items:[{ kind:"bal", amt:last.sd, date:last.date, time:pad(hm.getHours()) + ":" + pad(hm.getMinutes()) }] }).items[0];
     if(!b) return null;
@@ -9107,7 +9109,7 @@ function startNgay50k(){
       const seen = notifSeenList(), fresh = r.items.filter(it => !seen.includes(it.nk) && !notifInBook(it));
       notifSeenAdd(r.items.map(it => it.nk));
       if(!fresh.length){ notifSay("✓ Không có giao dịch mới"); return; }
-      r.items = fresh;
+      r.all = r.items; r.items = fresh;
     }
     if(settingsOpen) closeSettings();
     showTab("chat");
@@ -9121,7 +9123,7 @@ function startNgay50k(){
     chat.msgs.push({ id:uid(), role:"me", text:"📋 Thông báo ngân hàng: " + (one.length > 140 ? one.slice(0, 140) + "…" : one), t:Date.now() });
     r = r || notifItems(txt);
     if(r.items.length){
-      const nOut = r.items.filter(it => it.kind !== "in").length, nIn = r.items.length - nOut, bal = notifBalItem(r.items);
+      const nOut = r.items.filter(it => it.kind !== "in").length, nIn = r.items.length - nOut, bal = notifBalItem(r.all || r.items);
       const what = nOut && nIn ? nOut + " khoản chi, " + nIn + " khoản thu" : nIn ? nIn + " khoản thu (tiền vào)" : nOut + " khoản trừ tiền";
       const intro = "Mình đọc được " + what + ", bạn xem lại rồi bấm Ghi nhé" +
         (bal ? ". Thẻ cuối là <b>số dư sau giao dịch</b>, bấm Ghi nếu muốn cập nhật số dư Tài khoản" : "") + ":" + dupNote(r.items);
