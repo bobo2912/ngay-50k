@@ -1,6 +1,12 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v137, ngày 10/10/2026
+**Phiên bản hiện tại:** v138, ngày 10/10/2026
+
+---
+
+## Có gì mới trong v138 (so với v137)
+
+- Dán **một** thông báo (1 giao dịch + dòng số dư) giờ vẫn có nút **Ghi giao dịch** ở dưới khung, không phải chạm mở dòng mới ghi được. Từ 2 giao dịch trở lên vẫn là "Ghi tất cả (N)". Dòng số dư vẫn ghi riêng.
 
 ---
 

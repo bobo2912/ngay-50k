@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v137";
+  var K = "ngay50k:errlog", VER = "v138";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -2562,7 +2562,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v137</p>
+      <p class="sync" id="appVersion">Phiên bản v138</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3062,9 +3062,9 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
 
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=137"></script>
-<script src="thu-vien-cau.js?v=137"></script>
-<script src="lock.js?v=137"></script>
+<script src="parse-vi.js?v=138"></script>
+<script src="thu-vien-cau.js?v=138"></script>
+<script src="lock.js?v=138"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -6048,10 +6048,11 @@ function startNgay50k(){
       box.appendChild(intro);
       if(m.items.length > 1) box.appendChild(batchEl(m, sep));
       else m.items.forEach((_, i) => box.appendChild(cardEl(m, i)));
-      if(pend > 1){
+      /* v138: khung nhiều dòng (vd 1 giao dịch + 1 dòng số dư) luôn có nút ghi, khỏi phải mở từng dòng */
+      if(pend > 1 || (pend === 1 && m.items.length > 1)){
         const all = document.createElement("div"); all.className = "prop-all";
         const okAll = m.items.every((it, i) => m.status[i] !== "pending" || sep(i) || !validate(it));
-        all.innerHTML = '<button type="button">Ghi tất cả (' + pend + ")</button>";
+        all.innerHTML = '<button type="button">' + (pend > 1 ? "Ghi tất cả (" + pend + ")" : "Ghi giao dịch") + "</button>";
         all.querySelector("button").disabled = !okAll;
         all.querySelector("button").onclick = () => saveItems(m, m.items.map((_, i) => i).filter(i => !sep(i)));
         box.appendChild(all);
