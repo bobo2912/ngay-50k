@@ -1,6 +1,12 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v136, ngày 10/10/2026
+**Phiên bản hiện tại:** v137, ngày 10/10/2026
+
+---
+
+## Có gì mới trong v137 (so với v136)
+
+- **Biểu tượng nét mảnh trong vòng tròn xám** thay cho emoji màu ở mọi danh sách giao dịch (Sổ Ngày/Tháng, lịch sử ví, khoản thu, chuyển ví, vay…), gọn và đồng bộ hơn; hợp cả giao diện Sáng, Tối, Pastel. Có sẵn ~60 biểu tượng cho các nhóm và loại khoản; tag tự tạo dùng emoji lạ thì emoji được chuyển xám cho cùng tông.
 
 ---
 
