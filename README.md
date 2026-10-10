@@ -82,6 +82,7 @@ tests-thu-vien.js       chạy mọi câu mẫu của thư viện: node tests-th
 kho-cau-mau.js          kho câu mẫu sinh tự động (~4.300 câu) + câu viết tay + nhánh hội thoại, chỉ dùng để thử
 tests-kho-cau.js        chạy kho câu mẫu, in tỉ lệ máy tự hiểu đúng theo nhóm: node tests-kho-cau.js [-v] [nhóm]
 tests-parse-vi.js       bộ câu mẫu: node tests-parse-vi.js
+tests-notif.js          bộ thông báo ngân hàng mẫu (MB, VCB, TCB, ACB, TPBank, VPBank, BIDV…) cho parseNotif trong index.html: node tests-notif.js
 sw.js                   service worker, giữ app chạy được khi mất mạng
 manifest.webmanifest    tên, icon, màu, chế độ standalone
 fonts/                  font Be Vietnam Pro dạng woff2
