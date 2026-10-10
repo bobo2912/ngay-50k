@@ -1,6 +1,12 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v135, ngày 10/10/2026
+**Phiên bản hiện tại:** v136, ngày 10/10/2026
+
+---
+
+## Có gì mới trong v136 (so với v135)
+
+- **Phân tích lại bằng AI gửi nguyên cả đoạn thông báo đã dán** (đủ mọi dòng, giữ cả SD, ND, ngày giờ) để AI hiểu đúng ngữ cảnh. Kết quả AI tự lọc bỏ các giao dịch đã từng dán trước đó, chỉ giữ giao dịch mới của lần dán này, và nói rõ đã bỏ qua mấy giao dịch.
 
 ---
 
