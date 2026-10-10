@@ -1,6 +1,12 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v148, ngày 10/10/2026
+**Phiên bản hiện tại:** v149, ngày 10/10/2026
+
+---
+
+## Có gì mới trong v149 (so với v148)
+
+- Sửa ô **Số dư ví** bị nhảy dòng lúc đang cập nhật và nhãn ✦ AI lơ lửng giữa ô: vòng xoay giờ nằm đúng chỗ dấu › (không chiếm thêm chỗ), kèm vệt sáng chạy ở mép dưới ô; xong hiện ✓ một chút rồi trở lại ›.
 
 ---
 
