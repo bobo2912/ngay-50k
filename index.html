@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v131";
+  var K = "ngay50k:errlog", VER = "v132";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -2529,7 +2529,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v131</p>
+      <p class="sync" id="appVersion">Phiên bản v132</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3029,9 +3029,9 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
 
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=131"></script>
-<script src="thu-vien-cau.js?v=131"></script>
-<script src="lock.js?v=131"></script>
+<script src="parse-vi.js?v=132"></script>
+<script src="thu-vien-cau.js?v=132"></script>
+<script src="lock.js?v=132"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -5922,7 +5922,7 @@ function startNgay50k(){
     log.innerHTML = "";
     if(!chat.msgs.length){
       const d = document.createElement("div"); d.className = "msg bot";
-      d.textContent = "Hôm nay bạn cần tôi giúp gì nào?";
+      d.textContent = "Chào bạn! Hôm nay bạn thế nào?";
       log.appendChild(d);
     }
     let lastDay = "";
@@ -9106,8 +9106,12 @@ function startNgay50k(){
     try{ txt = String(await (pr || clipRead()) || "").trim(); }catch(e){ txt = null; }
     hideNotifBar();
     if(!chat) chatLoad();
-    const r = txt ? notifItems(txt) : null;
-    if(r && r.items.length){
+    /* v132: không đọc được / bộ nhớ tạm trống → chỉ báo thoáng ở dưới, không chèn câu hướng dẫn vào Chat */
+    if(txt == null){ notifSay("Chưa dán được. Bấm 📋 rồi chọn Paste nhé"); return; }
+    if(!txt){ notifSay("Bộ nhớ tạm đang trống"); return; }
+    const r = notifItems(txt);
+    if(!r.items.length){ notifSay("Không thấy giao dịch ngân hàng trong bộ nhớ tạm"); return; }
+    if(r.items.length){
       const seen = new Set(notifSeenList()), got = new Set();
       const fresh = r.items.filter(it => {
         if(got.has(it.nk)) return false;                 /* cùng một thông báo bị chép nhiều lần trong bộ nhớ tạm */
@@ -9120,9 +9124,7 @@ function startNgay50k(){
     }
     if(settingsOpen) closeSettings();
     showTab("chat");
-    if(txt == null) notifBot("Mình chưa đọc được bộ nhớ tạm. Khi iPhone hỏi thì bấm <b>Dán</b> (Paste) nhé, hoặc nhấn giữ ô chat → Dán thông báo vào rồi gửi.");
-    else if(!txt) notifBot("Bộ nhớ tạm đang trống. Kiểm tra lại Phím tắt có bước <b>Sao chép vào bộ nhớ tạm</b> chưa nhé (Cài đặt → Tự ghi từ thông báo).");
-    else notifToChat(txt, r);
+    notifToChat(txt, r);
     chatSave(); renderChat(); chatScrollEnd(true);
   }
   function notifToChat(txt, r){
