@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v132";
+  var K = "ngay50k:errlog", VER = "v133";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -1263,6 +1263,29 @@ body.kb #tab-chat .chat-sugg{display:none}
 .prop{align-self:stretch; display:flex; flex-direction:column; gap:8px}
 .pcard{background:var(--flat); border:1px solid var(--line); border-radius:18px; padding:11px 12px; display:flex; flex-direction:column; gap:8px}
 .pcard.done{opacity:.75; padding:9px 12px}
+/* v133: nhiều khoản → danh sách gọn, mỗi dòng một giao dịch, chạm để mở ra sửa */
+.pbatch{background:var(--flat); border:1px solid var(--line); border-radius:18px; overflow:hidden}
+.pb-head{display:flex; align-items:baseline; justify-content:space-between; gap:10px; white-space:nowrap; padding:10px 14px 9px; font-size:.84rem; color:var(--muted)}
+.pb-head b{color:var(--ink); font-weight:700}
+.pb-row{display:grid; grid-template-columns:24px minmax(0,1fr) auto; column-gap:10px; align-items:center; width:100%; padding:10px 14px; border:0; border-top:1px solid var(--line);
+  background:none; text-align:left; font:inherit; color:var(--ink); -webkit-tap-highlight-color:transparent; cursor:pointer}
+.pb-row:active{background:color-mix(in srgb, var(--line) 45%, transparent)}
+.pb-n{width:22px; height:22px; border-radius:50%; background:var(--note-soft); color:var(--note); font-size:.72rem; font-weight:800; display:grid; place-items:center}
+.pb-mid{min-width:0; display:flex; flex-direction:column; gap:1px}
+.pb-mid b{font-weight:600; font-size:.93rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.pb-mid small{color:var(--muted); font-size:.76rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.pb-amt{font-weight:800; font-size:.95rem; font-variant-numeric:tabular-nums; white-space:nowrap}
+.pb-amt.out{color:var(--over)} .pb-amt.in{color:var(--ok)}
+.pb-row.warn .pb-n{background:var(--over); color:#fff}
+.pb-row.done .pb-n{background:var(--ok-soft); color:var(--ok)}
+.pb-row.done .pb-mid b, .pb-row.done .pb-amt, .pb-row.skip .pb-mid b, .pb-row.skip .pb-amt{opacity:.55}
+.pb-row.skip .pb-mid b, .pb-row.skip .pb-amt{text-decoration:line-through}
+.pb-row .pb-undo{border:0; background:none; padding:0 0 0 6px; font:inherit; font-size:.76rem; font-weight:700; color:var(--note)}
+.pb-row.bal{border-top:1px dashed var(--line); background:color-mix(in srgb, var(--note-soft) 35%, transparent)}
+.pb-row.bal .pb-n{background:none; font-size:.95rem}
+.pbatch .pcard{border:0; border-top:1px solid var(--line); border-radius:0; background:color-mix(in srgb, var(--note-soft) 30%, transparent)}
+.pb-fold{display:flex; align-items:center; justify-content:space-between; font-size:.8rem; color:var(--muted)}
+.pb-fold button{border:0; background:none; font:inherit; font-weight:700; color:var(--note); padding:2px 0}
 .pcard.skip{opacity:.45}
 .prow{display:flex; flex-wrap:wrap; gap:6px; align-items:center; min-width:0}
 .prow > *{min-width:0}
@@ -2529,7 +2552,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v132</p>
+      <p class="sync" id="appVersion">Phiên bản v133</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3029,9 +3052,9 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
 
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=132"></script>
-<script src="thu-vien-cau.js?v=132"></script>
-<script src="lock.js?v=132"></script>
+<script src="parse-vi.js?v=133"></script>
+<script src="thu-vien-cau.js?v=133"></script>
+<script src="lock.js?v=133"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -5837,12 +5860,63 @@ function startNgay50k(){
     if(q(".pwf")) q(".pwf").onchange = e => { it.from = e.target.value; chatSave(); check(); };
     if(q(".pwt")) q(".pwt").onchange = e => { it.to = e.target.value; chatSave(); check(); };
     if(q(".pd")) q(".pd").onchange = e => { if(/^\d{4}-\d{2}-\d{2}$/.test(e.target.value)){ it.date = e.target.value; const now = new Date(); it.t = it.date === todayKey() ? now.getTime() : new Date(it.date + "T" + pad(now.getHours()) + ":" + pad(now.getMinutes()) + ":00").getTime(); chatSave(); } };
-    q(".no").onclick = () => { m.status[idx] = "skipped"; chatSave(); renderChat(true); };
+    q(".no").onclick = () => { m.status[idx] = "skipped"; delete pbOpen[m.id]; chatSave(); renderChat(true); };
     okB.onclick = () => saveItems(m, [idx]);
     check();
     return el;
   }
+  /* v133: nhiều khoản (nhất là dán nhiều thông báo ngân hàng) → một khung, mỗi giao dịch một dòng có số thứ tự,
+     số tiền chi đỏ / thu xanh, giờ, nhóm; chạm dòng để mở thẻ sửa đầy đủ. Thẻ số dư tách riêng ở cuối. */
+  var pbOpen = {};
+  function pbTitle(it){
+    if(["lend","borrow","repay","collect"].includes(it.kind)){ const l = it.loanId ? getLoan(it.loanId) : null; return KIND_LABEL[it.kind] + ((l ? l.who : it.who) ? ": " + (l ? l.who : it.who) : ""); }
+    if(it.kind === "xfer") return walletName(it.from) + " → " + walletName(it.to);
+    if(it.kind === "cardpay") return "Trả thẻ" + (cardName(it.cardId) ? " " + cardName(it.cardId) : "");
+    return it.note || KIND_LABEL[it.kind];
+  }
+  function batchEl(m, sep){
+    const wrap = document.createElement("div"); wrap.className = "pbatch";
+    const n = m.items.filter((_, i) => !sep(i)).length;
+    const head = document.createElement("div"); head.className = "pb-head";
+    head.innerHTML = "<b>" + (m.notif ? "📋 Thông báo ngân hàng" : "Các khoản vừa nhập") + "</b><span>" + n + " giao dịch</span>";
+    wrap.appendChild(head);
+    let no = 0;
+    m.items.forEach((it, i) => {
+      const isBal = sep(i); if(!isBal) no++;
+      const st = m.status[i];
+      if(st === "pending" && pbOpen[m.id] === i){
+        const c = cardEl(m, i);
+        const f = document.createElement("div"); f.className = "pb-fold";
+        f.innerHTML = "<span>" + (isBal ? "🏦 Số dư" : "Giao dịch " + no) + "</span><button type=\"button\">Thu gọn ▲</button>";
+        f.querySelector("button").onclick = () => { delete pbOpen[m.id]; renderChat(true); };
+        c.insertBefore(f, c.firstChild);
+        wrap.appendChild(c); return;
+      }
+      const row = document.createElement(st === "pending" ? "button" : "div");
+      if(st === "pending") row.type = "button";
+      const warn = st === "pending" && !isBal && validate(it);
+      row.className = "pb-row" + (isBal ? " bal" : "") + (st === "saved" ? " done" : st === "skipped" ? " skip" : "") + (warn ? " warn" : "");
+      const tm = new Date(it.t || Date.now()), hm = pad(tm.getHours()) + ":" + pad(tm.getMinutes()) + (it.date && it.date !== todayKey() ? " " + fmtD(it.date) : "");
+      const sign = it.kind === "in" ? "+" : (it.kind === "bal" || it.kind === "xfer") ? "" : "−";
+      const icon = it.kind === "out" || it.kind === "card" ? tagOf(it.cat).icon + " " + tagOf(it.cat).label : it.kind === "in" ? (INC.find(x => x.id === it.cat) || INC[INC.length-1]).icon + " Thu" : KIND_ICON[it.kind] + " " + KIND_LABEL[it.kind];
+      const src = it.kind === "card" ? " · 💳 " + (cardName(it.cardId) || "thẻ") : (it.w && it.w !== MAIN_W && multiW()) ? " · " + walletName(it.w) : "";
+      const title = isBal ? "Số dư sau giao dịch " + pad(tm.getHours()) + ":" + pad(tm.getMinutes()) : pbTitle(it);
+      const sub = isBal ? (st === "saved" ? "✓ Đã cập nhật số dư" : st === "skipped" ? "Không cập nhật" : "Chạm để cập nhật số dư")
+        : st === "saved" ? "✓ Đã ghi · " + hm : st === "skipped" ? "Đã bỏ · " + hm : (warn ? "⚠ " + warn : icon + " · " + hm + src);
+      row.innerHTML = '<span class="pb-n">' + (isBal ? "🏦" : st === "saved" ? "✓" : no) + '</span><span class="pb-mid"><b></b><small></small></span><span class="pb-amt ' + (sign === "+" ? "in" : sign ? "out" : "") + '">' + sign + fmt(it.amt).replace("đ", "") + "</span>";
+      row.querySelector("b").textContent = title; row.querySelector("small").textContent = sub;
+      if(st === "pending") row.onclick = () => { pbOpen[m.id] = i; renderChat(true); };
+      else {
+        const u = document.createElement("button"); u.type = "button"; u.className = "pb-undo"; u.textContent = st === "saved" ? "Hoàn tác" : "Khôi phục";
+        u.onclick = () => { if(st === "saved"){ uncommit(m.refs[i]); m.refs[i] = null; persist(true); renderAll(); } m.status[i] = "pending"; chatSave(); renderChat(true); };
+        row.querySelector("small").appendChild(u);
+      }
+      wrap.appendChild(row);
+    });
+    return wrap;
+  }
   function saveItems(m, idxs){
+    if(pbOpen[m.id] != null && idxs.includes(pbOpen[m.id])) delete pbOpen[m.id];
     const done = [];
     idxs.forEach(i => { if(m.status[i] !== "pending" || validate(m.items[i])) return; m.refs[i] = commit(m.items[i]); m.status[i] = "saved"; done.push(i); });
     if(!done.length) return;
@@ -5873,10 +5947,11 @@ function startNgay50k(){
       const intro = document.createElement("div"); intro.className = "msg bot";
       /* v129: thẻ số dư từ thông báo ngân hàng là lệnh riêng, không nằm trong "Ghi tất cả" */
       const sep = i => !!(m.items[i] && m.items[i].balAt), pend = m.status.filter((s, i) => s === "pending" && !sep(i)).length;
-      if(m.introHtml) intro.innerHTML = m.intro; else intro.innerHTML = (m.intro ? esc(m.intro) + "\n" : "") + (m.items.length > 1 ? "Mình hiểu là có <b>" + m.items.length + " khoản</b>, bạn xem lại rồi bấm Ghi nhé:" : (m.intro ? "Bạn xem lại rồi bấm Ghi nhé:" : "Mình hiểu vậy, đúng không?"));
+      if(m.introHtml) intro.innerHTML = m.intro; else intro.innerHTML = (m.intro ? esc(m.intro) + "\n" : "") + (m.items.length > 1 ? "Mình hiểu là có <b>" + m.items.length + " khoản</b>, chạm vào từng dòng nếu cần sửa:" : (m.intro ? "Bạn xem lại rồi bấm Ghi nhé:" : "Mình hiểu vậy, đúng không?"));
       if(m.ai) markAI(intro); else if(m.src === "local" || m.src === "learn") markLocal(intro, m.src === "learn");
       box.appendChild(intro);
-      m.items.forEach((_, i) => box.appendChild(cardEl(m, i)));
+      if(m.items.length > 1) box.appendChild(batchEl(m, sep));
+      else m.items.forEach((_, i) => box.appendChild(cardEl(m, i)));
       if(pend > 1){
         const all = document.createElement("div"); all.className = "prop-all";
         const okAll = m.items.every((it, i) => m.status[i] !== "pending" || sep(i) || !validate(it));
@@ -9130,15 +9205,14 @@ function startNgay50k(){
   function notifToChat(txt, r){
     r = r || notifItems(txt);
     /* v131: bong bóng chỉ liệt kê giao dịch mới (bộ nhớ tạm có thể chứa cả các thông báo cũ đã ghi) */
-    const lines = r.items.map(it => (it.kind === "in" ? "+" : "−") + fmt(it.amt) + " · " + pad(new Date(it.t).getHours()) + ":" + pad(new Date(it.t).getMinutes()) + (it.date !== todayKey() ? " " + fmtD(it.date) : ""));
-    chat.msgs.push({ id:uid(), role:"me", text:"📋 Thông báo ngân hàng mới" + (lines.length ? ":\n" + lines.join("\n") : ""), t:Date.now() });
+    chat.msgs.push({ id:uid(), role:"me", text:"📋 Dán thông báo ngân hàng" + (r.items.length > 1 ? " · " + r.items.length + " giao dịch mới" : ""), t:Date.now() });
     if(r.items.length){
       const nOut = r.items.filter(it => it.kind !== "in").length, nIn = r.items.length - nOut, bal = notifBalItem(r.all || r.items);
       const what = nOut && nIn ? nOut + " khoản chi, " + nIn + " khoản thu" : nIn ? nIn + " khoản thu (tiền vào)" : nOut + " khoản trừ tiền";
-      const intro = "Mình đọc được " + what + ", bạn xem lại rồi bấm Ghi nhé" +
-        (bal ? ". Thẻ cuối là <b>số dư sau giao dịch</b>, bấm Ghi nếu muốn cập nhật số dư Tài khoản" : "") + ":" + dupNote(r.items);
+      const intro = "Mình đọc được " + what + (items1 => items1 > 1 ? ", chạm vào dòng nếu cần sửa rồi bấm <b>Ghi tất cả</b>" : ", bạn xem lại rồi bấm Ghi nhé")(r.items.length) +
+        (bal ? ". Dòng <b>🏦 Số dư</b> ở cuối ghi riêng" : "") + "." + dupNote(r.items);
       const items = bal ? r.items.concat([bal]) : r.items;
-      chat.msgs.push({ id:uid(), role:"bot", items, intro, introHtml:true, status:items.map(() => "pending"), refs:items.map(() => null), t:Date.now(), src:"local" });
+      chat.msgs.push({ id:uid(), role:"bot", notif:true, items, intro, introHtml:true, status:items.map(() => "pending"), refs:items.map(() => null), t:Date.now(), src:"local" });
     } else notifBot("Mình không thấy giao dịch nào (số tiền có dấu − hoặc +) trong nội dung này.");
   }
   function hideNotifBar(){ clearTimeout(notifTimer); const b = $("notifBar"); if(b) b.hidden = true; }
