@@ -11,7 +11,7 @@
   "use strict";
   const strip = s => String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/đ/g, "d").replace(/Đ/g, "D");
   const norm = s => strip(s).toLowerCase();
-  const hasMarks = s => /[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i.test(s);
+  const hasMarks = s => /[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổổơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i.test(s);
   const pad = n => String(n).padStart(2, "0");
   const keyOf = d => d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
   const addDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
@@ -184,7 +184,7 @@
     ["hieuhy",   ["đám cưới","mừng cưới","đi đám cưới","ăn cưới","đi cưới","đám hỏi","phong bì","sinh nhật","quà","quà sinh nhật","quà tặng","tặng quà","đám hiếu","đám ma","đám tang","viếng","phúng viếng","biếu","mừng","mừng tuổi","lì xì cho","li xi cho","đầy tháng","thôi nôi","tân gia","hoa","mua hoa","bó hoa","giỗ","đồ cúng","cúng","vàng mã","mừng thọ","quà tết","biếu tết","quà 20/10","quà 8/3","quà valentine","gửi mẹ","gửi bố","gửi bố mẹ","biếu bố mẹ","cho bố mẹ","cho mẹ","cho bố","hiếu hỷ","đi viếng"]],
     ["tuthien",  ["từ thiện","ủng hộ","công đức","cúng dường","chùa","quyên góp","nhà thờ","phóng sinh","giúp đỡ","ủng hộ lũ lụt","quỹ"]],
     ["suachua",  ["vá săm","thay săm","vá lốp xe","sửa xe","sửa","thay nhớt","rửa xe","bảo dưỡng","bảo dưỡng xe","thay lốp","vá xe","vá lốp","bơm xe","sửa điện thoại","thay màn hình","thay pin","sửa máy tính","sửa laptop","sửa máy giặt","sửa điều hoà","sửa điều hòa","sửa tủ lạnh","bảo dưỡng điều hoà","bảo dưỡng điều hòa","vệ sinh điều hoà","vệ sinh điều hòa","thợ điện","thợ nước","sửa ống nước","sửa khoá","sửa khóa","đăng kiểm","thay phanh","thay má phanh","thay ắc quy","ắc quy","sơn xe","độ xe","thay dầu","sửa chữa","bảo hành","thay xích","thay săm","sửa giày","sửa quần áo","may đo","sửa đồng hồ"]],
-    ["khac",     ["phí chuyển khoản","phí ngân hàng","phí thường niên","phí sms","lãi thẻ","phí trả chậm","thuế","phạt","tiền phạt","phạt nguội","rút tiền","phí rút tiền"]]
+    ["khac",     ["phí chuyển khoản","phí ngân hàng","phí thường niên","phí sms","lãi thẻ","phí trả chậm","thuế","phạt","tiền phạt","phạt nguội","رút tiền","phí rút tiền"]]
   ];
   const AMBIG = new Set(["cho","cho con","cha","con","ca","sua","ao","quan","but","vo","the","tra","an","son","chó","chợ","nuoc","che","bo","ga","dau","keo","hoa","cam","le","nho","bo","mang","hanh","duong","sach","hoc","sang","trua","toi","bua","ban","bia","banh","kem","nem","com","mi","bun","pho","oc","tom","cua","muc","ngan","ga_","chay","bar","lon","tour_"]);
   /* các từ không dấu vẫn chắc nghĩa dù gõ không dấu */
@@ -223,7 +223,7 @@
   /* có dấu mà khác dấu của từ nối thì không phải từ nối */
   const isSplit = (O, N, j) => { const w = N[j]; if(!SPLIT_WORDS.includes(w) && w !== "sau" && w !== "do") return false; const o = clean(O[j] || "").toLowerCase(); return !hasMarks(o) || o === SPLIT_MARK[w]; };
   function tokenize(text){
-    const O = String(text).replace(/[ ]/g, " ").replace(/(\d)\s*([kK])\b/g, "$1$2")
+    const O = String(text).replace(/[ ]/g, " ").replace(/(\d)\s*([kK])\b/g, "$1$2")
       .replace(/(\d[\d.,]*\s*(?:k|đ|d|ngh|nghìn|ngàn|ngan|nghin|tr|triệu|trieu)?)\s*\/\s*(?=\p{L})/giu, "$1 mỗi ")   /* v122: "35k/ly" = 35k mỗi ly */
       .split(/\s+/).map(w => w.trim()).filter(Boolean);
     return pair(O, O.map(w => clean(norm(w))));
@@ -643,7 +643,7 @@
   const BRANDS = new Set(["grab","grab bike","grab car","be","xanh sm","gojek","taxi","shopee","lazada","tiki","tiktok","tiktok shop","sendo","highlands","starbucks","phuc long","katinat","the coffee house","coffee house","cong ca phe","trung nguyen","gong cha","tocotoco","mixue","koi","kfc","lotteria","jollibee","mcdonald","mcdonalds","burger king","domino","pizza hut","winmart","vinmart","coopmart","bach hoa xanh","bhx","lotte mart","aeon","big c","emart","circle k","gs25","7-eleven","ministop","family mart","cgv","lotte cinema","bhd","galaxy cinema","netflix","spotify","youtube","icloud","viettel","vinaphone","mobifone","fpt","evn","petrolimex","pharmacity","long chau","an khang","uniqlo","zara","nike","adidas","vietjet","vietnam airlines","bamboo","agoda","booking","traveloka","airbnb","grabfood","shopeefood","befood","baemin","guardian","watsons","hasaki","fahasa","dien may xanh","the gioi di dong","fpt shop","cellphones","ikea","decathlon","bun dau","pho thin","pho 10"]);
   const DICTN = new Set(DICT.map(d => d.n));
   /* chữ dùng để hỏi / chỉ thời gian: không coi là tên nơi, nội dung */
-  const STOPQ = new Set(("tieu chi xai het ton bao nhieu bn thang tuan nam ngay hom nay qua truoc roi mua lan lien ke cac khoan nhung gi nao may o dau cho ai voi va cua minh toi tien tong la khi nao gan nhat cuoi cung lan cuoi trung binh moi mot tim kiem xem liet co khong chua da duoc den toi tu tren duoi hon it nhieu nhat bao lau ve di an uong the tai khoan vi so du con lai sao vay_ nhi a nhe nha oi thi cai gia tri giao dich lich su chuyen gui nhan tra no vay muon dong nop ki ky dot sang trua chieu toi dem cuoi dau ").split(" ").filter(Boolean));
+  const STOPQ = new Set(("tieu chi xai het ton bao nhieu bn thang tuan nam ngay hom nay qua truoc roi mua lan lien ke cac khoan nhung gi nao may o dau cho ai voi va cua minh toi tien tong la khi nao gan nhat cuoi cung lan cuoi trung binh moi mot tim kiem xem liet co khong chua da duoc den toi tu tuyên duoi hon it nhieu nhat bao lau ve di an uong the tai khoan vi so du con lai sao vay_ nhi a nhe nha oi thi cai gia tri giao dịch lịch su chuyen gui nhan tra no vay muon dong nop ki ky dot sang trua chieu toi dem cuoi dau ").split(" ").filter(Boolean));
   const FAMILY = ["mẹ","bố","ba","má","vợ","chồng","ông","bà","ông bà","bố mẹ","ba mẹ","anh hai","chị hai","em gái","em trai","con gái","con trai","sếp"];
   function knownIn(text, ctx){
     const know = ctx && ctx.know; if(!know || !know.ng) return null;
@@ -779,7 +779,7 @@
       return subj({ q:"avg", unit });
     }
     /* "tìm grab", "tìm khoản bún chả", "tra cứu highlands" */
-    const mf = n.match(/^ (?:tim|tim kiem|tra cuu|loc|search) (?:khoan |giao dich |cac khoan |nhung khoan )?(.+?) $/);
+    const mf = n.match(/^ (?:tim|tim kiem|tra cuu|loc|search) (?:khoan |giao dịch |cac khoan |nhung khoan )?(.+?) $/);
     if(mf){ const q = per({ q:"find" }); if(K){ q.kw = K.kw; q.kwLabel = K.label; } else if(P.length){ q.who = P[0]; } else { q.kw = mf[1].replace(/ (thang nay|thang truoc|tuan nay|hom nay|hom qua|di|nhe|giup|voi)$/g, "").trim(); q.kwLabel = q.kw; } if(tagOf0 && !q.kw) q.tag = tagOf0; return q; }
     /* "giao dịch với Nam", "đã chuyển cho mẹ bao nhiêu", "Nam đã trả bao nhiêu" (không phải hỏi nợ) */
     if(P.length && !K && !/ (no|vay|muon) /.test(n) && / (bao nhieu|bn|gi|nhung gi|tong|lich su|giao dich|lan cuoi|khi nao|the nao|ra sao|xem|liet ke|nhung khoan|cac khoan) /.test(n))
@@ -861,7 +861,7 @@
       else if(/ theo thang /.test(n)) q.group = "month";
       else if(/ (o dau|cho ai|noi nao|cua hang nao|cho nhung ai) /.test(n)) q.group = "place";
       else if(/ (tai khoan hay the|the hay tai khoan|theo nguon) /.test(n)){ q.group = "src"; q.src = "all"; q.cardId = null; }
-      if(/ (liet ke|tung khoan|cac khoan|nhung khoan|chi tiet tung|cu the tung) /.test(n) && !/ (nhom|loai|danh muc) /.test(n) && q.group === "tag") q.group = "none";
+      if(/ (liet ke|tung khoan|cac khoan|nhung khoan|chi tiet tung|cu the tung) /.test(n) && !/ (nhom|loai|danh muc) /.test(n) && q.group === "tag" && !q.tag) q.group = "none";
       if(/ (liet ke|chi tiet|cu the|tung khoan|cac khoan|nhung khoan) /.test(n)) q.list = true;
       const tm = n.match(/ top (\d{1,2}) | (\d{1,2}) khoan (lon|to) /);
       if(tm || / (lon nhat|nhieu tien nhat|khoan to) /.test(n)){ q.top = tm ? +(tm[1] || tm[2]) : 5; q.group = "none"; q.list = true; }
@@ -1028,7 +1028,102 @@
   /* đọc số tiền người dùng gõ trong ô sửa ("45k", "1tr2", "45.000") */
   function amountText(s){ const { N } = tokenize(s); const a = amountAt(N, 0); return a ? a.v : (parseInt(String(s).replace(/\D/g, ""), 10) || 0); }
 
-  const api = { parse, stripLead, knownIn, peopleIn, tagWord, abbrIn, expandAbbr, abbrCands, assess, refine, amountText, guessTag, norm, _amountAt:amountAt, _clauses:clauses, _tokenize:tokenize };
+  /* ---------------- [CẬP NHẬT MỚI] BỔ SUNG LOGIC MAP & PACK DỮ LIỆU TỐC ĐỘ CAO ---------------- */
+
+  // 1. Hàm làm sạch nội dung sau chữ ND: và map với từ điển sheet ThuVien
+  function cleanAndMapDescription(rawText, mappingTable) {
+      if (!rawText) return "";
+      
+      // Cắt lấy phần nội dung nằm sau từ khóa "ND:", "Nội dung:", "CK", v.v.
+      let ndMatch = rawText.match(/(?:ND|Nội dung|CK)[:\s]+([^#\n]+)/i);
+      let cleanText = ndMatch ? ndMatch[1].trim() : rawText.trim();
+      cleanText = cleanText.replace(/\s+/g, ' ');
+
+      // Dò quét qua bảng từ điển (ThuVien) để tìm từ khóa khớp và thay thế chuẩn hóa
+      if (mappingTable && mappingTable.length > 0) {
+          for (let i = 0; i < mappingTable.length; i++) {
+              let keyword = mappingTable[i][0];   // Cột A: Từ khóa thô
+              let mappedNote = mappingTable[i][1]; // Cột B: Ghi chú chuẩn
+              
+              if (keyword && cleanText.toUpperCase().includes(keyword.toUpperCase())) {
+                  cleanText = mappedNote; // Thay thế bằng ghi chú chuẩn
+                  break;                  // Thoát vòng lặp khi tìm thấy khớp
+              }
+          }
+      }
+      
+      return cleanText;
+  }
+
+  // 2. Xử lý đóng gói (Pack) dữ liệu và lưu cache tăng tốc độ mở App
+  function handleDataPack(pack) {
+      if (!pack || pack.status !== "success") {
+          return;
+      }
+      
+      let mappingTable = pack.mappingTable || [];   
+      let rawTransactions = pack.transactions || []; 
+      
+      let processedTransactions = rawTransactions.map(row => {
+          let originalContent = row[2] || ""; // Cột nội dung giao dịch
+          let refinedNote = cleanAndMapDescription(originalContent, mappingTable);
+          
+          return {
+              date: row[0] || "",          
+              amount: row[1] || 0,       
+              rawContent: originalContent, 
+              note: refinedNote            
+          };
+      });
+      
+      // Lưu vào localStorage để mở app lên là hiển thị ngay lập tức không cần đợi mạng
+      try {
+          localStorage.setItem('cached_transactions_pack', JSON.stringify(processedTransactions));
+      } catch (e) {
+          console.error("Lỗi lưu cache:", e);
+      }
+      
+      // Render giao diện nếu hàm render tồn tại trong ứng dụng
+      if (typeof renderTransactionsUI === 'function') {
+          renderTransactionsUI(processedTransactions);
+      }
+      
+      return processedTransactions;
+  }
+
+  // 3. Khởi chạy đồng bộ pack ngầm khi mở ứng dụng
+  function initAppWithPack(apiWebUrl) {
+      let cachedData = localStorage.getItem('cached_transactions_pack');
+      if (cachedData) {
+          try {
+              let transactions = JSON.parse(cachedData);
+              if (typeof renderTransactionsUI === 'function') {
+                  renderTransactionsUI(transactions);
+              }
+          } catch (e) {
+              console.error("Lỗi đọc cache:", e);
+          }
+      }
+      
+      if (apiWebUrl) {
+          fetch(apiWebUrl)
+              .then(response => response.json())
+              .then(pack => {
+                  handleDataPack(pack);
+              })
+              .catch(error => {
+                  console.error("Lỗi kết nối đồng bộ dữ liệu mới:", error);
+              });
+      }
+  }
+
+  // Mở rộng API xuất ra ngoài bao gồm cả các hàm bổ sung mới
+  const api = { 
+    parse, stripLead, knownIn, peopleIn, tagWord, abbrIn, expandAbbr, abbrCands, assess, refine, amountText, guessTag, norm, 
+    cleanAndMapDescription, handleDataPack, initAppWithPack,
+    _amountAt:amountAt, _clauses:clauses, _tokenize:tokenize 
+  };
+  
   if(typeof module !== "undefined" && module.exports) module.exports = api;
   else root.N50KParse = api;
 })(typeof window !== "undefined" ? window : this);
