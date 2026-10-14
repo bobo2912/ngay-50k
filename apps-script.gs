@@ -1,4 +1,5 @@
-// Tiêu Gọn – nhận thông báo ngân hàng từ Phím tắt và trả cho app. Bản mã 4
+// Tiêu Gọn – nhận thông báo ngân hàng từ Phím tắt và trả cho app. Bản mã 4.1
+// Lỗi hay sai mã được ghi vào sheet NhatKy. Chạy hàm kiemTra (chọn ở thanh trên, bấm ▶ Chạy) để thử không cần iPhone.
 // Giữ ý tưởng: hàng đợi JSON ở DataPack!A1 (app lấy nhanh) + sheet ThuVien chuẩn hoá nội dung.
 // Ô A1 chỉ chứa giao dịch app CHƯA nhận. Không xoá ngay lúc app đọc (mạng rớt là mất), mà xoá khi app báo đã nhận:
 // app gửi "since" = mốc giao dịch cuối nó đã nhận (app v151 báo ngay sau khi lấy xong) → giao dịch tới mốc đó bị dọn khỏi A1.
@@ -13,13 +14,30 @@ var PAGE = 300;           // mỗi lần trả tối đa 300 giao dịch (app t�
 function out_(o){ return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }
 function txt_(t){ return ContentService.createTextOutput(t); }
 function P_(){ return PropertiesService.getScriptProperties(); }
-function keyOk_(k){ var s = SECRET || P_().getProperty('SECRET_KEY'); return !!s && !!k && String(k) === String(s); }
+// Mã đúng nếu khớp SECRET ở trên HOẶC mã đã lưu (SECRET_KEY). Chưa có mã nào thì lưu mã của lần gửi đầu tiên.
+function keyOk_(k){
+  k = String(k == null ? '' : k).trim(); if(!k) return false;
+  var p = P_(), saved = p.getProperty('SECRET_KEY');
+  if(SECRET && k === String(SECRET).trim()) return true;
+  if(saved && k === String(saved).trim()) return true;
+  if(!SECRET && !saved){ p.setProperty('SECRET_KEY', k); return true; }
+  return false;
+}
+function log_(kind, msg){
+  try{
+    var ss = SpreadsheetApp.getActiveSpreadsheet(), sh = ss.getSheetByName('NhatKy') || ss.insertSheet('NhatKy');
+    sh.appendRow([new Date(), kind, String(msg).slice(0, 500)]);
+    if(sh.getLastRow() > 300) sh.deleteRows(1, sh.getLastRow() - 200);
+  }catch(e){}
+}
+function hint_(k){ k = String(k == null ? '' : k); return 'mã nhận được: "' + (k.length > 3 ? k.slice(0, 3) + '…' : k) + '" (' + k.length + ' ký tự); SECRET ' + (SECRET ? 'có đặt' : 'để trống') + ', SECRET_KEY ' + (P_().getProperty('SECRET_KEY') ? 'có lưu' : 'chưa lưu'); }
 
 // ============ POST: Phím tắt gửi nội dung TieuGon.txt ============
 function doPost(e){
   var d = {};
   try{ d = JSON.parse(e.postData.contents); }catch(err){ d = (e && e.parameter) || {}; }
-  if(!keyOk_(d.k)) return txt_('TG_KEY');                // sai mã: không trả TG_OK, phím tắt giữ nguyên tệp
+  if(!d || typeof d !== 'object') d = {};
+  if(!keyOk_(d.k)){ log_('TG_KEY', 'POST sai mã · ' + hint_(d.k)); return txt_('TG_KEY'); }   // sai mã: phím tắt giữ nguyên tệp
   var lines = String(d.t || '').split(/\r?\n/).map(function(x){ return x.trim(); }).filter(function(x){ return x; });
   if(!lines.length) return txt_('TG_OK');
   var lock = LockService.getScriptLock();
@@ -31,7 +49,8 @@ function doPost(e){
     var rows = n ? tb.getRange(from, 1, n - from + 1, 3).getValues() : [], have = {};
     rows.forEach(function(r){ have[String(r[2] || r[1])] = 1; });   // bỏ trùng theo nội dung gốc (phím tắt gửi lại cả tệp khi lần trước lỗi)
     var last = Number(p.getProperty('lastAt')) || 0;
-    var at = Math.max(Date.now(), last + 1, rows.length ? Number(rows[rows.length - 1][0]) + 1 : 0);
+    var lastRow = 0; rows.forEach(function(r){ var v = Number(r[0]); if(v > lastRow) lastRow = v; });   // bỏ qua dòng tiêu đề / ô không phải số
+    var at = Math.max(Date.now(), last + 1, lastRow + 1);
     var lib = lib_(ss), add = [], q = [];
     lines.forEach(function(x){
       if(have[x]) return; have[x] = 1;
@@ -55,14 +74,15 @@ function doPost(e){
     p.setProperty('lastAt', String(at - 1));
     return txt_('TG_OK');
   }catch(err){
-    return txt_('ERR');                                                // phím tắt giữ tệp, lần sau gửi lại
+    log_('ERR', 'POST: ' + (err && err.stack || err));
+    return txt_('ERR ' + (err && err.message || err));                // phím tắt giữ tệp, lần sau gửi lại
   }finally{ lock.releaseLock(); }
 }
 
 // ============ GET: app hỏi giao dịch mới hơn "since" ============
 function doGet(e){
   var prm = (e && e.parameter) || {};
-  if(!keyOk_(prm.k)) return out_({ ok:false, err:'key' });
+  if(!keyOk_(prm.k)){ log_('TG_KEY', 'GET sai mã · ' + hint_(prm.k)); return out_({ ok:false, err:'key' }); }
   var p = P_(), since = Number(prm.since || 0), last = Number(p.getProperty('lastAt')) || 0;
   if(since > (Number(p.getProperty('ackAt')) || 0)) p.setProperty('ackAt', String(since));   // app đã nhận xong tới mốc này
   var qm = p.getProperty('qMin');                                      // mốc giao dịch cũ nhất còn trong A1 ('' = A1 trống)
@@ -87,6 +107,7 @@ function doGet(e){
     items.sort(function(a, b){ return a.at - b.at; });
     return out_({ ok:true, v:4, items:items.slice(0, PAGE), more:items.length > PAGE });
   }catch(err){
+    log_('ERR', 'GET: ' + (err && err.stack || err));
     return out_({ ok:false, err:String(err && err.message || err) });
   }finally{ lock.releaseLock(); }
 }
@@ -123,4 +144,13 @@ function clean_(line, lib){
     }
   }
   return line;
+}
+
+// ============ Thử trong trình soạn Apps Script: chọn kiemTra → ▶ Chạy → xem Nhật ký thực thi ============
+function kiemTra(){
+  var k = SECRET || P_().getProperty('SECRET_KEY') || '(chưa có mã)';
+  var line = 'TK 00xxx000|GD: -1,000VND ' + Utilities.formatDate(new Date(), 'Asia/Ho_Chi_Minh', 'dd/MM/yy HH:mm') + ' |SD: 0VND|ND: THU KIEM TRA TIEU GON';
+  var r = doPost({ postData: { contents: JSON.stringify({ k: k, t: line }) } }).getContent();
+  Logger.log('POST trả về: ' + r + (r === 'TG_OK' ? '  → ghi Sheet được. Xem sheet ThongBao và DataPack!A1 (xoá dòng thử nếu muốn).' : '  → xem sheet NhatKy để biết lý do.'));
+  Logger.log('Mã đang dùng bắt đầu bằng: ' + String(k).slice(0, 3) + '… (so với mã bí mật trong app và trường k của phím tắt)');
 }

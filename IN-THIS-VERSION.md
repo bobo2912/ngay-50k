@@ -1,6 +1,16 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v151, ngày 14/10/2026
+**Phiên bản hiện tại:** v152, ngày 14/10/2026
+
+---
+
+## Có gì mới trong v152 (so với v151)
+
+- **Apps Script bản mã 4.1** (sửa lỗi Sheet không nhận thông báo, tệp TieuGon.txt không được xoá):
+  - Mã bí mật dễ khớp hơn: đúng nếu trùng mã trong code **hoặc** mã đã lưu (`SECRET_KEY`); chưa có mã nào thì lưu mã của lần gửi đầu (như script cũ).
+  - Sai mã hoặc lỗi được ghi vào sheet **NhatKy** (kèm 3 ký tự đầu của mã nhận được), lỗi trả `ERR <lý do>` cho phím tắt.
+  - Không còn hỏng khi sheet ThongBao có dòng tiêu đề.
+  - Hàm **kiemTra**: chạy trong trình soạn Apps Script để thử ghi một dòng mà không cần iPhone.
 
 ---
 
