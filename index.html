@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v154";
+  var K = "ngay50k:errlog", VER = "v155";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -2605,7 +2605,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v154</p>
+      <p class="sync" id="appVersion">Phiên bản v155</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3106,9 +3106,9 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
 <input type="file" id="notifFileIn" accept=".txt,text/plain" hidden>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=154"></script>
-<script src="thu-vien-cau.js?v=154"></script>
-<script src="lock.js?v=154"></script>
+<script src="parse-vi.js?v=155"></script>
+<script src="thu-vien-cau.js?v=155"></script>
+<script src="lock.js?v=155"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -3516,12 +3516,12 @@ function startNgay50k(){
     (state.bals || []).forEach(b => { if(wOf(b) === wid && (!a || (b.t || 0) > (a.t || 0))) a = b; });
     return a;
   }
-  function balCalc(anchor, wid){
+  function balCalc(anchor, wid, until){
     wid = wid || (anchor && wOf(anchor)) || MAIN_W;
     anchor = anchor || balAnchor(wid);
     if(!anchor) return null;
     const main = wid === MAIN_W, inW = o => wOf(o) === wid;
-    const T = anchor.t || 0, N = Date.now(), af = x => x > T && x <= N;   /* khoản có ngày tương lai chưa trừ, tới ngày mới tính */
+    const T = anchor.t || 0, N = until || Date.now(), af = x => x > T && x <= N;   /* v155: until = tính số dư sổ tại một thời điểm (đối chiếu đúng lúc của số dư ngân hàng) */   /* khoản có ngày tương lai chưa trừ, tới ngày mới tính */
     let bal = Number(anchor.amt) || 0, debt = main ? Number(anchor.card) || 0 : 0;
     for(const k in state.income) (state.income[k]||[]).forEach(it => { if(inW(it) && af(recTime(k, it.t))) bal += Number(it.amt)||0; });
     for(const k in state.days) (state.days[k]||[]).forEach(it => { if(inW(it) && af(recTime(k, it.t))) bal -= Number(it.amt)||0; });
@@ -3535,6 +3535,15 @@ function startNgay50k(){
       (l.payments || []).forEach(pm => { if(af(recTime(pm.date, pm.t))) bal -= sg * (Number(pm.amt)||0); });
     });
     return { bal, debt: Math.max(0, debt), anchor, wid };
+  }
+  /* v155: các khoản chi/thu của một ví ghi SAU thời điểm T (tới bây giờ): sau khi đặt mốc số dư ngân hàng lúc T,
+     những khoản này vẫn được cộng/trừ tiếp. Nếu khoản nào thật ra đã nằm trong số dư ngân hàng thì số dư bị trừ hai lần. */
+  function entriesAfter(wid, T){
+    const out = [], N = Date.now(), inW = o => wOf(o) === (wid || MAIN_W);
+    const add = (k, it, sign) => { const t = recTime(k, it.t); if(inW(it) && t > T && t <= N) out.push({ k, it, t, amt: sign * (Number(it.amt) || 0) }); };
+    for(const k in state.days) (state.days[k] || []).forEach(it => add(k, it, -1));
+    for(const k in state.income) (state.income[k] || []).forEach(it => add(k, it, 1));
+    return out.sort((a, b) => a.t - b.t);
   }
   /* tổng mọi ví: cash = tổng số dư các ví đã có mốc, debt = nợ thẻ, net = cash − debt; missing = các ví chưa nhập số dư */
   function walletsTotal(){
@@ -5887,9 +5896,13 @@ function startNgay50k(){
     }
     else if(it.kind === "cardpay"){ const rec = { id, amt:it.amt, date:k, t }; if(it.cardId) rec.cardId = it.cardId; if(wv.w) rec.from = wv.w; (state.cardPay = state.cardPay || []).push(rec); }
     else if(it.kind === "bal"){
-      const r = balCalc(null, wv.w || MAIN_W), rec = Object.assign({ id, amt:it.amt, t:it.balAt || Date.now() }, wv);   /* v129: số dư từ thông báo ngân hàng đặt mốc ngay sau giao dịch */
-      if(r){ rec.book = Math.round(r.bal); if(!wv.w) rec.card = r.debt; } else if(!wv.w) rec.card = 0;
+      const wid = wv.w || MAIN_W, at = it.balAt || Date.now(), rec = Object.assign({ id, amt:it.amt, t:at }, wv);   /* v129: số dư từ thông báo ngân hàng đặt mốc ngay sau giao dịch */
+      /* v155: so với số dư của sổ TẠI lúc ngân hàng báo số dư (trước đây so với số dư hiện tại → báo "Khớp sổ" sai khi có khoản ghi sau giờ đó) */
+      const r = balCalc(null, wid, at), rNow = balCalc(null, wid);
+      if(r){ rec.book = Math.round(r.bal); if(!wv.w) rec.card = rNow ? rNow.debt : r.debt; } else if(!wv.w) rec.card = 0;
       (state.bals = state.bals || []).push(rec); ref.book = rec.book;
+      if(it.balAt) ref.after = entriesAfter(wid, at).map(e => ({ note: e.it.note || ((tagOf(e.it.cat) || {}).label || ""), amt: e.amt, t: e.t, k: e.k }));
+      ref.balAt = at;
     }
     return ref;
   }
@@ -5921,7 +5934,19 @@ function startNgay50k(){
     if(it.kind === "lend" || it.kind === "collect"){ const l = getLoan(ref.loanId || ref.id); return l ? esc(l.who) + " còn nợ bạn <b>" + fmt(leftOf(l)) + "</b>." + bal : bal; }
     if(it.kind === "borrow" || it.kind === "repay"){ const l = getLoan(ref.loanId || ref.id); return l ? (leftOf(l) > 0 ? "Bạn còn nợ " + esc(l.who) + " <b>" + fmt(leftOf(l)) + "</b>." : "Đã trả hết cho " + esc(l.who) + " 👏") + bal : bal; }
     if(it.kind === "cardpay") return r ? "Nợ thẻ còn <b>" + fmt(r.debt) + "</b>." + bal : "";
-    if(it.kind === "bal"){ const d = ref.book == null ? null : it.amt - ref.book; return "Đã lấy " + fmt(it.amt) + " làm mốc số dư" + (it.w && it.w !== MAIN_W && multiW() ? " " + esc(walletName(it.w)) : "") + "." + (d ? " Lệch " + (d > 0 ? "+" : "−") + fmt(Math.abs(d)) + " so với sổ." : d === 0 ? " Khớp sổ 👌" : ""); }
+    if(it.kind === "bal"){
+      const d = ref.book == null ? null : it.amt - ref.book, hmOf = t => { const x = new Date(t); return pad(x.getHours()) + ":" + pad(x.getMinutes()); };
+      const when = it.balAt ? " lúc " + hmOf(ref.balAt || it.balAt) : "";
+      let txt = "Đã lấy " + fmt(it.amt) + " làm mốc số dư" + (it.w && it.w !== MAIN_W && multiW() ? " " + esc(walletName(it.w)) : "") + when + "." + (d ? " Lệch " + (d > 0 ? "+" : "−") + fmt(Math.abs(d)) + " so với sổ" + (when ? " cùng lúc đó" : "") + "." : d === 0 ? " Khớp sổ 👌" : "");
+      const af = ref.after || [];
+      if(af.length){
+        const sum = af.reduce((a, e) => a + e.amt, 0);
+        txt += "<br>Sổ còn " + af.length + " khoản ghi sau" + when + " nên vẫn được " + (sum < 0 ? "trừ" : "cộng") + " tiếp (" + (sum < 0 ? "−" : "+") + fmt(Math.abs(sum)) + "): " +
+          af.slice(0, 4).map(e => esc(e.note || "khoản") + " " + (e.amt < 0 ? "−" : "+") + fmt(Math.abs(e.amt)) + " (" + (e.k === todayKey() ? "" : dateLabel(e.k) + " ") + hmOf(e.t) + ")").join(", ") + (af.length > 4 ? "…" : "") +
+          ". Khoản nào thật ra đã chi/nhận <b>trước</b> giờ đó thì vào Sổ sửa giờ (hoặc xoá nếu bị trùng), số dư sẽ đúng.";
+      }
+      return txt;
+    }
     return "";
   }
 
@@ -10373,14 +10398,25 @@ function chanDoan(){
     $("syncErr").hidden = true;
     const name = "tieugon-" + todayKey() + ".json";
     const text = await backupText(); if(text == null) return false;
+    let t0 = 0;
     if(!(navigator.canShare && typeof File === "function")){ showSyncErr("Máy này không mở được bảng chia sẻ. Hãy dùng nút Xuất file sao lưu."); return false; }
     try{
       const file = new File([text], name, { type:"application/json" });
       if(!navigator.canShare({ files:[file] })){ showSyncErr("Máy này không chia sẻ được file. Hãy dùng nút Xuất file sao lưu."); return false; }
+      t0 = Date.now();
       await navigator.share({ files:[file] });
       doneExport("✓ Đã gửi bản sao lưu " + name + " cho phím tắt.");
       return true;
-    }catch(e){ if(!(e && e.name === "AbortError")) showSyncErr("Chưa sao lưu được: " + (e && e.message ? e.message : e)); return false; }
+    }catch(e){
+      /* v155: iPhone hay báo "huỷ" (AbortError) cả khi phím tắt trong bảng chia sẻ đã lưu xong → app tưởng chưa sao lưu, nhắc mãi.
+         Bảng chia sẻ mở đủ lâu (đã chạm vào phím tắt) thì hỏi lại người dùng. */
+      if(e && e.name === "AbortError"){
+        if(t0 && Date.now() - t0 > 2500 && confirm("Phím tắt đã lưu xong bản sao lưu " + name + " chưa?\n\nBấm OK nếu đã thấy phím tắt chạy xong (vd thông báo \"Đã sao lưu thành công\")."))
+          { doneExport("✓ Đã ghi nhận sao lưu " + name + " bằng phím tắt."); return true; }
+        return false;
+      }
+      showSyncErr("Chưa sao lưu được: " + (e && e.message ? e.message : e)); return false;
+    }
   }
   $("scUse").checked = lsGet(SCUSE_KEY) === "1";
   $("scUse").addEventListener("change", () => { lsSet(SCUSE_KEY, $("scUse").checked ? "1" : "0"); });

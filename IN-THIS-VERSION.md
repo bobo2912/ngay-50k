@@ -1,6 +1,13 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v154, ngày 14/10/2026
+**Phiên bản hiện tại:** v155, ngày 14/10/2026
+
+---
+
+## Có gì mới trong v155 (so với v154)
+
+- **Sửa "Khớp sổ" sai khi cập nhật số dư từ thông báo ngân hàng:** trước đây app so số dư ngân hàng (lúc giao dịch, vd 21:08) với số dư sổ **hiện tại**, nên khoản ghi sau giờ đó (vd gõ "cắt tóc 60k" lúc 21:09 cho một khoản đã trừ ở ngân hàng từ 20:32) bị trừ hai lần mà app vẫn báo "Khớp sổ". Giờ so đúng số dư sổ **tại giờ ngân hàng báo**, và liệt kê các khoản ghi sau giờ đó (vẫn được cộng/trừ tiếp) để bạn sửa giờ hoặc xoá nếu trùng.
+- **Sao lưu nhanh bằng Phím tắt:** iPhone hay báo "huỷ" cả khi phím tắt đã lưu xong, nên app tưởng chưa sao lưu và nhắc mãi. Giờ nếu bảng chia sẻ đã mở đủ lâu, app hỏi "Phím tắt đã lưu xong chưa?" → OK là ghi nhận đã sao lưu.
 
 ---
 
