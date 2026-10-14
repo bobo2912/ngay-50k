@@ -12,6 +12,7 @@
   - `^ck`: chỉ khớp khi nội dung bắt đầu bằng "ck"; từ khoá ≤ 3 ký tự phải đứng thành từ riêng.
   - Cột B dùng được `{DEN}` / `{TU}` (tên người nhận/người gửi, bỏ số tài khoản).
   - Đã thử trên 22 thông báo thật: số tiền, giờ, số dư app đọc ra không đổi.
+- **Sửa lỗi:** `sw.js` bị ghi trống từ v152 (lỗi lúc tăng số bản) làm nút *Kiểm tra cập nhật* luôn báo "Không kết nối được" và app không chạy offline được. Đã khôi phục.
 
 ---
 
