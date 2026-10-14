@@ -1,6 +1,19 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v150, ngày 10/10/2026
+**Phiên bản hiện tại:** v151, ngày 14/10/2026
+
+---
+
+## Có gì mới trong v151 (so với v150)
+
+- **Apps Script bản mã 4** (nút *Chép mã Apps Script*, bản đầy đủ cũng có ở `apps-script.gs`):
+  - Hàng đợi ở sheet ẩn **DataPack**, ô **A1**: chỉ chứa giao dịch app chưa lấy, app đọc thẳng ô này nên nhanh.
+  - Ô A1 được dọn **khi app báo đã nhận** (gửi mốc `since`), không xoá ngay lúc đọc: mạng rớt giữa chừng hay bấm *Kiểm tra* trong Cài đặt không làm mất giao dịch.
+  - Sheet **ThuVien** (tuỳ chọn): cột A từ khoá, cột B nội dung thay cho phần ND. Không phân biệt hoa thường, có dấu hay không; từ khoá dài được so trước.
+  - Khoá chống ghi chồng khi hai thông báo tới cùng lúc; sai mã bí mật trả `TG_KEY` (phím tắt giữ tệp); bỏ dòng trùng khi phím tắt gửi lại; mỗi dòng một mốc riêng.
+  - A1 giữ tối đa 150 giao dịch; lâu không mở app thì phần thiếu lấy từ sheet ThongBao. Không có gì mới thì trả lời ngay, không mở Sheet.
+- App lấy xong là báo ngay mốc đã nhận cho Sheet (chạy ngầm) để ô A1 được dọn liền.
+- Cài đặt nhắc chép lại mã khi Apps Script còn bản mã 3 trở xuống; thêm hướng dẫn tạo sheet ThuVien.
 
 ---
 
