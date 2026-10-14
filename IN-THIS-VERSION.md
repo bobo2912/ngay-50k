@@ -1,6 +1,12 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v155, ngày 14/10/2026
+**Phiên bản hiện tại:** v156, ngày 14/10/2026
+
+---
+
+## Có gì mới trong v156 (so với v155)
+
+- **Sao lưu nhanh bằng Phím tắt được ghi nhận chắc hơn:** iPhone báo "huỷ" hoặc không báo gì khi phím tắt trong bảng chia sẻ đã lưu xong. Giờ: báo huỷ → luôn hỏi "Phím tắt đã lưu xong chưa?"; không báo gì → quay lại app sau ≥ 3 giây thì hỏi. Thêm nút **Đánh dấu đã sao lưu hôm nay** trong Cài đặt → Sao lưu và đồng bộ.
 
 ---
 

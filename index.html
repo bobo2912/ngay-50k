@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v155";
+  var K = "ngay50k:errlog", VER = "v156";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -2475,6 +2475,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
       <div class="set-head"><button class="set-back" data-back>‹ Cài đặt</button><h2 tabindex="-1">Sao lưu và đồng bộ</h2></div>
 <section class="set-group" id="syncBox" aria-labelledby="gSync">
       <p class="backup-state" id="backupState"></p>
+      <p class="set-now" id="bkMarkRow" hidden>Đã sao lưu bằng phím tắt mà app chưa nhận? <button class="ib" type="button" id="bkMark" style="width:auto; padding:0 10px">Đánh dấu đã sao lưu hôm nay</button></p>
       <div class="set-row">
         <button class="ghost grow" id="exportBtn">Xuất file sao lưu</button>
         <label class="ghost grow file-btn">Nhập từ file<input type="file" id="importFile"></label>
@@ -2605,7 +2606,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v155</p>
+      <p class="sync" id="appVersion">Phiên bản v156</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3106,9 +3107,9 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
 <input type="file" id="notifFileIn" accept=".txt,text/plain" hidden>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=155"></script>
-<script src="thu-vien-cau.js?v=155"></script>
-<script src="lock.js?v=155"></script>
+<script src="parse-vi.js?v=156"></script>
+<script src="thu-vien-cau.js?v=156"></script>
+<script src="lock.js?v=156"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -9214,6 +9215,7 @@ function startNgay50k(){
       st.textContent = "Sao lưu gần nhất: " + agoText(last) + ".";
       st.classList.toggle("stale", daysAgo(last) >= NUDGE_DAYS);
     }
+    if($("bkMarkRow")) $("bkMarkRow").hidden = !hasData() || (last && daysAgo(last) < 1);
     const snooze = Number(lsGet(SNOOZE_KEY)) || 0;
     const due = hasData() && (!last || daysAgo(last) >= NUDGE_DAYS) && Date.now() > snooze && lsGet("ngay50k:demo") !== "1";
     $("backupNudge").hidden = !due;
@@ -10404,14 +10406,19 @@ function chanDoan(){
       const file = new File([text], name, { type:"application/json" });
       if(!navigator.canShare({ files:[file] })){ showSyncErr("Máy này không chia sẻ được file. Hãy dùng nút Xuất file sao lưu."); return false; }
       t0 = Date.now();
-      await navigator.share({ files:[file] });
+      /* v156: có máy không bao giờ trả kết quả bảng chia sẻ khi chạy phím tắt → quay lại app sau ≥ 3 giây thì hỏi */
+      let settled = false;
+      const onBack = () => { if(document.hidden || settled) return; document.removeEventListener("visibilitychange", onBack); window.removeEventListener("focus", onBack);
+        setTimeout(() => { if(!settled && Date.now() - t0 > 3000 && confirm("Phím tắt đã lưu xong bản sao lưu " + name + " chưa?")){ settled = true; doneExport("✓ Đã ghi nhận sao lưu " + name + " bằng phím tắt."); } }, 1500); };
+      document.addEventListener("visibilitychange", onBack); window.addEventListener("focus", onBack);
+      try{ await navigator.share({ files:[file] }); } finally { settled = true; document.removeEventListener("visibilitychange", onBack); window.removeEventListener("focus", onBack); }
       doneExport("✓ Đã gửi bản sao lưu " + name + " cho phím tắt.");
       return true;
     }catch(e){
       /* v155: iPhone hay báo "huỷ" (AbortError) cả khi phím tắt trong bảng chia sẻ đã lưu xong → app tưởng chưa sao lưu, nhắc mãi.
          Bảng chia sẻ mở đủ lâu (đã chạm vào phím tắt) thì hỏi lại người dùng. */
       if(e && e.name === "AbortError"){
-        if(t0 && Date.now() - t0 > 2500 && confirm("Phím tắt đã lưu xong bản sao lưu " + name + " chưa?\n\nBấm OK nếu đã thấy phím tắt chạy xong (vd thông báo \"Đã sao lưu thành công\")."))
+        if(t0 && confirm("Phím tắt đã lưu xong bản sao lưu " + name + " chưa?\n\nBấm OK nếu đã thấy phím tắt chạy xong (vd thông báo \"Đã sao lưu thành công\")."))
           { doneExport("✓ Đã ghi nhận sao lưu " + name + " bằng phím tắt."); return true; }
         return false;
       }
@@ -10421,6 +10428,7 @@ function chanDoan(){
   $("scUse").checked = lsGet(SCUSE_KEY) === "1";
   $("scUse").addEventListener("change", () => { lsSet(SCUSE_KEY, $("scUse").checked ? "1" : "0"); });
   $("scBackup").onclick = () => quickBackup();
+  $("bkMark").onclick = () => { if(confirm("Ghi nhận là bạn đã sao lưu hôm nay (tệp tieugon-" + todayKey() + ".json trong iCloud Drive)?")) doneExport("✓ Đã ghi nhận sao lưu hôm nay."); };
   $("exportBtn").onclick = exportData;
   $("csvBtn").onclick = exportCSV;
   $("nudgeGo").onclick = () => {
