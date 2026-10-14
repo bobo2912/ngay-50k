@@ -4,7 +4,7 @@
 
 Ứng dụng web ghi chi tiêu hằng ngày, đặt một hạn mức cho mỗi ngày và theo dõi xem hôm nay còn tiêu được bao nhiêu. Cài lên màn hình chính của iPhone hay Android là chạy như một app bình thường, dùng được cả khi không có mạng.
 
-**Dữ liệu chỉ nằm trên máy của bạn.** Không có tài khoản, không có máy chủ, không gửi gì đi đâu.
+**Dữ liệu chỉ nằm trên máy của bạn.** Không có tài khoản, không có máy chủ chung. Tính năng tuỳ chọn Tự ghi từ thông báo dùng một trạm Cloudflare do chính bạn triển khai, chỉ giữ thông báo trong lúc chờ app lấy.
 
 ---
 
@@ -40,6 +40,10 @@ Phải mở qua một máy chủ web, không mở thẳng bằng `file://`, vì 
 
 **Khoản vay** — Theo dõi khoản mình đi vay và mình cho vay. Một khoản ghi được nhiều lần vay thêm và nhiều lần trả, lịch sử gộp theo thời gian. Cảnh báo quá hạn.
 
+**Tự ghi từ thông báo** (trong Cài đặt) — automation của Phím tắt chuyển thông báo biến động số dư sang app qua **trạm Cloudflare của chính người dùng** (`worker/`, cài bằng nút Deploy to Cloudflare). App đang mở thì nhận qua WebSocket nên giao dịch hiện ngay. Trạm không lưu trữ: app nhận là xoá, không ai lấy thì tự xoá sau 3 ngày. Không có trạm thì dán bộ nhớ tạm hoặc chọn tệp `TieuGon.txt`.
+
+**Thư viện nội dung** (trong Cài đặt, từ v158) — quy tắc đổi nội dung khó đọc của thông báo ngân hàng thành chữ gọn và tự gắn tag. Khớp trên máy bằng `quy-tac.js`; quy tắc nằm ở `state.thuvien`, đi theo file sao lưu. Cú pháp xem đầu file `quy-tac.js` hoặc mục *Cách viết từ khoá* trong app.
+
 **Người nhận** (trong Cài đặt) — Lưu người hay chuyển tiền để lần sau điền sẵn.
 
 **Lần đầu mở** (máy chưa có dữ liệu): màn hình chào 4 bước (hạn mức, ngân hàng hay dùng, thẻ tín dụng, mã PIN) và nút xem thử với dữ liệu mẫu. Mọi khoản mẫu có mã bắt đầu bằng `demo_` để xoá sạch; cờ ở `localStorage` là `ngay50k:welcome`, `ngay50k:demo`, ngân hàng chọn ở `ngay50k:bank`.
@@ -67,7 +71,8 @@ Hệ quả cần biết:
 - Sao lưu nhanh: `navigator.share` một file `ngay50k-yyyy-MM-dd.json`; người dùng chạm vào phím tắt của mình (bật Hiện trong Bảng chia sẻ, nhận Tệp, Lưu tệp vào iCloud Drive) ngay trong bảng chia sẻ, không rời app. Phím tắt không đọc được dữ liệu của app web, nên lượt nào cũng phải bắt đầu từ nút trong app.
 - Dữ liệu được giữ vô thời hạn; app không tự xoá khoản cũ.
 - Khoá API của Trợ lý AI nằm trên máy người dùng, không có trong kho này. Từ v113 khoá **có đi theo file sao lưu** (cùng mọi cài đặt và lịch sử Chat, trừ mã PIN / Face ID), nên bật mật khẩu file. **Đừng bao giờ dán khoá vào mã nguồn.**
-- File sao lưu là JSON có chứa số tài khoản, tên người nhận và khoá API AI. **Đừng bao giờ tải file đó lên GitHub** — kho này công khai.
+- File sao lưu là JSON có chứa số tài khoản, tên người nhận, khoá API AI và Thư viện nội dung (có thể có tên người). **Đừng bao giờ tải file đó lên GitHub** — kho này công khai.
+- **Mã nguồn không chứa dữ liệu cá nhân.** Mọi ví dụ (thông báo mẫu, tên, số tài khoản trong bài thử) là giả. Quy tắc Thư viện nội dung thật chỉ nằm trong app và file sao lưu.
 
 ---
 
@@ -77,6 +82,9 @@ Hệ quả cần biết:
 index.html              toàn bộ app: giao diện, CSS và JavaScript trong một file
 lock.js                 khoá app bằng mã PIN, mã hoá dữ liệu, Face ID (passkey PRF), sao lưu có mật khẩu
 parse-vi.js             bộ hiểu câu tiếng Việt cho màn Trò chuyện (chạy trên máy)
+quy-tac.js              Thư viện nội dung: khớp quy tắc làm gọn thông báo ngân hàng, giải thích cú pháp, gợi ý (không chứa quy tắc của ai)
+tests-quy-tac.js        bài thử Thư viện nội dung (dữ liệu giả): node tests-quy-tac.js
+worker/                 trạm trung chuyển thông báo trên Cloudflare (Durable Object, không lưu trữ), xem worker/README.md
 thu-vien-cau.js         thư viện câu hỏi – trả lời: câu mẫu theo ngữ cảnh, câu trả lời trò chuyện/hướng dẫn, câu mẫu cho AI
 tests-thu-vien.js       chạy mọi câu mẫu của thư viện: node tests-thu-vien.js
 kho-cau-mau.js          kho câu mẫu sinh tự động (~4.300 câu) + câu viết tay + nhánh hội thoại, chỉ dùng để thử
@@ -100,7 +108,7 @@ App không tải gì từ bên ngoài khi chạy. Riêng chức năng đọc ch�
 1. Sửa code.
 2. Tăng số phiên bản ở **ba chỗ**, cùng một số:
    - `sw.js` → `const V = "NN";`
-   - `index.html` → hai thẻ `<script src="parse-vi.js?v=NN">`, `<script src="lock.js?v=NN">`, và dòng `Phiên bản vNN` trong phần Cài đặt (cùng `VER` trong đoạn lưới an toàn đầu trang).
+   - `index.html` → các thẻ `<script src="…?v=NN">` (parse-vi, thu-vien-cau, quy-tac, lock), và dòng `Phiên bản vNN` trong phần Cài đặt (cùng `VER` trong đoạn lưới an toàn đầu trang).
    - Lệnh gợi ý: `sed -i 's/const V = "OLD"/const V = "NN"/' sw.js && sed -i 's/?v=OLD/?v=NN/g; s/Phiên bản vOLD/Phiên bản vNN/; s/VER = "vOLD"/VER = "vNN"/' index.html`
 3. Ghi lại thay đổi vào `IN-THIS-VERSION.md`.
 4. Đẩy lên GitHub.
@@ -121,7 +129,7 @@ python3 -m http.server 8765 &
 # rồi bấm qua từng tab và chụp màn hình so sánh
 ```
 
-Bộ hiểu câu có các bài thử chạy bằng Node: `node tests-parse-vi.js` và `node tests-parse-vi-2.js` (hiểu câu, 104 câu gõ không dấu, viết tắt, nhiều khoản), `node tests-assess-vi.js` (câu nào máy tự xử lý, câu nào gửi AI, dùng `N50KParse.assess`) và `node tests-wallet-vi.js` (nhiều ví: chi theo ví, chuyển giữa ví, hỏi số dư ví).
+Bộ hiểu câu có các bài thử chạy bằng Node: `node tests-parse-vi.js` và `node tests-parse-vi-2.js`, `node tests-quy-tac.js` (Thư viện nội dung) (hiểu câu, 104 câu gõ không dấu, viết tắt, nhiều khoản), `node tests-assess-vi.js` (câu nào máy tự xử lý, câu nào gửi AI, dùng `N50KParse.assess`) và `node tests-wallet-vi.js` (nhiều ví: chi theo ví, chuyển giữa ví, hỏi số dư ví).
 
 Vài chỗ dễ vỡ, sửa xong nên thử lại:
 

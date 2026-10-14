@@ -1,6 +1,25 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v157, ngày 14/10/2026
+**Phiên bản hiện tại:** v158, ngày 14/10/2026
+
+---
+
+## Có gì mới trong v158 (so với v157)
+
+- **Trạm Cloudflare thay Google Sheet** (thư mục `worker/`, cài bằng nút **Deploy to Cloudflare** trong Cài đặt → Tự ghi từ thông báo):
+  - Phím tắt gửi y như cũ, chỉ đổi URL. Trạm trả lời trong vài chục mili giây; Apps Script cần vài giây.
+  - App đang mở thì giữ một WebSocket: giao dịch mới **tự hiện trong Chat** ngay khi phím tắt gửi, không phải hỏi lại sau 4/10/20 giây.
+  - **Không lưu trữ:** app nhận là trạm xoá ngay; không ai lấy thì tự xoá sau 3 ngày; không ghi nhật ký. Có nút **Xoá hết trên Cloudflare**.
+  - Bỏ `apps-script.gs` và nút Chép mã Apps Script. Địa chỉ Google Sheet cũ được nhận ra và nhắc chuyển.
+- **Thư viện nội dung** (Cài đặt → Thư viện nội dung) thay sheet **ThuVien**:
+  - Quy tắc nằm trong dữ liệu của app (mã hoá khi bật PIN), **đi theo file sao lưu**, không nằm trong mã nguồn. Cách khớp ở `quy-tac.js`.
+  - Kết quả **giống hệt** Apps Script 4.4 với mọi kiểu quy tắc cũ (`^`, `DEN:`, `TU:`, `{DEN}`, `{TU}`, từ ≤ 3 ký tự đứng riêng).
+  - Cú pháp mới: `từ$` kết thúc bằng · `"từ"` nguyên từ · `a*b` đoạn bất kỳ · `a, b` hoặc · `a & b` và · `-từ` không có · `TK:` tài khoản của bạn · `DONG:` cả dòng · `TIEN:<50k`, `TIEN:10k-50k`, `TIEN:+`/`TIEN:-` · cột B thêm `{ND}`, `{TIEN}` · tự gắn tag.
+  - Ô nhập thông minh: nút chèn cú pháp đúng chỗ, câu giải thích bằng lời ngay khi gõ, cảnh báo (từ quá ngắn, mã giao dịch, chỗ tự điền sai, trùng quy tắc), **thử ngay trên các thông báo gần đây** (trước → sau) và báo khi bị quy tắc khác xét trước.
+  - **Gợi ý quy tắc** từ thông báo chưa có quy tắc (theo người nhận/người gửi, tên nơi chạm thẻ, nội dung mặc định "… chuyen tien"); nút **Làm gọn nội dung ›** ngay trong tin giao dịch ở Chat.
+  - **Dán từ Google Sheet** (2 cột A:B) để chuyển thư viện cũ; **Chép thành bảng** để xuất.
+  - 40 thông báo gần đây để thử chỉ lưu trên máy (mã hoá khi bật PIN), không vào file sao lưu, xoá được.
+- Bài thử mới: `node tests-quy-tac.js` (33 bài, dữ liệu giả).
 
 ---
 

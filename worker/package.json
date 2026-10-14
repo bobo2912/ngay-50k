@@ -1,0 +1,13 @@
+{
+  "name": "tieugon-relay",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Tiêu Gọn – trạm trung chuyển thông báo ngân hàng từ Phím tắt tới app, không lưu trữ.",
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev"
+  },
+  "devDependencies": {
+    "wrangler": "^4.151.0"
+  }
+}

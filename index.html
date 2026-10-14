@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v157";
+  var K = "ngay50k:errlog", VER = "v158";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -1633,6 +1633,34 @@ body.searching .ledger-head{background:var(--top-c)}
 .msg .up{color:var(--over); font-weight:600}
 .src-tag.local-mark{color:var(--muted); background:color-mix(in srgb, var(--muted) 12%, transparent)}
 .learn-row{cursor:default}
+/* v158: Thư viện nội dung */
+.mono, .lib-syntax code, .lib-k{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.lib-ops{display:flex; flex-wrap:wrap; gap:6px; margin-top:7px}
+.lib-ops button{border:1px solid var(--line); background:var(--flat); color:var(--ink); border-radius:8px; padding:4px 8px; font-size:.76rem; font-weight:600; font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.lib-explain{margin:2px 2px 0; font-size:.86rem; color:var(--ok); min-height:1.2em}
+.lib-explain.bad{color:var(--over)}
+.lib-warn{margin:6px 0 0; padding-left:18px; font-size:.82rem; color:var(--over)}
+.lib-warn:empty{display:none}
+.lib-row .t b{white-space:normal}
+.lib-row .lib-k{font-size:.84rem; font-weight:600}
+.lib-row .arrow{color:var(--muted); font-weight:400; margin:0 4px}
+.lib-row.off{opacity:.5}
+.lib-row .n{flex:none; font-size:.72rem; color:var(--muted); padding:2px 7px; border-radius:999px; background:color-mix(in srgb, var(--muted) 12%, transparent)}
+.lib-try{margin:0; padding:0; list-style:none}
+.lib-try li{border:1px solid var(--line); border-radius:10px; padding:8px 10px; margin-top:6px; font-size:.82rem}
+.lib-try .bf{color:var(--muted); text-decoration:line-through; word-break:break-word}
+.lib-try .af{font-weight:600; word-break:break-word}
+.lib-try .by{color:var(--over); font-size:.76rem}
+.lib-try-in{margin-top:8px; font-size:14px}
+.lib-sg{display:block}
+.lib-sg .raw{display:block; font-size:.76rem; color:var(--muted); word-break:break-word; margin-bottom:6px}
+.lib-sg .chips{margin-top:0}
+.lib-sg .chip{white-space:normal; text-align:left}
+.lib-syntax{width:100%; border-collapse:collapse; font-size:.82rem; margin-top:8px}
+.lib-syntax td{border-top:1px solid var(--line); padding:7px 4px; vertical-align:top}
+.lib-syntax td:first-child{white-space:nowrap; padding-right:10px}
+.lib-syntax code{font-size:.8rem}
+.deploy-btn{display:block; text-align:center; text-decoration:none; color:var(--ink); margin-top:10px}
 .learn-row .t small{white-space:normal}
 .learn-row .del{margin-left:auto; flex:none; border:0; background:none; color:var(--muted); font-size:1rem; padding:6px 4px 6px 10px}
 .msg.bot:has(> .rpt) > .src-tag{margin-bottom:6px}
@@ -2263,6 +2291,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <button class="set-nav" data-go="setTags"><span class="nav-t">Quản lý tag</span><span class="nav-v" id="navTags"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
         <button class="set-nav" data-go="setSync"><span class="nav-t">Sao lưu và đồng bộ</span><span class="nav-v" id="navSync"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
         <button class="set-nav" data-go="setNotif"><span class="nav-t">Tự ghi từ thông báo</span><span class="nav-v" id="navNotif"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+        <button class="set-nav" data-go="setLib"><span class="nav-t">Thư viện nội dung</span><span class="nav-v" id="navLib"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
         <button class="set-nav" data-go="setStore"><span class="nav-t">Dung lượng</span><span class="nav-v" id="navStore"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
       </div>
       <h3 class="set-label">Nâng cao</h3>
@@ -2487,7 +2516,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <div class="field"><label for="bkPw2"><span>Nhập lại mật khẩu</span></label><input id="bkPw2" class="inp" type="password" autocomplete="new-password" autocapitalize="off" spellcheck="false"></div>
         <p class="set-now">Dùng cho Xuất file sao lưu và Sao lưu nhanh. App không lưu mật khẩu này, quên thì file không mở được. File CSV không có mật khẩu.</p>
       </div>
-      <p class="set-now">File sao lưu gồm mọi khoản đã ghi và toàn bộ cài đặt: giao diện, ngân hàng, trợ lý AI <b>kể cả khoá API</b>, lịch sử Chat, Tự ghi từ thông báo (địa chỉ Google Sheet và <b>mã bí mật</b>). Mã PIN / Face ID không đi theo file. Vì có khoá API và mã bí mật, nên bật mật khẩu file nếu cất file ở nơi người khác xem được.</p>
+      <p class="set-now">File sao lưu gồm mọi khoản đã ghi và toàn bộ cài đặt: giao diện, ngân hàng, trợ lý AI <b>kể cả khoá API</b>, lịch sử Chat, <b>Thư viện nội dung</b>, Tự ghi từ thông báo (địa chỉ trạm Cloudflare và <b>mã bí mật</b>). Mã PIN / Face ID không đi theo file. Vì có khoá API, mã bí mật và quy tắc theo tên người, nên bật mật khẩu file nếu cất file ở nơi người khác xem được.</p>
 
       <h4 class="sub">Sao lưu nhanh bằng Phím tắt <button class="ib" type="button" data-info="infoSc" aria-expanded="false" aria-label="Cách cài">i</button></h4>
       <p class="set-now">Bấm nút, bảng chia sẻ hiện lên, chạm vào phím tắt của bạn. Phím tắt chạy ngay trong app, lưu file vào iCloud Drive theo ngày, không rời app.</p>
@@ -2558,41 +2587,123 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
 
       <h4 class="sub">App lấy thông báo theo thứ tự</h4>
       <ol class="sc-steps">
-        <li><b>Đã kết nối Google Sheet, có mạng</b>: mở app là tự lấy, bấm 📋 để lấy ngay. Thông báo đến lúc iPhone mất mạng sẽ được gửi bù ở thông báo sau.</li>
-        <li><b>Đã kết nối Google Sheet, mất mạng</b>: bấm 📋 là mở chọn tệp <b>TieuGon.txt</b> (chỉ còn các thông báo chưa gửi được lên Sheet).</li>
-        <li><b>Chưa kết nối Google Sheet</b>: bấm 📋 → <b>Paste</b>, dán từ bộ nhớ tạm; dán không được thì thanh dưới có nút <b>Chọn tệp</b>.</li>
+        <li><b>Có trạm Cloudflare, có mạng</b>: mở app là lấy ngay; app đang mở thì giao dịch mới <b>tự hiện</b> sau vài giây, không cần bấm. Bấm 📋 để lấy lại. Thông báo đến lúc iPhone mất mạng sẽ được gửi bù ở thông báo sau.</li>
+        <li><b>Có trạm Cloudflare, mất mạng</b>: bấm 📋 là mở chọn tệp <b>TieuGon.txt</b> (chỉ còn các thông báo chưa gửi được).</li>
+        <li><b>Chưa có trạm Cloudflare</b>: bấm 📋 → <b>Paste</b>, dán từ bộ nhớ tạm; dán không được thì thanh dưới có nút <b>Chọn tệp</b>.</li>
       </ol>
-      <p class="set-now">Giao dịch đã ghi hoặc đã bỏ không bao giờ hiện lại; giao dịch cũ hơn 35 ngày được bỏ qua.</p>
+      <p class="set-now">Giao dịch đã ghi hoặc đã bỏ không bao giờ hiện lại; giao dịch cũ hơn 35 ngày được bỏ qua. Nội dung được làm gọn theo <button type="button" class="linkbtn" data-go="setLib">Thư viện nội dung</button> ngay trên máy.</p>
 
       <h4 class="sub">Phần A (bắt buộc): automation "TG · Lưu thông báo MB"</h4>
       <ol class="sc-steps">
         <li><b>Phím tắt</b> → tab <b>Tự động hoá</b> → <b>＋</b> → <b>Thông báo</b> (Notification) → app <b>MB Bank</b> → <b>Add Filter</b>: <b>Title contains</b> "Thông báo biến động số dư". Bật <b>Automation</b>, tắt <b>Notify</b>.</li>
         <li>Tác vụ 1 <b>Append to Text File</b>: nội dung <b>Shortcut Input → Body</b> (chưa thấy Body thì đổi Type sang Notification); chạm chữ thư mục chọn folder iCloud của bạn; <b>File Path</b> = <b>TieuGon.txt</b>; bật <b>Make New Line</b>.</li>
         <li>Tác vụ 2 <b>Get File from Folder</b>: cùng folder đó, path <b>TieuGon.txt</b>, tắt <b>Error If Not Found</b>.</li>
-        <li>Tác vụ 3, <b>chỉ khi không dùng Google Sheet</b>: <b>Copy to Clipboard</b>: nội dung <b>File</b> (Type <b>Text</b>), bật <b>Local Only</b>, để trống Expire At. Dùng Google Sheet thì bỏ tác vụ này (để thông báo không ghi đè thứ bạn đang copy) và làm tiếp Phần B.</li>
-        <li>Chạm tên ở trên cùng, đặt tên <b>TG · Lưu thông báo MB</b>. Phím tắt cũ tên "TieuGon" (nếu có) thì xoá đi.</li>
+        <li>Tác vụ 3, <b>chỉ khi không dùng trạm Cloudflare</b>: <b>Copy to Clipboard</b>: nội dung <b>File</b> (Type <b>Text</b>), bật <b>Local Only</b>, để trống Expire At. Dùng Cloudflare thì bỏ tác vụ này và làm tiếp Phần B.</li>
+        <li>Chạm tên ở trên cùng, đặt tên <b>TG · Lưu thông báo MB</b>.</li>
       </ol>
 
-      <h4 class="sub">Phần B (tuỳ chọn, để tự động hoàn toàn): Google Sheet</h4>
+      <h4 class="sub">Phần B (tuỳ chọn, để tự động hoàn toàn): trạm Cloudflare</h4>
       <ol class="sc-steps">
-        <li>Mở <b>sheets.new</b> (nên làm trên máy tính), tạo Sheet tên <b>TG · Thông báo ngân hàng</b>.</li>
-        <li>Menu <b>Tiện ích mở rộng → Apps Script</b>, đặt tên dự án <b>TG Relay</b>, xoá hết mã có sẵn, dán mã từ nút <b>Chép mã Apps Script</b> bên dưới, bấm Lưu.</li>
-        <li><b>Triển khai → Triển khai mới</b> → bánh răng chọn <b>Ứng dụng web</b> → Thực thi với tư cách <b>Tôi</b>, Ai có quyền truy cập <b>Bất kỳ ai</b> → Triển khai → cấp quyền (gặp "chưa xác minh" thì Nâng cao → Đi tới…) → chép <b>URL ứng dụng web</b> (đuôi /exec) dán vào ô dưới, bấm <b>Kiểm tra</b>.</li>
-        <li>Trong automation <b>TG · Lưu thông báo MB</b>, sau tác vụ 2 thêm <b>Get Contents of URL</b>: URL = địa chỉ /exec; ⌄ → Method <b>POST</b>, Request Body <b>JSON</b>, thêm 2 trường Text: <b>k</b> = mã bí mật bên dưới, <b>t</b> = biến <b>File</b> (tệp lấy ở tác vụ 2, không phải Body). Gửi cả tệp để thông báo nào lỡ lúc mất mạng được gửi bù; Sheet tự bỏ dòng trùng.</li>
-        <li>Thêm <b>If</b>: <b>Contents of URL</b> <b>is</b> <b>TG_OK</b>. Bên trong If: thêm <b>Text</b> gõ một dấu cách, rồi <b>Save File</b>: tắt Ask Where to Save, chọn cùng folder, Subpath <b>TieuGon.txt</b>, bật <b>Overwrite If File Exists</b>. Tệp chỉ được xoá khi Sheet đã nhận, nên không lớn dần và không mất thông báo.</li>
-        <li>Đã cài Sheet từ bản trước v151 (Cài đặt báo "mã Apps Script là bản cũ"): chép lại mã Apps Script, dán đè rồi <b>Triển khai → Quản lý triển khai → ✎ → Phiên bản mới</b> (giữ nguyên URL). Cài từ trước v145 thì sửa thêm phím tắt như 2 bước trên.</li>
-        <li>(Tuỳ chọn) <b>Làm gọn nội dung giao dịch</b>: thêm sheet tên <b>ThuVien</b>, dòng 1 để tiêu đề, cột A là từ khoá, cột B là nội dung thay. Ví dụ A <b>GRABFOOD</b>, B <b>Ăn GrabFood</b>: phần ND chứa "grabfood" (không phân biệt hoa thường, có dấu hay không) sẽ thành "Ăn GrabFood". Từ khoá dài được so trước. Áp dụng cho phần <b>ND:</b>, <b>Tại:</b> (chạm thẻ) và <b>Nội dung giao dịch:</b> (thẻ tín dụng). Viết <b>DEN:tên</b> hoặc <b>TU:tên/số TK</b> để xét theo người nhận/người gửi (xét trước); thêm <b>^</b> ở đầu (vd <b>^ck</b>) để chỉ khớp khi nội dung bắt đầu bằng từ đó; cột B có thể dùng <b>{DEN}</b>/<b>{TU}</b> để lấy tên người nhận/người gửi.</li>
+        <li>Bấm nút <b>Deploy to Cloudflare</b> bên dưới, đăng nhập (hoặc tạo) tài khoản Cloudflare miễn phí và cho phép kết nối GitHub. Cloudflare tạo trong GitHub của bạn một bản sao <b>mã</b> của trạm (thư mục <code>worker/</code> của app, không có dữ liệu nào) rồi tự triển khai. Giữ tên <b>tieugon-relay</b>, bấm <b>Create and deploy</b>.</li>
+        <li>Triển khai xong, chép địa chỉ dạng <b>https://tieugon-relay.&lt;tên&gt;.workers.dev</b>, dán vào ô dưới, bấm <b>Kiểm tra</b>. Lần kiểm tra đầu tiên gắn mã bí mật của máy này với trạm: từ đó chỉ ai có mã mới gửi và lấy được.</li>
+        <li>Trong automation <b>TG · Lưu thông báo MB</b>, sau tác vụ 2 thêm <b>Get Contents of URL</b>: URL = địa chỉ workers.dev; ⌄ → Method <b>POST</b>, Request Body <b>JSON</b>, thêm 2 trường Text: <b>k</b> = mã bí mật bên dưới, <b>t</b> = biến <b>File</b> (tệp lấy ở tác vụ 2, không phải Body).</li>
+        <li>Thêm <b>If</b>: <b>Contents of URL</b> <b>is</b> <b>TG_OK</b>. Bên trong If: thêm <b>Text</b> gõ một dấu cách, rồi <b>Save File</b>: tắt Ask Where to Save, chọn cùng folder, Subpath <b>TieuGon.txt</b>, bật <b>Overwrite If File Exists</b>. Tệp chỉ được xoá khi trạm đã nhận, nên không mất thông báo.</li>
+        <li><b>Đang dùng Google Sheet từ bản cũ?</b> Chỉ cần làm bước 1, 2 rồi sửa URL trong tác vụ <b>Get Contents of URL</b> sẵn có thành địa chỉ workers.dev (giữ nguyên k, t và If). Chuyển các dòng sheet <b>ThuVien</b> vào <button type="button" class="linkbtn" data-go="setLib">Thư viện nội dung</button> (dán thẳng 2 cột), xong có thể xoá Sheet và dự án Apps Script.</li>
       </ol>
-      <div class="field"><label for="relayUrl"><span>URL ứng dụng web (đuôi /exec)</span></label><input id="relayUrl" class="inp" inputmode="url" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="https://script.google.com/macros/s/…/exec"></div>
+      <a class="ghost deploy-btn" id="relayDeploy" target="_blank" rel="noopener" href="#">Deploy to Cloudflare ↗</a>
+      <div class="field"><label for="relayUrl"><span>Địa chỉ trạm (workers.dev)</span></label><input id="relayUrl" class="inp" inputmode="url" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="https://tieugon-relay.<tên>.workers.dev"></div>
       <div class="set-row"><p class="set-now grow" style="margin:0">Mã bí mật: <b id="relayKey" style="font-family:ui-monospace,monospace; letter-spacing:.5px"></b></p><button class="ghost" type="button" id="relayKeyCopy">Chép mã</button></div>
-      <div class="set-row"><button class="ghost grow" id="relayCopy" type="button">Chép mã Apps Script</button><button class="ghost grow" id="relayTest" type="button">Kiểm tra</button></div>
+      <div class="set-row"><button class="ghost grow" id="relayTest" type="button">Kiểm tra</button><button class="ghost grow" id="relayForget" type="button" hidden>Xoá hết trên Cloudflare</button></div>
       <p class="set-now" id="relayTestMsg" role="status" aria-live="polite" hidden></p>
-      <pre class="errlog" id="relayCode" hidden></pre>
-      <p class="set-now">Thông báo đi qua Google Sheet trong tài khoản Google của chính bạn, chỉ ai có cả địa chỉ /exec lẫn mã bí mật mới đọc được. Sheet tự giữ khoảng 1.000 thông báo gần nhất; sheet ẩn <b>DataPack</b> (ô A1) chỉ chứa giao dịch app chưa lấy, lấy xong là tự dọn. Xoá trắng ô URL để thôi dùng Google Sheet. Không dùng Sheet thì tệp TieuGon.txt lớn dần, lâu lâu có thể xoá trong app Tệp (giao dịch đã ghi không bị ảnh hưởng).</p>
+      <p class="set-now"><b>Không lưu trữ:</b> trạm chỉ giữ thông báo trong lúc chờ app lấy; app nhận xong là xoá ngay, không ai lấy thì tự xoá sau 3 ngày. Trạm không ghi nhật ký, không biết Thư viện nội dung (việc làm gọn nội dung chạy trên máy). Trạm nằm trong tài khoản Cloudflare của chính bạn; xoá trắng ô địa chỉ để thôi dùng.</p>
 
       <h4 class="sub">Thử</h4>
       <div class="set-row"><button class="ghost grow" id="notifTest" type="button">Dán thử</button><button class="ghost grow" id="notifPick" type="button">Chọn tệp thử</button></div>
     </section>
+    </div>
+
+    <div class="set-page" id="setLib" hidden>
+      <div class="set-head"><button class="set-back" id="libBack" data-back>‹ Cài đặt</button><h2 tabindex="-1">Thư viện nội dung</h2><button class="ib" type="button" data-info="infoLib" aria-expanded="false" aria-label="Giải thích">i</button></div>
+      <p class="set-now info" id="infoLib" hidden>Mỗi quy tắc đổi phần nội dung khó đọc của thông báo ngân hàng (vd "MBCT … chuyen tien D25X…/1234") thành chữ gọn bạn muốn, và có thể tự gắn tag. Chạy ngay trên máy lúc giao dịch hiện ra trong Chat. Quy tắc nằm trong dữ liệu của app (được mã hoá khi bật mã PIN), đi theo file sao lưu, không gửi đi đâu và không nằm trong mã nguồn. Các thông báo gần đây dùng để thử chỉ lưu trên máy này (40 thông báo cuối).</p>
+      <p class="set-now" id="libSum"></p>
+      <div class="set-row"><button class="ghost grow" id="libAdd" type="button">＋ Thêm quy tắc</button><button class="ghost grow" id="libPasteBtn" type="button">Dán từ Google Sheet</button></div>
+
+      <section class="set-group lib-form" id="libForm" hidden aria-labelledby="libFormTitle">
+        <h3 id="libFormTitle">Quy tắc mới</h3>
+        <div class="field"><label for="libK"><span>Khi thông báo có</span><span class="opt">cột A · từ khoá</span></label>
+          <input id="libK" class="inp mono" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="vd: GRABFOOD  ·  DEN:NGUYEN VAN A  ·  ^ck">
+          <div class="lib-ops" id="libKOps" aria-label="Chèn cú pháp">
+            <button type="button" data-ins="^" data-pos="start" title="Bắt đầu bằng">^ đầu</button>
+            <button type="button" data-ins="$" data-pos="end" title="Kết thúc bằng">$ cuối</button>
+            <button type="button" data-ins=", " title="Hoặc">, hoặc</button>
+            <button type="button" data-ins=" &amp; " title="Và">&amp; và</button>
+            <button type="button" data-ins=" &amp; -" title="Không có">− trừ</button>
+            <button type="button" data-ins="*" title="Đoạn bất kỳ">* bất kỳ</button>
+            <button type="button" data-ins="&quot;&quot;" data-mid="1" title="Nguyên từ">"" nguyên từ</button>
+            <button type="button" data-ins="DEN:" data-pos="field" title="Người nhận">DEN: người nhận</button>
+            <button type="button" data-ins="TU:" data-pos="field" title="Người gửi">TU: người gửi</button>
+            <button type="button" data-ins=" &amp; TIEN:&lt;" title="Số tiền">TIEN: số tiền</button>
+            <button type="button" data-ins="TK:" data-pos="field" title="Tài khoản của bạn">TK:</button>
+          </div>
+        </div>
+        <p class="lib-explain" id="libExplain" aria-live="polite"></p>
+        <ul class="lib-warn" id="libWarn"></ul>
+        <div class="field"><label for="libR"><span>Đổi nội dung thành</span><span class="opt">cột B</span></label>
+          <input id="libR" class="inp" autocomplete="off" placeholder="vd: Ăn GrabFood  ·  {DEN}">
+          <div class="lib-ops" id="libROps" aria-label="Chèn chỗ tự điền">
+            <button type="button" data-ins="{DEN}" title="Tên người nhận">{DEN} người nhận</button>
+            <button type="button" data-ins="{TU}" title="Tên người gửi">{TU} người gửi</button>
+            <button type="button" data-ins="{ND}" title="Nội dung gốc, bỏ mã giao dịch">{ND} nội dung gốc</button>
+            <button type="button" data-ins="{TIEN}" title="Số tiền">{TIEN}</button>
+          </div>
+        </div>
+        <div class="field"><label for="libTag"><span>Tự gắn tag <span class="opt">(không bắt buộc)</span></span></label><select id="libTag" class="inp"></select></div>
+        <label class="sc-use"><input type="checkbox" id="libOn" checked> <span>Đang dùng quy tắc này</span></label>
+        <h4 class="sub">Thử trên thông báo gần đây</h4>
+        <div id="libTry"></div>
+        <textarea id="libTryIn" class="inp lib-try-in" rows="2" placeholder="Hoặc dán một thông báo ngân hàng vào đây để thử"></textarea>
+        <button class="primary" id="libSave" type="button" disabled>Lưu quy tắc</button>
+        <div class="set-row"><button class="ghost grow" id="libCancel" type="button">Huỷ</button><button class="ghost grow danger" id="libDel" type="button" hidden>Xoá quy tắc</button></div>
+      </section>
+
+      <section class="set-group" id="libPaste" hidden>
+        <h3>Dán từ Google Sheet</h3>
+        <p class="set-now">Trong Sheet chọn hai cột <b>A:B</b> (từ khoá, nội dung thay) → Chép, rồi dán vào ô dưới. Dòng tiêu đề tự bỏ; từ khoá đã có thì bỏ qua.</p>
+        <textarea id="libPasteIn" class="inp mono" rows="6" placeholder="GRABFOOD&#9;Ăn GrabFood&#10;^ck&#9;Chuyển tiền"></textarea>
+        <p class="set-now" id="libPasteInfo" aria-live="polite"></p>
+        <div class="set-row"><button class="ghost grow" id="libPasteCancel" type="button">Huỷ</button><button class="primary grow" id="libPasteGo" type="button" disabled style="margin-top:0">Nhập</button></div>
+      </section>
+
+      <h4 class="sub">Quy tắc <span class="opt">· xét từ trên xuống, khớp quy tắc đầu tiên là dừng</span></h4>
+      <div id="libList"></div>
+
+      <h4 class="sub">Gợi ý từ thông báo chưa có quy tắc</h4>
+      <div id="libSuggest"></div>
+
+      <details class="set-more lib-help"><summary>Cách viết từ khoá</summary>
+        <table class="lib-syntax">
+          <tr><td><code>grabfood</code></td><td>Nội dung chứa “grabfood”. Không phân biệt hoa thường, có dấu hay không.</td></tr>
+          <tr><td><code>ck</code></td><td>Từ 3 ký tự trở xuống phải đứng thành từ riêng (không khớp “ckb”).</td></tr>
+          <tr><td><code>^ck</code></td><td>Nội dung <b>bắt đầu</b> bằng “ck”.</td></tr>
+          <tr><td><code>hoan tien$</code></td><td>Nội dung <b>kết thúc</b> bằng “hoan tien”.</td></tr>
+          <tr><td><code>"an"</code></td><td>Khớp <b>nguyên từ</b> “an”, không khớp “ban”, “anh”.</td></tr>
+          <tr><td><code>grab*food</code></td><td><b>*</b> là đoạn bất kỳ: “grab food”, “grab-xyz-food”.</td></tr>
+          <tr><td><code>grab, be, xanh sm</code></td><td>Dấu phẩy = <b>hoặc</b>: một trong các từ.</td></tr>
+          <tr><td><code>grab &amp; food</code></td><td>Dấu &amp; = <b>và</b>: phải có cả hai.</td></tr>
+          <tr><td><code>taxi &amp; -hoan</code></td><td>Dấu − ở đầu = <b>không có</b> từ đó.</td></tr>
+          <tr><td><code>DEN:nguyen van a</code></td><td>Theo <b>người nhận</b> (phần DEN: của thông báo, gồm cả số tài khoản).</td></tr>
+          <tr><td><code>TU:0123456789</code></td><td>Theo <b>người gửi</b>, tên hoặc số tài khoản.</td></tr>
+          <tr><td><code>TK:12xxx345</code></td><td>Theo <b>tài khoản của bạn</b> trong thông báo (khi có nhiều tài khoản).</td></tr>
+          <tr><td><code>DONG:abc</code></td><td>Tìm trong <b>cả dòng</b> thông báo.</td></tr>
+          <tr><td><code>TIEN:&lt;50k</code></td><td>Theo <b>số tiền</b>: <code>TIEN:50k</code> (đúng), <code>&lt;</code> <code>&gt;</code> <code>&lt;=</code> <code>&gt;=</code>, <code>TIEN:10k-50k</code>, <code>TIEN:+</code> tiền vào, <code>TIEN:-</code> tiền ra.</td></tr>
+          <tr><td><code>DEN:le van b &amp; TIEN:&lt;100k</code></td><td>Ghép nhiều điều kiện bằng &amp;.</td></tr>
+          <tr><td><code>{DEN} {TU}</code></td><td>Ở cột B: tên người nhận / người gửi (bỏ số tài khoản).</td></tr>
+          <tr><td><code>{ND} {TIEN}</code></td><td>Ở cột B: nội dung gốc (đã bỏ mã giao dịch) / số tiền. Vd <code>Ăn {ND}</code>.</td></tr>
+        </table>
+        <p class="set-now">Quy tắc cụ thể hơn được xét trước: có điều kiện người nhận, người gửi, tài khoản hay số tiền; nhiều điều kiện hơn; từ khoá dài hơn.</p>
+      </details>
+      <div class="set-row"><button class="ghost grow" id="libCopy" type="button">Chép thành bảng</button><button class="ghost grow" id="libClearRaw" type="button">Xoá thông báo thử</button></div>
+      <p class="inline-ok" id="libMsg" hidden></p>
     </div>
 
     <div class="set-page" id="setStore" hidden>
@@ -2606,7 +2717,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v157</p>
+      <p class="sync" id="appVersion">Phiên bản v158</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3107,9 +3218,10 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
 <input type="file" id="notifFileIn" accept=".txt,text/plain" hidden>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=157"></script>
-<script src="thu-vien-cau.js?v=157"></script>
-<script src="lock.js?v=157"></script>
+<script src="parse-vi.js?v=158"></script>
+<script src="thu-vien-cau.js?v=158"></script>
+<script src="quy-tac.js?v=158"></script>
+<script src="lock.js?v=158"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -3119,7 +3231,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
    Khi bật khoá bằng mã PIN (lock.js): trong bộ nhớ là dữ liệu thường, lúc ghi xuống máy mới mã hoá ("enc1:…").
    Chưa mở khoá thì không ghi các khoá dữ liệu, chỉ ghi được thông tin khoá "ngay50k:lock". */
 window.N50K = (function(){
-  var DB_NAME = "ngay50k", STORE = "kv", MAIN = "ngay50k:v1", LOCK = "ngay50k:lock", KEYS = [MAIN, "ngay50k:beforeImport", "ngay50k:chat", "ngay50k:ai", LOCK];
+  var DB_NAME = "ngay50k", STORE = "kv", MAIN = "ngay50k:v1", LOCK = "ngay50k:lock", KEYS = [MAIN, "ngay50k:beforeImport", "ngay50k:chat", "ngay50k:ai", "ngay50k:tbRaw", LOCK];
   var mem = {}, sizes = {}, gen = {}, db = null, mode = "ls", chan = null, dirty = {}, writing = null;
   var why = "", trying = null, lastTry = 0, codec = null, unlocked = false;
   function isEnc(k){ return k !== LOCK; }
@@ -3438,7 +3550,10 @@ function startNgay50k(){
       learn: Array.isArray(s.learn) ? s.learn.filter(r => r && r.id && r.key) : [],
       miss: Array.isArray(s.miss) ? s.miss.filter(r => r && r.id && r.key) : [],
       /* v125: viết tắt bạn đã chọn ("hl" → "Highlands"); aliasM: lúc đặt, để gộp hai máy lấy bản mới hơn */
-      alias: obj(s.alias), aliasM: obj(s.aliasM)
+      alias: obj(s.alias), aliasM: obj(s.aliasM),
+      /* v158 – Thư viện nội dung (thay sheet ThuVien): quy tắc làm gọn nội dung thông báo ngân hàng, { id, k, r, tag?, off? }.
+         Nằm trong dữ liệu chính: mã hoá khi bật PIN, đi theo file sao lưu, không bao giờ nằm trong mã nguồn */
+      thuvien: Array.isArray(s.thuvien) ? s.thuvien.filter(r => r && r.id && typeof r.k === "string") : []
     };  /* caps: giữ lại cho dữ liệu cũ, không còn dùng */
   }
   function loadLocal(){
@@ -3462,6 +3577,7 @@ function startNgay50k(){
     (st.xfer||[]).forEach(x => fn(x.id, x, false));
     (st.learn||[]).forEach(x => fn(x.id, x, false));
     (st.miss||[]).forEach(x => fn(x.id, x, false));
+    (st.thuvien||[]).forEach(x => fn(x.id, x, false));
   }
   function collectSigs(st){
     const out = {};
@@ -9409,7 +9525,10 @@ function startNgay50k(){
       : notifBarAct(txt == null ? "Chưa dán được" : !txt ? "Bộ nhớ tạm trống" : "Không thấy giao dịch trong bộ nhớ tạm", "Chọn tệp", notifPickFile, "Dán lại", () => notifFromClip(clipRead(), "clip"));
     if(txt == null){ if(src === "file") notifSay("Chưa đọc được tệp, thử chọn lại nhé"); else viaFile(); return; }
     if(!txt){ if(src === "file") notifSay(relayUrl() ? "Chưa có giao dịch mới, có mạng app sẽ tự cập nhật" : "Tệp chưa có thông báo nào"); else viaFile(); return; }
-    const r = notifItems(txt);
+    /* v158: lưu tạm thông báo gần đây trên máy (để thử quy tắc), rồi làm gọn nội dung theo Thư viện nội dung */
+    tbRawAdd(txt);
+    const lib = libApply(txt); txt = lib.text;
+    const r = notifItems(txt); libTag(r, lib.hits);
     if(!r.items.length){ if(auto) return; if(src === "file") notifSay("Không thấy giao dịch ngân hàng trong tệp"); else viaFile(); return; }
     if(r.items.length){
       const seen = new Set(notifSeenList()), got = new Set(), used = new Set();
@@ -9443,7 +9562,8 @@ function startNgay50k(){
       const nOut = r.items.filter(it => it.kind !== "in").length, nIn = r.items.length - nOut, bal = notifBalItem(r.all || r.items);
       const what = nOut && nIn ? nOut + " khoản chi, " + nIn + " khoản thu" : nIn ? nIn + " khoản thu (tiền vào)" : nOut + " khoản trừ tiền";
       const intro = "Mình đọc được " + what + (items1 => items1 > 1 ? ", chạm vào dòng nếu cần sửa rồi bấm <b>Ghi tất cả</b>" : ", bạn xem lại rồi bấm Ghi nhé")(r.items.length) +
-        (bal ? ". Dòng <b>🏦 Số dư</b> ở cuối ghi riêng" : "") + "." + dupNote(r.items);
+        (bal ? ". Dòng <b>🏦 Số dư</b> ở cuối ghi riêng" : "") + "." + dupNote(r.items) +
+        ' <button type="button" class="linkbtn" data-open-lib>Làm gọn nội dung ›</button>';
       const items = bal ? r.items.concat([bal]) : r.items;
       /* v136: "Phân tích lại bằng AI" gửi nguyên cả đoạn thông báo đã dán; kết quả AI lọc bỏ các giao dịch đã từng dán trước đó */
       chat.msgs.push(...tagRetry([{ id:uid(), role:"bot", notif:true, nkNew:r.items.map(it => it.nkB), items, intro, introHtml:true, status:items.map(() => "pending"), refs:items.map(() => null), t:Date.now(), src:"local" }],
@@ -9460,7 +9580,9 @@ function startNgay50k(){
   /* v142: tự động qua Google Sheet của người dùng: Phím tắt gửi (POST) nội dung thông báo lên Apps Script web app của họ;
      mở app / quay lại app thì app hỏi (GET) các thông báo mới từ lần trước, tách giao dịch, hiện sẵn thẻ chờ Ghi. Không tốn chạm. */
   var RELAY_URL = "ngay50k:relayUrl", RELAY_KEY = "ngay50k:relayKey", RELAY_AT = "ngay50k:relayAt", relayLast = 0, relayBusy = false;
-  function relayUrl(){ const u = (lsGet(RELAY_URL) || "").trim(); return /^https:\/\/script\.google(usercontent)?\.com\//.test(u) ? u : ""; }
+  /* v158: trạm Cloudflare Worker của chính người dùng (https://…workers.dev hoặc tên miền riêng). Địa chỉ Google Apps Script cũ không dùng nữa */
+  function relayIsGoogle(u){ return /^https:\/\/script\.google(usercontent)?\.com\//.test(String(u || "").trim()); }
+  function relayUrl(){ const u = (lsGet(RELAY_URL) || "").trim().replace(/\/+$/, ""); return (/^https:\/\/[a-z0-9.-]+\.[a-z]{2,}(\/|$)/i.test(u) || /^http:\/\/(127\.0\.0\.1|localhost)(:\d+)?$/.test(u)) && !relayIsGoogle(u) ? u : ""; }   /* http://localhost: chạy thử Worker trên máy (wrangler dev) */
   function relayKey(){
     let k = lsGet(RELAY_KEY);
     if(!k){ const a = "abcdefghijkmnpqrstuvwxyz23456789"; k = ""; const r = new Uint32Array(10); (crypto.getRandomValues ? crypto.getRandomValues(r) : r.forEach((_, i) => r[i] = Math.random() * 1e9)); r.forEach(x => k += a[x % a.length]); lsSet(RELAY_KEY, k); }
@@ -9488,10 +9610,11 @@ function startNgay50k(){
     }
     return all;
   }
-  function relayOld(){ const v = Number(lsGet(RELAY_V) || 0); return !!relayUrl() && v > 0 && v < 4; }
+  function relayOld(){ return relayIsGoogle(lsGet(RELAY_URL)); }   /* v158: vẫn còn địa chỉ Google Sheet cũ */
   /* v151: lấy xong thì báo ngay cho Sheet mốc đã nhận → Apps Script bản mã 4 dọn ô A1 (chạy ngầm, lỗi thì lần mở app sau báo lại) */
   function relayAck(){
-    const u = relayUrl(), at = Number(lsGet(RELAY_AT)) || 0; if(!u || !at || Number(lsGet(RELAY_V) || 0) < 4) return;
+    const u = relayUrl(), at = Number(lsGet(RELAY_AT)) || 0; if(!u || !at) return;
+    if(relayWs && relayWs.readyState === 1){ try{ relayWs.send(JSON.stringify({ ack:at })); return; }catch(e){} }
     try{ fetch(u + (u.indexOf("?") >= 0 ? "&" : "?") + "k=" + encodeURIComponent(relayKey()) + "&since=" + at + "&ack=1", { cache:"no-store", keepalive:true }).catch(() => {}); }catch(e){}
   }
   /* v148: dấu hiệu "Đang cập nhật" cạnh Số dư ví + nút 📋 nhấp nháy trong lúc lấy thông báo số dư mới nhất */
@@ -9544,8 +9667,40 @@ function startNgay50k(){
       if(n > 0) { relayBurstT.forEach(clearTimeout); relayBurstT = []; }
     };
     step(0);
-    [4000, 10000, 20000].forEach(ms => relayBurstT.push(setTimeout(() => step(ms), ms)));
+    relayWsOpen();
+    /* trình duyệt không mở được WebSocket thì hỏi lại như cũ (thông báo vừa đến, phím tắt có thể chưa gửi xong) */
+    [4000, 10000, 20000].forEach(ms => relayBurstT.push(setTimeout(() => { if(!(relayWs && relayWs.readyState === 1)) step(ms); }, ms)));
   }
+  /* v158: app đang mở thì giữ một WebSocket tới trạm Cloudflare: thông báo tới là hiện ngay, không phải hỏi lại.
+     Rời app thì đóng (iPhone cũng tự đóng); quay lại app thì mở lại và hỏi bù một lần. */
+  var relayWs = null, relayWsT = 0, relayWsTry = 0;
+  function relayWsUrl(){ const u = relayUrl(); return u ? u.replace(/^http(s?):/, "ws$1:") + "/ws?k=" + encodeURIComponent(relayKey()) : ""; }
+  function relayWsOpen(){
+    clearTimeout(relayWsT);
+    if(!relayUrl() || !notifOn() || document.hidden || navigator.onLine === false || !window.WebSocket) return;
+    if(relayWs && relayWs.readyState <= 1) return;
+    let ws;
+    try{ ws = new WebSocket(relayWsUrl()); }catch(e){ return; }
+    relayWs = ws;
+    ws.onopen = () => { relayWsTry = 0; };
+    ws.onmessage = async e => {
+      let d = null; try{ d = JSON.parse(e.data); }catch(x){ return; }
+      const items = d && Array.isArray(d.items) ? d.items.filter(x => Number(x.at) > (Number(lsGet(RELAY_AT)) || 0)) : [];
+      if(!items.length){ if(d && d.items && d.items.length) relayAck(); return; }
+      lsSet(RELAY_AT, String(Math.max.apply(null, items.map(x => Number(x.at) || 0))));
+      await notifFromClip(Promise.resolve(items.map(x => String(x.t || "")).join("\n")), "relay", true);
+      relayAck();
+      syncShow("new");
+    };
+    ws.onclose = () => {
+      if(relayWs === ws) relayWs = null;
+      if(document.hidden || !relayUrl() || !notifOn()) return;
+      relayWsTry = Math.min(relayWsTry + 1, 6);
+      relayWsT = setTimeout(relayWsOpen, 1000 * Math.pow(2, relayWsTry));   /* mất kết nối: thử lại sau 2, 4, 8… giây */
+    };
+    ws.onerror = () => {};
+  }
+  function relayWsClose(){ clearTimeout(relayWsT); if(relayWs){ const w = relayWs; relayWs = null; try{ w.close(1000); }catch(e){} } }
   var notifGoFn = null, notifGo2Fn = null;
   function notifBarAct(text, btn, fn, btn2, fn2, ms){
     const b = $("notifBar"), p = b.querySelector("p");
@@ -9569,288 +9724,263 @@ function startNgay50k(){
   $("notifGo").onclick = () => { const f = notifGoFn; notifGoFn = notifGo2Fn = null; hideNotifBar(); if(f) f(); else notifFromClip(clipRead(), "clip"); };
   $("notifGo2").onclick = () => { const f = notifGo2Fn; notifGoFn = notifGo2Fn = null; hideNotifBar(); if(f) f(); };
   $("notifPick").onclick = () => $("notifFileIn").click();
-  /* cài đặt Google Sheet */
-  function relayScript(){
-    /* v151 (bản mã 4): hàng đợi DataPack!A1 (chỉ chứa giao dịch app chưa nhận) + sheet ThuVien chuẩn hoá nội dung ND.
-       A1 được dọn khi app báo đã nhận (gửi since), không xoá lúc đọc nên mạng rớt không mất giao dịch;
-       khoá tránh ghi chồng; sai mã trả TG_KEY; bỏ dòng trùng; A1 đầy (150) thì app lấy phần thiếu từ ThongBao. */
-    return String.raw`// Tiêu Gọn – nhận thông báo ngân hàng từ Phím tắt và trả cho app. Bản mã 4.4
-// Lỗi hay sai mã được ghi vào sheet NhatKy. Chạy hàm kiemTra (chọn ở thanh trên, bấm ▶ Chạy) để thử không cần iPhone.
-// Giữ ý tưởng: hàng đợi JSON ở DataPack!A1 (app lấy nhanh) + sheet ThuVien chuẩn hoá nội dung.
-// Ô A1 chỉ chứa giao dịch app CHƯA nhận. Không xoá ngay lúc app đọc (mạng rớt là mất), mà xoá khi app báo đã nhận:
-// app gửi "since" = mốc giao dịch cuối nó đã nhận (app v151 báo ngay sau khi lấy xong) → giao dịch tới mốc đó bị dọn khỏi A1.
-// Nhờ vậy mạng rớt giữa chừng hay bấm "Kiểm tra" trong Cài đặt cũng không mất giao dịch.
-
-var SECRET = '${relayKey()}';   // mã bí mật của app (Cài đặt → Tự ghi từ thông báo)
-var SH_TB = 'ThongBao', SH_TV = 'ThuVien', SH_DP = 'DataPack';
-var KEEP = 1000;          // ThongBao giữ 1000 dòng gần nhất
-var QMAX = 150;           // hàng đợi A1 tối đa 150 giao dịch (~30 KB; một ô Sheet chứa tối đa 50.000 ký tự)
-var PAGE = 300;           // mỗi lần trả tối đa 300 giao dịch (app tự lấy tiếp khi more = true)
-
-function out_(o){ return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }
-function txt_(t){ return ContentService.createTextOutput(t); }
-function P_(){ return PropertiesService.getScriptProperties(); }
-// Mã đúng nếu khớp SECRET ở trên HOẶC mã đã lưu (SECRET_KEY). Chưa có mã nào thì lưu mã của lần gửi đầu tiên.
-function keyOk_(k){
-  k = String(k == null ? '' : k).trim(); if(!k) return false;
-  var p = P_(), saved = p.getProperty('SECRET_KEY');
-  if(SECRET && k === String(SECRET).trim()) return true;
-  if(saved && k === String(saved).trim()) return true;
-  if(!SECRET && !saved){ p.setProperty('SECRET_KEY', k); return true; }
-  return false;
-}
-function log_(kind, msg){
-  try{
-    var ss = SpreadsheetApp.getActiveSpreadsheet(), sh = ss.getSheetByName('NhatKy') || ss.insertSheet('NhatKy');
-    sh.appendRow([new Date(), kind, String(msg).slice(0, 500)]);
-    if(sh.getLastRow() > 300) sh.deleteRows(1, sh.getLastRow() - 200);
-  }catch(e){}
-}
-function hint_(k){ k = String(k == null ? '' : k); return 'mã nhận được: "' + (k.length > 3 ? k.slice(0, 3) + '…' : k) + '" (' + k.length + ' ký tự); SECRET ' + (SECRET ? 'có đặt' : 'để trống') + ', SECRET_KEY ' + (P_().getProperty('SECRET_KEY') ? 'có lưu' : 'chưa lưu'); }
-
-// ============ POST: Phím tắt gửi nội dung TieuGon.txt ============
-function doPost(e){
-  var d = {};
-  try{ d = JSON.parse(e.postData.contents); }catch(err){ d = (e && e.parameter) || {}; }
-  if(!d || typeof d !== 'object') d = {};
-  if(!keyOk_(d.k)){ log_('TG_KEY', 'POST sai mã · ' + hint_(d.k)); return txt_('TG_KEY'); }   // sai mã: phím tắt giữ nguyên tệp
-  var lines = String(d.t || '').split(/\r?\n/).map(function(x){ return x.trim(); }).filter(function(x){ return x; });
-  if(!lines.length) return txt_('TG_OK');
-  var lock = LockService.getScriptLock(), t0 = Date.now();
-  if(!lock.tryLock(8000)){                               // khoá bị giữ quá lâu: vẫn ghi (không đè ai), không bắt phím tắt chờ
-    log_('TG_BUSY', 'POST chờ khoá 8 giây không được (lần chạy khác đang giữ) → ghi thẳng vào ThongBao');
-    return postNoLock_(lines);
-  }
-  try{
-    var ss = SpreadsheetApp.getActiveSpreadsheet(), p = P_();
-    var tb = ss.getSheetByName(SH_TB) || ss.insertSheet(SH_TB);
-    var n = tb.getLastRow(), from = Math.max(1, n - 399);
-    var rows = n ? tb.getRange(from, 1, n - from + 1, 3).getValues() : [], have = {};
-    rows.forEach(function(r){ have[String(r[2] || r[1])] = 1; });   // bỏ trùng theo nội dung gốc (phím tắt gửi lại cả tệp khi lần trước lỗi)
-    var last = Number(p.getProperty('lastAt')) || 0;
-    var lastRow = 0; rows.forEach(function(r){ var v = Number(r[0]); if(v > lastRow) lastRow = v; });   // bỏ qua dòng tiêu đề / ô không phải số
-    var at = Math.max(Date.now(), last + 1, lastRow + 1);
-    var lib = lib_(ss), add = [], q = [];
-    lines.forEach(function(x){
-      if(have[x]) return; have[x] = 1;
-      var c = clean_(x, lib);
-      add.push([String(at), c, x]); q.push({ at: at, t: c }); at++;  // mỗi dòng một mốc riêng
-    });
-    if(!add.length) return txt_('TG_OK');
-    tb.getRange(n + 1, 1, add.length, 3).setNumberFormat('@').setValues(add);   // ghi một lần thay vì appendRow từng dòng
-    if(n + add.length > KEEP + 200) tb.deleteRows(1, Math.min(300, n + add.length - KEEP));   // dọn dần, mỗi lần tối đa 300 dòng
-
-    var dp = ss.getSheetByName(SH_DP);
-    if(!dp){ dp = ss.insertSheet(SH_DP); dp.hideSheet(); }
-    var floor = Number(p.getProperty('qFloor')) || 0, ack = Number(p.getProperty('ackAt')) || 0;
-    var cur = readQ_(dp);
-    if(cur === null){ cur = []; floor = Math.max(floor, last); }        // A1 hỏng: bỏ, phần cũ app lấy từ ThongBao
-    cur = cur.filter(function(x){ return x.at > ack; }).concat(q);     // dọn những gì app đã báo nhận
-    floor = Math.max(floor, ack);
-    if(cur.length > QMAX){ var drop = cur.splice(0, cur.length - QMAX); floor = Math.max(floor, drop[drop.length - 1].at); }
-    p.setProperties({ qFloor: String(floor), qMin: cur.length ? String(cur[0].at) : '' });   // ghi mốc trước, ô A1 sau
-    dp.getRange('A1').setNumberFormat('@').setValue(JSON.stringify(cur));
-    p.setProperty('lastAt', String(at - 1));
-    if(Date.now() - t0 > 5000) log_('CHAM', 'POST mất ' + Math.round((Date.now() - t0) / 1000) + ' giây · ThongBao ' + n + ' dòng');
-    return txt_('TG_OK');
-  }catch(err){
-    log_('ERR', 'POST: ' + (err && err.stack || err));
-    return txt_('ERR ' + (err && err.message || err));                // phím tắt giữ tệp, lần sau gửi lại
-  }finally{ lock.releaseLock(); }
-}
-
-// ============ GET: app hỏi giao dịch mới hơn "since" ============
-function doGet(e){
-  var prm = (e && e.parameter) || {};
-  if(!keyOk_(prm.k)){ log_('TG_KEY', 'GET sai mã · ' + hint_(prm.k)); return out_({ ok:false, err:'key' }); }
-  var p = P_(), since = Number(prm.since || 0), last = Number(p.getProperty('lastAt')) || 0;
-  if(since > (Number(p.getProperty('ackAt')) || 0)) p.setProperty('ackAt', String(since));   // app đã nhận xong tới mốc này
-  var qm = p.getProperty('qMin');                                      // mốc giao dịch cũ nhất còn trong A1 ('' = A1 trống)
-  var trim = qm === null || (qm !== '' && Number(qm) <= since);        // A1 còn giao dịch app đã nhận → dọn
-  if(last && last <= since && !trim) return out_({ ok:true, v:4, items:[], more:false });   // không có gì mới: trả ngay, không mở Sheet
-  var lock = LockService.getScriptLock(), locked = lock.tryLock(0);   // app hỏi không bao giờ chờ khoá
-  try{
-    var ss = SpreadsheetApp.getActiveSpreadsheet(), floor = Number(p.getProperty('qFloor')) || 0, items = null;
-    var dp = ss.getSheetByName(SH_DP), q = dp ? readQ_(dp) : [];
-    if(trim && locked && dp && q !== null){                                        // dọn ô A1: chỉ giữ giao dịch app chưa nhận
-      q = q.filter(function(x){ return x.at > since; });
-      floor = Math.max(floor, since);
-      p.setProperties({ qFloor: String(floor), qMin: q.length ? String(q[0].at) : '' });
-      dp.getRange('A1').setNumberFormat('@').setValue(JSON.stringify(q));
-    } else if(trim && locked && !dp) p.setProperty('qMin', '');
-    if(since >= floor && q !== null) items = q.filter(function(x){ return x.at > since; });   // đường nhanh: chỉ đọc ô A1
-    if(items === null){                                                  // đường chậm: app lâu không mở, hàng đợi đã tràn
-      var tb = ss.getSheetByName(SH_TB), n = tb ? tb.getLastRow() : 0;
-      var rows = n ? tb.getRange(1, 1, n, 2).getValues() : [];
-      items = rows.filter(function(r){ return Number(r[0]) > since; }).map(function(r){ return { at:Number(r[0]), t:String(r[1]) }; });
-    }
-    items.sort(function(a, b){ return a.at - b.at; });
-    return out_({ ok:true, v:4, items:items.slice(0, PAGE), more:items.length > PAGE });
-  }catch(err){
-    log_('ERR', 'GET: ' + (err && err.stack || err));
-    return out_({ ok:false, err:String(err && err.message || err) });
-  }finally{ if(locked) lock.releaseLock(); }
-}
-
-// Ghi khi không có khoá: appendRow từng dòng (không đè dòng của lần chạy khác), không động vào ô A1;
-// nâng mốc qFloor để app lấy các dòng này thẳng từ ThongBao.
-function postNoLock_(lines){
-  try{
-    var ss = SpreadsheetApp.getActiveSpreadsheet(), p = P_(), lib = lib_(ss);
-    var tb = ss.getSheetByName(SH_TB) || ss.insertSheet(SH_TB);
-    var at = Math.max(Date.now(), (Number(p.getProperty('lastAt')) || 0) + 1);
-    lines.forEach(function(x){ tb.appendRow([String(at), clean_(x, lib), x]); at++; });
-    p.setProperties({ qFloor: String(Math.max(Number(p.getProperty('qFloor')) || 0, at - 1)), lastAt: String(Math.max(Number(p.getProperty('lastAt')) || 0, at - 1)) });
-    return txt_('TG_OK');
-  }catch(err){
-    log_('ERR', 'POST không khoá: ' + (err && err.stack || err));
-    return txt_('ERR ' + (err && err.message || err));
-  }
-}
-
-// ============ Hỗ trợ ============
-function readQ_(dp){
-  var v = dp.getRange('A1').getValue();
-  if(v === '' || v === null) return [];
-  try{ var a = JSON.parse(v); return Array.isArray(a) ? a : null; }catch(e){ return null; }
-}
-
-// ThuVien: cột A từ khoá, cột B nội dung thay; dòng 1 là tiêu đề. So không phân biệt hoa thường, có dấu hay không.
-//   • Từ khoá thường: tìm trong phần nội dung của thông báo: "ND:" (chuyển khoản), "Tại:" (chạm thẻ),
-//     "Nội dung giao dịch:" (thẻ tín dụng). Khớp thì cả phần nội dung đó được thay bằng cột B.
-//   • Từ khoá theo người nhận / người gửi: "DEN:tên hoặc số TK", "TU:tên hoặc số TK" (vd DEN:NGUYEN VAN A).
-//     Loại này được xét TRƯỚC từ khoá thường.
-//   • Từ khoá ngắn (3 ký tự trở xuống, vd "ck") phải đứng thành một từ riêng, không khớp giữa chữ khác.
-//   • Thêm ^ ở đầu (vd "^ck") = chỉ khớp khi nội dung BẮT ĐẦU bằng từ đó ("ck fJML…" khớp, "tra tien ck cho ban" không).
-//   • Cột B có thể dùng {DEN} hoặc {TU}: thay bằng tên người nhận / người gửi (vd MBCT NGUYEN VAN A CHUYEN TIEN → {DEN}).
-//   • Cùng loại thì từ khoá dài được xét trước.
-function lib_(ss){
-  var sh = ss.getSheetByName(SH_TV); if(!sh) return [];
-  var v = sh.getDataRange().getValues(); v.shift();
-  return v.map(function(r){
-    var raw = String(r[0]).trim(), m = raw.match(/^(DEN|TU)\s*:\s*(.+)$/i);
-    return { f: m ? m[1].toUpperCase() : '', k: noAcc_(m ? m[2].trim() : raw), r: String(r[1]).trim() };
-  }).filter(function(x){ return x.k && x.r; })
-    .sort(function(a, b){ return (a.f ? 0 : 1) - (b.f ? 0 : 1) || b.k.length - a.k.length; });
-}
-function noAcc_(s){ return String(s).normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase().replace(/\s+/g, ' '); }
-function has_(text, k){
-  text = String(text).trim();
-  if(k.charAt(0) === '^'){ k = k.slice(1).trim(); return text.indexOf(k) === 0 && !/[a-z0-9]/.test(text.charAt(k.length)); }
-  if(k.length > 3) return text.indexOf(k) >= 0;
-  return new RegExp('(^|[^a-z0-9])' + k.replace(/[.*+?^$(){}|[\]\\]/g, '\\$&') + '($|[^a-z0-9])').test(text);
-}
-// Phần DEN:/TU: của thông báo MB, bỏ số tài khoản phía sau " - "
-function party_(line, f){
-  var m = line.match(new RegExp('\\|\\s*' + f + '\\s*:\\s*([^|]*)', 'i'));
-  return m ? m[1].trim() : '';
-}
-function partyName_(v){ return v.replace(/\s+-\s+-?[A-Z0-9]*\d[A-Z0-9]*\s*$/i, '').trim() || v; }
-// Vị trí phần nội dung cần làm gọn: [bắt đầu, kết thúc) trong dòng
-function noteSpan_(line){
-  var m = line.match(/(\bND\s*:|N[ộo]i dung giao d[ịi]ch\s*:|N[ộo]i dung\s*:)\s*/i);
-  if(m){
-    var st = m.index + m[0].length, rest = line.slice(st), e = rest.indexOf('|');
-    var end = e >= 0 ? st + e : line.length;
-    while(end > st && /\s/.test(line[end - 1])) end--;
-    return end > st ? [st, end] : null;
-  }
-  m = line.match(/\bT[ạa]i\s*:\s*/i);                                  // MB chạm thẻ: "Tại: GS25 VN0001 ABC Số tiền: ..."
-  if(m){
-    var s2 = m.index + m[0].length, r2 = line.slice(s2), e2 = r2.search(/\s+S[ốo] ti[ềe]n\s*:/i);
-    var end2 = e2 >= 0 ? s2 + e2 : line.length;
-    return end2 > s2 ? [s2, end2, true] : null;                         // true: thêm ';' để app tách đúng tên nơi mua
-  }
-  return null;
-}
-function clean_(line, lib){
-  if(!lib.length) return line;
-  var sp = noteSpan_(line); if(!sp) return line;
-  var note = noAcc_(line.slice(sp[0], sp[1])), den = party_(line, 'DEN'), tu = party_(line, 'TU');
-  var pf = { DEN: noAcc_(den), TU: noAcc_(tu) };
-  for(var i = 0; i < lib.length; i++){
-    var x = lib[i];
-    if(has_(x.f ? pf[x.f] : note, x.k)){
-      var rep = x.r.replace(/\{DEN\}/gi, partyName_(den)).replace(/\{TU\}/gi, partyName_(tu)).replace(/\|/g, '/').trim();
-      if(!rep) return line;
-      return line.slice(0, sp[0]) + rep + (sp[2] ? ';' : '') + line.slice(sp[1]);
-    }
-  }
-  return line;
-}
-
-// ============ Thử trong trình soạn Apps Script: chọn kiemTra → ▶ Chạy → xem Nhật ký thực thi ============
-function kiemTra(){
-  var k = SECRET || P_().getProperty('SECRET_KEY') || '(chưa có mã)';
-  var line = 'TK 00xxx000|GD: -1,000VND ' + Utilities.formatDate(new Date(), 'Asia/Ho_Chi_Minh', 'dd/MM/yy HH:mm') + ' |SD: 0VND|ND: THU KIEM TRA TIEU GON';
-  var r = doPost({ postData: { contents: JSON.stringify({ k: k, t: line }) } }).getContent();
-  Logger.log('POST trả về: ' + r + (r === 'TG_OK' ? '  → ghi Sheet được. Xem sheet ThongBao và DataPack!A1 (xoá dòng thử nếu muốn).' : '  → xem sheet NhatKy để biết lý do.'));
-  Logger.log('Mã đang dùng bắt đầu bằng: ' + String(k).slice(0, 3) + '… (so với mã bí mật trong app và trường k của phím tắt)');
-}
-
-// ============ Chẩn đoán: chọn chanDoan → ▶ Chạy → chép Nhật ký thực thi gửi lại ============
-function chanDoan(){
-  var t = Date.now(), lap = function(name){ Logger.log(name + ': ' + (Date.now() - t) + ' ms'); t = Date.now(); };
-  var lk = LockService.getScriptLock(), got = lk.tryLock(1000);
-  Logger.log('Khoá ghi: ' + (got ? 'trống' : 'ĐANG BỊ GIỮ bởi lần chạy khác')); if(got) lk.releaseLock(); t = Date.now();
-  var ss = SpreadsheetApp.getActiveSpreadsheet(); lap('Mở Sheet');
-  ss.getSheets().forEach(function(sh){
-    var r = sh.getLastRow(), c = sh.getLastColumn(), f = 0;
-    if(r && c){ sh.getRange(1, 1, Math.min(r, 3000), Math.min(c, 30)).getFormulas().forEach(function(row){ row.forEach(function(x){ if(x) f++; }); }); }
-    Logger.log('Sheet ' + sh.getName() + ': ' + r + ' dòng có dữ liệu × ' + c + ' cột · lưới ' + sh.getMaxRows() + '×' + sh.getMaxColumns() + ' · ' + f + ' ô công thức');
-  }); lap('Đếm các sheet');
-  var tb = ss.getSheetByName(SH_TB);
-  if(tb){ var n = tb.getLastRow(); if(n) tb.getRange(Math.max(1, n - 399), 1, Math.min(n, 400), 3).getValues(); } lap('Đọc 400 dòng cuối ThongBao');
-  var lib = lib_(ss); lap('Đọc ThuVien (' + lib.length + ' từ khoá)');
-  var dp = ss.getSheetByName(SH_DP), a1 = dp ? String(dp.getRange('A1').getValue()) : ''; lap('Đọc DataPack!A1 (' + a1.length + ' ký tự)');
-  var pr = P_().getProperties(); Logger.log('Thuộc tính: ' + Object.keys(pr).map(function(k){ return k + '=' + (k === 'SECRET_KEY' ? String(pr[k]).slice(0, 3) + '…' : pr[k]); }).join(', '));
-  var tr = ScriptApp.getProjectTriggers(); Logger.log('Trình kích hoạt: ' + (tr.length ? tr.map(function(x){ return x.getHandlerFunction() + ' (' + x.getEventType() + ')'; }).join(', ') : 'không có'));
-}`;
-  }
+  /* v158: cài đặt trạm Cloudflare (thay Google Sheet). Mã Worker nằm ở thư mục worker/ của kho, cài bằng nút Deploy to Cloudflare */
   function renderRelaySet(){
-    $("relayUrl").value = lsGet(RELAY_URL) || "";
+    $("relayUrl").value = relayOld() ? "" : (lsGet(RELAY_URL) || "");
     $("relayKey").textContent = relayKey();
-    $("relayState").innerHTML = relayUrl() ? "Đang dùng: <b>Google Sheet</b> (tự lấy khi mở app; mất mạng thì chọn tệp)." + (relayOld() ? " ⚠️ Mã Apps Script là bản cũ, nên chép mã mới và triển khai lại." : "") : "Đang dùng: <b>dán bộ nhớ tạm</b> (chưa kết nối Google Sheet), dự phòng chọn tệp.";
+    $("relayState").innerHTML = relayUrl() ? "Đang dùng: <b>trạm Cloudflare</b> của bạn (mở app là lấy ngay; app đang mở thì giao dịch mới tự hiện)."
+      : relayOld() ? "⚠️ Từ v158 app không dùng Google Sheet nữa. Làm Phần B bên dưới để chuyển sang trạm Cloudflare (nhanh hơn, không lưu lại gì), xong có thể xoá Sheet cũ."
+      : "Đang dùng: <b>dán bộ nhớ tạm</b> (chưa có trạm Cloudflare), dự phòng chọn tệp.";
+    $("relayForget").hidden = !relayUrl();
+    /* nút Deploy to Cloudflare trỏ tới thư mục worker/ của chính kho đang chạy app (GitHub Pages), không ghi cứng tên ai */
+    const h = location.hostname, seg = location.pathname.split("/").filter(Boolean)[0];
+    const repo = /\.github\.io$/i.test(h) ? "https://github.com/" + h.split(".")[0] + "/" + (seg && !/\.html?$/.test(seg) ? seg : h) + "/tree/main/worker" : "";
+    $("relayDeploy").href = repo ? "https://deploy.workers.cloudflare.com/?url=" + repo : "https://dash.cloudflare.com/";
   }
-  $("relayUrl").addEventListener("change", e => { lsSet(RELAY_URL, e.target.value.trim()); lsSet(RELAY_AT, String(Date.now() - 2 * 86400000)); renderRelaySet(); });
-  $("relayCopy").onclick = async () => {
-    try{ await navigator.clipboard.writeText(relayScript()); $("relayCopy").textContent = "Đã chép mã ✓"; }
-    catch(e){ $("relayCode").hidden = false; $("relayCode").textContent = relayScript(); }
-    setTimeout(() => { $("relayCopy").textContent = "Chép mã Apps Script"; }, 2500);
-  };
+  function relaySetUrl(u){
+    u = String(u || "").trim().replace(/\/+$/, "");
+    if(u === (lsGet(RELAY_URL) || "")) return;
+    relayWsClose(); lsSet(RELAY_URL, u); lsSet(RELAY_AT, String(Date.now() - 2 * 86400000));
+  }
+  $("relayUrl").addEventListener("change", e => { relaySetUrl(e.target.value); renderRelaySet(); relayWsOpen(); });
   $("relayKeyCopy").onclick = async () => { try{ await navigator.clipboard.writeText(relayKey()); $("relayKeyCopy").textContent = "Đã chép ✓"; setTimeout(() => { $("relayKeyCopy").textContent = "Chép mã"; }, 2000); }catch(e){} };
-  /* v146: kết quả Kiểm tra hiện ngay dưới nút (trước đây hiện ở đầu trang, ngoài màn hình nên trông như nút không chạy) */
+  /* v146: kết quả Kiểm tra hiện ngay dưới nút */
   $("relayTest").onclick = async () => {
     const btn = $("relayTest"), st = $("relayTestMsg"), u = $("relayUrl").value.trim();
     const say = t => { st.textContent = t; st.hidden = false; };
     if(btn.disabled) return;
-    if(u !== (lsGet(RELAY_URL) || "")){ lsSet(RELAY_URL, u); lsSet(RELAY_AT, String(Date.now() - 2 * 86400000)); }
-    if(!u){ say("Chưa có địa chỉ: dán URL ứng dụng web (đuôi /exec) vào ô ở trên."); renderRelaySet(); return; }
-    if(!relayUrl()){ say("Địa chỉ phải bắt đầu bằng https://script.google.com/… (chép ở bước Triển khai, không phải link trang Sheet)."); renderRelaySet(); return; }
-    if(!/\/exec(\?|$)/.test(u)){ say(/\/dev(\?|$)/.test(u) ? "Đây là địa chỉ thử (/dev), chỉ chạy khi đăng nhập trên máy tính. Hãy dùng URL ứng dụng web có đuôi /exec." : "Địa chỉ cần có đuôi /exec. Chép đúng dòng \"URL ứng dụng web\" sau khi Triển khai."); return; }
+    relaySetUrl(u);
+    if(!u){ say("Chưa có địa chỉ: dán địa chỉ Worker (dạng https://tieugon-relay.<tên>.workers.dev) vào ô ở trên."); renderRelaySet(); return; }
+    if(relayIsGoogle(u)){ say("Đây là địa chỉ Google Apps Script cũ. Từ v158 app dùng trạm Cloudflare: làm Phần B rồi dán địa chỉ workers.dev."); renderRelaySet(); return; }
+    if(!relayUrl()){ say("Địa chỉ phải bắt đầu bằng https://, vd https://tieugon-relay.<tên>.workers.dev"); renderRelaySet(); return; }
     if(navigator.onLine === false){ say("Máy đang mất mạng, có mạng rồi bấm Kiểm tra lại nhé."); return; }
-    btn.disabled = true; btn.textContent = "Đang kiểm tra…"; say("Đang kết nối tới Google Sheet…");
+    btn.disabled = true; btn.textContent = "Đang kiểm tra…"; say("Đang kết nối tới Cloudflare…");
+    const t0 = Date.now();
     try{
       const it = await relayFetch();
-      say("✓ Kết nối được. Trong Sheet có " + it.length + " thông báo chưa lấy." + (relayOld() ? " ⚠️ Mã Apps Script là bản cũ: chép mã mới, dán đè và triển khai phiên bản mới." : ""));
+      say("✓ Kết nối được (" + (Date.now() - t0) + " ms). Mã bí mật đã khớp" + (it.length ? ", đang có " + it.length + " thông báo chờ lấy." : ", chưa có thông báo nào chờ."));
+      relayWsOpen();
     }catch(e){
-      say(e && e.message === "key" ? "Kết nối được nhưng mã bí mật không khớp: bấm Chép mã Apps Script, dán đè vào TG Relay rồi triển khai phiên bản mới."
-        : "Không kết nối được. Kiểm tra: URL đúng đuôi /exec, lúc triển khai chọn Ai có quyền truy cập = \"Bất kỳ ai\", và đã bấm Cho phép khi Google hỏi quyền.");
+      say(e && e.message === "key" ? "Kết nối được nhưng mã bí mật không khớp: Worker đã nhận mã của máy khác. Khôi phục file sao lưu từ máy đó (mang theo mã), hoặc trong Cloudflare đặt biến SECRET = mã ở trên."
+        : "Không kết nối được. Kiểm tra lại địa chỉ (chép đúng dòng workers.dev sau khi triển khai) và mạng.");
     } finally { btn.disabled = false; btn.textContent = "Kiểm tra"; renderRelaySet(); }
   };
-  document.addEventListener("visibilitychange", () => { if(!document.hidden) setTimeout(relayBurst, 100); else { relayBurstT.forEach(clearTimeout); relayBurstT = []; } });
+  /* xoá sạch mọi thứ đang chờ trên Cloudflare (hàng đợi và dấu chống trùng) */
+  $("relayForget").onclick = async e => {
+    const btn = e.currentTarget, st = $("relayTestMsg"), u = relayUrl();
+    if(!u || !armed(btn)) return;
+    btn.disabled = true;
+    try{
+      const r = await fetch(u + "/forget", { method:"POST", headers:{ "Content-Type":"text/plain" }, body:JSON.stringify({ k:relayKey() }), cache:"no-store" });
+      const t = (await r.text()).trim();
+      st.textContent = t === "TG_OK" ? "✓ Đã xoá hết dữ liệu đang chờ trên Cloudflare." : "Chưa xoá được (" + t.slice(0, 40) + ").";
+    }catch(x){ st.textContent = "Chưa xoá được: không kết nối tới Cloudflare."; }
+    st.hidden = false; btn.disabled = false; btn.dataset.armed = ""; btn.classList.remove("armed"); btn.textContent = "Xoá hết trên Cloudflare";
+  };
+  /* ---- v158: Thư viện nội dung (thay sheet ThuVien của Google Sheet) ----
+     Quy tắc ở state.thuvien; cách khớp ở quy-tac.js (N50KRule). Thông báo gần đây để thử quy tắc: khoá "ngay50k:tbRaw"
+     (40 dòng cuối, chỉ trên máy này, mã hoá khi bật PIN, không vào file sao lưu). */
+  var TB_RAW = "ngay50k:tbRaw", libEdit = null, libSample = "";
+  function tbRawList(){ try{ const a = JSON.parse(N50K.get(TB_RAW) || "[]"); return Array.isArray(a) ? a.filter(x => typeof x === "string") : []; }catch(e){ return []; } }
+  function tbRawAdd(txt){
+    const lines = String(txt || "").split(/\r?\n/).map(x => x.trim()).filter(x => x && /\d/.test(x) && /(VND|VNĐ|GD\s*:|S[ốo] ti[ềe]n)/i.test(x));
+    if(!lines.length) return;
+    N50K.set(TB_RAW, JSON.stringify(tbRawList().filter(x => !lines.includes(x)).concat(lines).slice(-40)));
+  }
+  function libRules(){ return state.thuvien || (state.thuvien = []); }
+  function libApply(txt){
+    try{ return window.N50KRule && libRules().length ? window.N50KRule.applyText(txt, libRules()) : { text:txt, hits:[] }; }
+    catch(e){ return { text:txt, hits:[] }; }
+  }
+  /* quy tắc có tag: gắn vào đúng khoản (so nội dung đã làm gọn với ghi chú của khoản) */
+  function libTag(r, hits){
+    if(!r || !r.items || !hits || !hits.length || !window.N50KRule) return;
+    const N = window.N50KRule.noAcc, ids = allTags().map(t => t.id), used = new Set();
+    hits.forEach(h => {
+      if(!h.tag || !ids.includes(h.tag)) return;
+      const hn = N(h.note); if(!hn) return;
+      const it = r.items.find(it => !used.has(it) && (it.kind === "out" || it.kind === "card") && N(it.note) && (hn.indexOf(N(it.note)) >= 0 || N(it.note).indexOf(hn) >= 0));
+      if(it){ it.cat = h.tag; used.add(it); }
+    });
+  }
+  function libShort(line){
+    const f = window.N50KRule.fields(line);
+    return (f.sign === "+" ? "+" : f.sign === "-" ? "−" : "") + (f.amt ? f.amt.toLocaleString("vi-VN") + "đ · " : "") + (f.nd || f.den || line).slice(0, 90);
+  }
+  function renderLib(){
+    if(!window.N50KRule) return;
+    const R = window.N50KRule, rules = libRules(), raw = tbRawList(), pre = R.sorted(rules);
+    const cnt = {}; let hit = 0;
+    const miss = [];
+    raw.forEach(l => { const a = R.apply(l, null, pre); if(a.rule){ cnt[a.rule.id] = (cnt[a.rule.id] || 0) + 1; hit++; } else miss.push(l); });
+    $("libSum").textContent = (rules.length ? rules.length + " quy tắc" : "Chưa có quy tắc nào") + (raw.length ? " · làm gọn được " + hit + "/" + raw.length + " thông báo gần đây." : ". Chưa có thông báo nào để thử: giao dịch từ ngân hàng hiện trong Chat là app tự lưu tạm vài chục cái gần nhất.");
+    $("navLib").textContent = rules.length ? rules.length + " quy tắc" : "chưa có";
+    const box = $("libList"); box.innerHTML = "";
+    const order = pre.map(x => x.r).concat(rules.filter(r => !pre.some(x => x.r === r)));
+    if(!order.length) box.innerHTML = '<p class="empty">Thêm quy tắc, dán từ Google Sheet, hoặc chạm một gợi ý bên dưới.</p>';
+    order.forEach(rule => {
+      const p = R.parse(rule.k), tg = rule.tag ? allTags().find(t => t.id === rule.tag) : null;
+      const row = document.createElement("button"); row.type = "button"; row.className = "card-nav lib-row" + (rule.off || !p.ok ? " off" : "");
+      row.innerHTML = '<span class="t"><b><span class="lib-k"></span><span class="arrow">→</span><span class="lib-r"></span></b><small></small></span><span class="n"></span>';
+      row.querySelector(".lib-k").textContent = rule.k;
+      row.querySelector(".lib-r").textContent = rule.r || "(giữ nguyên)";
+      row.querySelector("small").textContent = (rule.off ? "Đang tắt · " : "") + (p.ok ? R.explain(rule.k).text : "⚠️ " + p.errors[0]) + (tg ? " · tag " + tg.name : "");
+      const n = row.querySelector(".n"); if(cnt[rule.id]) n.textContent = cnt[rule.id] + " lần"; else n.remove();
+      row.onclick = () => libOpen(rule);
+      box.appendChild(row);
+    });
+    /* gợi ý: thông báo gần đây chưa quy tắc nào khớp (mới nhất trước, mỗi kiểu một lần) */
+    const sg = $("libSuggest"); sg.innerHTML = ""; const seen = new Set(); let shown = 0;
+    miss.slice().reverse().forEach(l => {
+      if(shown >= 6) return;
+      const opts = R.suggest(l); if(!opts.length) return;
+      const key = R.noAcc(opts[0].k); if(seen.has(key)) return; seen.add(key); shown++;
+      const d = document.createElement("div"); d.className = "card-nav lib-sg";
+      d.innerHTML = '<span class="raw"></span><div class="chips"></div>';
+      d.querySelector(".raw").textContent = libShort(l);
+      opts.forEach(o => {
+        const c = document.createElement("button"); c.type = "button"; c.className = "chip";
+        c.textContent = o.k + " → " + (o.r || "…"); c.title = o.why;
+        c.onclick = () => libOpen({ k:o.k, r:o.r }, l, true);
+        d.querySelector(".chips").appendChild(c);
+      });
+      sg.appendChild(d);
+    });
+    if(!shown) sg.innerHTML = '<p class="empty">' + (raw.length ? "Mọi thông báo gần đây đều đã có quy tắc." : "Chưa có thông báo nào.") + '</p>';
+  }
+  function libOpen(rule, sample, isNew){
+    const ex = rule && !isNew && rule.id ? rule : null;
+    libEdit = ex ? ex.id : null; libSample = sample || "";
+    $("libFormTitle").textContent = ex ? "Sửa quy tắc" : "Quy tắc mới";
+    $("libK").value = rule ? rule.k || "" : ""; $("libR").value = rule ? rule.r || "" : "";
+    $("libOn").checked = !(ex && ex.off); $("libTryIn").value = "";
+    const sel = $("libTag"); sel.innerHTML = '<option value="">Không gắn (app tự đoán)</option>';
+    allTags().forEach(t => { const o = document.createElement("option"); o.value = t.id; o.textContent = t.name; sel.appendChild(o); });
+    sel.value = ex && ex.tag ? ex.tag : "";
+    $("libDel").hidden = !ex; $("libPaste").hidden = true; $("libForm").hidden = false; $("libMsg").hidden = true;
+    libCheck();
+    $("libForm").scrollIntoView({ behavior:"smooth", block:"start" });
+    setTimeout(() => { const k = $("libK"); k.focus({ preventScroll:true }); k.setSelectionRange(k.value.length, k.value.length); }, 250);
+  }
+  function libClose(){ $("libForm").hidden = true; libEdit = null; libSample = ""; }
+  function libCur(){ return { id:libEdit || "__new", k:$("libK").value.trim(), r:$("libR").value.trim(), tag:$("libTag").value || "", off:!$("libOn").checked }; }
+  function libCheck(){
+    const R = window.N50KRule, cur = libCur(), ex = $("libExplain"), wl = $("libWarn"), tr = $("libTry");
+    wl.innerHTML = ""; tr.innerHTML = "";
+    if(!cur.k){ ex.textContent = "Gõ từ khoá, hoặc chạm các nút bên dưới ô để chèn cú pháp."; ex.classList.remove("bad"); $("libSave").disabled = true; return; }
+    const extra = $("libTryIn").value.split(/\r?\n/).map(x => x.trim()).filter(Boolean);
+    const sample = [...new Set(extra.concat(libSample ? [libSample] : [], tbRawList().slice().reverse()))];
+    const lt = R.lint(cur, libRules().filter(x => x.id !== libEdit), sample);
+    ex.textContent = lt.ok ? lt.explain : "⚠️ " + lt.errors.join(" "); ex.classList.toggle("bad", !lt.ok);
+    lt.warn.forEach(w => { const li = document.createElement("li"); li.textContent = w; wl.appendChild(li); });
+    if(lt.ok){
+      const ul = document.createElement("ul"); ul.className = "lib-try";
+      lt.hits.slice(0, 5).forEach(h => {
+        const li = document.createElement("li");
+        li.innerHTML = '<div class="bf"></div><div class="af"></div>';
+        li.querySelector(".bf").textContent = h.before || libShort(h.line);
+        li.querySelector(".af").textContent = "→ " + (h.after || h.before || "(giữ nguyên)") + (cur.tag ? "  · tag " + ((allTags().find(t => t.id === cur.tag) || {}).name || "") : "");
+        ul.appendChild(li);
+      });
+      lt.shadow.slice(0, 3).forEach(h => {
+        const li = document.createElement("li");
+        li.innerHTML = '<div class="bf"></div><div class="by"></div>';
+        li.querySelector(".bf").textContent = h.before || libShort(h.line);
+        li.querySelector(".by").textContent = "Quy tắc “" + h.by.k + "” được xét trước nên thông báo này thành “" + (h.by.r || "giữ nguyên") + "”. Thêm điều kiện cho quy tắc kia, hoặc làm quy tắc này cụ thể hơn (vd thêm DEN:, TIEN:).";
+        ul.appendChild(li);
+      });
+      if(ul.children.length) tr.appendChild(ul);
+      const p = document.createElement("p"); p.className = "set-now";
+      p.textContent = sample.length ? "Khớp " + lt.hits.length + (lt.shadow.length ? " (+" + lt.shadow.length + " bị quy tắc khác xét trước)" : "") + " / " + sample.length + " thông báo." : "Chưa có thông báo nào để thử, dán một thông báo vào ô dưới.";
+      tr.appendChild(p);
+    }
+    $("libSave").disabled = !lt.ok || (!cur.r && !cur.tag);
+  }
+  /* chèn cú pháp vào đúng chỗ trong ô từ khoá / ô nội dung thay */
+  function libIns(inp, b){
+    const v = inp.value, txt = b.dataset.ins, pos = b.dataset.pos;
+    let a = inp.selectionStart != null ? inp.selectionStart : v.length, z = inp.selectionEnd != null ? inp.selectionEnd : a;
+    const segA = (() => { let i = v.lastIndexOf("&", a - 1) + 1; while(i < v.length && /[\s\-!]/.test(v[i])) i++; return Math.min(i, a); })();
+    const segZ = (() => { let i = v.indexOf("&", a); i = i < 0 ? v.length : i; while(i > 0 && /\s/.test(v[i - 1])) i--; return Math.max(i, a); })();
+    if(pos === "start" || pos === "field"){
+      let at = segA; const fm = v.slice(segA).match(/^[A-Za-z]{2,6}\s*:\s*/);
+      if(pos === "start" && fm) at += fm[0].length;
+      if(pos === "field" && fm){ inp.setSelectionRange(segA, segA + fm[0].length); a = segA; z = segA + fm[0].length; }
+      else { a = z = at; }
+      if(pos === "start" && v[at] === "^"){ inp.focus(); return; }
+    } else if(pos === "end"){ a = z = segZ; if(v[segZ - 1] === "$"){ inp.focus(); return; } }
+    const nv = v.slice(0, a) + txt + v.slice(z);
+    inp.value = nv;
+    const c = a + (b.dataset.mid ? 1 : txt.length);
+    inp.focus(); inp.setSelectionRange(c, c);
+    libCheck();
+  }
+  ["libKOps", "libROps"].forEach(id => {
+    const box = $(id), inp = $(id === "libKOps" ? "libK" : "libR");
+    box.addEventListener("pointerdown", e => { if(e.target.closest("button")) e.preventDefault(); });   /* giữ bàn phím và vị trí con trỏ */
+    box.addEventListener("click", e => { const b = e.target.closest("button[data-ins]"); if(b) libIns(inp, b); });
+  });
+  ["libK", "libR", "libTryIn"].forEach(id => $(id).addEventListener("input", libCheck));
+  ["libTag", "libOn"].forEach(id => $(id).addEventListener("change", libCheck));
+  $("libAdd").onclick = () => libOpen(null);
+  $("libCancel").onclick = () => { libClose(); };
+  $("libSave").onclick = () => {
+    const cur = libCur(); if(!window.N50KRule.parse(cur.k).ok || (!cur.r && !cur.tag)) return;
+    const rules = libRules(), ex = libEdit ? rules.find(x => x.id === libEdit) : null;
+    const rec = { k:cur.k, r:cur.r };
+    if(cur.tag) rec.tag = cur.tag; if(cur.off) rec.off = true;
+    if(ex){ delete ex.tag; delete ex.off; Object.assign(ex, rec); }
+    else rules.push(Object.assign({ id:uid(), o:Date.now() }, rec));
+    persist(); libClose(); renderLib();
+    const m = $("libMsg"); m.textContent = "✓ Đã lưu quy tắc. Áp dụng từ giao dịch tiếp theo."; m.hidden = false;
+  };
+  $("libDel").onclick = e => {
+    if(!libEdit || !armed(e.currentTarget)) return;
+    state.thuvien = libRules().filter(x => x.id !== libEdit); persist(); libClose(); renderLib();
+  };
+  $("libPasteBtn").onclick = () => { libClose(); $("libPaste").hidden = false; $("libPasteIn").value = ""; $("libPasteInfo").textContent = ""; $("libPasteGo").disabled = true; $("libPasteIn").focus(); };
+  $("libPasteCancel").onclick = () => { $("libPaste").hidden = true; };
+  function libPasteRows(){
+    const R = window.N50KRule, have = new Set(libRules().map(x => R.noAcc(x.k)));
+    const rows = R.parseTable($("libPasteIn").value), bad = rows.filter(x => !R.parse(x.k).ok);
+    const fresh = rows.filter(x => R.parse(x.k).ok && !have.has(R.noAcc(x.k)) && (have.add(R.noAcc(x.k)), true));
+    return { rows, bad, fresh };
+  }
+  $("libPasteIn").addEventListener("input", () => {
+    const x = libPasteRows();
+    $("libPasteInfo").textContent = x.rows.length ? "Đọc được " + x.rows.length + " dòng: " + x.fresh.length + " quy tắc mới" + (x.rows.length - x.fresh.length - x.bad.length ? ", " + (x.rows.length - x.fresh.length - x.bad.length) + " đã có" : "") + (x.bad.length ? ", " + x.bad.length + " dòng lỗi (vd “" + x.bad[0].k + "”)" : "") + "." : "Chưa đọc được dòng nào. Mỗi dòng cần hai cột: từ khoá và nội dung thay (dán thẳng từ Sheet là đúng).";
+    $("libPasteGo").disabled = !x.fresh.length;
+  });
+  $("libPasteGo").onclick = () => {
+    const x = libPasteRows(); if(!x.fresh.length) return;
+    const t = Date.now();
+    x.fresh.forEach((r, i) => libRules().push({ id:uid() + i, o:t + i, k:r.k, r:r.r }));
+    persist(); $("libPaste").hidden = true; renderLib();
+    const m = $("libMsg"); m.textContent = "✓ Đã nhập " + x.fresh.length + " quy tắc."; m.hidden = false;
+  };
+  $("libCopy").onclick = async () => {
+    const t = "Từ khoá\tNội dung thay\n" + libRules().map(r => r.k + "\t" + (r.r || "")).join("\n");
+    try{ await navigator.clipboard.writeText(t); $("libCopy").textContent = "Đã chép ✓"; }catch(e){ $("libCopy").textContent = "Chưa chép được"; }
+    setTimeout(() => { $("libCopy").textContent = "Chép thành bảng"; }, 2000);
+  };
+  $("libClearRaw").onclick = e => { if(!armed(e.currentTarget)) return; N50K.del(TB_RAW); e.currentTarget.dataset.armed = ""; e.currentTarget.classList.remove("armed"); e.currentTarget.textContent = "Xoá thông báo thử"; renderLib(); };
+  /* nút "Làm gọn nội dung" trong tin nhắn giao dịch ở Chat */
+  document.addEventListener("click", e => { if(e.target.closest("[data-open-lib]")){ if(!settingsOpen) openSettings(); showSetPage("setLib"); } });
+  document.addEventListener("visibilitychange", () => { if(!document.hidden) setTimeout(relayBurst, 100); else { relayBurstT.forEach(clearTimeout); relayBurstT = []; relayWsClose(); } });
   window.addEventListener("online", () => relayPull(true));
   setTimeout(relayBurst, 100);
   renderClipBtn();
   $("notifX").onclick = hideNotifBar;
   $("notifTest").onclick = () => notifFromClip(clipRead(), "clip");
-  $("notifOn").addEventListener("change", e => { lsSet(NOTIF_KEY, e.target.checked ? "1" : "0"); renderClipBtn(); });
+  $("notifOn").addEventListener("change", e => { lsSet(NOTIF_KEY, e.target.checked ? "1" : "0"); renderClipBtn(); if(e.target.checked) relayWsOpen(); else relayWsClose(); });
   document.addEventListener("visibilitychange", () => { if(document.hidden) hideNotifBar(); });
 
   /* ---- settings navigation ---- */
-  const SET_PAGES = ["setHome","setLock","setBank","setStart","setAI","setTheme","setBudget","setRecur","setPeople","setTags","setTagOne","setSync","setStore","setLearn","setNotif"];
+  const SET_PAGES = ["setHome","setLock","setBank","setStart","setAI","setTheme","setBudget","setRecur","setPeople","setTags","setTagOne","setSync","setStore","setLearn","setNotif","setLib"];
   let setPage = "setHome";
+  var setPrev = "setHome";
   function showSetPage(id, back){
+    if(!back) setPrev = setPage;
     setPage = id;
     SET_PAGES.forEach(p => { const el = $(p); if(el) el.hidden = p !== id; });
     const el = $(id);
@@ -9867,6 +9997,7 @@ function chanDoan(){
     if(id === "setLock") renderLockSet();
     if(id === "setBank") renderBanks("setBanks", true);
     if(id === "setNotif"){ $("notifOn").checked = notifOn(); renderRelaySet(); }
+    if(id === "setLib"){ const fromN = setPrev === "setNotif"; $("libBack").dataset.back = fromN ? "setNotif" : "setHome"; $("libBack").textContent = fromN ? "‹ Tự ghi từ thông báo" : "‹ Cài đặt"; libClose(); $("libPaste").hidden = true; $("libMsg").hidden = true; renderLib(); }
   }
   /* v118: trang Chat đã học */
   const MISS_WHY = { noitem:"không tìm ra khoản nào", query:"câu hỏi khó", leftover:"thừa chữ không có số tiền", numbers:"nhiều số tiền hơn số khoản", words:"có chữ khó (chia, sửa, %…)", card:"không rõ thẻ nào", who:"không rõ người vay", long:"câu dài", khong_hieu:"máy không hiểu", sai:"bạn báo máy hiểu sai" };
@@ -9922,6 +10053,7 @@ function chanDoan(){
     $("navStart").textContent = homeTab() === "chat" ? "Chat" : "Sổ";
     $("navAI").textContent = aiNav();
     $("navLearn").textContent = (state.learn || []).length ? state.learn.length + " câu" : "chưa có";
+    $("navLib").textContent = (state.thuvien || []).length ? state.thuvien.length + " quy tắc" : "chưa có";
     $("navBank").textContent = myBank() ? myBank().name : (lsGet(BANK_KEY) === "none" ? "Không dùng" : "chưa chọn");
     $("navBudget").textContent = fmt(state.budget) + "/ngày";
     $("navTags").textContent = allTags().length + " tag";
@@ -10183,7 +10315,7 @@ function chanDoan(){
   /* nội dung file sao lưu; bật mật khẩu thì mã hoá. Trả về null nếu mật khẩu chưa hợp lệ. */
   /* v113: file sao lưu mang theo cả cài đặt: giao diện, màn mở đầu, ngân hàng, trợ lý AI (kể cả khoá API), chi phí AI,
      sao lưu nhanh, ví hay dùng, và lịch sử Chat. Không mang mã PIN / Face ID (gắn với từng máy). */
-  /* v150: thêm phần Tự ghi từ thông báo: bật/tắt, URL Google Sheet, mã bí mật (phải giữ để khớp Apps Script), bản mã */
+  /* v150: thêm phần Tự ghi từ thông báo: bật/tắt, địa chỉ trạm (v158: Cloudflare), mã bí mật (phải giữ để khớp trạm) */
   const SET_LS = ["ngay50k-theme","ngay50k:home","ngay50k:bank","ngay50k:aiUse","ngay50k:aiBudget","ngay50k:aiSaved","ngay50k:usdVnd","ngay50k:scUse","ngay50k:lastW",
     "ngay50k:notifOn","ngay50k:relayUrl","ngay50k:relayKey","ngay50k:relayV"];
   function backupSettings(){
@@ -10290,6 +10422,7 @@ function chanDoan(){
       wallets: byId(a.wallets, b.wallets), xfer: byId(a.xfer, b.xfer),
       alias: (() => { const o = Object.assign({}, a.alias || {}); for(const k in (b.alias || {})) if(!(k in o) || ((b.aliasM || {})[k] || 0) > ((a.aliasM || {})[k] || 0)) o[k] = b.alias[k]; return o; })(),
       aliasM: Object.assign({}, a.aliasM || {}, b.aliasM || {}),
+      thuvien: byId(a.thuvien, b.thuvien).sort((x, y) => (x.o || 0) - (y.o || 0)),
       learn: byId(a.learn, b.learn), miss: byId(a.miss, b.miss).filter(x => !byId(a.learn, b.learn).some(r => r.key === x.key)),
       payees: Object.assign({}, b.payees, a.payees), tagOff: mergeTagOff(a.tagOff, b.tagOff),
       deleted: del, updated: Date.now()
@@ -10319,7 +10452,7 @@ function chanDoan(){
     for(const k in st.days) exp += st.days[k].length;
     for(const k in st.income) inc += st.income[k].length;
     let ctx = 0; for(const k in (st.cardTx||{})) ctx += st.cardTx[k].length;
-    return exp + " khoản chi, " + inc + " khoản thu, " + ctx + " khoản thẻ, " + st.loans.length + " khoản vay, " + st.contacts.length + " người nhận" + ((st.learn || []).length ? ", " + st.learn.length + " câu Chat đã học" : "");
+    return exp + " khoản chi, " + inc + " khoản thu, " + ctx + " khoản thẻ, " + st.loans.length + " khoản vay, " + st.contacts.length + " người nhận" + ((st.learn || []).length ? ", " + st.learn.length + " câu Chat đã học" : "") + ((st.thuvien || []).length ? ", " + st.thuvien.length + " quy tắc Thư viện nội dung" : "");
   }
   function fmtStamp(iso){
     const d = new Date(iso); if(isNaN(d)) return "";
@@ -10451,7 +10584,7 @@ function chanDoan(){
     try{
       Object.keys(localStorage).filter(k => k.indexOf("ngay50k:") === 0).forEach(k => localStorage.removeItem(k));
     }catch(e){}
-    N50K.del(LS_KEY); N50K.del(UNDO_KEY); N50K.del("ngay50k:chat"); N50K.del("ngay50k:ai"); N50KLock.forget(); chat = { msgs:[] }; renderChat();
+    N50K.del(LS_KEY); N50K.del(UNDO_KEY); N50K.del("ngay50k:chat"); N50K.del("ngay50k:ai"); N50K.del("ngay50k:tbRaw"); N50KLock.forget(); chat = { msgs:[] }; renderChat();
     state = normalize({}); sigs = collectSigs(state); pending = null;
     viewDay = null; $("importCard").hidden = true; $("wipeCard").hidden = true;
     $("syncMsg").hidden = true; $("syncErr").hidden = true;

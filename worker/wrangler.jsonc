@@ -1,0 +1,14 @@
+{
+  // Tiêu Gọn – trạm trung chuyển thông báo. Xem worker/README.md
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "tieugon-relay",
+  "main": "src/index.js",
+  "compatibility_date": "2026-01-01",
+  "workers_dev": true,
+  // Không ghi nhật ký yêu cầu, không lưu gì ngoài hàng đợi tạm trong Durable Object.
+  "observability": { "enabled": false },
+  "durable_objects": {
+    "bindings": [{ "name": "RELAY", "class_name": "Relay" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["Relay"] }]
+}
