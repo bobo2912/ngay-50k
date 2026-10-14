@@ -40,7 +40,10 @@ export default {
     const u = new URL(req.url);
     if (u.pathname === "/favicon.ico") return new Response(null, { status: 404 });
     // Một hàng đợi duy nhất cho mỗi lần triển khai (mỗi người tự triển khai Worker của mình).
-    const stub = env.RELAY.get(env.RELAY.idFromName("tieugon"));
+    // RELAY: cấu hình trong kho này. MY_DURABLE_OBJECT: mẫu "Hello World Durable Object" của Cloudflare (dán đè mã vào mẫu đó).
+    const ns = env.RELAY || env.MY_DURABLE_OBJECT;
+    if (!ns) return text("Thiếu Durable Object binding (RELAY hoặc MY_DURABLE_OBJECT)", 500);
+    const stub = ns.get(ns.idFromName("tieugon"));
     return stub.fetch(req);
   },
 };
@@ -174,3 +177,6 @@ export class Relay extends DurableObject {
     if (left) await this.ctx.storage.setAlarm(Date.now() + 6 * 3600000);
   }
 }
+
+// Tên lớp của mẫu Cloudflare "Hello World Durable Object": dán file này đè lên src/index.ts của mẫu là chạy, không phải sửa cấu hình.
+export { Relay as MyDurableObject };

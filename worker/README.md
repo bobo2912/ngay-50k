@@ -6,6 +6,15 @@ Trạm nhỏ trên Cloudflare Workers chuyển thông báo biến động số d
 
 Trong app có sẵn nút Deploy trỏ đúng kho của bạn: **Cài đặt → Tự ghi từ thông báo → Phần B**.
 
+## Tự dựng trong Cloudflare, không nối với kho này
+
+1. Cloudflare → **Workers & Pages** → **Create** → chọn mẫu **Hello World Durable Object** (hoặc mở `https://deploy.workers.cloudflare.com/?url=https://github.com/cloudflare/templates/tree/main/hello-world-do-template`). Nếu được hỏi tạo kho GitHub, chọn **Private**.
+2. Triển khai xong, vào Worker vừa tạo → **Edit code**. Mở `src/index.ts`, xoá hết, dán toàn bộ [`src/index.js`](src/index.js) → **Deploy**. Mã đã có sẵn tên `MY_DURABLE_OBJECT` / `MyDurableObject` của mẫu, không phải sửa cấu hình.
+   Nếu Worker nối với kho GitHub riêng của bạn thì nên dán vào `src/index.ts` ngay trong kho đó, để lần build sau không ghi đè.
+3. **Settings → Variables and Secrets → Add**: loại **Secret**, tên `SECRET`, giá trị = mã bí mật trong app (Cài đặt → Tự ghi từ thông báo → Chép mã). Có `SECRET` thì trạm chỉ nhận đúng mã này.
+4. **Settings → Observability**: tắt Logs / Traces.
+5. Chép địa chỉ `https://<tên>.<tài-khoản>.workers.dev`, dán vào app và vào tác vụ *Get Contents of URL* của phím tắt.
+
 ## Chạy thế nào
 
 ```
