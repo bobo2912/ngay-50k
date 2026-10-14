@@ -1,6 +1,12 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v156, ngày 14/10/2026
+**Phiên bản hiện tại:** v157, ngày 14/10/2026
+
+---
+
+## Có gì mới trong v157 (so với v156)
+
+- Nút **Đánh dấu đã sao lưu hôm nay** và **Chép mã** (mã bí mật) dùng kiểu nút thường của Cài đặt, không còn là viên tròn dẹt.
 
 ---
 

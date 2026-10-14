@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v156";
+  var K = "ngay50k:errlog", VER = "v157";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -2475,7 +2475,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
       <div class="set-head"><button class="set-back" data-back>‹ Cài đặt</button><h2 tabindex="-1">Sao lưu và đồng bộ</h2></div>
 <section class="set-group" id="syncBox" aria-labelledby="gSync">
       <p class="backup-state" id="backupState"></p>
-      <p class="set-now" id="bkMarkRow" hidden>Đã sao lưu bằng phím tắt mà app chưa nhận? <button class="ib" type="button" id="bkMark" style="width:auto; padding:0 10px">Đánh dấu đã sao lưu hôm nay</button></p>
+      <div id="bkMarkRow" hidden><p class="set-now">Đã sao lưu bằng phím tắt mà app chưa nhận?</p><div class="set-row" style="margin-top:6px"><button class="ghost grow" type="button" id="bkMark">Đánh dấu đã sao lưu hôm nay</button></div></div>
       <div class="set-row">
         <button class="ghost grow" id="exportBtn">Xuất file sao lưu</button>
         <label class="ghost grow file-btn">Nhập từ file<input type="file" id="importFile"></label>
@@ -2584,7 +2584,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <li>(Tuỳ chọn) <b>Làm gọn nội dung giao dịch</b>: thêm sheet tên <b>ThuVien</b>, dòng 1 để tiêu đề, cột A là từ khoá, cột B là nội dung thay. Ví dụ A <b>GRABFOOD</b>, B <b>Ăn GrabFood</b>: phần ND chứa "grabfood" (không phân biệt hoa thường, có dấu hay không) sẽ thành "Ăn GrabFood". Từ khoá dài được so trước. Áp dụng cho phần <b>ND:</b>, <b>Tại:</b> (chạm thẻ) và <b>Nội dung giao dịch:</b> (thẻ tín dụng). Viết <b>DEN:tên</b> hoặc <b>TU:tên/số TK</b> để xét theo người nhận/người gửi (xét trước); thêm <b>^</b> ở đầu (vd <b>^ck</b>) để chỉ khớp khi nội dung bắt đầu bằng từ đó; cột B có thể dùng <b>{DEN}</b>/<b>{TU}</b> để lấy tên người nhận/người gửi.</li>
       </ol>
       <div class="field"><label for="relayUrl"><span>URL ứng dụng web (đuôi /exec)</span></label><input id="relayUrl" class="inp" inputmode="url" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="https://script.google.com/macros/s/…/exec"></div>
-      <p class="set-now">Mã bí mật: <b id="relayKey" style="font-family:ui-monospace,monospace; letter-spacing:.5px"></b> <button class="ib" type="button" id="relayKeyCopy" style="width:auto; padding:0 10px">Chép mã</button></p>
+      <div class="set-row"><p class="set-now grow" style="margin:0">Mã bí mật: <b id="relayKey" style="font-family:ui-monospace,monospace; letter-spacing:.5px"></b></p><button class="ghost" type="button" id="relayKeyCopy">Chép mã</button></div>
       <div class="set-row"><button class="ghost grow" id="relayCopy" type="button">Chép mã Apps Script</button><button class="ghost grow" id="relayTest" type="button">Kiểm tra</button></div>
       <p class="set-now" id="relayTestMsg" role="status" aria-live="polite" hidden></p>
       <pre class="errlog" id="relayCode" hidden></pre>
@@ -2606,7 +2606,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v156</p>
+      <p class="sync" id="appVersion">Phiên bản v157</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3107,9 +3107,9 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
 <input type="file" id="notifFileIn" accept=".txt,text/plain" hidden>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=156"></script>
-<script src="thu-vien-cau.js?v=156"></script>
-<script src="lock.js?v=156"></script>
+<script src="parse-vi.js?v=157"></script>
+<script src="thu-vien-cau.js?v=157"></script>
+<script src="lock.js?v=157"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
