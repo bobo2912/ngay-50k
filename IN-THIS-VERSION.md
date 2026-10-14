@@ -1,6 +1,17 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v153, ngày 14/10/2026
+**Phiên bản hiện tại:** v154, ngày 14/10/2026
+
+---
+
+## Có gì mới trong v154 (so với v153)
+
+- **Apps Script bản mã 4.4 – ThuVien chính xác hơn:**
+  - Làm gọn cả thông báo chạm thẻ (**Tại:** GS25…, thêm dấu `;` để app tách đúng tên nơi mua) và thẻ tín dụng (**Nội dung giao dịch:**), không chỉ phần **ND:**.
+  - Quy tắc theo người nhận/người gửi: `DEN:NGUYEN VAN A`, `TU:0123456789` (xét trước từ khoá thường) → không còn gắn nhầm "tiền bản thân" cho khoản trả cửa hàng có nội dung mặc định "MBCT <tên> chuyen tien".
+  - `^ck`: chỉ khớp khi nội dung bắt đầu bằng "ck"; từ khoá ≤ 3 ký tự phải đứng thành từ riêng.
+  - Cột B dùng được `{DEN}` / `{TU}` (tên người nhận/người gửi, bỏ số tài khoản).
+  - Đã thử trên 22 thông báo thật: số tiền, giờ, số dư app đọc ra không đổi.
 
 ---
 

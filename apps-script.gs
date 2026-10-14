@@ -1,4 +1,4 @@
-// Tiêu Gọn – nhận thông báo ngân hàng từ Phím tắt và trả cho app. Bản mã 4.3
+// Tiêu Gọn – nhận thông báo ngân hàng từ Phím tắt và trả cho app. Bản mã 4.4
 // Lỗi hay sai mã được ghi vào sheet NhatKy. Chạy hàm kiemTra (chọn ở thanh trên, bấm ▶ Chạy) để thử không cần iPhone.
 // Giữ ý tưởng: hàng đợi JSON ở DataPack!A1 (app lấy nhanh) + sheet ThuVien chuẩn hoá nội dung.
 // Ô A1 chỉ chứa giao dịch app CHƯA nhận. Không xoá ngay lúc app đọc (mạng rớt là mất), mà xoá khi app báo đã nhận:
@@ -139,28 +139,65 @@ function readQ_(dp){
   try{ var a = JSON.parse(v); return Array.isArray(a) ? a : null; }catch(e){ return null; }
 }
 
-// ThuVien: cột A từ khoá, cột B nội dung thay; dòng 1 là tiêu đề. Từ khoá dài được so trước
-// (vd "GRAB FOOD" thắng "GRAB"), so không phân biệt hoa thường và có dấu/không dấu.
+// ThuVien: cột A từ khoá, cột B nội dung thay; dòng 1 là tiêu đề. So không phân biệt hoa thường, có dấu hay không.
+//   • Từ khoá thường: tìm trong phần nội dung của thông báo: "ND:" (chuyển khoản), "Tại:" (chạm thẻ),
+//     "Nội dung giao dịch:" (thẻ tín dụng). Khớp thì cả phần nội dung đó được thay bằng cột B.
+//   • Từ khoá theo người nhận / người gửi: "DEN:tên hoặc số TK", "TU:tên hoặc số TK" (vd DEN:NGUYEN VAN A).
+//     Loại này được xét TRƯỚC từ khoá thường.
+//   • Từ khoá ngắn (3 ký tự trở xuống, vd "ck") phải đứng thành một từ riêng, không khớp giữa chữ khác.
+//   • Thêm ^ ở đầu (vd "^ck") = chỉ khớp khi nội dung BẮT ĐẦU bằng từ đó ("ck fJML…" khớp, "tra tien ck cho ban" không).
+//   • Cột B có thể dùng {DEN} hoặc {TU}: thay bằng tên người nhận / người gửi (vd MBCT NGUYEN VAN A CHUYEN TIEN → {DEN}).
+//   • Cùng loại thì từ khoá dài được xét trước.
 function lib_(ss){
   var sh = ss.getSheetByName(SH_TV); if(!sh) return [];
   var v = sh.getDataRange().getValues(); v.shift();
-  return v.map(function(r){ return { k: noAcc_(String(r[0]).trim()), r: String(r[1]).trim() }; })
-          .filter(function(x){ return x.k && x.r; })
-          .sort(function(a, b){ return b.k.length - a.k.length; });
+  return v.map(function(r){
+    var raw = String(r[0]).trim(), m = raw.match(/^(DEN|TU)\s*:\s*(.+)$/i);
+    return { f: m ? m[1].toUpperCase() : '', k: noAcc_(m ? m[2].trim() : raw), r: String(r[1]).trim() };
+  }).filter(function(x){ return x.k && x.r; })
+    .sort(function(a, b){ return (a.f ? 0 : 1) - (b.f ? 0 : 1) || b.k.length - a.k.length; });
 }
-function noAcc_(s){ return s.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase(); }
-
+function noAcc_(s){ return String(s).normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase().replace(/\s+/g, ' '); }
+function has_(text, k){
+  text = String(text).trim();
+  if(k.charAt(0) === '^'){ k = k.slice(1).trim(); return text.indexOf(k) === 0 && !/[a-z0-9]/.test(text.charAt(k.length)); }
+  if(k.length > 3) return text.indexOf(k) >= 0;
+  return new RegExp('(^|[^a-z0-9])' + k.replace(/[.*+?^$(){}|[\]\\]/g, '\\$&') + '($|[^a-z0-9])').test(text);
+}
+// Phần DEN:/TU: của thông báo MB, bỏ số tài khoản phía sau " - "
+function party_(line, f){
+  var m = line.match(new RegExp('\\|\\s*' + f + '\\s*:\\s*([^|]*)', 'i'));
+  return m ? m[1].trim() : '';
+}
+function partyName_(v){ return v.replace(/\s+-\s+-?[A-Z0-9]*\d[A-Z0-9]*\s*$/i, '').trim() || v; }
+// Vị trí phần nội dung cần làm gọn: [bắt đầu, kết thúc) trong dòng
+function noteSpan_(line){
+  var m = line.match(/(\bND\s*:|N[ộo]i dung giao d[ịi]ch\s*:|N[ộo]i dung\s*:)\s*/i);
+  if(m){
+    var st = m.index + m[0].length, rest = line.slice(st), e = rest.indexOf('|');
+    var end = e >= 0 ? st + e : line.length;
+    while(end > st && /\s/.test(line[end - 1])) end--;
+    return end > st ? [st, end] : null;
+  }
+  m = line.match(/\bT[ạa]i\s*:\s*/i);                                  // MB chạm thẻ: "Tại: GS25 VN0001 ABC Số tiền: ..."
+  if(m){
+    var s2 = m.index + m[0].length, r2 = line.slice(s2), e2 = r2.search(/\s+S[ốo] ti[ềe]n\s*:/i);
+    var end2 = e2 >= 0 ? s2 + e2 : line.length;
+    return end2 > s2 ? [s2, end2, true] : null;                         // true: thêm ';' để app tách đúng tên nơi mua
+  }
+  return null;
+}
 function clean_(line, lib){
   if(!lib.length) return line;
-  var m = line.match(/(ND\s*:|N[ộo]i dung\s*:)\s*([^|]*)/i);
-  if(!m) return line;
-  var raw = m[2], body = raw.replace(/\s+$/, ''), tail = raw.slice(body.length);
-  if(!body) return line;
-  var low = noAcc_(body);
+  var sp = noteSpan_(line); if(!sp) return line;
+  var note = noAcc_(line.slice(sp[0], sp[1])), den = party_(line, 'DEN'), tu = party_(line, 'TU');
+  var pf = { DEN: noAcc_(den), TU: noAcc_(tu) };
   for(var i = 0; i < lib.length; i++){
-    if(low.indexOf(lib[i].k) >= 0){
-      var start = m.index + m[0].length - raw.length;
-      return line.slice(0, start) + lib[i].r + tail + line.slice(start + raw.length);
+    var x = lib[i];
+    if(has_(x.f ? pf[x.f] : note, x.k)){
+      var rep = x.r.replace(/\{DEN\}/gi, partyName_(den)).replace(/\{TU\}/gi, partyName_(tu)).replace(/\|/g, '/').trim();
+      if(!rep) return line;
+      return line.slice(0, sp[0]) + rep + (sp[2] ? ';' : '') + line.slice(sp[1]);
     }
   }
   return line;
