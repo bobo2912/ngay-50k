@@ -1,4 +1,4 @@
-// Tiêu Gọn – nhận thông báo ngân hàng từ Phím tắt và trả cho app. Bản mã 4.1
+// Tiêu Gọn – nhận thông báo ngân hàng từ Phím tắt và trả cho app. Bản mã 4.3
 // Lỗi hay sai mã được ghi vào sheet NhatKy. Chạy hàm kiemTra (chọn ở thanh trên, bấm ▶ Chạy) để thử không cần iPhone.
 // Giữ ý tưởng: hàng đợi JSON ở DataPack!A1 (app lấy nhanh) + sheet ThuVien chuẩn hoá nội dung.
 // Ô A1 chỉ chứa giao dịch app CHƯA nhận. Không xoá ngay lúc app đọc (mạng rớt là mất), mà xoá khi app báo đã nhận:
@@ -40,8 +40,11 @@ function doPost(e){
   if(!keyOk_(d.k)){ log_('TG_KEY', 'POST sai mã · ' + hint_(d.k)); return txt_('TG_KEY'); }   // sai mã: phím tắt giữ nguyên tệp
   var lines = String(d.t || '').split(/\r?\n/).map(function(x){ return x.trim(); }).filter(function(x){ return x; });
   if(!lines.length) return txt_('TG_OK');
-  var lock = LockService.getScriptLock();
-  if(!lock.tryLock(20000)) return txt_('TG_BUSY');       // hai thông báo tới cùng lúc: cái sau chờ, không đè nhau
+  var lock = LockService.getScriptLock(), t0 = Date.now();
+  if(!lock.tryLock(8000)){                               // khoá bị giữ quá lâu: vẫn ghi (không đè ai), không bắt phím tắt chờ
+    log_('TG_BUSY', 'POST chờ khoá 8 giây không được (lần chạy khác đang giữ) → ghi thẳng vào ThongBao');
+    return postNoLock_(lines);
+  }
   try{
     var ss = SpreadsheetApp.getActiveSpreadsheet(), p = P_();
     var tb = ss.getSheetByName(SH_TB) || ss.insertSheet(SH_TB);
@@ -59,7 +62,7 @@ function doPost(e){
     });
     if(!add.length) return txt_('TG_OK');
     tb.getRange(n + 1, 1, add.length, 3).setNumberFormat('@').setValues(add);   // ghi một lần thay vì appendRow từng dòng
-    if(n + add.length > KEEP + 200) tb.deleteRows(1, n + add.length - KEEP);
+    if(n + add.length > KEEP + 200) tb.deleteRows(1, Math.min(300, n + add.length - KEEP));   // dọn dần, mỗi lần tối đa 300 dòng
 
     var dp = ss.getSheetByName(SH_DP);
     if(!dp){ dp = ss.insertSheet(SH_DP); dp.hideSheet(); }
@@ -72,6 +75,7 @@ function doPost(e){
     p.setProperties({ qFloor: String(floor), qMin: cur.length ? String(cur[0].at) : '' });   // ghi mốc trước, ô A1 sau
     dp.getRange('A1').setNumberFormat('@').setValue(JSON.stringify(cur));
     p.setProperty('lastAt', String(at - 1));
+    if(Date.now() - t0 > 5000) log_('CHAM', 'POST mất ' + Math.round((Date.now() - t0) / 1000) + ' giây · ThongBao ' + n + ' dòng');
     return txt_('TG_OK');
   }catch(err){
     log_('ERR', 'POST: ' + (err && err.stack || err));
@@ -88,16 +92,16 @@ function doGet(e){
   var qm = p.getProperty('qMin');                                      // mốc giao dịch cũ nhất còn trong A1 ('' = A1 trống)
   var trim = qm === null || (qm !== '' && Number(qm) <= since);        // A1 còn giao dịch app đã nhận → dọn
   if(last && last <= since && !trim) return out_({ ok:true, v:4, items:[], more:false });   // không có gì mới: trả ngay, không mở Sheet
-  var lock = LockService.getScriptLock(); lock.tryLock(5000);
+  var lock = LockService.getScriptLock(), locked = lock.tryLock(0);   // app hỏi không bao giờ chờ khoá
   try{
     var ss = SpreadsheetApp.getActiveSpreadsheet(), floor = Number(p.getProperty('qFloor')) || 0, items = null;
     var dp = ss.getSheetByName(SH_DP), q = dp ? readQ_(dp) : [];
-    if(trim && dp && q !== null){                                        // dọn ô A1: chỉ giữ giao dịch app chưa nhận
+    if(trim && locked && dp && q !== null){                                        // dọn ô A1: chỉ giữ giao dịch app chưa nhận
       q = q.filter(function(x){ return x.at > since; });
       floor = Math.max(floor, since);
       p.setProperties({ qFloor: String(floor), qMin: q.length ? String(q[0].at) : '' });
       dp.getRange('A1').setNumberFormat('@').setValue(JSON.stringify(q));
-    } else if(trim && !dp) p.setProperty('qMin', '');
+    } else if(trim && locked && !dp) p.setProperty('qMin', '');
     if(since >= floor && q !== null) items = q.filter(function(x){ return x.at > since; });   // đường nhanh: chỉ đọc ô A1
     if(items === null){                                                  // đường chậm: app lâu không mở, hàng đợi đã tràn
       var tb = ss.getSheetByName(SH_TB), n = tb ? tb.getLastRow() : 0;
@@ -109,7 +113,23 @@ function doGet(e){
   }catch(err){
     log_('ERR', 'GET: ' + (err && err.stack || err));
     return out_({ ok:false, err:String(err && err.message || err) });
-  }finally{ lock.releaseLock(); }
+  }finally{ if(locked) lock.releaseLock(); }
+}
+
+// Ghi khi không có khoá: appendRow từng dòng (không đè dòng của lần chạy khác), không động vào ô A1;
+// nâng mốc qFloor để app lấy các dòng này thẳng từ ThongBao.
+function postNoLock_(lines){
+  try{
+    var ss = SpreadsheetApp.getActiveSpreadsheet(), p = P_(), lib = lib_(ss);
+    var tb = ss.getSheetByName(SH_TB) || ss.insertSheet(SH_TB);
+    var at = Math.max(Date.now(), (Number(p.getProperty('lastAt')) || 0) + 1);
+    lines.forEach(function(x){ tb.appendRow([String(at), clean_(x, lib), x]); at++; });
+    p.setProperties({ qFloor: String(Math.max(Number(p.getProperty('qFloor')) || 0, at - 1)), lastAt: String(Math.max(Number(p.getProperty('lastAt')) || 0, at - 1)) });
+    return txt_('TG_OK');
+  }catch(err){
+    log_('ERR', 'POST không khoá: ' + (err && err.stack || err));
+    return txt_('ERR ' + (err && err.message || err));
+  }
 }
 
 // ============ Hỗ trợ ============
@@ -153,4 +173,23 @@ function kiemTra(){
   var r = doPost({ postData: { contents: JSON.stringify({ k: k, t: line }) } }).getContent();
   Logger.log('POST trả về: ' + r + (r === 'TG_OK' ? '  → ghi Sheet được. Xem sheet ThongBao và DataPack!A1 (xoá dòng thử nếu muốn).' : '  → xem sheet NhatKy để biết lý do.'));
   Logger.log('Mã đang dùng bắt đầu bằng: ' + String(k).slice(0, 3) + '… (so với mã bí mật trong app và trường k của phím tắt)');
+}
+
+// ============ Chẩn đoán: chọn chanDoan → ▶ Chạy → chép Nhật ký thực thi gửi lại ============
+function chanDoan(){
+  var t = Date.now(), lap = function(name){ Logger.log(name + ': ' + (Date.now() - t) + ' ms'); t = Date.now(); };
+  var lk = LockService.getScriptLock(), got = lk.tryLock(1000);
+  Logger.log('Khoá ghi: ' + (got ? 'trống' : 'ĐANG BỊ GIỮ bởi lần chạy khác')); if(got) lk.releaseLock(); t = Date.now();
+  var ss = SpreadsheetApp.getActiveSpreadsheet(); lap('Mở Sheet');
+  ss.getSheets().forEach(function(sh){
+    var r = sh.getLastRow(), c = sh.getLastColumn(), f = 0;
+    if(r && c){ sh.getRange(1, 1, Math.min(r, 3000), Math.min(c, 30)).getFormulas().forEach(function(row){ row.forEach(function(x){ if(x) f++; }); }); }
+    Logger.log('Sheet ' + sh.getName() + ': ' + r + ' dòng có dữ liệu × ' + c + ' cột · lưới ' + sh.getMaxRows() + '×' + sh.getMaxColumns() + ' · ' + f + ' ô công thức');
+  }); lap('Đếm các sheet');
+  var tb = ss.getSheetByName(SH_TB);
+  if(tb){ var n = tb.getLastRow(); if(n) tb.getRange(Math.max(1, n - 399), 1, Math.min(n, 400), 3).getValues(); } lap('Đọc 400 dòng cuối ThongBao');
+  var lib = lib_(ss); lap('Đọc ThuVien (' + lib.length + ' từ khoá)');
+  var dp = ss.getSheetByName(SH_DP), a1 = dp ? String(dp.getRange('A1').getValue()) : ''; lap('Đọc DataPack!A1 (' + a1.length + ' ký tự)');
+  var pr = P_().getProperties(); Logger.log('Thuộc tính: ' + Object.keys(pr).map(function(k){ return k + '=' + (k === 'SECRET_KEY' ? String(pr[k]).slice(0, 3) + '…' : pr[k]); }).join(', '));
+  var tr = ScriptApp.getProjectTriggers(); Logger.log('Trình kích hoạt: ' + (tr.length ? tr.map(function(x){ return x.getHandlerFunction() + ' (' + x.getEventType() + ')'; }).join(', ') : 'không có'));
 }

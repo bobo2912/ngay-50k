@@ -1,6 +1,15 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v152, ngày 14/10/2026
+**Phiên bản hiện tại:** v153, ngày 14/10/2026
+
+---
+
+## Có gì mới trong v153 (so với v152)
+
+- **Apps Script bản mã 4.3** – sửa lỗi kẹt khoá (`TG_BUSY`, phím tắt báo hết giờ):
+  - Khoá bị giữ quá 8 giây thì vẫn ghi thẳng vào ThongBao (từng dòng, không đè lần chạy khác) và trả `TG_OK`; app lấy các dòng này từ ThongBao.
+  - App hỏi (GET) không bao giờ chờ khoá; chỉ dọn ô A1 khi khoá đang trống.
+  - Giữ hàm **chanDoan** (đo thời gian từng bước, xem khoá có đang bị giữ, liệt kê kích thước các sheet và trình kích hoạt).
 
 ---
 
