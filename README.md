@@ -93,7 +93,7 @@ tests-parse-vi.js       bộ câu mẫu: node tests-parse-vi.js
 tests-notif.js          bộ thông báo ngân hàng mẫu (MB, VCB, TCB, ACB, TPBank, VPBank, BIDV…) cho parseNotif trong index.html: node tests-notif.js
 sw.js                   service worker, giữ app chạy được khi mất mạng
 manifest.webmanifest    tên, icon, màu, chế độ standalone
-fonts/                  font Be Vietnam Pro dạng woff2
+fonts/                  font Plus Jakarta Sans dạng woff2 (từ v176)
 icons/                  icon app
 HUONG-DAN.md            hướng dẫn đưa lên GitHub Pages và cài lên máy
 IN-THIS-VERSION.md      có gì mới ở hai bản gần nhất, kèm danh sách tính năng
@@ -147,7 +147,7 @@ Vài chỗ dễ vỡ, sửa xong nên thử lại:
 HTML, CSS và JavaScript thuần, không framework, không bước build. Mở `index.html` ra sửa là chạy.
 
 - [Tesseract.js](https://github.com/naptha/tesseract.js) — đọc chữ trong ảnh, tải từ CDN khi cần
-- [Be Vietnam Pro](https://fonts.google.com/specimen/Be+Vietnam+Pro) — font, đã để sẵn trong `fonts/`
+- [Plus Jakarta Sans](https://fonts.google.com/specimen/Plus+Jakarta+Sans) — font (giấy phép SIL Open Font License), đã để sẵn trong `fonts/`
 
 ---
 

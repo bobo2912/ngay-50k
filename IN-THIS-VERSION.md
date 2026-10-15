@@ -1,6 +1,13 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v175, ngày 15/10/2026
+**Phiên bản hiện tại:** v176, ngày 15/10/2026
+
+---
+
+## Có gì mới trong v176 (so với v175)
+
+- **Font mới: Plus Jakarta Sans** (thay Be Vietnam Pro) cho toàn bộ chữ và số tiền, kể cả ô từ khoá trong Thư viện nội dung. Đủ dấu tiếng Việt, các độ đậm 400/500/600/700/800, nằm sẵn trong `fonts/` nên chạy được khi không có mạng (giấy phép SIL Open Font License).
+- Giữ font chữ đều (monospace) cho mã bí mật và các mẫu cú pháp để dễ phân biệt ký tự.
 
 ---
 

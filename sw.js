@@ -1,6 +1,6 @@
 /* Tiêu Gọn – bộ nhớ đệm để app mở được khi không có mạng.
    Mỗi lần sửa app, hãy tăng số phiên bản dưới đây (v1 -> v2 ...) để máy nhận bản mới. */
-const V = "175";                                   /* tăng cùng lúc với ?v= trong index.html (xem README) */
+const V = "176";                                   /* tăng cùng lúc với ?v= trong index.html (xem README) */
 const VERSION = "ngay50k-v" + V;
 
 /* Trang chính và các file script luôn đi cùng một bản: script có đuôi ?v=<số bản>, và chỉ lấy từ đúng bộ nhớ đệm
@@ -17,18 +17,21 @@ const ASSETS = [
   "./icons/icon-192.png",
   "./icons/icon-512.png",
   "./icons/apple-touch-icon.png",
-  "./fonts/be-vietnam-pro-latin-400-normal.woff2",
-  "./fonts/be-vietnam-pro-latin-500-normal.woff2",
-  "./fonts/be-vietnam-pro-latin-600-normal.woff2",
-  "./fonts/be-vietnam-pro-latin-800-normal.woff2",
-  "./fonts/be-vietnam-pro-latin-ext-400-normal.woff2",
-  "./fonts/be-vietnam-pro-latin-ext-500-normal.woff2",
-  "./fonts/be-vietnam-pro-latin-ext-600-normal.woff2",
-  "./fonts/be-vietnam-pro-latin-ext-800-normal.woff2",
-  "./fonts/be-vietnam-pro-vietnamese-400-normal.woff2",
-  "./fonts/be-vietnam-pro-vietnamese-500-normal.woff2",
-  "./fonts/be-vietnam-pro-vietnamese-600-normal.woff2",
-  "./fonts/be-vietnam-pro-vietnamese-800-normal.woff2",
+  "./fonts/plus-jakarta-sans-latin-400-normal.woff2",
+  "./fonts/plus-jakarta-sans-latin-ext-400-normal.woff2",
+  "./fonts/plus-jakarta-sans-vietnamese-400-normal.woff2",
+  "./fonts/plus-jakarta-sans-latin-500-normal.woff2",
+  "./fonts/plus-jakarta-sans-latin-ext-500-normal.woff2",
+  "./fonts/plus-jakarta-sans-vietnamese-500-normal.woff2",
+  "./fonts/plus-jakarta-sans-latin-600-normal.woff2",
+  "./fonts/plus-jakarta-sans-latin-ext-600-normal.woff2",
+  "./fonts/plus-jakarta-sans-vietnamese-600-normal.woff2",
+  "./fonts/plus-jakarta-sans-latin-700-normal.woff2",
+  "./fonts/plus-jakarta-sans-latin-ext-700-normal.woff2",
+  "./fonts/plus-jakarta-sans-vietnamese-700-normal.woff2",
+  "./fonts/plus-jakarta-sans-latin-800-normal.woff2",
+  "./fonts/plus-jakarta-sans-latin-ext-800-normal.woff2",
+  "./fonts/plus-jakarta-sans-vietnamese-800-normal.woff2",
 ];
 
 self.addEventListener("install", event => {
