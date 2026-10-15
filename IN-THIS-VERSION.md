@@ -1,6 +1,14 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v161, ngày 15/10/2026
+**Phiên bản hiện tại:** v162, ngày 15/10/2026
+
+---
+
+## Có gì mới trong v162 (so với v161)
+
+- Góc phải trên Cài đặt: **icon nhà** (về trang chính) thay chữ "Xong", để khỏi nhầm là nút xong của từng mục.
+- Cài đặt từng bước: nút **‹ Trước** và **Xong, tiếp ›** cùng hàng, cùng chiều cao.
+- Ô **Tỉ giá 1 USD** (Trợ lý AI → Chi phí và ngân sách) không còn tràn sang phải: ô nhập nằm trong mục gập lại bị tính chiều rộng sai; mọi ô nhập giờ tính cả viền và lề vào chiều rộng.
 
 ---
 

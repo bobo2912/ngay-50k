@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v161";
+  var K = "ngay50k:errlog", VER = "v162";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -200,7 +200,7 @@ h2{font-size:.95rem; font-weight:600; margin:0 0 8px}
 .field > label{display:flex; justify-content:space-between; font-size:.8rem; color:var(--muted); margin-bottom:4px}
 .src{color:var(--ok); font-weight:600}
 .need{color:var(--over); font-weight:600}
-.inp{width:100%; border:1.5px solid var(--line); background:var(--bg); border-radius:10px; padding:9px 11px; outline:none; font-size:16px}
+.inp{box-sizing:border-box; width:100%; border:1.5px solid var(--line); background:var(--bg); border-radius:10px; padding:9px 11px; outline:none; font-size:16px}
 .inp:focus{border-color:var(--note)}
 .inp.missing{border-color:var(--over)}
 .inp:disabled{opacity:.75}
@@ -415,6 +415,9 @@ header .date{color:var(--ink); font-size:1rem; font-weight:700}
 .settings-head{position:sticky; top:0; z-index:2; display:flex; justify-content:space-between; align-items:center; margin:0 -16px; padding:8px 16px 10px; background:var(--bg)}
 .settings-head h2{margin:0; font-size:1.25rem; font-weight:800; outline:none}
 .settings .done{border:0; background:none; font:inherit; font-weight:700; color:var(--note); padding:8px 4px}
+.settings .done.home{display:flex; align-items:center; justify-content:center; width:40px; height:40px; padding:0; border-radius:50%}   /* v162: icon nhà thay chữ Xong */
+.settings .done.home svg{width:24px; height:24px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round}
+.settings .done.home:active{background:var(--note-soft)}
 .set-group{margin-top:14px; padding:16px; border-radius:16px; background:var(--surface); border:1px solid var(--line)}
 .set-group > h3{margin:0 0 4px; font-size:1rem; font-weight:700}
 .set-group .set-row:first-of-type{margin-top:10px}
@@ -1233,7 +1236,7 @@ input.sw:checked{background:var(--ok)} input.sw:checked::after{transform:transla
 .wiz .wz-cp{flex:none; font:inherit; font-size:.78rem; padding:4px 8px; border-radius:8px; border:1px solid var(--line); background:var(--surface); color:var(--ink)}
 .wiz .wz-note{margin:6px 0 0; font-size:.82rem; color:var(--muted)}
 .wiz .wz-nav{display:flex; gap:10px; margin-top:14px}
-.wiz .wz-nav button{flex:1}
+.wiz .wz-nav{align-items:stretch} .wiz .wz-nav button{flex:1; margin:0; min-height:50px; padding:12px}   /* v162: hai nút cùng hàng, cùng cao */
 .wiz .wz-opt{display:block; width:100%; text-align:left; padding:12px 14px; margin-top:8px; border-radius:14px; border:1.5px solid var(--line); background:var(--surface); font:inherit; color:var(--ink)}
 .wiz .wz-opt b{display:block} .wiz .wz-opt span{font-size:.84rem; color:var(--muted)}
 .wiz .wz-opt[aria-pressed="true"]{border-color:var(--note); background:var(--note-soft)}
@@ -2318,7 +2321,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
   <div class="settings-in">
     <div class="settings-head">
       <h2 id="settingsTitle" tabindex="-1">Cài đặt</h2>
-      <button class="done" id="closeSettings">Xong</button>
+      <button class="done home" id="closeSettings" aria-label="Về trang chính" title="Về trang chính"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V9.5"/></svg></button>
     </div>
 
     <div class="set-page" id="setHome">
@@ -2756,7 +2759,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v161</p>
+      <p class="sync" id="appVersion">Phiên bản v162</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3257,10 +3260,10 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
 <input type="file" id="notifFileIn" accept=".txt,text/plain" hidden>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=161"></script>
-<script src="thu-vien-cau.js?v=161"></script>
-<script src="quy-tac.js?v=161"></script>
-<script src="lock.js?v=161"></script>
+<script src="parse-vi.js?v=162"></script>
+<script src="thu-vien-cau.js?v=162"></script>
+<script src="quy-tac.js?v=162"></script>
+<script src="lock.js?v=162"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
