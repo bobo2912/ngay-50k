@@ -1,6 +1,12 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v169, ngày 15/10/2026
+**Phiên bản hiện tại:** v170, ngày 15/10/2026
+
+---
+
+## Có gì mới trong v170 (so với v169)
+
+- **Bỏ tính năng Mục tiêu tiết kiệm / chia hũ của v168** (khối 🎯 Tiết kiệm ở tab Ví, mẫu 6 hũ, Chia khoản thu) theo yêu cầu. Mục tiêu đã tạo (nếu có) không còn được giữ trong dữ liệu. Dự báo cuối tháng và ảnh hoá đơn giữ nguyên.
 
 ---
 
