@@ -1,6 +1,15 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v170, ngày 15/10/2026
+**Phiên bản hiện tại:** v171, ngày 15/10/2026
+
+---
+
+## Có gì mới trong v171 (so với v170)
+
+- **Icon nét mảnh ở mọi chỗ còn lại** (trước chỉ có ở Sổ và Ví): chip chọn tag, bảng chọn tag, Quản lý tag, xem trước tag mới, bộ chọn icon, tiêu đề nhóm, khoản định kỳ, danh sách thẻ, thẻ thông báo ngân hàng trong Chat, báo cáo / khoản sắp tới / gợi ý tiết kiệm trong Chat. Hàm dùng chung `icH`, `icSet`, `icText`.
+- Thẻ xác nhận trong Chat: ô chọn nhóm (danh sách của iPhone, không vẽ được icon) đổi thành nút mở **bảng chọn tag**.
+- Cài đặt gọn hơn: **Giao diện** + **Màn hình mở đầu** → một trang "Giao diện và mở đầu"; **Hạn mức chi một ngày** + **Ngân hàng hay dùng** + **Khoản định kỳ** → một trang "Hạn mức, ngân hàng, định kỳ". Đường dẫn cũ tới các trang này tự chuyển sang trang mới.
+- Còn giữ emoji ở các ô chọn kiểu danh sách của iPhone (chọn nguồn thu, chọn ví, Xếp vào tag trong Thư viện nội dung) vì danh sách đó chỉ hiện được chữ.
 
 ---
 
