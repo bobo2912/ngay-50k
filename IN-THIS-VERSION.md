@@ -1,6 +1,13 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v173, ngày 15/10/2026
+**Phiên bản hiện tại:** v174, ngày 15/10/2026
+
+---
+
+## Có gì mới trong v174 (so với v173)
+
+- Bỏ **Ngân hàng hay dùng** và **Người nhận** khỏi Cài đặt, bỏ bước chọn ngân hàng ở màn hình chào: app không còn chỗ bắt đầu chuyển tiền (Quét QR, form chuyển khoản đã ẩn từ trước), nên hai mục này không còn tác dụng. Trang còn lại đổi tên **Hạn mức và định kỳ** (tóm tắt: "100k/ngày · 4 định kỳ").
+- Dữ liệu người nhận cũ vẫn giữ trong file, không xoá; tự ghi từ thông báo không bị ảnh hưởng.
 
 ---
 
