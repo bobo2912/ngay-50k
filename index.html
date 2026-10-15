@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v167";
+  var K = "ngay50k:errlog", VER = "v168";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -1692,6 +1692,24 @@ body.searching .ledger-head{background:var(--top-c)}
 .wfc-d{margin:4px 0 8px; padding:10px 14px; border-radius:14px; background:var(--note-soft); font-size:.86rem}
 .wfc-d .r{display:flex; justify-content:space-between; gap:10px; padding:3px 0} .wfc-d .r.t{border-top:1px solid var(--line); margin-top:4px; padding-top:7px; font-weight:700}
 .wfc-d p{margin:6px 0 0; color:var(--muted); font-size:.8rem}
+.goals{margin:6px 0 8px; padding:10px 12px; border-radius:16px; background:var(--surface); border:1px solid var(--line)}   /* v168 */
+.goals .g-h{display:flex; align-items:center; gap:8px} .goals .g-h b{font-size:.92rem; white-space:nowrap} .goals .g-h small{color:var(--muted); font-size:.78rem; white-space:nowrap}
+.goals .g-h .sp{margin-left:auto; display:flex; gap:6px}
+.goals .g-h button{white-space:nowrap; font:inherit; font-size:.76rem; font-weight:600; padding:5px 10px; border-radius:999px; border:1px solid var(--line); background:var(--flat); color:var(--ink)}
+.g-row{display:block; width:100%; text-align:left; font:inherit; color:var(--ink); background:none; border:0; border-top:1px solid var(--line); padding:9px 0 8px; margin-top:6px}
+.g-row:first-of-type{border-top:0}
+.g-row .t{display:flex; gap:8px; align-items:baseline} .g-row .n{font-weight:600; font-size:.92rem} .g-row .v{margin-left:auto; font-weight:700; font-size:.9rem}
+.g-row small{display:block; color:var(--muted); font-size:.76rem; margin-top:2px}
+.g-bar{display:block; height:6px; border-radius:3px; background:var(--line); overflow:hidden; margin-top:6px} .g-bar i{display:block; height:6px; border-radius:3px; background:var(--ok)}
+.g-more{display:block; width:100%; font:inherit; font-size:.82rem; font-weight:600; color:var(--note); background:none; border:0; border-top:1px solid var(--line); padding:8px 0 2px; margin-top:6px; text-align:left}
+.g-empty{display:block; width:100%; font:inherit; font-size:.86rem; color:var(--muted); background:none; border:0; text-align:left; padding:2px 0}
+.g-big{padding:12px 14px; border-radius:14px; background:var(--note-soft); margin-bottom:6px}
+.g-big .num{font-size:1.5rem; font-weight:800} .g-big small{display:block; color:var(--muted); font-size:.82rem; margin-top:4px}
+.g-hist .r{display:flex; align-items:center; gap:10px; padding:8px 0; border-top:1px solid var(--line); font-size:.88rem}
+.g-hist .r:first-child{border-top:0} .g-hist .r .a{margin-left:auto; font-weight:700} .g-hist .r .a.in{color:var(--ok)}
+.g-hist .r small{display:block; color:var(--muted); font-size:.76rem}
+.g-hist .r button{font:inherit; font-size:.76rem; border:1px solid var(--line); background:var(--surface); border-radius:8px; padding:3px 7px; color:var(--muted)}
+.g-split .r{display:flex; justify-content:space-between; gap:10px; padding:6px 0; border-top:1px solid var(--line); font-size:.9rem} .g-split .r:first-child{border-top:0}
 .lib-adv{margin-top:8px} .lib-adv > summary{cursor:pointer; list-style:none; font-size:.84rem; font-weight:600; color:var(--note)}
 .lib-adv > summary::-webkit-details-marker{display:none} .lib-adv > summary::after{content:" ›"} .lib-adv[open] > summary::after{content:" ⌄"}
 .lib-ops button{font-family:inherit !important}
@@ -1974,6 +1992,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
     </div>
     <button type="button" class="wfc" id="wFc" hidden aria-expanded="false" aria-controls="wFcD"><span class="wfc-l">Dự báo cuối tháng</span><b class="num" id="wFcNum"></b><small id="wFcSub"></small></button>
     <div class="wfc-d" id="wFcD" hidden></div>
+    <div class="goals" id="goalsBox" hidden></div>
     <p class="wtotal" hidden><span id="wTotLabel"></span><b class="num" id="wTotNum"></b><small id="wTotSub"></small></p>
     <div class="wstrip" id="wStrip" role="tablist" aria-label="Các ví"></div>
   </div>
@@ -2784,7 +2803,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v167</p>
+      <p class="sync" id="appVersion">Phiên bản v168</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3009,6 +3028,50 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
   <div class="sheet-foot">
     <button class="ghost" id="xCancel" type="button">Huỷ</button>
     <button class="primary" id="xSave" type="button" style="margin:0" disabled>Lưu</button>
+  </div>
+</div>
+
+<div class="sheet-back top2" id="gEBack" hidden></div>
+<div class="sheet top2" id="gESheet" role="dialog" aria-modal="true" aria-labelledby="gETitle" hidden>
+  <div class="grab" aria-hidden="true"></div>
+  <div class="sheet-head"><h2 id="gETitle">Mục tiêu mới</h2><button class="x" id="gEClose" aria-label="Đóng">✕</button></div>
+  <button type="button" class="ghost" id="gJars" style="width:100%; margin-bottom:6px">Dùng mẫu 6 hũ (55/10/10/10/10/5%)</button>
+  <div class="field"><label for="gName"><span>Tên</span></label><input id="gName" class="inp" maxlength="30" autocomplete="off" placeholder="vd: Du lịch Đà Lạt, Mua xe, Quỹ khẩn cấp"></div>
+  <div class="field"><label><span>Icon</span></label><div class="chips" id="gIcons" style="margin-top:0"></div></div>
+  <div class="field"><label for="gTarget"><span>Số tiền cần có <span class="opt">(để trống = hũ không giới hạn)</span></span></label>
+    <div class="amt-row"><input id="gTarget" class="inp amount-inp num" inputmode="numeric" autocomplete="off" placeholder="0đ"><button type="button" class="k000 num" id="gTarget000" aria-label="Thêm 000">000</button></div></div>
+  <div class="field"><label for="gDue"><span>Hạn <span class="opt">(không bắt buộc)</span></span></label><input id="gDue" class="inp" type="date"></div>
+  <div class="field"><label for="gPct"><span>Tỉ lệ khi chia khoản thu <span class="opt">(%, không bắt buộc)</span></span></label><input id="gPct" class="inp num" inputmode="numeric" maxlength="3" autocomplete="off" placeholder="vd: 10"></div>
+  <div class="sheet-foot">
+    <button class="ghost danger" id="gDel" type="button" hidden>Xoá</button>
+    <button class="primary" id="gSave" type="button" style="margin:0" disabled>Lưu</button>
+  </div>
+</div>
+
+<div class="sheet-back top" id="gVBack" hidden></div>
+<div class="sheet top" id="gVSheet" role="dialog" aria-modal="true" aria-labelledby="gVTitle" hidden>
+  <div class="grab" aria-hidden="true"></div>
+  <div class="sheet-head"><h2 id="gVTitle">Mục tiêu</h2><button class="ghost" id="gVEdit" type="button" style="margin-left:auto; padding:6px 12px">Sửa</button><button class="x" id="gVClose" aria-label="Đóng" style="margin-left:10px">✕</button></div>
+  <div class="g-big" id="gVBig"></div>
+  <div class="field"><label for="gAmt"><span>Số tiền</span></label>
+    <div class="amt-row"><input id="gAmt" class="inp amount-inp num" inputmode="numeric" autocomplete="off" placeholder="0đ"><button type="button" class="k000 num" id="gAmt000" aria-label="Thêm 000">000</button></div></div>
+  <div class="field"><label for="gNote"><span>Ghi chú <span class="opt">(không bắt buộc)</span></span></label><input id="gNote" class="inp" maxlength="40" autocomplete="off" placeholder="vd: thưởng tháng 10"></div>
+  <div class="set-row"><button class="ghost grow" id="gOut" type="button" disabled>− Rút ra</button><button class="primary grow" id="gIn" type="button" style="margin:0" disabled>＋ Bỏ vào</button></div>
+  <h3 style="margin-top:16px">Lịch sử</h3>
+  <div id="gVHist"></div>
+</div>
+
+<div class="sheet-back top" id="gSBack" hidden></div>
+<div class="sheet top" id="gSSheet" role="dialog" aria-modal="true" aria-labelledby="gSTitle" hidden>
+  <div class="grab" aria-hidden="true"></div>
+  <div class="sheet-head"><h2 id="gSTitle">Chia khoản thu vào hũ</h2><button class="x" id="gSClose" aria-label="Đóng">✕</button></div>
+  <p class="ov-sub" style="margin:0 2px 6px">Chia theo tỉ lệ đã đặt ở từng hũ. Tiền vẫn nằm trong ví, chỉ được đánh dấu là để dành.</p>
+  <div class="field"><label for="gSAmt"><span>Khoản thu cần chia</span></label>
+    <div class="amt-row"><input id="gSAmt" class="inp amount-inp num" inputmode="numeric" autocomplete="off" placeholder="0đ"><button type="button" class="k000 num" id="gSAmt000" aria-label="Thêm 000">000</button></div></div>
+  <div id="gSList"></div>
+  <div class="sheet-foot">
+    <button class="ghost" id="gSCancel" type="button">Huỷ</button>
+    <button class="primary" id="gSGo" type="button" style="margin:0" disabled>Chia vào hũ</button>
   </div>
 </div>
 
@@ -3285,10 +3348,10 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
 <input type="file" id="notifFileIn" accept=".txt,text/plain" hidden>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=167"></script>
-<script src="thu-vien-cau.js?v=167"></script>
-<script src="quy-tac.js?v=167"></script>
-<script src="lock.js?v=167"></script>
+<script src="parse-vi.js?v=168"></script>
+<script src="thu-vien-cau.js?v=168"></script>
+<script src="quy-tac.js?v=168"></script>
+<script src="lock.js?v=168"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -3552,7 +3615,7 @@ function startNgay50k(){
   const WD = ["CN","T2","T3","T4","T5","T6","T7"];
 
   /* ---------- state ---------- */
-  let state = { budget:50000, days:{}, income:{}, contacts:[], loans:[], payees:{}, updated:0, budgetM:0, deleted:{}, tags:[], tagOff:{}, cards:[], cardTx:{}, caps:{}, recur:[], bals:[], cardPay:[], wallets:[], xfer:[] };
+  let state = { budget:50000, days:{}, income:{}, contacts:[], loans:[], payees:{}, updated:0, budgetM:0, deleted:{}, tags:[], tagOff:{}, cards:[], cardTx:{}, caps:{}, recur:[], bals:[], cardPay:[], wallets:[], xfer:[], goals:[], goalTx:[] };
   let sigs = {};
   let selectedCat = "an", mode = "cash", scanned = null, locked = false, activeContact = null;
   let incCat = "luong", cCat = "an", editingContactId = null;
@@ -3621,7 +3684,11 @@ function startNgay50k(){
       alias: obj(s.alias), aliasM: obj(s.aliasM),
       /* v158 – Thư viện nội dung (thay sheet ThuVien): quy tắc làm gọn nội dung thông báo ngân hàng, { id, k, r, tag?, off? }.
          Nằm trong dữ liệu chính: mã hoá khi bật PIN, đi theo file sao lưu, không bao giờ nằm trong mã nguồn */
-      thuvien: Array.isArray(s.thuvien) ? s.thuvien.filter(r => r && r.id && typeof r.k === "string") : []
+      thuvien: Array.isArray(s.thuvien) ? s.thuvien.filter(r => r && r.id && typeof r.k === "string") : [],
+      /* v168 – mục tiêu tiết kiệm / hũ: goals { id, name, icon, target (0 = hũ không giới hạn), due?, pct? (tỉ lệ khi chia khoản thu) };
+         goalTx { id, g, amt (+ bỏ vào, − rút ra), date, t, note? }. Tiền để dành vẫn nằm trong ví nên không đổi số dư ví */
+      goals: Array.isArray(s.goals) ? s.goals.filter(g => g && g.id && typeof g.name === "string") : [],
+      goalTx: Array.isArray(s.goalTx) ? s.goalTx.filter(x => x && x.id && x.g && Number.isFinite(Number(x.amt))) : []
     };  /* caps: giữ lại cho dữ liệu cũ, không còn dùng */
   }
   function loadLocal(){
@@ -3646,6 +3713,8 @@ function startNgay50k(){
     (st.learn||[]).forEach(x => fn(x.id, x, false));
     (st.miss||[]).forEach(x => fn(x.id, x, false));
     (st.thuvien||[]).forEach(x => fn(x.id, x, false));
+    (st.goals||[]).forEach(x => fn(x.id, x, false));
+    (st.goalTx||[]).forEach(x => fn(x.id, x, false));
   }
   function collectSigs(st){
     const out = {};
@@ -5796,6 +5865,7 @@ function startNgay50k(){
     p.push(f.n >= 3 ? "Mức tiêu hằng ngày là trung bình " + f.n + " ngày qua, không tính khoản định kỳ. Quẹt thẻ không trừ số dư nên không tính." : "Chưa đủ 3 ngày ghi chép nên tạm lấy hạn mức ngày làm mức tiêu.");
     if(f.bud != null) p.push("Nếu giữ đúng hạn mức " + fmt(state.budget) + "/ngày: còn khoảng <b>" + sMoney(Math.round(f.bud / 1000) * 1000) + "</b>.");
     if(f.low) p.push("⚠️ Số dư có thể xuống dưới 0 từ ngày <b>" + fcD(f.low.k) + "</b>.");
+    const gs = goalsSavedTotal(); if(gs > 0) p.push("Trong số dư có " + fmt(gs) + " đã để dành vào mục tiêu tiết kiệm; dùng được khoảng " + sMoney(Math.round((f.val - gs) / 1000) * 1000) + ".");
     if(f.debt > 0) p.push("Nợ thẻ " + fmt(f.debt) + " chưa trừ vào dự báo. Định trả thẻ trong tháng thì ghi trước khoản Trả thẻ có ngày, dự báo sẽ tính vào.");
     return p;
   }
@@ -7643,6 +7713,7 @@ function startNgay50k(){
     const btn = (txt, title, fn, cls) => { const b = el("button", "wh-btn" + (cls ? " " + cls : ""), txt); b.type = "button"; if(title) b.setAttribute("aria-label", title); b.onclick = fn; acts.appendChild(b); };
     const nameEl = $("whName"), num = $("whNum"), sub = $("whSub"), tot = $("whTot");
     try{ renderForecast(sel); }catch(e){ $("wFc").hidden = true; }
+    try{ renderGoals(sel); }catch(e){ $("goalsBox").hidden = true; }
     num.classList.remove("neg", "debt"); tot.hidden = true;
     acts.classList.toggle("col", sel.indexOf("card:") === 0);
     if(sel.indexOf("card:") === 0){
@@ -8066,6 +8137,145 @@ function startNgay50k(){
   $("xSave").onclick = saveXfer;
   $("xCancel").onclick = closeXfer; $("xBack").onclick = closeXfer; $("closeX").onclick = closeXfer;
   $("xAmt").addEventListener("input", () => { fmtInput("xAmt"); xCheck(); });
+  /* ---------- v168: mục tiêu tiết kiệm / chia hũ ---------- */
+  const G_ICONS = ["🎯","🏖️","🚗","🏠","💍","📱","🎓","🛟","📈","🎁","🎉","💰"];
+  const JARS6 = [["Thiết yếu","🏠",55],["Tiết kiệm dài hạn","🛟",10],["Giáo dục","🎓",10],["Hưởng thụ","🎉",10],["Tự do tài chính","📈",10],["Cho đi","🎁",5]];
+  let gEditId = null, gViewId = null, gIcon = "🎯", goalsOpen = false;
+  const goalSaved = id => (state.goalTx || []).filter(x => x.g === id).reduce((a, x) => a + (+x.amt || 0), 0);
+  function goalsSavedTotal(){ return (state.goals || []).reduce((a, g) => a + Math.max(0, goalSaved(g.id)), 0); }
+  function goalNeed(g){
+    const saved = goalSaved(g.id);
+    if(!g.target || saved >= g.target || !g.due) return null;
+    const now = new Date(), d = new Date(g.due + "T00:00:00");
+    const months = Math.max(1, Math.ceil((d - now) / (30.44 * 86400000)));   /* số tháng còn lại, làm tròn lên */
+    return { months, per:Math.ceil((g.target - saved) / months / 1000) * 1000, late:d < new Date(now.getFullYear(), now.getMonth(), now.getDate()) };
+  }
+  function goalLine(g){
+    const saved = goalSaved(g.id), nd = goalNeed(g), dd = g.due ? fcD(g.due) + "/" + g.due.slice(0, 4) : "";
+    if(g.target && saved >= g.target) return "Đã đạt mục tiêu 🎉";
+    const parts = [];
+    if(g.target) parts.push("còn thiếu " + fmt(g.target - saved));
+    if(nd) parts.push(nd.late ? "đã quá hạn " + dd : "cần " + fmt(nd.per) + "/tháng tới " + dd);
+    else if(dd) parts.push("hạn " + dd);
+    if(g.pct) parts.push(g.pct + "% khoản thu");
+    return parts.join(" · ") || "Hũ để dành";
+  }
+  function renderGoals(sel){
+    const box = $("goalsBox");
+    if(sel.indexOf("card:") === 0){ box.hidden = true; return; }
+    box.hidden = false;
+    const gs = state.goals || [];
+    if(!gs.length){ box.innerHTML = '<button type="button" class="g-empty" id="gNew0">🎯 ＋ Tạo mục tiêu tiết kiệm hoặc chia hũ</button>'; $("gNew0").onclick = () => openGEdit(null); return; }
+    const tot = goalsSavedTotal(), hasPct = gs.some(g => g.pct > 0);
+    let h = '<div class="g-h"><b>🎯 Tiết kiệm</b><small>' + fmt(tot) + '</small><span class="sp">' + (hasPct ? '<button type="button" id="gSplitBtn">Chia khoản thu</button>' : '') + '<button type="button" id="gAddBtn" aria-label="Thêm mục tiêu">＋</button></span></div>';
+    const show = goalsOpen || gs.length <= 3 ? gs : gs.slice(0, 2);
+    show.forEach(g => {
+      const saved = goalSaved(g.id), pct = g.target ? Math.min(100, Math.max(0, Math.round(saved / g.target * 100))) : 0;
+      h += '<button type="button" class="g-row" data-g="' + esc(g.id) + '"><span class="t"><span>' + esc(g.icon || "🎯") + '</span><span class="n">' + esc(g.name) + '</span><span class="v">' + fmt(saved) + (g.target ? '<small style="display:inline; font-weight:500"> / ' + fmt(g.target) + '</small>' : '') + '</span></span>'
+        + '<small>' + esc(goalLine(g)) + '</small>' + (g.target ? '<span class="g-bar"><i style="width:' + pct + '%"></i></span>' : '') + '</button>';
+    });
+    if(gs.length > 3) h += '<button type="button" class="g-more" id="gMore">' + (goalsOpen ? "Thu gọn" : "Xem thêm " + (gs.length - 2) + " mục ›") + '</button>';
+    box.innerHTML = h;
+    if($("gMore")) $("gMore").onclick = () => { goalsOpen = !goalsOpen; renderGoals(sel); };
+    box.querySelectorAll(".g-row").forEach(b => b.onclick = () => openGView(b.dataset.g));
+    $("gAddBtn").onclick = () => openGEdit(null);
+    if($("gSplitBtn")) $("gSplitBtn").onclick = openGSplit;
+  }
+  /* tạo / sửa */
+  function gIconsRender(){
+    const box = $("gIcons"); box.innerHTML = "";
+    G_ICONS.forEach(ic => { const b = el("button", "chip", ic); b.type = "button"; b.setAttribute("aria-pressed", ic === gIcon ? "true" : "false"); b.onclick = () => { gIcon = ic; gIconsRender(); }; box.appendChild(b); });
+  }
+  function gECheck(){ $("gSave").disabled = !$("gName").value.trim(); }
+  function openGEdit(id){
+    const g = id ? (state.goals || []).find(x => x.id === id) : null;
+    gEditId = g ? g.id : null; gIcon = g ? g.icon || "🎯" : "🎯";
+    $("gETitle").textContent = g ? "Sửa mục tiêu" : "Mục tiêu mới";
+    $("gName").value = g ? g.name : ""; $("gTarget").value = g && g.target ? g.target.toLocaleString("vi-VN") : "";
+    $("gDue").value = g && g.due ? g.due : ""; $("gDue").min = todayKey(); $("gPct").value = g && g.pct ? String(g.pct) : "";
+    $("gDel").hidden = !g; $("gJars").hidden = !!g || (state.goals || []).some(x => x.pct > 0);
+    gIconsRender(); gECheck(); showSheet("gESheet", "gEBack");
+    if(!g) setTimeout(() => $("gName").focus({ preventScroll:true }), 260);
+  }
+  function closeGEdit(){ hideSheet("gESheet", "gEBack"); }
+  function saveGEdit(){
+    const name = $("gName").value.trim(); if(!name) return;
+    const target = balVal("gTarget") || 0, due = /^\d{4}-\d{2}-\d{2}$/.test($("gDue").value) ? $("gDue").value : "";
+    const pct = Math.min(100, parseInt(digits($("gPct").value), 10) || 0);
+    state.goals = state.goals || [];
+    let g = gEditId ? state.goals.find(x => x.id === gEditId) : null;
+    if(!g){ g = { id:uid(), t:Date.now() }; state.goals.push(g); }
+    Object.assign(g, { name, icon:gIcon, target, due, pct });
+    persist(true); closeGEdit(); renderAll();
+    if(gViewId === g.id) renderGView();
+  }
+  $("gSave").onclick = saveGEdit;
+  $("gEClose").onclick = closeGEdit; $("gEBack").onclick = closeGEdit;
+  $("gName").addEventListener("input", gECheck);
+  $("gTarget").addEventListener("input", () => fmtInput("gTarget"));
+  $("gPct").addEventListener("input", e => { e.target.value = digits(e.target.value).slice(0, 3); });
+  $("gDel").onclick = e => {
+    if(!armed(e.currentTarget)) return;
+    state.goals = (state.goals || []).filter(x => x.id !== gEditId);
+    state.goalTx = (state.goalTx || []).filter(x => x.g !== gEditId);
+    persist(true); closeGEdit(); if(gViewId === gEditId) closeGView(); renderAll();
+  };
+  $("gJars").onclick = () => {
+    state.goals = state.goals || [];
+    JARS6.forEach(([name, icon, pct], i) => state.goals.push({ id:uid(), t:Date.now() + i, name, icon, target:0, due:"", pct }));
+    persist(true); closeGEdit(); renderAll();
+  };
+  /* xem một mục tiêu: bỏ vào / rút ra, lịch sử */
+  function renderGView(){
+    const g = (state.goals || []).find(x => x.id === gViewId); if(!g){ closeGView(); return; }
+    const saved = goalSaved(g.id);
+    $("gVTitle").textContent = (g.icon || "🎯") + " " + g.name;
+    $("gVBig").innerHTML = '<span class="num">' + fmt(saved) + '</span>' + (g.target ? ' <span style="color:var(--muted)">/ ' + fmt(g.target) + '</span><span class="g-bar"><i style="width:' + Math.min(100, Math.max(0, Math.round(saved / g.target * 100))) + '%"></i></span>' : '') + '<small>' + esc(goalLine(g)) + '</small>';
+    const tx = (state.goalTx || []).filter(x => x.g === g.id).sort((a, b) => (b.t || 0) - (a.t || 0));
+    $("gVHist").className = "g-hist";
+    $("gVHist").innerHTML = tx.length ? tx.map(x => '<div class="r"><div>' + fcD(x.date) + '/' + x.date.slice(0, 4) + (x.note ? '<small>' + esc(x.note) + '</small>' : '') + '</div><span class="a' + (x.amt > 0 ? " in" : "") + '">' + (x.amt > 0 ? "+" : "−") + fmt(Math.abs(x.amt)) + '</span><button type="button" data-x="' + esc(x.id) + '">Xoá</button></div>').join("") : '<p class="empty">Chưa có lần bỏ vào nào.</p>';
+    $("gVHist").querySelectorAll("button[data-x]").forEach(b => b.onclick = () => { if(!armed(b)) return; state.goalTx = state.goalTx.filter(x => x.id !== b.dataset.x); persist(true); renderGView(); renderAll(); });
+    gVCheck();
+  }
+  function gVCheck(){ const v = balVal("gAmt"), saved = goalSaved(gViewId); $("gIn").disabled = !v; $("gOut").disabled = !v || v > saved; }
+  function openGView(id){ gViewId = id; $("gAmt").value = ""; $("gNote").value = ""; renderGView(); showSheet("gVSheet", "gVBack"); }
+  function closeGView(){ hideSheet("gVSheet", "gVBack"); gViewId = null; }
+  function gMove(sign){
+    const v = balVal("gAmt"); if(!v || !gViewId) return;
+    if(sign < 0 && v > goalSaved(gViewId)) return;
+    const rec = { id:uid(), g:gViewId, amt:sign * v, date:todayKey(), t:Date.now() };
+    const note = $("gNote").value.trim(); if(note) rec.note = note;
+    (state.goalTx = state.goalTx || []).push(rec);
+    persist(true); $("gAmt").value = ""; $("gNote").value = ""; renderGView(); renderAll();
+  }
+  $("gIn").onclick = () => gMove(1); $("gOut").onclick = () => gMove(-1);
+  $("gVEdit").onclick = () => openGEdit(gViewId);
+  $("gVClose").onclick = closeGView; $("gVBack").onclick = closeGView;
+  $("gAmt").addEventListener("input", () => { fmtInput("gAmt"); gVCheck(); });
+  /* chia khoản thu theo tỉ lệ các hũ */
+  function gSplitRows(){
+    const v = balVal("gSAmt") || 0, js = (state.goals || []).filter(g => g.pct > 0), totPct = js.reduce((a, g) => a + g.pct, 0);
+    const rows = js.map(g => ({ g, amt:Math.round(v * g.pct / 100 / 1000) * 1000 }));
+    $("gSList").className = "g-split";
+    $("gSList").innerHTML = rows.map(r => '<div class="r"><span>' + esc(r.g.icon || "🎯") + " " + esc(r.g.name) + ' <small style="color:var(--muted)">' + r.g.pct + '%</small></span><b>' + fmt(r.amt) + '</b></div>').join("")
+      + (totPct !== 100 ? '<p class="pwarn">Tổng tỉ lệ đang là ' + totPct + '%' + (totPct < 100 ? ", phần còn lại không chia." : ", vượt 100%: sửa tỉ lệ ở từng hũ.") + '</p>' : "");
+    $("gSGo").disabled = !v || totPct > 100 || !rows.some(r => r.amt > 0);
+    return rows;
+  }
+  function openGSplit(){ $("gSAmt").value = ""; gSplitRows(); showSheet("gSSheet", "gSBack"); setTimeout(() => $("gSAmt").focus({ preventScroll:true }), 260); }
+  function closeGSplit(){ hideSheet("gSSheet", "gSBack"); }
+  $("gSGo").onclick = () => {
+    const rows = gSplitRows().filter(r => r.amt > 0); if(!rows.length) return;
+    const now = Date.now();
+    rows.forEach((r, i) => (state.goalTx = state.goalTx || []).push({ id:uid(), g:r.g.id, amt:r.amt, date:todayKey(), t:now + i, note:"Chia khoản thu " + fmt(balVal("gSAmt")) }));
+    persist(true); closeGSplit(); renderAll();
+  };
+  $("gSCancel").onclick = closeGSplit; $("gSClose").onclick = closeGSplit; $("gSBack").onclick = closeGSplit;
+  $("gSAmt").addEventListener("input", () => { fmtInput("gSAmt"); gSplitRows(); });
+  [["gTarget000","gTarget"],["gAmt000","gAmt"],["gSAmt000","gSAmt"]].forEach(([b, i]) => {
+    $(b).addEventListener("pointerdown", e => e.preventDefault());
+    $(b).onclick = () => { const v = balVal(i); if(!v) return; $(i).value = (v * 1000).toLocaleString("vi-VN"); $(i).dispatchEvent(new Event("input", { bubbles:true })); };
+  });
   $("xAmt000").addEventListener("pointerdown", e => e.preventDefault());
   $("xAmt000").onclick = () => { const v = balVal("xAmt"); if(!v) return; $("xAmt").value = (v * 1000).toLocaleString("vi-VN"); xCheck(); };
   $("wEdit").onclick = () => openWSheet(reconW);
@@ -10772,6 +10982,7 @@ function startNgay50k(){
       alias: (() => { const o = Object.assign({}, a.alias || {}); for(const k in (b.alias || {})) if(!(k in o) || ((b.aliasM || {})[k] || 0) > ((a.aliasM || {})[k] || 0)) o[k] = b.alias[k]; return o; })(),
       aliasM: Object.assign({}, a.aliasM || {}, b.aliasM || {}),
       thuvien: byId(a.thuvien, b.thuvien).sort((x, y) => (x.o || 0) - (y.o || 0)),
+      goals: byId(a.goals, b.goals).sort((x, y) => (x.t || 0) - (y.t || 0)), goalTx: byId(a.goalTx, b.goalTx),
       learn: byId(a.learn, b.learn), miss: byId(a.miss, b.miss).filter(x => !byId(a.learn, b.learn).some(r => r.key === x.key)),
       payees: Object.assign({}, b.payees, a.payees), tagOff: mergeTagOff(a.tagOff, b.tagOff),
       deleted: del, updated: Date.now()

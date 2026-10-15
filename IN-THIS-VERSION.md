@@ -1,6 +1,16 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v167, ngày 15/10/2026
+**Phiên bản hiện tại:** v168, ngày 15/10/2026
+
+---
+
+## Có gì mới trong v168 (so với v167) – mục tiêu tiết kiệm / chia hũ
+
+- Tab **Ví** có khối **🎯 Tiết kiệm**: mỗi mục tiêu có tên, icon, số tiền cần có (để trống = hũ không giới hạn), hạn, tỉ lệ khi chia khoản thu. Thanh tiến độ, "còn thiếu", "cần X/tháng tới hạn". Hơn 3 mục thì thu gọn.
+- Chạm một mục: **Bỏ vào / Rút ra** (không rút quá số đã để dành), ghi chú, lịch sử, xoá từng lần.
+- **Mẫu 6 hũ** (Thiết yếu 55%, Tiết kiệm dài hạn 10%, Giáo dục 10%, Hưởng thụ 10%, Tự do tài chính 10%, Cho đi 5%) và nút **Chia khoản thu**: nhập số tiền, app chia theo tỉ lệ từng hũ.
+- Tiền để dành vẫn nằm trong ví nên **không đổi số dư ví**; dự báo cuối tháng ghi thêm "trong số dư có X đã để dành, dùng được khoảng Y".
+- Dữ liệu mới `state.goals`, `state.goalTx`: mã hoá khi bật PIN, đi theo file sao lưu, gộp được giữa hai máy.
 
 ---
 
