@@ -1,6 +1,17 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v160, ngày 15/10/2026
+**Phiên bản hiện tại:** v161, ngày 15/10/2026
+
+---
+
+## Có gì mới trong v161 (so với v160) – các trang Cài đặt còn lại gọn lại
+
+Mỗi trang một dòng mô tả; giải thích dời vào nút **i** cạnh tiêu đề. Không bỏ thông tin nào, chỉ dời chỗ.
+- **Khoá app:** dòng chính là cảnh báo quên mã PIN; phần mã hoá AES-256, tự khoá Ngay, nhập sai 5 lần nằm sau nút i.
+- **Trợ lý AI:** "Không bắt buộc. Chỉ dùng cho câu máy chưa hiểu."; giới thiệu và mục An toàn vào nút i; ghi chú chi phí, ngân sách rút còn một dòng.
+- **Sao lưu và đồng bộ:** dòng chính nhắc khoá file bằng mật khẩu; danh sách file gồm những gì và cách đồng bộ sang máy khác vào nút i.
+- **Thư viện nội dung:** thêm một dòng mô tả.
+- Số chữ hiện ra ngay: Khoá app 52, Trợ lý AI 70, Sao lưu 91, Tự ghi từ thông báo 57.
 
 ---
 

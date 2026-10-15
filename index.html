@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v160";
+  var K = "ngay50k:errlog", VER = "v161";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -2350,7 +2350,12 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
     </div>
 
     <div class="set-page" id="setLock" hidden>
-      <div class="set-head"><button class="set-back" data-back>‹ Cài đặt</button><h2 tabindex="-1">Khoá app</h2></div>
+      <div class="set-head"><button class="set-back" data-back>‹ Cài đặt</button><h2 tabindex="-1">Khoá app</h2><button class="ib" type="button" data-info="infoLock" aria-expanded="false" aria-label="Giải thích">i</button></div>
+      <div class="set-now info" id="infoLock" hidden>
+        <p>Khi bật khoá, toàn bộ dữ liệu trên máy (khoản chi, lịch sử Chat, khoá API của Trợ lý AI) được mã hoá AES-256 bằng khoá sinh từ mã PIN. App không lưu mã PIN ở đâu cả.</p>
+        <p>Chọn tự khoá <b>Ngay</b> thì màn hình cũng được che khi vuốt sang app khác. Nhập sai 5 lần phải chờ một lúc mới thử tiếp.</p>
+      </div>
+      <p class="set-lead">Quên mã PIN thì dữ liệu trên máy không mở được, chỉ khôi phục được từ file sao lưu.</p>
 <section class="set-group">
       <p class="set-now" id="lockState"></p>
       <div id="lockOff">
@@ -2364,7 +2369,6 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
           <button data-auto="5">5 phút</button>
           <button data-auto="15">15 phút</button>
         </div>
-        <p class="set-now" style="margin-top:8px">Chọn <b>Ngay</b> thì màn hình cũng được che khi bạn vuốt sang app khác, số liệu không lộ trong trình chuyển app.</p>
         <h4 class="sub">Face ID</h4>
         <p class="set-now" id="pkState"></p>
         <div class="set-row" style="margin-top:10px"><button class="ghost grow" id="pkToggle"></button></div>
@@ -2374,9 +2378,6 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
       </div>
       <p class="inline-ok" id="lockMsg" hidden></p>
       <p class="sync-err" id="lockErrMsg" hidden></p>
-      <h4 class="sub">Cách app bảo vệ dữ liệu</h4>
-      <p class="set-now">Khi bật khoá, toàn bộ dữ liệu trên máy (khoản chi, lịch sử trò chuyện, khoá API của Trợ lý AI) được mã hoá AES-256. Khoá mã hoá được bảo vệ bằng mã PIN của bạn, app không lưu mã PIN ở đâu cả.</p>
-      <p class="set-now" style="margin-top:8px"><b>Quên mã PIN thì không lấy lại được dữ liệu trên máy.</b> Khi đó chỉ còn cách xoá dữ liệu rồi nhập lại từ file sao lưu, nên hãy sao lưu đều đặn. Nhập sai 5 lần thì phải chờ một lúc mới thử tiếp.</p>
     </section>
     </div>
 
@@ -2392,10 +2393,14 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
     </div>
 
     <div class="set-page" id="setAI" hidden>
-      <div class="set-head"><button class="set-back" data-back>‹ Cài đặt</button><h2 tabindex="-1">Trợ lý AI</h2></div>
+      <div class="set-head"><button class="set-back" data-back>‹ Cài đặt</button><h2 tabindex="-1">Trợ lý AI</h2><button class="ib" type="button" data-info="infoAI" aria-expanded="false" aria-label="Giải thích">i</button></div>
+      <div class="set-now info" id="infoAI" hidden>
+        <p>Không có AI, Chat vẫn chạy bằng bộ hiểu câu trên máy: không cần mạng, không tốn phí. Có khoá API của Claude, ChatGPT hoặc Gemini thì app nhờ AI hiểu câu khó; mỗi lần gọi tốn một khoản nhỏ trong tài khoản API của bạn.</p>
+        <p><b>An toàn:</b> khoá chỉ lưu trên máy và đi theo file sao lưu (nên bật mật khẩu file). Câu bạn gõ cùng tên thẻ, tên người vay, nhóm chi được gửi cho nhà cung cấp để hiểu ngữ cảnh; số liệu trả lời do app tự tính trên máy. AI lỗi hay mất mạng thì app dùng bộ hiểu câu trên máy. Nên đặt hạn mức chi cho khoá ở trang nhà cung cấp.</p>
+      </div>
+      <p class="set-lead">Không bắt buộc. Chỉ dùng cho câu máy chưa hiểu.</p>
 <section class="set-group">
-      <p class="set-now"><b>Không bắt buộc.</b> Trò chuyện vẫn chạy bằng bộ hiểu câu trên máy, không cần mạng, không tốn phí. Nếu bạn có khoá API của Claude, ChatGPT hoặc Gemini, app có thể nhờ AI hiểu những câu khó. Mỗi lần gọi AI tốn một khoản phí nhỏ, tính vào tài khoản API của bạn.</p>
-      <div class="seg seg3" id="aiProv" role="group" aria-label="Nhà cung cấp" style="margin-top:12px">
+      <div class="seg seg3" id="aiProv" role="group" aria-label="Nhà cung cấp">
         <button data-p="claude" aria-pressed="true">Claude</button>
         <button data-p="openai" aria-pressed="false">ChatGPT</button>
         <button data-p="gemini" aria-pressed="false">Gemini</button>
@@ -2412,7 +2417,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
       </div>
       <label class="sc-use"><input type="checkbox" id="aiOn"> Dùng AI khi trò chuyện</label>
       <label class="sc-use"><input type="checkbox" id="aiSmart" checked> Chỉ gọi AI cho câu khó <span class="opt">(tiết kiệm)</span></label>
-      <p class="set-now" style="margin:4px 0 0 28px">Câu đơn giản như "phở 45k", "hôm nay tiêu bao nhiêu" do máy tự hiểu. Câu có chia tiền, sửa khoản, nhiều số, hỏi lời khuyên… mới gửi cho AI. Máy hiểu sai thì bấm <b>Nhờ AI hiểu lại</b> ngay dưới khoản đó.</p>
+      <p class="set-now" style="margin:4px 0 0 28px">Máy hiểu sai thì bấm <b>Nhờ AI hiểu lại</b> dưới khoản đó.</p>
       <div class="set-row" style="margin-top:12px"><button class="ghost grow" id="aiTest">Thử kết nối</button><button class="ghost danger" id="aiDel" hidden>Xoá khoá</button></div>
       <p class="inline-ok" id="aiMsg" hidden></p>
       <details class="set-more">
@@ -2428,16 +2433,14 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <label for="aiRate"><span>Tỉ giá 1 USD <span class="opt">(đồng)</span></span></label>
         <input id="aiRate" class="inp" inputmode="numeric" autocomplete="off">
       </div>
-      <p class="set-now">Số tiền là ước tính: app đếm token mỗi lần gọi AI rồi nhân với bảng giá niêm yết của nhà cung cấp (đơn giá USD cho 1 triệu token). Hoá đơn thật xem ở trang của nhà cung cấp. Chỉ đếm các lần gọi từ máy này, tính từ bản v73.</p>
+      <p class="set-now">Ước tính theo bảng giá niêm yết, chỉ đếm trên máy này. Hoá đơn thật xem ở trang nhà cung cấp.</p>
       <div class="set-row" style="margin-top:10px"><button class="ghost danger grow" id="aiUseReset">Đặt lại bộ đếm</button></div>
       <h4 class="sub" style="margin-top:18px">Ngân sách đã nạp (USD)</h4>
-      <p class="set-now">Nhập số dư <b>đang còn</b> trong tài khoản API của từng nền tảng. App trừ dần theo chi phí ước tính và báo khi đã dùng 80%, 95% và khi hết. Nạp thêm thì nhập lại số dư mới.</p>
+      <p class="set-now">Nhập số dư <b>đang còn</b>; app trừ dần và báo ở 80%, 95% và khi hết.</p>
       <div id="aiBudList" class="ai-use" style="margin-top:10px"></div>
       <div class="set-row" style="margin-top:10px"><button class="ghost grow" id="aiNotif">Bật thông báo đẩy</button></div>
       <p class="set-now" id="aiNotifMsg" style="margin-top:6px"></p>
       </details>
-      <h4 class="sub">An toàn</h4>
-      <p class="set-now">Khoá lưu trên máy này và đi theo file sao lưu (để chuyển máy không phải dán lại), không nằm trong mã nguồn trên GitHub, không gửi đi đâu ngoài nhà cung cấp bạn chọn. Nên bật mật khẩu cho file sao lưu. Câu bạn gõ cùng danh sách tên thẻ, tên người vay và nhóm chi được gửi cho nhà cung cấp để AI hiểu ngữ cảnh. Số liệu trả lời (đã chi, còn nợ, số dư) do app tự tính trên máy. Mất mạng hay AI lỗi thì app dùng bộ hiểu câu trên máy. Nên đặt hạn mức chi tiêu cho khoá trong trang của nhà cung cấp.</p>
     </section>
     </div>
 
@@ -2543,7 +2546,12 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
     </div>
 
     <div class="set-page" id="setSync" hidden>
-      <div class="set-head"><button class="set-back" data-back>‹ Cài đặt</button><h2 tabindex="-1">Sao lưu và đồng bộ</h2></div>
+      <div class="set-head"><button class="set-back" data-back>‹ Cài đặt</button><h2 tabindex="-1">Sao lưu và đồng bộ</h2><button class="ib" type="button" data-info="infoSync" aria-expanded="false" aria-label="Giải thích">i</button></div>
+      <div class="set-now info" id="infoSync" hidden>
+        <p>File sao lưu gồm mọi khoản đã ghi và toàn bộ cài đặt: giao diện, ngân hàng, khoá API của Trợ lý AI, lịch sử Chat, Thư viện nội dung, địa chỉ trạm và mã bí mật. Mã PIN và Face ID không đi theo file.</p>
+        <p><b>Đồng bộ sang máy khác:</b> máy có dữ liệu bấm Xuất file sao lưu, gửi qua AirDrop, Zalo hoặc iCloud Drive; máy kia bấm Nhập từ file, chọn Gộp. Muốn hai máy giống hệt nhau thì làm thêm một lượt theo chiều ngược lại. Gộp giữ khoản mới của cả hai máy, khoản đã xoá ở máy này cũng được xoá ở máy kia.</p>
+      </div>
+      <p class="set-lead">File chứa cả khoá API và mã bí mật: nên khoá bằng mật khẩu nếu cất ở nơi người khác xem được.</p>
 <section class="set-group" id="syncBox" aria-labelledby="gSync">
       <p class="backup-state" id="backupState"></p>
       <div id="bkMarkRow" hidden><p class="set-now">Đã sao lưu bằng phím tắt mà app chưa nhận?</p><div class="set-row" style="margin-top:6px"><button class="ghost grow" type="button" id="bkMark">Đánh dấu đã sao lưu hôm nay</button></div></div>
@@ -2556,12 +2564,11 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
       <div id="bkPwBox" hidden>
         <div class="field"><label for="bkPw"><span>Mật khẩu file <span class="opt">(ít nhất 8 ký tự)</span></span></label><input id="bkPw" class="inp" type="password" autocomplete="new-password" autocapitalize="off" spellcheck="false"></div>
         <div class="field"><label for="bkPw2"><span>Nhập lại mật khẩu</span></label><input id="bkPw2" class="inp" type="password" autocomplete="new-password" autocapitalize="off" spellcheck="false"></div>
-        <p class="set-now">Dùng cho Xuất file sao lưu và Sao lưu nhanh. App không lưu mật khẩu này, quên thì file không mở được. File CSV không có mật khẩu.</p>
+        <p class="set-now">App không lưu mật khẩu này, quên thì file không mở được.</p>
       </div>
-      <p class="set-now">File sao lưu gồm mọi khoản đã ghi và toàn bộ cài đặt: giao diện, ngân hàng, trợ lý AI <b>kể cả khoá API</b>, lịch sử Chat, <b>Thư viện nội dung</b>, Tự ghi từ thông báo (địa chỉ trạm Cloudflare và <b>mã bí mật</b>). Mã PIN / Face ID không đi theo file. Vì có khoá API, mã bí mật và quy tắc theo tên người, nên bật mật khẩu file nếu cất file ở nơi người khác xem được.</p>
 
       <h4 class="sub">Sao lưu nhanh bằng Phím tắt <button class="ib" type="button" data-info="infoSc" aria-expanded="false" aria-label="Cách cài">i</button></h4>
-      <p class="set-now">Bấm nút, bảng chia sẻ hiện lên, chạm vào phím tắt của bạn. Phím tắt chạy ngay trong app, lưu file vào iCloud Drive theo ngày, không rời app.</p>
+      <p class="set-now">Lưu file vào iCloud Drive qua phím tắt, không rời app.</p>
       <div class="set-now info" id="infoSc" hidden>
         <b>Cài một lần trong app Phím tắt:</b>
         <ol class="sc-steps">
@@ -2594,15 +2601,6 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
       </div>
       <p class="inline-ok" id="syncMsg" hidden></p>
       <p class="sync-err" id="syncErr" hidden></p>
-      <div class="how">
-        <h4>Đồng bộ sang máy khác</h4>
-        <ol>
-          <li>Trên máy đang có dữ liệu, bấm Xuất file sao lưu, rồi gửi file qua AirDrop, Zalo hoặc lưu vào iCloud Drive.</li>
-          <li>Trên máy kia, bấm Nhập từ file, chọn file đó, rồi chọn Gộp.</li>
-          <li>Muốn hai máy giống hệt nhau, làm thêm một lượt theo chiều ngược lại.</li>
-        </ol>
-        <p>Gộp giữ lại khoản mới của cả hai máy, khoản nào đã xoá ở một máy cũng được xoá ở máy kia.</p>
-      </div>
     </section>
     </div>
 
@@ -2665,6 +2663,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
     <div class="set-page" id="setLib" hidden>
       <div class="set-head"><button class="set-back" id="libBack" data-back>‹ Cài đặt</button><h2 tabindex="-1">Thư viện nội dung</h2><button class="ib" type="button" data-info="infoLib" aria-expanded="false" aria-label="Giải thích">i</button></div>
       <p class="set-now info" id="infoLib" hidden>Mỗi quy tắc đổi phần nội dung khó đọc của thông báo ngân hàng (vd "MBCT … chuyen tien D25X…/1234") thành chữ gọn bạn muốn, và có thể tự gắn tag. Chạy ngay trên máy lúc giao dịch hiện ra trong Chat. Quy tắc nằm trong dữ liệu của app (được mã hoá khi bật mã PIN), đi theo file sao lưu, không gửi đi đâu và không nằm trong mã nguồn. Các thông báo gần đây dùng để thử chỉ lưu trên máy này (40 thông báo cuối).</p>
+      <p class="set-lead">Đổi nội dung khó đọc của thông báo thành chữ gọn, tự gắn tag.</p>
       <p class="set-now" id="libSum"></p>
       <div class="set-row"><button class="ghost grow" id="libAdd" type="button">＋ Thêm quy tắc</button><button class="ghost grow" id="libPasteBtn" type="button">Dán từ Google Sheet</button></div>
 
@@ -2757,7 +2756,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v160</p>
+      <p class="sync" id="appVersion">Phiên bản v161</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3258,10 +3257,10 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
 <input type="file" id="notifFileIn" accept=".txt,text/plain" hidden>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=160"></script>
-<script src="thu-vien-cau.js?v=160"></script>
-<script src="quy-tac.js?v=160"></script>
-<script src="lock.js?v=160"></script>
+<script src="parse-vi.js?v=161"></script>
+<script src="thu-vien-cau.js?v=161"></script>
+<script src="quy-tac.js?v=161"></script>
+<script src="lock.js?v=161"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
