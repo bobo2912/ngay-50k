@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v168";
+  var K = "ngay50k:errlog", VER = "v169";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -1710,6 +1710,16 @@ body.searching .ledger-head{background:var(--top-c)}
 .g-hist .r small{display:block; color:var(--muted); font-size:.76rem}
 .g-hist .r button{font:inherit; font-size:.76rem; border:1px solid var(--line); background:var(--surface); border-radius:8px; padding:3px 7px; color:var(--muted)}
 .g-split .r{display:flex; justify-content:space-between; gap:10px; padding:6px 0; border-top:1px solid var(--line); font-size:.9rem} .g-split .r:first-child{border-top:0}
+.ph-row{display:flex; gap:8px; flex-wrap:wrap}   /* v169 */
+.ph-row .ph-t{width:64px; height:64px; border-radius:12px; overflow:hidden; border:1px solid var(--line); padding:0; background:var(--flat)}
+.ph-row .ph-t img{width:100%; height:100%; object-fit:cover; display:block}
+.ph-row .ph-add{width:64px; height:64px; border-radius:12px; border:1.5px dashed var(--line); background:none; font:inherit; font-size:.72rem; color:var(--muted); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px}
+.ph-row .ph-add b{font-size:1.2rem}
+.ph-view{position:fixed; inset:0; z-index:200; background:rgba(0,0,0,.92); display:flex; flex-direction:column; align-items:center; justify-content:center; padding:env(safe-area-inset-top) 12px env(safe-area-inset-bottom)}
+.ph-view[hidden]{display:none}
+.ph-view img{max-width:100%; max-height:calc(100% - 80px); object-fit:contain; border-radius:8px}
+.ph-bar{display:flex; gap:10px; margin-top:14px} .ph-bar button{font:inherit; font-weight:600; padding:10px 18px; border-radius:999px; border:0; background:rgba(255,255,255,.16); color:#fff}
+.ph-bar #phDel{color:#FF9A92}
 .lib-adv{margin-top:8px} .lib-adv > summary{cursor:pointer; list-style:none; font-size:.84rem; font-weight:600; color:var(--note)}
 .lib-adv > summary::-webkit-details-marker{display:none} .lib-adv > summary::after{content:" ›"} .lib-adv[open] > summary::after{content:" ⌄"}
 .lib-ops button{font-family:inherit !important}
@@ -2803,7 +2813,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v168</p>
+      <p class="sync" id="appVersion">Phiên bản v169</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -2858,6 +2868,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
     <label><span>Nhóm <span class="opt">(để tính ngân sách)</span></span></label>
     <div class="chips" id="cxTagChips" style="margin-top:0"></div>
   </div>
+  <div class="field ph-field"><label><span>Ảnh hoá đơn <span class="opt">(không bắt buộc)</span></span></label><div class="ph-row" id="cxPhRow"></div></div>
   <div class="sheet-foot">
     <button class="ghost" id="cxCancel">Huỷ</button>
     <button class="primary" id="cxSave" style="margin:0">Lưu</button>
@@ -3287,6 +3298,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
     <label><span id="eWLabel">Ví</span></label>
     <div class="chips wchips" id="eWChips" style="margin-top:0"></div>
   </div>
+  <div class="field ph-field"><label><span>Ảnh hoá đơn <span class="opt">(không bắt buộc)</span></span></label><div class="ph-row" id="ePhRow"></div></div>
   <p class="edit-hint" id="editHint" hidden>Chỉ sửa trong sổ chi tiêu, không thay đổi giao dịch đã chuyển ở ngân hàng.</p>
   <div class="sheet-foot">
     <button class="ghost" id="cancelEdit">Huỷ</button>
@@ -3347,11 +3359,13 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
 
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
 <input type="file" id="notifFileIn" accept=".txt,text/plain" hidden>
+<input type="file" id="phFile" accept="image/*" hidden>
+<div class="ph-view" id="phView" role="dialog" aria-modal="true" aria-label="Ảnh hoá đơn" hidden><img id="phImg" alt="Ảnh hoá đơn"><div class="ph-bar"><button type="button" id="phDel">Bỏ ảnh này</button><button type="button" id="phClose">Đóng</button></div></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=168"></script>
-<script src="thu-vien-cau.js?v=168"></script>
-<script src="quy-tac.js?v=168"></script>
-<script src="lock.js?v=168"></script>
+<script src="parse-vi.js?v=169"></script>
+<script src="thu-vien-cau.js?v=169"></script>
+<script src="quy-tac.js?v=169"></script>
+<script src="lock.js?v=169"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -3361,7 +3375,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
    Khi bật khoá bằng mã PIN (lock.js): trong bộ nhớ là dữ liệu thường, lúc ghi xuống máy mới mã hoá ("enc1:…").
    Chưa mở khoá thì không ghi các khoá dữ liệu, chỉ ghi được thông tin khoá "ngay50k:lock". */
 window.N50K = (function(){
-  var DB_NAME = "ngay50k", STORE = "kv", MAIN = "ngay50k:v1", LOCK = "ngay50k:lock", KEYS = [MAIN, "ngay50k:beforeImport", "ngay50k:chat", "ngay50k:ai", "ngay50k:tbRaw", "ngay50k:notifSeen", "ngay50k:relayUrl", "ngay50k:relayKey", LOCK];   /* v166: thêm danh sách giao dịch đã hiện, địa chỉ trạm, mã bí mật (trước nằm thường trong localStorage); lần mở đầu tự chuyển */
+  var DB_NAME = "ngay50k", STORE = "kv", MAIN = "ngay50k:v1", LOCK = "ngay50k:lock", KEYS = [MAIN, "ngay50k:beforeImport", "ngay50k:chat", "ngay50k:ai", "ngay50k:tbRaw", "ngay50k:notifSeen", "ngay50k:relayUrl", "ngay50k:relayKey", "ngay50k:photos", LOCK];   /* v166: thêm danh sách giao dịch đã hiện, địa chỉ trạm, mã bí mật (trước nằm thường trong localStorage); lần mở đầu tự chuyển */
   var mem = {}, sizes = {}, gen = {}, db = null, mode = "ls", chan = null, dirty = {}, writing = null;
   var why = "", trying = null, lastTry = 0, codec = null, unlocked = false;
   function isEnc(k){ return k !== LOCK; }
@@ -3742,6 +3756,7 @@ function startNgay50k(){
     track();
     state.updated = Date.now();
     N50K.set(LS_KEY, JSON.stringify(state));
+    clearTimeout(persist.gc); persist.gc = setTimeout(() => { try{ phGc(); }catch(e){} }, 2000);   /* v169: dọn ảnh hoá đơn của khoản đã xoá */
   }
   /* ---------- số dư ví ----------
      Số dư = số bạn nhập ở lần đối chiếu gần nhất, rồi tính tiếp mọi khoản xảy ra SAU thời điểm đó:
@@ -4131,6 +4146,7 @@ function startNgay50k(){
     li.querySelector(".desc div:last-child").textContent = pad(t.getHours())+":"+pad(t.getMinutes()) + " · " + (it.bank ? (it.who && it.note && it.note !== it.who ? it.who + " · " : "") + it.bank : c.label)
 ;
     if(srcLabels()) addSrc(li, it.w || MAIN_W);
+    if(it.ph && it.ph.length) li.querySelector(".desc div:first-child").textContent += " 📎";
     li.querySelector(".amt").textContent = (opts && opts.sign ? "−" : "") + fmt(it.amt);
     const dk = opts && opts.day ? opts.day : (viewDay || todayKey());
     li.classList.add("tap"); li.tabIndex = 0; li.setAttribute("role","button"); li.setAttribute("aria-label", "Sửa khoản " + (it.note || c.label) + " " + fmt(it.amt));
@@ -4781,7 +4797,7 @@ function startNgay50k(){
     const li = document.createElement("li"); li.className = "item";
     li.innerHTML = '<span class="cat" aria-hidden="true"></span><div class="desc"><div></div><div></div></div><span class="amt plus num"></span><button class="del" aria-label="Xoá khoản thu">✕</button>';
     setIcon(li.querySelector(".cat"), c.icon);
-    li.querySelector(".desc div:first-child").textContent = it.note || c.label;
+    li.querySelector(".desc div:first-child").textContent = (it.note || c.label) + (it.ph && it.ph.length ? " 📎" : "");
     li.querySelector(".desc div:last-child").textContent = "Thu · " + c.label;
     li.querySelector(".amt").textContent = "+" + fmt(it.amt);
     li.classList.add("tap"); li.tabIndex = 0; li.setAttribute("role","button");
@@ -7845,12 +7861,12 @@ function startNgay50k(){
     for(const k in state.income) (state.income[k]||[]).forEach(it => {
       if(!inW(it)) return;
       const c = INC.find(x => x.id === it.cat) || INC[INC.length - 1];
-      add(recTime(k, it.t), Number(it.amt)||0, c.icon, it.note || c.label, "Thu", () => openEdit(it.id, k, "in"), false, c.label);
+      add(recTime(k, it.t), Number(it.amt)||0, c.icon, (it.note || c.label) + (it.ph && it.ph.length ? " 📎" : ""), "Thu", () => openEdit(it.id, k, "in"), false, c.label);
     });
     for(const k in state.days) (state.days[k]||[]).forEach(it => {
       if(!inW(it)) return;
       const c = tagOf(it.cat);
-      add(recTime(k, it.t), -(Number(it.amt)||0), c.icon, it.note || it.who || it.holder || c.label, it.fx ? "Định kỳ" : "Chi", () => openEdit(it.id, k, "out"), false, [c.label, it.who, it.holder, it.bank].filter(Boolean).join(" "));
+      add(recTime(k, it.t), -(Number(it.amt)||0), c.icon, (it.note || it.who || it.holder || c.label) + (it.ph && it.ph.length ? " 📎" : ""), it.fx ? "Định kỳ" : "Chi", () => openEdit(it.id, k, "out"), false, [c.label, it.who, it.holder, it.bank].filter(Boolean).join(" "));
     });
     if(main) for(const k in state.cardTx) (state.cardTx[k]||[]).forEach(it => {
       const nm = cardName(it.cardId);
@@ -8459,6 +8475,7 @@ function startNgay50k(){
     $("editMeta").textContent = parts.join(" · ");
     $("editHint").hidden = !(kind === "out" && it.bank);
     $("saveEdit").disabled = !eAmtVal();
+    phEdit("ePhRow", it.ph);
     showSheet("editSheet", "editBack");
   }
   function closeEdit(){
@@ -8477,6 +8494,7 @@ function startNgay50k(){
     it.amt = v; it.note = $("eNote").value.trim();
     it.cat = kind === "in" ? eInc : eCat;
     if(!$("eWField").hidden){ const ew = pickedW("eWChips"); if(ew) it.w = ew; else delete it.w; }
+    phApply(it, "ePhRow");
     if(kind === "out" && it.contactId){ const c = state.contacts.find(x => x.id === it.contactId); if(c) c.cat = eCat; }
     const newDay = $("eDate").value || f.day;
     if(newDay !== f.day){
@@ -8497,6 +8515,60 @@ function startNgay50k(){
   $("closeEdit").onclick = closeEdit;
   $("editBack").onclick = closeEdit;
 
+  /* ---------- v169: ảnh hoá đơn ----------
+     Ảnh thu nhỏ (cạnh dài 1280px, JPEG ~60%) lưu trong kho N50K khoá "ngay50k:photos" = { id: { d:dataURL, t } }
+     (mã hoá khi bật PIN, đi theo file sao lưu). Khoản chi/thu/thẻ giữ danh sách mã ảnh ở trường ph (tối đa 3).
+     Ảnh không còn khoản nào dùng thì tự dọn. */
+  const PH_KEY = "ngay50k:photos", PH_MAX = 3;
+  let phRaw = null, phMap = {}, phCur = null, phViewId = null;
+  const phEditors = {};
+  function phAll(){ const r = N50K.get(PH_KEY); if(r !== phRaw){ phRaw = r; try{ phMap = JSON.parse(r || "{}") || {}; }catch(e){ phMap = {}; } } return phMap; }
+  function phSaveAll(m){ phMap = m; phRaw = JSON.stringify(m); N50K.set(PH_KEY, phRaw); }
+  function phSrc(id){ const p = phAll()[id]; return p ? p.d : ""; }
+  function phEdit(rowId, list){ phEditors[rowId] = (list || []).filter(id => phAll()[id]); phRender(rowId); }
+  function phApply(it, rowId){ const l = phEditors[rowId] || []; if(l.length) it.ph = l.slice(); else delete it.ph; setTimeout(phGc, 500); }
+  function phRender(rowId){
+    const row = $(rowId), list = phEditors[rowId] || []; row.innerHTML = "";
+    list.forEach(id => { const b = el("button", "ph-t"); b.type = "button"; b.setAttribute("aria-label", "Xem ảnh hoá đơn"); const im = new Image(); im.src = phSrc(id); im.alt = ""; b.appendChild(im); b.onclick = () => phOpen(rowId, id); row.appendChild(b); });
+    if(list.length < PH_MAX){ const a = el("button", "ph-add"); a.type = "button"; a.innerHTML = "<b>📷</b>Thêm ảnh"; a.onclick = () => { phCur = rowId; $("phFile").value = ""; $("phFile").click(); }; row.appendChild(a); }
+  }
+  function phShrink(file){
+    return new Promise((res, rej) => {
+      const url = URL.createObjectURL(file), im = new Image();
+      im.onload = () => {
+        const k = Math.min(1, 1280 / Math.max(im.naturalWidth, im.naturalHeight)), w = Math.round(im.naturalWidth * k), h = Math.round(im.naturalHeight * k);
+        const c = document.createElement("canvas"); c.width = w; c.height = h;
+        c.getContext("2d").drawImage(im, 0, 0, w, h); URL.revokeObjectURL(url);
+        res(c.toDataURL("image/jpeg", 0.6));
+      };
+      im.onerror = () => { URL.revokeObjectURL(url); rej(new Error("img")); };
+      im.src = url;
+    });
+  }
+  $("phFile").addEventListener("change", async e => {
+    const f = e.target.files && e.target.files[0], row = phCur; if(!f || !row) return;
+    try{
+      const d = await phShrink(f), id = "ph" + uid(), m = Object.assign({}, phAll());
+      m[id] = { d, t:Date.now() }; phSaveAll(m);
+      (phEditors[row] = phEditors[row] || []).push(id); phRender(row);
+    }catch(x){ alert("Chưa đọc được ảnh này, thử chọn ảnh khác nhé."); }
+  });
+  function phOpen(rowId, id){ phCur = rowId; phViewId = id; $("phImg").src = phSrc(id); $("phView").hidden = false; }
+  function phCloseView(){ $("phView").hidden = true; $("phImg").removeAttribute("src"); phViewId = null; }
+  $("phClose").onclick = phCloseView;
+  $("phView").addEventListener("click", e => { if(e.target === $("phView")) phCloseView(); });
+  $("phDel").onclick = () => { if(phCur && phViewId){ phEditors[phCur] = (phEditors[phCur] || []).filter(x => x !== phViewId); phRender(phCur); } phCloseView(); };
+  /* dọn ảnh không còn khoản nào dùng (để lại ảnh đang mở trong form, và ảnh mới thêm dưới 1 giờ) */
+  function phGc(){
+    const m = phAll(), ids = Object.keys(m); if(!ids.length) return;
+    const used = new Set();
+    const scan = obj => { for(const k in obj) (obj[k] || []).forEach(it => (it.ph || []).forEach(x => used.add(x))); };
+    scan(state.days); scan(state.income); scan(state.cardTx || {});
+    Object.values(phEditors).forEach(l => (l || []).forEach(x => used.add(x)));
+    const now = Date.now(), keep = {}; let drop = 0;
+    ids.forEach(id => { if(used.has(id) || now - (m[id].t || 0) < 3600000) keep[id] = m[id]; else drop++; });
+    if(drop) phSaveAll(keep);
+  }
   /* ---------- income vs expense chart ---------- */
   let chartGran = "month", chartSel = -1;
   const shortMoney = n => n >= 1e9 ? (n/1e9).toFixed(n >= 1e10 ? 0 : 1).replace(".", ",") + "tỷ" : n >= 1e6 ? (n/1e6).toFixed(n >= 1e7 ? 0 : 1).replace(".", ",") + "tr" : n >= 1e3 ? Math.round(n/1e3) + "k" : String(n);
@@ -8973,7 +9045,7 @@ function startNgay50k(){
     const li = document.createElement("li"); li.className = "item tap"; li.tabIndex = 0; li.setAttribute("role","button");
     li.setAttribute("aria-label", "Sửa khoản thẻ " + (it.where || "") + " " + fmt(it.amt));
     li.innerHTML = '<div class="desc"><div></div><div></div></div><span class="amt num"></span><button class="del" aria-label="Xoá khoản này">✕</button>';
-    li.querySelector(".desc div:first-child").textContent = it.where || "Chi bằng thẻ";
+    li.querySelector(".desc div:first-child").textContent = (it.where || "Chi bằng thẻ") + (it.ph && it.ph.length ? " 📎" : "");
     const t = new Date(it.t || 0);
     const bits = [];
     if(it.t) bits.push(pad(t.getHours()) + ":" + pad(t.getMinutes()));
@@ -9056,6 +9128,7 @@ function startNgay50k(){
       wc.appendChild(b);
     });
     $("cxSave").disabled = !cxAmtVal();
+    phEdit("cxPhRow", it && it.ph);
     showSheet("cardSheet", "cardBack");
   }
   function closeCardTx(){
@@ -9072,7 +9145,7 @@ function startNgay50k(){
     if(cxEditing){
       const f = findCardTx(cxEditing.id, cxEditing.day);
       if(f){
-        const it = f.it; it.amt = v; it.where = where; it.cardId = cxCard || null; it.cat = cxTag || "";
+        const it = f.it; it.amt = v; it.where = where; it.cardId = cxCard || null; it.cat = cxTag || ""; phApply(it, "cxPhRow");
         if(day !== f.day){
           const old = new Date(it.t || Date.now()), nd = new Date(day + "T00:00:00");
           if(!isNaN(nd)){ nd.setHours(old.getHours(), old.getMinutes(), 0, 0); it.t = nd.getTime(); }
@@ -9084,7 +9157,8 @@ function startNgay50k(){
     } else {
       const now = new Date(), nd = new Date(day + "T00:00:00");
       if(!isNaN(nd)) nd.setHours(now.getHours(), now.getMinutes(), 0, 0);
-      (state.cardTx[day] = state.cardTx[day] || []).push({ id:uid(), amt:v, where, cardId:cxCard || null, cat:cxTag || "", t:(isNaN(nd) ? Date.now() : nd.getTime()) });
+      const nit = { id:uid(), amt:v, where, cardId:cxCard || null, cat:cxTag || "", t:(isNaN(nd) ? Date.now() : nd.getTime()) }; phApply(nit, "cxPhRow");
+      (state.cardTx[day] = state.cardTx[day] || []).push(nit);
     }
     cardMonth = new Date(day + "T00:00:00"); cardMonth.setDate(1);
     persist(); renderCards(); closeCardTx();
@@ -10877,12 +10951,14 @@ function startNgay50k(){
     const seen = notifSeenList(); if(seen.length) out.notifSeen = seen;
     const ai = N50K.get("ngay50k:ai"); if(ai) out.ai = ai;
     const ch = N50K.get("ngay50k:chat"); if(ch) out.chat = ch;
+    const ph = N50K.get("ngay50k:photos"); if(ph && ph !== "{}") out.photos = ph;   /* v169: ảnh hoá đơn */
     return out;
   }
   function restoreSettings(st, full){
     if(!st || typeof st !== "object") return;
     if(st.ls && typeof st.ls === "object") SET_LS.forEach(k => { if(typeof st.ls[k] === "string"){ if(SET_SEC.includes(k)) N50K.set(k, st.ls[k]); else lsSet(k, st.ls[k]); } else if(full && k.indexOf("ngay50k:relay") !== 0 && k !== "ngay50k:notifOn") try{ localStorage.removeItem(k); }catch(e){} });   /* file cũ chưa có phần thông báo thì giữ cài đặt đang có */
     if(typeof st.ai === "string") N50K.set("ngay50k:ai", st.ai);
+    if(typeof st.photos === "string"){ try{ const inc = JSON.parse(st.photos) || {}, cur = JSON.parse(N50K.get("ngay50k:photos") || "{}") || {}; N50K.set("ngay50k:photos", JSON.stringify(Object.assign({}, inc, cur))); }catch(e){} }
     /* gộp chứ không đè: lấy mốc muộn hơn, cộng dồn danh sách đã thấy (khôi phục trên chính máy này không làm hiện lại giao dịch) */
     if(st.relayAt && Number(st.relayAt) > (Number(lsGet("ngay50k:relayAt")) || 0)) lsSet("ngay50k:relayAt", String(st.relayAt));
     if(Array.isArray(st.notifSeen) && st.notifSeen.length) notifSeenAdd(st.notifSeen.map(String));
@@ -10892,7 +10968,7 @@ function startNgay50k(){
     applyTheme(curTheme); applyHome(); aiBadge();
     try{ renderClipBtn(); renderRelaySet(); }catch(e){}
   }
-  function hasSetBackup(st){ return !!(st && typeof st === "object" && (st.ls || st.ai || st.chat)); }
+  function hasSetBackup(st){ return !!(st && typeof st === "object" && (st.ls || st.ai || st.chat || st.photos)); }
   /* v166: file có khoá API hoặc mã bí mật trạm mà chưa đặt mật khẩu → hỏi một lần */
   const BK_NAG = "ngay50k:bkPwNag";
   async function backupText(){
@@ -11144,7 +11220,7 @@ function startNgay50k(){
     try{
       Object.keys(localStorage).filter(k => k.indexOf("ngay50k:") === 0).forEach(k => localStorage.removeItem(k));
     }catch(e){}
-    N50K.del(LS_KEY); N50K.del(UNDO_KEY); N50K.del("ngay50k:chat"); N50K.del("ngay50k:ai"); N50K.del("ngay50k:tbRaw"); N50KLock.forget(); chat = { msgs:[] }; renderChat();
+    N50K.del(LS_KEY); N50K.del(UNDO_KEY); N50K.del("ngay50k:chat"); N50K.del("ngay50k:ai"); N50K.del("ngay50k:tbRaw"); N50K.del("ngay50k:photos"); N50KLock.forget(); chat = { msgs:[] }; renderChat();
     state = normalize({}); sigs = collectSigs(state); pending = null;
     viewDay = null; $("importCard").hidden = true; $("wipeCard").hidden = true;
     $("syncMsg").hidden = true; $("syncErr").hidden = true;

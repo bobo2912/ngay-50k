@@ -1,6 +1,16 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v168, ngày 15/10/2026
+**Phiên bản hiện tại:** v169, ngày 15/10/2026
+
+---
+
+## Có gì mới trong v169 (so với v168) – ảnh hoá đơn
+
+- Form **Sửa khoản chi / khoản thu** và **khoản chi thẻ** có mục **Ảnh hoá đơn**: chụp hoặc chọn ảnh, tối đa 3 ảnh mỗi khoản. Chạm ảnh để xem to, bấm **Bỏ ảnh này** để gỡ.
+- Ảnh được thu nhỏ (cạnh dài 1280px, JPEG ~60%, thường 50–150 KB) và lưu trong kho `ngay50k:photos`: **mã hoá khi bật PIN**, đi theo file sao lưu (khôi phục thì gộp ảnh), không gửi đi đâu.
+- Khoản có ảnh hiện dấu 📎 trong Sổ, lịch sử ví, danh sách thẻ.
+- Ảnh không còn khoản nào dùng (khoản đã xoá, ảnh đã bỏ) tự được dọn sau khoảng 1 giờ. Xoá toàn bộ dữ liệu cũng xoá ảnh.
+- Khoản vừa ghi từ Chat: chạm vào khoản trong Sổ để đính kèm ảnh.
 
 ---
 
