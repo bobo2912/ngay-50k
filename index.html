@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v159";
+  var K = "ngay50k:errlog", VER = "v160";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -744,6 +744,8 @@ html, body{overscroll-behavior-y:none; overscroll-behavior-x:none}
 @media (prefers-reduced-motion: reduce){ .set-page{animation:none} }
 .set-head{display:flex; flex-direction:column; gap:2px; margin:6px 2px 14px}
 .set-head h2{margin:0; font-size:1.35rem; font-weight:800; outline:none}
+.set-head{position:relative} .set-head .ib{position:absolute; right:4px; bottom:4px; width:26px; height:26px; font-size:.85rem; background:var(--surface); border:1px solid var(--line)}   /* v160: nút i nằm cùng hàng tiêu đề */
+.set-head:has(.ib) h2{padding-right:34px}
 .set-back{align-self:flex-start; border:0; background:none; padding:4px 0; font:inherit; font-size:.92rem; font-weight:600; color:var(--note)}
 .set-list{display:flex; flex-direction:column; gap:8px}
 .set-nav{display:flex; align-items:center; gap:10px; width:100%; padding:14px 16px; border-radius:18px; font:inherit; text-align:left;
@@ -1195,6 +1197,46 @@ html{scroll-padding-top:var(--head-h, 100px)}
 .sc-steps li{margin:3px 0}
 #infoSc code{font-size:.85em; background:var(--note-soft); border-radius:5px; padding:0 4px}
 .sc-use{display:flex; align-items:center; gap:8px; margin-top:10px; font-size:.86rem; color:var(--muted)}
+/* v160: trang cài đặt gọn: một dòng mô tả, giải thích nằm sau nút i, trạng thái và trình từng bước */
+.set-lead{margin:2px 2px 10px; font-size:.9rem; color:var(--muted)}
+.set-now.info{margin:0 0 10px; padding:10px 12px; border-radius:12px; background:var(--note-soft); color:var(--ink); font-size:.86rem}
+.set-now.info[hidden]{display:none}
+.set-now.info p{margin:0 0 6px} .set-now.info p:last-child{margin:0}
+.set-now.info.warn{color:var(--ink)}
+.nst{display:flex; flex-direction:column; border-radius:18px; background:var(--surface); border:1px solid var(--line); overflow:hidden}
+.nst-r{display:flex; align-items:center; gap:10px; width:100%; padding:12px 14px; font:inherit; font-size:.92rem; text-align:left; color:var(--ink); background:none; border:0; border-top:1px solid var(--line)}
+.nst-r:first-child{border-top:0}
+.nst-r .d{width:10px; height:10px; border-radius:50%; flex:none; background:var(--muted)}
+.nst-r.ok .d{background:var(--ok)} .nst-r.warn .d{background:#D99A1E} .nst-r.bad .d{background:var(--over)}
+.nst-r .t{font-weight:600}
+.nst-r .v{margin-left:auto; color:var(--muted); font-size:.84rem; text-align:right}
+.nst-r.warn .v{color:#B07A0E; font-weight:600}
+button.nst-r:active{background:var(--note-soft)}
+.nst-go{width:100%; margin:12px 0}
+.nst-list .nst-tg{cursor:pointer}
+.nst-list .nst-tg .sw{margin-left:auto}
+input.sw{appearance:none; -webkit-appearance:none; width:46px; height:28px; border-radius:14px; background:var(--line); position:relative; flex:none; margin:0; transition:background .2s}
+input.sw::after{content:""; position:absolute; top:3px; left:3px; width:22px; height:22px; border-radius:50%; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.25); transition:transform .2s}
+input.sw:checked{background:var(--ok)} input.sw:checked::after{transform:translateX(18px)}
+.wiz .wz-meta{font-size:.8rem; color:var(--muted)}
+.wiz .wz-bar{height:4px; border-radius:2px; background:var(--line); margin:6px 0 12px; overflow:hidden}
+.wiz .wz-bar i{display:block; height:4px; background:var(--note); border-radius:2px}
+.wiz h3{margin:0 0 6px; font-size:1.05rem}
+.wiz .wz-p{margin:0 0 8px; font-size:.92rem}
+.wiz .wz-f{border-radius:12px; background:var(--note-soft); padding:2px 12px; margin:8px 0}
+.wiz .wz-row{display:flex; align-items:center; gap:10px; padding:8px 0; border-top:1px solid var(--line); font-size:.88rem}
+.wiz .wz-row:first-child{border-top:0}
+.wiz .wz-row .k{color:var(--muted); flex:none}
+.wiz .wz-row .val{margin-left:auto; text-align:right; font-weight:600; word-break:break-word}
+.wiz .wz-row .val.code{font-family:ui-monospace,monospace; font-weight:500}
+.wiz .wz-row.long{flex-wrap:wrap; row-gap:2px} .wiz .wz-row.long .k{width:100%} .wiz .wz-row.long .val{margin-left:0; text-align:left; flex:1}
+.wiz .wz-cp{flex:none; font:inherit; font-size:.78rem; padding:4px 8px; border-radius:8px; border:1px solid var(--line); background:var(--surface); color:var(--ink)}
+.wiz .wz-note{margin:6px 0 0; font-size:.82rem; color:var(--muted)}
+.wiz .wz-nav{display:flex; gap:10px; margin-top:14px}
+.wiz .wz-nav button{flex:1}
+.wiz .wz-opt{display:block; width:100%; text-align:left; padding:12px 14px; margin-top:8px; border-radius:14px; border:1.5px solid var(--line); background:var(--surface); font:inherit; color:var(--ink)}
+.wiz .wz-opt b{display:block} .wiz .wz-opt span{font-size:.84rem; color:var(--muted)}
+.wiz .wz-opt[aria-pressed="true"]{border-color:var(--note); background:var(--note-soft)}
 .sc-use input{width:18px; height:18px; accent-color:var(--note)}
 .set-group .sub .ib{margin-left:4px; vertical-align:middle}
 
@@ -2579,47 +2621,45 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
     </div>
 
     <div class="set-page" id="setNotif" hidden>
-      <div class="set-head"><button class="set-back" data-back>‹ Cài đặt</button><h2 tabindex="-1">Tự ghi từ thông báo</h2></div>
-<section class="set-group">
-      <p class="set-now">iPhone không cho app nào tự đọc thông báo của app khác, nên cần một automation của <b>Phím tắt</b> chuyển hộ mỗi khi MB Bank báo biến động số dư.</p>
-      <label class="sc-use"><input type="checkbox" id="notifOn"> <span>Hiện nút <b>📋</b> cạnh ô chat để ghi từ thông báo</span></label>
-      <p class="set-now" id="relayState"></p>
+      <div class="set-head"><button class="set-back" data-back>‹ Cài đặt</button><h2 tabindex="-1">Tự ghi từ thông báo</h2><button class="ib" type="button" data-info="infoNotif" aria-expanded="false" aria-label="Giải thích">i</button></div>
+      <div class="set-now info" id="infoNotif" hidden>
+        <p>iPhone không cho app tự đọc thông báo của app khác, nên một automation của Phím tắt chuyển hộ mỗi khi MB Bank báo biến động số dư.</p>
+        <p><b>Có trạm Cloudflare:</b> mở app là lấy ngay, app đang mở thì giao dịch tự hiện. Mất mạng thì bấm 📋 để chọn tệp TieuGon.txt.<br><b>Chưa có trạm:</b> bấm 📋 → Paste để dán từ bộ nhớ tạm.</p>
+        <p>Giao dịch đã ghi hoặc đã bỏ không hiện lại; giao dịch cũ hơn 35 ngày được bỏ qua. Nội dung được làm gọn theo <button type="button" class="linkbtn" data-go="setLib">Thư viện nội dung</button> ngay trên máy.</p>
+      </div>
+      <p class="set-lead">Phím tắt chuyển thông báo MB Bank sang app.</p>
+      <div class="nst" id="notifStatus"></div>
+      <button class="primary nst-go" type="button" id="wizOpen">Cài đặt từng bước</button>
+      <div class="set-list nst-list">
+        <label class="set-nav nst-tg"><span class="nav-t">Hiện nút 📋 cạnh ô chat</span><input type="checkbox" id="notifOn" class="sw"></label>
+        <button class="set-nav" data-go="setRelay"><span class="nav-t">Trạm và mã bí mật</span><span class="nav-v" id="navRelay"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+      </div>
+      <section class="set-group">
+        <h4 class="sub" style="margin-top:0">Thử</h4>
+        <div class="set-row" style="margin-top:6px"><button class="ghost grow" id="notifTest" type="button">Dán thử</button><button class="ghost grow" id="notifPick" type="button">Chọn tệp thử</button></div>
+      </section>
+    </div>
 
-      <h4 class="sub">App lấy thông báo theo thứ tự</h4>
-      <ol class="sc-steps">
-        <li><b>Có trạm Cloudflare, có mạng</b>: mở app là lấy ngay; app đang mở thì giao dịch mới <b>tự hiện</b> sau vài giây, không cần bấm. Bấm 📋 để lấy lại. Thông báo đến lúc iPhone mất mạng sẽ được gửi bù ở thông báo sau.</li>
-        <li><b>Có trạm Cloudflare, mất mạng</b>: bấm 📋 là mở chọn tệp <b>TieuGon.txt</b> (chỉ còn các thông báo chưa gửi được).</li>
-        <li><b>Chưa có trạm Cloudflare</b>: bấm 📋 → <b>Paste</b>, dán từ bộ nhớ tạm; dán không được thì thanh dưới có nút <b>Chọn tệp</b>.</li>
-      </ol>
-      <p class="set-now">Giao dịch đã ghi hoặc đã bỏ không bao giờ hiện lại; giao dịch cũ hơn 35 ngày được bỏ qua. Nội dung được làm gọn theo <button type="button" class="linkbtn" data-go="setLib">Thư viện nội dung</button> ngay trên máy.</p>
+    <div class="set-page" id="setRelay" hidden>
+      <div class="set-head"><button class="set-back" data-back="setNotif">‹ Tự ghi từ thông báo</button><h2 tabindex="-1">Trạm và mã bí mật</h2><button class="ib" type="button" data-info="infoRelay" aria-expanded="false" aria-label="Giải thích">i</button></div>
+      <div class="set-now info" id="infoRelay" hidden>
+        <p><b>Không lưu trữ:</b> trạm chỉ giữ thông báo trong lúc chờ app lấy; app nhận xong là xoá, không ai lấy thì tự xoá sau 3 ngày. Trạm không ghi nhật ký và không biết Thư viện nội dung.</p>
+        <p>Trạm nằm trong tài khoản Cloudflare của chính bạn. Lần bấm Kiểm tra đầu tiên gắn mã bí mật của máy này với trạm; xoá trắng ô địa chỉ để thôi dùng.</p>
+      </div>
+      <p class="set-lead">Trạm Cloudflare của bạn đẩy giao dịch sang app ngay khi có.</p>
+      <p class="set-now info warn" id="relayUpd" hidden></p>
+      <section class="set-group">
+        <div class="field" style="margin-top:0"><label for="relayUrl"><span>Địa chỉ trạm</span></label><input id="relayUrl" class="inp" inputmode="url" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="https://tieugon-relay.<tên>.workers.dev"></div>
+        <div class="set-row"><p class="set-now grow" style="margin:0">Mã bí mật: <b id="relayKey" style="font-family:ui-monospace,monospace; letter-spacing:.5px"></b></p><button class="ghost" type="button" id="relayKeyCopy">Chép mã</button></div>
+        <div class="set-row"><button class="ghost grow" id="relayTest" type="button">Kiểm tra</button><button class="ghost grow" id="relayForget" type="button" hidden>Xoá hết trên Cloudflare</button></div>
+        <p class="set-now" id="relayTestMsg" role="status" aria-live="polite" hidden></p>
+        <a class="ghost deploy-btn" id="relayDeploy" target="_blank" rel="noopener" href="#">Tạo trạm mới trên Cloudflare ↗</a>
+      </section>
+    </div>
 
-      <h4 class="sub">Phần A (bắt buộc): automation "TG · Lưu thông báo MB"</h4>
-      <ol class="sc-steps">
-        <li><b>Phím tắt</b> → tab <b>Tự động hoá</b> → <b>＋</b> → <b>Thông báo</b> (Notification) → app <b>MB Bank</b> → <b>Add Filter</b>: <b>Title contains</b> "Thông báo biến động số dư". Bật <b>Automation</b>, tắt <b>Notify</b>.</li>
-        <li>Tác vụ 1 <b>Append to Text File</b>: nội dung <b>Shortcut Input → Body</b> (chưa thấy Body thì đổi Type sang Notification); chạm chữ thư mục chọn folder iCloud của bạn; <b>File Path</b> = <b>TieuGon.txt</b>; bật <b>Make New Line</b>.</li>
-        <li>Tác vụ 2 <b>Get File from Folder</b>: cùng folder đó, path <b>TieuGon.txt</b>, tắt <b>Error If Not Found</b>.</li>
-        <li>Tác vụ 3, <b>chỉ khi không dùng trạm Cloudflare</b>: <b>Copy to Clipboard</b>: nội dung <b>File</b> (Type <b>Text</b>), bật <b>Local Only</b>, để trống Expire At. Dùng Cloudflare thì bỏ tác vụ này và làm tiếp Phần B.</li>
-        <li>Chạm tên ở trên cùng, đặt tên <b>TG · Lưu thông báo MB</b>.</li>
-      </ol>
-
-      <h4 class="sub">Phần B (tuỳ chọn, để tự động hoàn toàn): trạm Cloudflare</h4>
-      <ol class="sc-steps">
-        <li>Bấm nút <b>Deploy to Cloudflare</b> bên dưới, đăng nhập (hoặc tạo) tài khoản Cloudflare miễn phí và cho phép kết nối GitHub. Cloudflare tạo trong GitHub của bạn một bản sao <b>mã</b> của trạm (thư mục <code>worker/</code> của app, không có dữ liệu nào) rồi tự triển khai. Giữ tên <b>tieugon-relay</b>, bấm <b>Create and deploy</b>.</li>
-        <li>Triển khai xong, chép địa chỉ dạng <b>https://tieugon-relay.&lt;tên&gt;.workers.dev</b>, dán vào ô dưới, bấm <b>Kiểm tra</b>. Lần kiểm tra đầu tiên gắn mã bí mật của máy này với trạm: từ đó chỉ ai có mã mới gửi và lấy được. Trước khi bấm Kiểm tra, trạm từ chối mọi yêu cầu, kể cả từ phím tắt.</li>
-        <li>Trong automation <b>TG · Lưu thông báo MB</b>, sau tác vụ 2 thêm <b>Get Contents of URL</b>: URL = địa chỉ workers.dev; ⌄ → Method <b>POST</b>, Request Body <b>JSON</b>, thêm 2 trường Text: <b>k</b> = mã bí mật bên dưới, <b>t</b> = biến <b>File</b> (tệp lấy ở tác vụ 2, không phải Body).</li>
-        <li>Thêm <b>If</b>: <b>Contents of URL</b> <b>is</b> <b>TG_OK</b>. Bên trong If: thêm <b>Text</b> gõ một dấu cách, rồi <b>Save File</b>: tắt Ask Where to Save, chọn cùng folder, Subpath <b>TieuGon.txt</b>, bật <b>Overwrite If File Exists</b>. Tệp chỉ được xoá khi trạm đã nhận, nên không mất thông báo.</li>
-        <li><b>Đang dùng Google Sheet từ bản cũ?</b> Chỉ cần làm bước 1, 2 rồi sửa URL trong tác vụ <b>Get Contents of URL</b> sẵn có thành địa chỉ workers.dev (giữ nguyên k, t và If). Chuyển các dòng sheet <b>ThuVien</b> vào <button type="button" class="linkbtn" data-go="setLib">Thư viện nội dung</button> (dán thẳng 2 cột), xong có thể xoá Sheet và dự án Apps Script.</li>
-      </ol>
-      <a class="ghost deploy-btn" id="relayDeploy" target="_blank" rel="noopener" href="#">Deploy to Cloudflare ↗</a>
-      <div class="field"><label for="relayUrl"><span>Địa chỉ trạm (workers.dev)</span></label><input id="relayUrl" class="inp" inputmode="url" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="https://tieugon-relay.<tên>.workers.dev"></div>
-      <div class="set-row"><p class="set-now grow" style="margin:0">Mã bí mật: <b id="relayKey" style="font-family:ui-monospace,monospace; letter-spacing:.5px"></b></p><button class="ghost" type="button" id="relayKeyCopy">Chép mã</button></div>
-      <div class="set-row"><button class="ghost grow" id="relayTest" type="button">Kiểm tra</button><button class="ghost grow" id="relayForget" type="button" hidden>Xoá hết trên Cloudflare</button></div>
-      <p class="set-now" id="relayTestMsg" role="status" aria-live="polite" hidden></p>
-      <p class="set-now"><b>Không lưu trữ:</b> trạm chỉ giữ thông báo trong lúc chờ app lấy; app nhận xong là xoá ngay, không ai lấy thì tự xoá sau 3 ngày. Trạm không ghi nhật ký, không biết Thư viện nội dung (việc làm gọn nội dung chạy trên máy). Trạm nằm trong tài khoản Cloudflare của chính bạn; xoá trắng ô địa chỉ để thôi dùng.</p>
-
-      <h4 class="sub">Thử</h4>
-      <div class="set-row"><button class="ghost grow" id="notifTest" type="button">Dán thử</button><button class="ghost grow" id="notifPick" type="button">Chọn tệp thử</button></div>
-    </section>
+    <div class="set-page" id="setWiz" hidden>
+      <div class="set-head"><button class="set-back" data-back="setNotif">‹ Tự ghi từ thông báo</button><h2 tabindex="-1">Cài đặt từng bước</h2></div>
+      <section class="set-group wiz" id="wizBox"></section>
     </div>
 
     <div class="set-page" id="setLib" hidden>
@@ -2717,7 +2757,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v159</p>
+      <p class="sync" id="appVersion">Phiên bản v160</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3218,10 +3258,10 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
 <input type="file" id="notifFileIn" accept=".txt,text/plain" hidden>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=159"></script>
-<script src="thu-vien-cau.js?v=159"></script>
-<script src="quy-tac.js?v=159"></script>
-<script src="lock.js?v=159"></script>
+<script src="parse-vi.js?v=160"></script>
+<script src="thu-vien-cau.js?v=160"></script>
+<script src="quy-tac.js?v=160"></script>
+<script src="lock.js?v=160"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -8263,7 +8303,7 @@ function startNgay50k(){
     if(!$("tagSheet").hidden || !$("editSheet").hidden || !$("filterSheet").hidden || !$("formSheet").hidden
        || !$("cardSheet").hidden || !$("pasteSheet").hidden || !$("cardEditSheet").hidden) return null;
     if(balEditing && !settingsOpen) return closeBalance;
-    if(settingsOpenNow()) return setPage === "setHome" ? closeSettings : () => showSetPage(setPage === "setTagOne" ? "setTags" : "setHome", true);
+    if(settingsOpenNow()) return setPage === "setHome" ? closeSettings : () => showSetPage(setPage === "setTagOne" ? "setTags" : setPage === "setRelay" || setPage === "setWiz" ? "setNotif" : "setHome", true);
     if(!$("incomeForm").hidden) return () => $("cancelIncome").click();
     if(!$("contactForm").hidden) return () => $("cancelContact").click();
     if(!$("loanForm").hidden) return () => $("cancelLoan").click();
@@ -9530,6 +9570,7 @@ function startNgay50k(){
     const lib = libApply(txt); txt = lib.text;
     const r = notifItems(txt); libTag(r, lib.hits);
     if(!r.items.length){ if(auto) return; if(src === "file") notifSay("Không thấy giao dịch ngân hàng trong tệp"); else viaFile(); return; }
+    lsSet(NOTIF_LAST, String(Date.now()));                  /* v160: cho thẻ trạng thái "Phím tắt nhận lần cuối" */
     if(r.items.length){
       const seen = new Set(notifSeenList()), got = new Set(), used = new Set();
       const fresh = r.items.filter(it => {
@@ -9611,7 +9652,6 @@ function startNgay50k(){
     }
     return all;
   }
-  function relayOld(){ return relayIsGoogle(lsGet(RELAY_URL)); }   /* v158: vẫn còn địa chỉ Google Sheet cũ */
   /* v151: lấy xong thì báo ngay cho Sheet mốc đã nhận → Apps Script bản mã 4 dọn ô A1 (chạy ngầm, lỗi thì lần mở app sau báo lại) */
   function relayAck(){
     const u = relayUrl(), at = Number(lsGet(RELAY_AT)) || 0; if(!u || !at) return;
@@ -9685,6 +9725,7 @@ function startNgay50k(){
     relayWs = ws;
     ws.onopen = () => {
       relayWsTry = 0;
+      if(setPage === "setNotif") renderNotifStatus();
       /* v159: cứ 25 giây gửi ping (Cloudflare tự trả pong, không đánh thức trạm). Quá 10 giây không có pong
          (vd đổi Wi-Fi sang 4G, iPhone giữ kết nối "ma") thì bỏ kết nối này, nối lại ngay */
       ws._hb = setInterval(() => {
@@ -9707,6 +9748,7 @@ function startNgay50k(){
     ws.onclose = () => {
       clearInterval(ws._hb); clearTimeout(ws._to);
       if(relayWs === ws) relayWs = null;
+      if(setPage === "setNotif") renderNotifStatus();
       if(document.hidden || !relayUrl() || !notifOn()) return;
       relayWsTry = Math.min(relayWsTry + 1, 6);
       relayWsT = setTimeout(relayWsOpen, 1000 * Math.pow(2, relayWsTry));   /* mất kết nối: thử lại sau 2, 4, 8… giây */
@@ -9745,21 +9787,47 @@ function startNgay50k(){
   $("notifGo").onclick = () => { const f = notifGoFn; notifGoFn = notifGo2Fn = null; hideNotifBar(); if(f) f(); else notifFromClip(clipRead(), "clip"); };
   $("notifGo2").onclick = () => { const f = notifGo2Fn; notifGoFn = notifGo2Fn = null; hideNotifBar(); if(f) f(); };
   $("notifPick").onclick = () => $("notifFileIn").click();
-  /* v158: cài đặt trạm Cloudflare (thay Google Sheet). Mã Worker nằm ở thư mục worker/ của kho, cài bằng nút Deploy to Cloudflare */
-  function renderRelaySet(){
-    $("relayUrl").value = relayOld() ? "" : (lsGet(RELAY_URL) || "");
-    $("relayKey").textContent = relayKey();
-    $("relayState").innerHTML = relayUrl() ? "Đang dùng: <b>trạm Cloudflare</b> của bạn (mở app là lấy ngay; app đang mở thì giao dịch mới tự hiện)."
-      : relayOld() ? "⚠️ Từ v158 app không dùng Google Sheet nữa. Làm Phần B bên dưới để chuyển sang trạm Cloudflare (nhanh hơn, không lưu lại gì), xong có thể xoá Sheet cũ."
-      : "Đang dùng: <b>dán bộ nhớ tạm</b> (chưa có trạm Cloudflare), dự phòng chọn tệp.";
-    /* v159: trạm của người dùng cũ hơn mã trong kho → nhắc cập nhật (worker/README.md → Cập nhật trạm) */
-    const wv = Number(lsGet(RELAY_WV)) || 0;
-    if(relayUrl() && wv && wv < RELAY_WV_NEW) $("relayState").innerHTML += "<br>⚠️ Trạm Cloudflare đang là bản " + wv + ", đã có bản " + RELAY_WV_NEW + ": giữ kết nối tiết kiệm hơn và chặn người lạ nhận chủ trạm. Cập nhật: Worker nối GitHub thì đồng bộ kho; Worker tự dựng thì <b>Edit code</b>, dán đè <b>worker/src/index.js</b> mới → <b>Deploy</b>. Dữ liệu và mã bí mật giữ nguyên.";
-    $("relayForget").hidden = !relayUrl();
-    /* nút Deploy to Cloudflare trỏ tới thư mục worker/ của chính kho đang chạy app (GitHub Pages), không ghi cứng tên ai */
+  /* v158: cài đặt trạm Cloudflare. Mã Worker ở thư mục worker/ của kho, cài bằng nút Deploy to Cloudflare.
+     v160: trang riêng "Trạm và mã bí mật"; trạng thái tóm tắt ở đầu trang Tự ghi từ thông báo */
+  function relayDeployUrl(){
+    /* trỏ tới thư mục worker/ của chính kho đang chạy app (GitHub Pages), không ghi cứng tên ai */
     const h = location.hostname, seg = location.pathname.split("/").filter(Boolean)[0];
     const repo = /\.github\.io$/i.test(h) ? "https://github.com/" + h.split(".")[0] + "/" + (seg && !/\.html?$/.test(seg) ? seg : h) + "/tree/main/worker" : "";
-    $("relayDeploy").href = repo ? "https://deploy.workers.cloudflare.com/?url=" + repo : "https://dash.cloudflare.com/";
+    return repo ? "https://deploy.workers.cloudflare.com/?url=" + repo : "https://dash.cloudflare.com/";
+  }
+  function relayOldWv(){ const wv = Number(lsGet(RELAY_WV)) || 0; return relayUrl() && wv && wv < RELAY_WV_NEW ? wv : 0; }
+  function renderRelaySet(){
+    $("relayUrl").value = relayIsGoogle(lsGet(RELAY_URL)) ? "" : (lsGet(RELAY_URL) || "");
+    $("relayKey").textContent = relayKey();
+    /* v159: trạm cũ hơn mã trong kho → nhắc cập nhật (worker/README.md → Cập nhật trạm) */
+    const wv = relayOldWv();
+    $("relayUpd").hidden = !wv;
+    if(wv) $("relayUpd").innerHTML = "⚠️ Trạm đang là bản " + wv + ", đã có bản " + RELAY_WV_NEW + ". Worker nối GitHub: đồng bộ kho. Worker tự dựng: <b>Edit code</b>, dán đè <b>worker/src/index.js</b> mới → <b>Deploy</b>. Mã bí mật giữ nguyên.";
+    $("relayForget").hidden = !relayUrl();
+    $("relayDeploy").href = relayDeployUrl();
+    $("relayDeploy").hidden = !!relayUrl();
+  }
+  /* ---- thẻ trạng thái: phím tắt nhận lần cuối, trạm, bản trạm ---- */
+  var NOTIF_LAST = "ngay50k:notifLast";
+  function agoText(t){
+    const d = new Date(t), now = new Date(), hm = pad(d.getHours()) + ":" + pad(d.getMinutes());
+    if(keyOf(d) === keyOf(now)) return hm + " hôm nay";
+    if(keyOf(d) === keyOf(new Date(Date.now() - 86400000))) return hm + " hôm qua";
+    return hm + " " + pad(d.getDate()) + "/" + pad(d.getMonth() + 1);
+  }
+  function renderNotifStatus(){
+    const el = $("notifStatus"); if(!el) return;
+    const last = Number(lsGet(NOTIF_LAST)) || 0, url = relayUrl(), wv = relayOldWv();
+    const live = relayWs && relayWs.readyState === 1;
+    const row = (cls, t, v, go) => '<' + (go ? 'button type="button" data-go="' + go + '"' : 'div') + ' class="nst-r ' + cls + '"><i class="d"></i><span class="t">' + t + '</span><span class="v">' + v + '</span></' + (go ? 'button' : 'div') + '>';
+    let h = row(last ? "ok" : "warn", "Phím tắt", last ? "nhận lần cuối " + agoText(last) : "chưa nhận thông báo nào");
+    h += url ? row("ok", "Trạm Cloudflare", live ? "kết nối trực tiếp" : notifOn() ? "đã cài, mở app là lấy" : "đã cài", "setRelay")
+             : row("", "Trạm Cloudflare", "chưa cài · dán bộ nhớ tạm", "setRelay");
+    if(wv) h += row("warn", "Trạm bản " + wv, "Cập nhật ›", "setRelay");
+    el.innerHTML = h;
+    el.querySelectorAll("[data-go]").forEach(b => b.onclick = () => showSetPage(b.dataset.go));
+    $("navRelay").textContent = url ? (wv ? "cần cập nhật" : "đang dùng") : "chưa cài";
+    $("wizOpen").textContent = last && url ? "Xem lại cách cài" : "Cài đặt từng bước";
   }
   function relaySetUrl(u){
     u = String(u || "").trim().replace(/\/+$/, "");
@@ -9768,27 +9836,110 @@ function startNgay50k(){
   }
   $("relayUrl").addEventListener("change", e => { relaySetUrl(e.target.value); renderRelaySet(); relayWsOpen(); });
   $("relayKeyCopy").onclick = async () => { try{ await navigator.clipboard.writeText(relayKey()); $("relayKeyCopy").textContent = "Đã chép ✓"; setTimeout(() => { $("relayKeyCopy").textContent = "Chép mã"; }, 2000); }catch(e){} };
-  /* v146: kết quả Kiểm tra hiện ngay dưới nút */
-  $("relayTest").onclick = async () => {
-    const btn = $("relayTest"), st = $("relayTestMsg"), u = $("relayUrl").value.trim();
-    const say = t => { st.textContent = t; st.hidden = false; };
-    if(btn.disabled) return;
+  /* v146: kết quả Kiểm tra hiện ngay dưới nút. v160: dùng chung cho trang Trạm và trình từng bước */
+  var relayTesting = false;
+  async function relayTestRun(u, say){
+    if(relayTesting) return false;
+    u = String(u || "").trim();
     relaySetUrl(u);
-    if(!u){ say("Chưa có địa chỉ: dán địa chỉ Worker (dạng https://tieugon-relay.<tên>.workers.dev) vào ô ở trên."); renderRelaySet(); return; }
-    if(relayIsGoogle(u)){ say("Đây là địa chỉ Google Apps Script cũ. Từ v158 app dùng trạm Cloudflare: làm Phần B rồi dán địa chỉ workers.dev."); renderRelaySet(); return; }
-    if(!relayUrl()){ say("Địa chỉ phải bắt đầu bằng https://, vd https://tieugon-relay.<tên>.workers.dev"); renderRelaySet(); return; }
-    if(navigator.onLine === false){ say("Máy đang mất mạng, có mạng rồi bấm Kiểm tra lại nhé."); return; }
-    btn.disabled = true; btn.textContent = "Đang kiểm tra…"; say("Đang kết nối tới Cloudflare…");
+    if(!u){ say("Chưa có địa chỉ: dán địa chỉ trạm dạng https://tieugon-relay.<tên>.workers.dev"); return false; }
+    if(!relayUrl()){ say("Địa chỉ phải là địa chỉ trạm Cloudflare, dạng https://tieugon-relay.<tên>.workers.dev"); return false; }
+    if(navigator.onLine === false){ say("Máy đang mất mạng, có mạng rồi bấm Kiểm tra lại nhé."); return false; }
+    relayTesting = true; say("Đang kết nối tới Cloudflare…");
     const t0 = Date.now();
     try{
       const it = await relayFetch(true);
-      say("✓ Kết nối được (" + (Date.now() - t0) + " ms). Mã bí mật đã khớp" + (it.length ? ", đang có " + it.length + " thông báo chờ lấy." : ", chưa có thông báo nào chờ."));
+      say("✓ Kết nối được (" + (Date.now() - t0) + " ms), mã bí mật đã khớp" + (it.length ? ", có " + it.length + " thông báo chờ lấy." : "."));
       relayWsOpen();
+      return true;
     }catch(e){
-      say(e && e.message === "key" ? "Kết nối được nhưng mã bí mật không khớp: Worker đã nhận mã của máy khác. Khôi phục file sao lưu từ máy đó (mang theo mã), hoặc trong Cloudflare đặt biến SECRET = mã ở trên."
-        : "Không kết nối được. Kiểm tra lại địa chỉ (chép đúng dòng workers.dev sau khi triển khai) và mạng.");
-    } finally { btn.disabled = false; btn.textContent = "Kiểm tra"; renderRelaySet(); }
+      say(e && e.message === "key" ? "Trạm đã gắn với mã của máy khác. Khôi phục file sao lưu từ máy đó, hoặc trong Cloudflare đặt biến SECRET = mã bí mật của máy này."
+        : "Không kết nối được. Kiểm tra lại địa chỉ (chép đúng dòng workers.dev) và mạng.");
+      return false;
+    } finally { relayTesting = false; }
+  }
+  $("relayTest").onclick = async () => {
+    const btn = $("relayTest"), st = $("relayTestMsg");
+    btn.disabled = true; btn.textContent = "Đang kiểm tra…";
+    await relayTestRun($("relayUrl").value, t => { st.textContent = t; st.hidden = false; });
+    btn.disabled = false; btn.textContent = "Kiểm tra"; renderRelaySet();
   };
+  /* ---- v160: Cài đặt từng bước (automation Phím tắt + trạm Cloudflare), mỗi màn một bước ----
+     Bước 0 chọn cách nhận: "auto" (trạm Cloudflare) hoặc "paste" (dán bộ nhớ tạm). Giá trị cần gõ có nút Chép. */
+  var wiz = { i:0, mode:"" };
+  const WZ_FILE = "TieuGon.txt", WZ_NAME = "TG · Lưu thông báo MB", WZ_TITLE = "Thông báo biến động số dư";
+  function wizSteps(){
+    const auto = wiz.mode !== "paste", A = "Phần bắt buộc", B = "Trạm Cloudflare";
+    const st = [
+      { part:A, h:"Tạo automation", p:"Mở <b>Phím tắt</b> → tab <b>Tự động hoá</b> → <b>＋</b> → <b>Thông báo</b> → chọn app <b>MB Bank</b>.",
+        f:[["Add Filter · Title contains", WZ_TITLE, 1], ["Automation", "Bật"], ["Notify", "Tắt"]] },
+      { part:A, h:"Lưu thông báo vào tệp", p:"Thêm tác vụ <b>Append to Text File</b>:",
+        f:[["Nội dung", "Shortcut Input → Body"], ["File Path", WZ_FILE, 1], ["Make New Line", "Bật"]],
+        n:"Chạm chữ thư mục để chọn một thư mục iCloud của bạn. Chưa thấy Body thì đổi Type sang Notification." },
+      { part:A, h:"Lấy lại tệp", p:"Thêm tác vụ <b>Get File from Folder</b>:",
+        f:[["Thư mục", "như bước trước"], ["Path", WZ_FILE, 1], ["Error If Not Found", "Tắt"]] }
+    ];
+    if(!auto) st.push({ part:A, h:"Chép vào bộ nhớ tạm", p:"Thêm tác vụ <b>Copy to Clipboard</b>:",
+        f:[["Nội dung", "File (Type Text)"], ["Local Only", "Bật"], ["Expire At", "để trống"]],
+        n:"Mở app, bấm 📋 → Paste là giao dịch hiện ra." });
+    st.push({ part:A, h:"Đặt tên automation", p:"Chạm tên ở trên cùng của automation, đặt:", f:[["Tên", WZ_NAME, 1]] });
+    if(auto){
+      st.push({ part:B, h:"Tạo trạm Cloudflare", p:"Đăng nhập Cloudflare (miễn phí), cho phép kết nối GitHub, giữ tên <b>tieugon-relay</b> → <b>Create and deploy</b>.",
+        link:[relayDeployUrl(), "Deploy to Cloudflare ↗"], n:"Cloudflare chép mã trạm sang GitHub của bạn, không có dữ liệu nào." });
+      st.push({ part:B, h:"Gắn trạm với app", p:"Triển khai xong, chép địa chỉ <b>workers.dev</b>, dán vào đây rồi bấm Kiểm tra:", url:1,
+        n:"Lần Kiểm tra đầu tiên gắn mã bí mật của máy này với trạm." });
+      st.push({ part:B, h:"Gửi thông báo lên trạm", p:"Mở lại automation <b>" + WZ_NAME + "</b>, sau tác vụ Get File thêm <b>Get Contents of URL</b>:",
+        f:[["URL", relayUrl() || "địa chỉ ở bước trước", relayUrl() ? 1 : 0], ["Method", "POST"], ["Request Body", "JSON"], ["Trường Text k", relayKey(), 1], ["Trường Text t", "biến File"]],
+        n:"t là tệp lấy ở tác vụ Get File, không phải Body." });
+      st.push({ part:B, h:"Dọn tệp khi trạm đã nhận", p:"Thêm <b>If</b>: Contents of URL <b>is</b>:",
+        f:[["Giá trị", "TG_OK", 1], ["Trong If: Text", "một dấu cách"], ["Save File · Subpath", WZ_FILE, 1], ["Ask Where to Save", "Tắt"], ["Overwrite If File Exists", "Bật"]],
+        n:"Trạm chưa nhận thì tệp còn nguyên, không mất thông báo." });
+    }
+    return st;
+  }
+  function renderWiz(){
+    if(!wiz.mode){ wiz.i = 0; }
+    const box = $("wizBox"), steps = wizSteps(), n = steps.length;
+    const esc2 = x => esc(String(x));
+    let h = "";
+    if(wiz.i === 0){
+      const cur = wiz.mode || (relayUrl() ? "auto" : "");
+      h = '<div class="wz-meta">Chọn cách nhận giao dịch</div><div class="wz-bar"><i style="width:4%"></i></div>'
+        + '<h3>App nhận thông báo bằng cách nào?</h3>'
+        + '<button type="button" class="wz-opt" data-m="auto" aria-pressed="' + (cur === "auto") + '"><b>Tự động (khuyên dùng)</b><span>Qua trạm Cloudflare miễn phí: giao dịch tự hiện, không cần bấm. ' + (n + (wiz.mode === "paste" ? 3 : 0)) + ' bước.</span></button>'
+        + '<button type="button" class="wz-opt" data-m="paste" aria-pressed="' + (cur === "paste") + '"><b>Dán thủ công</b><span>Không cần tài khoản nào: mở app bấm 📋 → Paste. 5 bước.</span></button>'
+        + '<div class="wz-nav"><button type="button" class="primary" id="wzNext"' + (cur ? "" : " disabled") + '>Bắt đầu ›</button></div>';
+      wiz.mode = cur;
+    } else if(wiz.i > n){
+      h = '<div class="wz-meta">Hoàn tất</div><div class="wz-bar"><i style="width:100%"></i></div><h3>Xong rồi ✓</h3>'
+        + '<p class="wz-p">' + (wiz.mode === "auto" ? "Lần tới MB Bank báo biến động số dư, giao dịch sẽ tự hiện trong Chat." : "Lần tới có thông báo MB Bank, mở app bấm 📋 → Paste để ghi.") + '</p>'
+        + '<p class="wz-note">Muốn thử ngay: chuyển một khoản nhỏ, hoặc bấm Dán thử / Chọn tệp thử ở trang trước.</p>'
+        + '<div class="wz-nav"><button type="button" class="ghost" id="wzPrev">‹ Trước</button><button type="button" class="primary" id="wzDone">Xong</button></div>';
+    } else {
+      const st = steps[wiz.i - 1];
+      h = '<div class="wz-meta">Bước ' + wiz.i + ' / ' + n + ' · ' + st.part + '</div><div class="wz-bar"><i style="width:' + Math.round(wiz.i / n * 100) + '%"></i></div>'
+        + '<h3>' + st.h + '</h3><p class="wz-p">' + st.p + '</p>';
+      if(st.f) h += '<div class="wz-f">' + st.f.map(([k, v, cp]) => '<div class="wz-row' + (String(k).length + String(v).length > 30 ? " long" : "") + '"><span class="k">' + esc2(k) + '</span><span class="val' + (cp && /^[\x20-\x7e]+$/.test(v) ? " code" : "") + '">' + esc2(v) + '</span>' + (cp ? '<button type="button" class="wz-cp" data-cp="' + esc2(v) + '">Chép</button>' : "") + '</div>').join("") + '</div>';
+      if(st.link) h += '<a class="primary deploy-btn" style="display:block;text-align:center;margin:10px 0" target="_blank" rel="noopener" href="' + esc2(st.link[0]) + '">' + st.link[1] + '</a>';
+      if(st.url) h += '<input id="wzUrl" class="inp" inputmode="url" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="https://tieugon-relay.<tên>.workers.dev" value="' + esc2(lsGet(RELAY_URL) && !relayIsGoogle(lsGet(RELAY_URL)) ? lsGet(RELAY_URL) : "") + '">'
+        + '<div class="set-row"><button type="button" class="ghost grow" id="wzTest">Kiểm tra</button></div><p class="set-now" id="wzMsg" role="status" aria-live="polite" style="margin-top:8px"></p>';
+      if(st.n) h += '<p class="wz-note">' + st.n + '</p>';
+      h += '<div class="wz-nav"><button type="button" class="ghost" id="wzPrev">‹ Trước</button><button type="button" class="primary" id="wzNext">' + (wiz.i === n ? "Hoàn tất ›" : "Xong, tiếp ›") + '</button></div>';
+    }
+    box.innerHTML = h;
+    box.querySelectorAll(".wz-opt").forEach(b => b.onclick = () => { wiz.mode = b.dataset.m; renderWiz(); });
+    box.querySelectorAll(".wz-cp").forEach(b => b.onclick = async () => { try{ await navigator.clipboard.writeText(b.dataset.cp); b.textContent = "Đã chép ✓"; setTimeout(() => { b.textContent = "Chép"; }, 1800); }catch(e){} });
+    const go = d => { wiz.i = Math.max(0, wiz.i + d); renderWiz(); $("settings").scrollTop = 0; };
+    if($("wzNext")) $("wzNext").onclick = () => go(1);
+    if($("wzPrev")) $("wzPrev").onclick = () => go(-1);
+    if($("wzDone")) $("wzDone").onclick = () => { wiz = { i:0, mode:"" }; showSetPage("setNotif", true); };
+    if($("wzTest")) $("wzTest").onclick = async () => {
+      const b = $("wzTest"); b.disabled = true; b.textContent = "Đang kiểm tra…";
+      await relayTestRun($("wzUrl").value, t => { $("wzMsg").textContent = t; });
+      b.disabled = false; b.textContent = "Kiểm tra";
+    };
+  }
+  $("wizOpen").onclick = () => { if(wiz.i > wizSteps().length) wiz.i = 0; showSetPage("setWiz"); };
   /* xoá sạch mọi thứ đang chờ trên Cloudflare (hàng đợi và dấu chống trùng) */
   $("relayForget").onclick = async e => {
     const btn = e.currentTarget, st = $("relayTestMsg"), u = relayUrl();
@@ -10001,7 +10152,7 @@ function startNgay50k(){
   document.addEventListener("visibilitychange", () => { if(document.hidden) hideNotifBar(); });
 
   /* ---- settings navigation ---- */
-  const SET_PAGES = ["setHome","setLock","setBank","setStart","setAI","setTheme","setBudget","setRecur","setPeople","setTags","setTagOne","setSync","setStore","setLearn","setNotif","setLib"];
+  const SET_PAGES = ["setHome","setLock","setBank","setStart","setAI","setTheme","setBudget","setRecur","setPeople","setTags","setTagOne","setSync","setStore","setLearn","setNotif","setRelay","setWiz","setLib"];
   let setPage = "setHome";
   var setPrev = "setHome";
   function showSetPage(id, back){
@@ -10021,7 +10172,9 @@ function startNgay50k(){
     if(id === "setLearn") renderLearn();
     if(id === "setLock") renderLockSet();
     if(id === "setBank") renderBanks("setBanks", true);
-    if(id === "setNotif"){ $("notifOn").checked = notifOn(); renderRelaySet(); }
+    if(id === "setNotif"){ $("notifOn").checked = notifOn(); renderNotifStatus(); }
+    if(id === "setRelay"){ renderRelaySet(); $("relayTestMsg").hidden = true; }
+    if(id === "setWiz") renderWiz();
     if(id === "setLib"){ const fromN = setPrev === "setNotif"; $("libBack").dataset.back = fromN ? "setNotif" : "setHome"; $("libBack").textContent = fromN ? "‹ Tự ghi từ thông báo" : "‹ Cài đặt"; libClose(); $("libPaste").hidden = true; $("libMsg").hidden = true; renderLib(); }
   }
   /* v118: trang Chat đã học */

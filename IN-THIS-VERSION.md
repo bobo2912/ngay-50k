@@ -1,6 +1,17 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v159, ngày 15/10/2026
+**Phiên bản hiện tại:** v160, ngày 15/10/2026
+
+---
+
+## Có gì mới trong v160 (so với v159) – trang Tự ghi từ thông báo gọn lại
+
+- Trang chính từ ~730 chữ (2,7 màn) còn một màn: một dòng mô tả, **thẻ trạng thái** (Phím tắt nhận lần cuối lúc nào, trạm Cloudflare đã cài / đang kết nối trực tiếp, trạm cần cập nhật), nút **Cài đặt từng bước**, công tắc nút 📋, mục **Trạm và mã bí mật**, nút Thử.
+- **Cài đặt từng bước:** chọn Tự động (trạm Cloudflare, 8 bước) hoặc Dán thủ công (5 bước), mỗi màn một bước, thanh tiến độ. Giá trị cần gõ (tiêu đề lọc, TieuGon.txt, tên automation, địa chỉ trạm, mã bí mật, TG_OK) có nút **Chép**. Bước gắn trạm có ô dán địa chỉ và nút Kiểm tra ngay tại chỗ.
+- Trang riêng **Trạm và mã bí mật**: địa chỉ, mã, Kiểm tra, Xoá hết trên Cloudflare, lời nhắc cập nhật trạm; giải thích "không lưu trữ" nằm sau nút **i**.
+- Giải thích cách app lấy thông báo dời vào nút **i** cạnh tiêu đề. Nút **i** giờ nằm cùng hàng tiêu đề ở mọi trang Cài đặt.
+- Bỏ hẳn hướng dẫn chuyển từ Google Sheet.
+- App ghi lại giờ nhận thông báo lần cuối (`ngay50k:notifLast`, chỉ trên máy) cho thẻ trạng thái.
 
 ---
 
