@@ -11,7 +11,7 @@
 <meta property="og:description" content="Tiêu Gọn – app quản lý chi tiêu, sổ thu chi cho iPhone và Android: ghi bằng lời, đặt hạn mức mỗi ngày. Không cần tài khoản, dữ liệu chỉ nằm trên máy của bạn.">
 <meta property="og:locale" content="vi_VN">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Tiêu Gọn","alternateName":"Tieu Gon","applicationCategory":"FinanceApplication","operatingSystem":"iOS, Android, Web","inLanguage":"vi","description":"Tiêu Gọn – app quản lý chi tiêu, sổ thu chi cho iPhone và Android: ghi bằng lời, đặt hạn mức mỗi ngày. Không cần tài khoản, dữ liệu chỉ nằm trên máy của bạn.","offers":{"@type":"Offer","price":"0","priceCurrency":"VND"}}</script>
-<meta name="theme-color" content="#E9EFFD" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#F3F4F7" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0E1530" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v174";
+  var K = "ngay50k:errlog", VER = "v175";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -66,7 +66,7 @@
 /* giao diện + màu thanh trạng thái iPhone: đặt ngay khi trang bắt đầu tải, vì iPhone lấy màu thanh trạng thái lúc mở app.
    Màu = màu đỉnh trang của từng giao diện (cùng giá trị --top-c trong CSS), đỉnh trang có dải chuyển màu từ màu này xuống. */
 window.__themeColor = function(t){
-  var TOP = { light:"#E9EFFD", dark:"#0E1530", pastel:"#F9F2F0" }, fixed = t === "light" || t === "dark" || t === "pastel";
+  var TOP = { light:"#F3F4F7", dark:"#0E1530", pastel:"#F9F2F0" }, fixed = t === "light" || t === "dark" || t === "pastel";
   var ms = document.querySelectorAll('meta[name="theme-color"]');
   for(var i = 0; i < ms.length; i++){
     var m = ms[i]; if(!m.getAttribute("data-media")) m.setAttribute("data-media", m.getAttribute("media") || "");
@@ -1922,6 +1922,69 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
   background:color-mix(in srgb, var(--ink) 7%, transparent); color:color-mix(in srgb, var(--ink) 62%, transparent); font-size:1.05rem}
 .flow .fi.lic svg{width:21px; height:21px; fill:none; stroke:currentColor; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round}
 .flow .fi.emo{filter:grayscale(1); opacity:.75}
+
+/* ================= v175: PHẲNG MỀM =================
+   Bỏ gradient, kính mờ, bóng đậm; giữ màu nhấn riêng của từng giao diện. Thẻ nền đặc, bóng rất nhẹ, bo 16px;
+   nút chính một màu đặc bo 12px; thanh tab vẫn nổi nhưng nền đặc. Khối này nằm cuối nên đè các kiểu cũ. */
+:root{
+  --surface:#FFFFFF; --glass:#FFFFFF; --glass-strong:#FFFFFF; --glass-border:rgba(20,24,40,.07); --glass-hi:transparent;
+  --shadow:0 1px 2px rgba(20,24,40,.05); --shadow-s:none; --field:#F5F6F8;
+  --tint-a:var(--note); --tint-b:var(--note); --tint-shadow:transparent;
+  --blob1:transparent; --blob2:transparent; --blob3:transparent; --blob4:transparent;
+  --r-card:16px; --r-ctl:12px; --btn:var(--note);
+}
+:root:not([data-theme]), :root[data-theme="light"]{--bg:#F3F4F7; --top-c:#F3F4F7}   /* nền xám trung tính thay xanh nhạt */
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]):not([data-theme="pastel"]){
+  --surface:#181C2B; --glass:#181C2B; --glass-strong:#181C2B; --glass-border:rgba(255,255,255,.07);
+  --shadow:none; --field:rgba(255,255,255,.06); --btn:#3A6FE0;
+} }
+:root[data-theme="dark"]{
+  --surface:#181C2B; --glass:#181C2B; --glass-strong:#181C2B; --glass-border:rgba(255,255,255,.07);
+  --shadow:none; --field:rgba(255,255,255,.06); --btn:#3A6FE0;
+}
+:root[data-theme="pastel"]{
+  --surface:#FFFFFF; --glass:#FFFFFF; --glass-strong:#FFFFFF; --glass-border:#F0E7E3; --glass-hi:transparent;
+  --shadow:0 1px 2px rgba(120,80,90,.06); --shadow-s:none; --field:#FBF8F6;
+  --tint-a:var(--note); --tint-b:var(--note); --tint-shadow:transparent;
+}
+/* nền một màu */
+body::before, .settings::before, .lock, .welcome{background:var(--bg) !important}
+/* không kính mờ (trừ các dải mờ chuyển màu ở đầu trang, vốn là gradient trong suốt) */
+.note, .form, .ledger, .loan, .detail-card, .set-group, .import-card, .backup-nudge, .result, .tabs, .settings-head,
+.ghost, .chip, .k000, .q-btn, .month button, .day-nav button, .day-pick, .filter-btn, .mini, .tag-btn, .gear, .person, .copy-btn,
+.sheet-foot .reset, .rec .rb-edit, .x, .lk, .set-nav, .sheet, .kpi, .wfc, .nst, .pcard, .chat-chip{
+  -webkit-backdrop-filter:none !important; backdrop-filter:none !important}
+/* thẻ: nền đặc, viền mảnh, bóng rất nhẹ, bo 16px */
+.note, .form, .ledger, .loan, .detail-card, .set-group, .import-card, .backup-nudge, .result,
+#tab-today section:has(#list), #tab-today section:has(#week), #tab-today #calSec, .wallet-part section, .chart-sec,
+#tab-money section:has(#catBreakdown), #tab-money section:has(#ledgerList){
+  border-radius:var(--r-card); box-shadow:var(--shadow)}
+.set-nav, .nst, .wfc, .kpi{border-radius:14px; box-shadow:var(--shadow)}
+/* nút phụ, chip, ô nhập: phẳng */
+.ghost, .chip, .k000, .q-btn, .month button, .day-nav button, .day-pick, .filter-btn, .mini, .tag-btn, .person, .copy-btn, .sheet-foot .reset, .rec .rb-edit, .x{
+  box-shadow:none}
+.ghost{border-radius:var(--r-ctl)}
+.inp{box-shadow:none; border-radius:var(--r-ctl)}
+.inp:focus{box-shadow:0 0 0 3px var(--note-soft)}
+/* nút chính: một màu đặc, không bóng */
+.primary, .scan-btn, .sheet-foot .apply, .mini.main, .chip[aria-pressed="true"], .filter-btn.on, .mb-btn, .icon-grid button[aria-pressed="true"]{
+  background:var(--btn); color:#fff; border:1px solid transparent; box-shadow:none}
+.primary{border-radius:var(--r-ctl)}
+.sheet-foot .apply{border-radius:var(--r-ctl)}
+.primary.green{background:#1E9464; box-shadow:none}
+.pay-form.draw .primary{background:#B45309; box-shadow:none}
+.seg button[aria-pressed="true"], .swipe-ind.go{background:var(--note)}
+/* thanh tiến độ, cột biểu đồ: một màu */
+.note .spent-mask, .cat-bar i, .cbars button[data-on="1"] i, .rpt-g summary .bar i{background:var(--note)}
+.note.over .spent-mask, .bar.overb{background:var(--over)}
+.bar.under{background:var(--ok)}
+/* thanh tab: vẫn nổi, nền đặc, bóng nhẹ */
+.tabs{background:var(--surface); border:1px solid var(--glass-border); box-shadow:0 4px 16px rgba(20,24,40,.08)}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]):not([data-theme="pastel"]) .tabs{box-shadow:0 4px 16px rgba(0,0,0,.4)} }
+:root[data-theme="dark"] .tabs{box-shadow:0 4px 16px rgba(0,0,0,.4)}
+.pbtns .ok, .ptry .ok, .nb-go{background:var(--btn); border-color:var(--btn)}
+/* sheet (bảng trượt lên) và bàn phím mã PIN */
+.lk{background:var(--surface); box-shadow:none}
 </style>
 </head>
 <body>
@@ -2782,7 +2845,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v174</p>
+      <p class="sync" id="appVersion">Phiên bản v175</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3287,10 +3350,10 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
 <input type="file" id="phFile" accept="image/*" hidden>
 <div class="ph-view" id="phView" role="dialog" aria-modal="true" aria-label="Ảnh hoá đơn" hidden><img id="phImg" alt="Ảnh hoá đơn"><div class="ph-bar"><button type="button" id="phDel">Bỏ ảnh này</button><button type="button" id="phClose">Đóng</button></div></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=174"></script>
-<script src="thu-vien-cau.js?v=174"></script>
-<script src="quy-tac.js?v=174"></script>
-<script src="lock.js?v=174"></script>
+<script src="parse-vi.js?v=175"></script>
+<script src="thu-vien-cau.js?v=175"></script>
+<script src="quy-tac.js?v=175"></script>
+<script src="lock.js?v=175"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.

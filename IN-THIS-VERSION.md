@@ -1,6 +1,16 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v174, ngày 15/10/2026
+**Phiên bản hiện tại:** v175, ngày 15/10/2026
+
+---
+
+## Có gì mới trong v175 (so với v174) – phong cách phẳng mềm
+
+- Bỏ gradient, kính mờ và bóng đậm ở toàn app; giữ màu nhấn riêng của từng giao diện (Sáng xanh, Pastel hồng đất, Tối xanh).
+- Thẻ, khối: nền đặc, viền mảnh, bóng rất nhẹ, bo 16px (trước 22–26px). Nút chính một màu đặc, bo 12px, không bóng. Nút phụ, chip, ô nhập phẳng.
+- Nền một màu, bỏ các vệt màu loang. Giao diện Sáng đổi nền sang xám trung tính `#F3F4F7` (thanh trạng thái, manifest cùng màu).
+- Thanh tab dưới vẫn nổi, nền đặc, bóng nhẹ. Giao diện Tối: nút chính xanh đậm `#3A6FE0` để chữ trắng dễ đọc.
+- Toàn bộ nằm trong một khối CSS cuối bảng kiểu ("v175: PHẲNG MỀM"), muốn quay lại kiểu cũ chỉ cần bỏ khối này.
 
 ---
 
