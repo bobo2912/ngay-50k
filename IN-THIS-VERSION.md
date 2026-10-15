@@ -1,6 +1,12 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v162, ngày 15/10/2026
+**Phiên bản hiện tại:** v163, ngày 15/10/2026
+
+---
+
+## Có gì mới trong v163 (so với v162)
+
+- Sửa lỗi Thư viện nội dung: ô **Tự gắn tag** chỉ hiện "Không gắn", các tag khác hiện thành dòng trống (code lấy nhầm trường `name`, tag dùng `label`). Giờ có đủ tag kèm icon.
 
 ---
 
