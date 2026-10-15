@@ -23,7 +23,7 @@ Thông báo ngân hàng → Phím tắt (POST) → Worker giữ tạm → app l�
 
 - Phím tắt gửi `POST /` với JSON `{ "k": "<mã bí mật>", "t": "<các dòng thông báo>" }`, trạm trả `TG_OK`. Cùng giao thức với Apps Script cũ, nên phím tắt cũ chỉ cần đổi URL.
 - App gọi `GET /?k=…&since=<mốc>`. Mọi thông báo có mốc ≤ `since` bị xoá (app đã nhận), phần mới hơn được trả về.
-- App đang mở thì giữ `GET /ws?k=…` (WebSocket). Thông báo tới là được đẩy sang ngay, app gửi `{ "ack": <mốc> }` để xoá.
+- App đang mở thì giữ `GET /ws?k=…` (WebSocket). Thông báo tới là được đẩy sang ngay, app gửi `{ "ack": <mốc> }` để xoá. Cứ 25 giây app gửi `{"ping":1}`, Cloudflare tự trả `{"pong":1}`; quá 10 giây không thấy trả lời (đổi Wi-Fi sang 4G…) thì app nối lại.
 - `POST /forget` với `{ "k": … }` xoá sạch hàng đợi. Nút **Xoá hết trên Cloudflare** trong app gọi đường này.
 
 Dùng một Durable Object (lưu bằng SQLite), có trong gói Workers miễn phí.
@@ -37,7 +37,20 @@ Dùng một Durable Object (lưu bằng SQLite), có trong gói Workers miễn p
 
 ## Mã bí mật
 
-Nếu đặt biến môi trường `SECRET` (Cloudflare → Workers → tieugon-relay → Settings → Variables and Secrets), trạm dùng mã đó. Không đặt thì trạm ghi nhớ mã của lần kết nối đầu tiên. Vì vậy, triển khai xong hãy bấm **Kiểm tra** trong app ngay để nhận chủ.
+Nếu đặt biến môi trường `SECRET` (Cloudflare → Workers → tieugon-relay → Settings → Variables and Secrets), trạm dùng mã đó. Không đặt thì trạm ghi nhớ mã gửi kèm lần bấm **Kiểm tra** đầu tiên trong app (`GET ?claim=1`). Từ trạm bản 2, phím tắt hay người lạ dò địa chỉ không nhận chủ được: trước khi bấm Kiểm tra, mọi yêu cầu khác đều bị từ chối.
+
+## Cập nhật trạm
+
+App báo **"Trạm Cloudflare đang là bản cũ"** trong Cài đặt → Tự ghi từ thông báo khi có bản trạm mới. Cách cập nhật:
+- Worker nối với kho GitHub: kéo (sync) kho, Cloudflare tự build lại.
+- Worker tự dựng từ mẫu: **Edit code**, dán đè `src/index.js` mới → **Deploy**.
+
+Hàng đợi, mã bí mật đã nhận và dấu chống trùng giữ nguyên khi cập nhật.
+
+| Bản trạm | Thay đổi |
+|---|---|
+| 2 (app v159) | Nhịp giữ kết nối được Cloudflare tự trả lời, không đánh thức trạm; chỉ nút Kiểm tra mới nhận chủ; trả `wv` để app biết bản trạm |
+| 1 (app v158) | Bản đầu |
 
 ## Chạy thử trên máy
 

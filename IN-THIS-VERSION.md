@@ -1,6 +1,17 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v158, ngày 14/10/2026
+**Phiên bản hiện tại:** v159, ngày 15/10/2026
+
+---
+
+## Có gì mới trong v159 (so với v158) – hoàn thiện trạm Cloudflare (trạm bản 2)
+
+- **Kết nối trực tiếp bền hơn:** app gửi ping mỗi 25 giây, quá 10 giây không có pong (đổi Wi-Fi sang 4G, iPhone giữ kết nối "ma") thì bỏ kết nối cũ và nối lại ngay, giao dịch chờ được đẩy bù. Mất mạng thì đóng, có mạng lại thì mở lại kết nối và hỏi bù.
+- **Ping không tốn lượt:** trạm bản 2 để Cloudflare tự trả `{"pong":1}`, trạm đang ngủ đông không bị đánh thức.
+- **Chặn người lạ nhận chủ trạm:** trước đây yêu cầu đầu tiên bất kỳ (kể cả người lạ dò địa chỉ workers.dev) được ghi nhớ làm mã bí mật. Giờ chỉ nút **Kiểm tra** trong app (`claim=1`, mã ≥ 8 ký tự) mới nhận chủ; trạm đã nhận chủ thì giữ nguyên.
+- **Nhắc cập nhật trạm:** trạm trả `wv` (bản trạm); Cài đặt → Tự ghi từ thông báo báo khi trạm cũ hơn bản trong kho, kèm cách cập nhật (worker/README.md → Cập nhật trạm).
+- Lỗi "trạm chưa gắn với máy này" có câu báo riêng, chỉ cách bấm Kiểm tra.
+- Đã chạy thử trạm thật bằng `wrangler dev`: nhận chủ, từ chối sai mã, chống trùng, đẩy qua WebSocket, ack, xoá hết, nối lại khi mất pong.
 
 ---
 

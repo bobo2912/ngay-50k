@@ -10,17 +10,19 @@
 //     không giữ nội dung.
 //   • Không có thư viện nội dung (ThuVien): việc làm gọn nội dung chạy trong app, trên máy của bạn.
 //
-// Mã bí mật: lấy từ biến môi trường SECRET nếu có đặt; không thì mã của lần kết nối đầu tiên được ghi nhớ
-// (app bấm "Kiểm tra" ngay sau khi triển khai là nhận chủ).
+// Mã bí mật: lấy từ biến môi trường SECRET nếu có đặt; không thì mã gửi kèm lần bấm "Kiểm tra" đầu tiên trong app
+// (GET có claim=1) được ghi nhớ. Từ trạm bản 2: yêu cầu khác (phím tắt, người lạ dò địa chỉ) không nhận chủ được.
 //
 // Giao thức (giống Apps Script bản mã 4 để phím tắt cũ chỉ cần đổi URL):
 //   POST /            body JSON { k, t }   → "TG_OK" | "TG_KEY" | "ERR …"
-//   GET  /?k=&since=  → { ok, v:5, items:[{at,t}], more }   (đồng thời xoá mọi giao dịch có at ≤ since: app đã nhận)
-//   GET  /ws?k=       → WebSocket: server gửi {items:[…]}; app gửi {ack:at} để xoá tới mốc đó
+//   GET  /?k=&since=  → { ok, v:5, wv, items:[{at,t}], more }   (claim=1: lần đầu thì nhận chủ)   (đồng thời xoá mọi giao dịch có at ≤ since: app đã nhận)
+//   GET  /ws?k=       → WebSocket: server gửi {items:[…]}; app gửi {ack:at} để xoá tới mốc đó;
+//                       app gửi {"ping":1} định kỳ, Cloudflare tự trả {"pong":1} mà không đánh thức trạm (không tốn lượt)
 //   POST /forget      body JSON { k }      → xoá sạch hàng đợi và dấu băm (nút "Xoá hết trên Cloudflare" trong app)
 
 import { DurableObject } from "cloudflare:workers";
 
+const WV = 2;                   // phiên bản trạm; app nhắc cập nhật khi trạm cũ hơn
 const KEEP_MS = 3 * 86400000;   // giữ tối đa 3 ngày nếu app không lấy
 const PAGE = 300;
 const MAX_BODY = 200000;        // ~200 KB, đủ cho vài trăm thông báo
@@ -68,19 +70,22 @@ export class Relay extends DurableObject {
     this.sql.exec("CREATE TABLE IF NOT EXISTS q (at INTEGER PRIMARY KEY, t TEXT NOT NULL)");
     this.sql.exec("CREATE TABLE IF NOT EXISTS seen (h TEXT PRIMARY KEY, ts INTEGER NOT NULL)");
     this.sql.exec("CREATE TABLE IF NOT EXISTS kv (k TEXT PRIMARY KEY, v TEXT)");
+    // Nhịp giữ kết nối của app: Cloudflare tự trả lời, trạm đang ngủ đông không bị đánh thức.
+    try { ctx.setWebSocketAutoResponse(new WebSocketRequestResponsePair('{"ping":1}', '{"pong":1}')); } catch (e) {}
   }
 
   get(k) { const r = this.sql.exec("SELECT v FROM kv WHERE k = ?", k).toArray(); return r.length ? r[0].v : null; }
   put(k, v) { this.sql.exec("INSERT INTO kv (k, v) VALUES (?, ?) ON CONFLICT(k) DO UPDATE SET v = excluded.v", k, String(v)); }
 
-  keyOk(k) {
+  keyOk(k, claim) {
     k = String(k == null ? "" : k).trim();
     if (!k || k.length > 200) return false;
     const env = String(this.env.SECRET || "").trim();
     if (env) return safeEq(k, env);
     const saved = this.get("secret");
     if (saved) return safeEq(k, saved);
-    this.put("secret", k);                 // lần kết nối đầu tiên nhận chủ
+    if (!claim || k.length < 8) return false;   // chỉ nút Kiểm tra trong app mới nhận chủ, mã đủ dài
+    this.put("secret", k);
     return true;
   }
 
@@ -148,12 +153,13 @@ export class Relay extends DurableObject {
     }
 
     if (req.method === "GET") {
-      if (!this.keyOk(u.searchParams.get("k"))) return json({ ok: false, err: "key" });
+      if (!this.keyOk(u.searchParams.get("k"), u.searchParams.get("claim") === "1"))
+        return json({ ok: false, err: this.env.SECRET || this.get("secret") ? "key" : "unclaimed", wv: WV });
       const since = Number(u.searchParams.get("since")) || 0;
       this.ack(since);                                     // mọi giao dịch tới mốc since app đã nhận → xoá
-      if (u.searchParams.get("ack")) return json({ ok: true, v: 5 });
+      if (u.searchParams.get("ack")) return json({ ok: true, v: 5, wv: WV });
       const rows = this.pending(since);
-      return json({ ok: true, v: 5, items: rows.slice(0, PAGE), more: rows.length > PAGE, ws: true });
+      return json({ ok: true, v: 5, wv: WV, items: rows.slice(0, PAGE), more: rows.length > PAGE, ws: true });
     }
 
     return text("Phương thức không hỗ trợ", 405);

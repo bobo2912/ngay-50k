@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v158";
+  var K = "ngay50k:errlog", VER = "v159";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -2605,7 +2605,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
       <h4 class="sub">Phần B (tuỳ chọn, để tự động hoàn toàn): trạm Cloudflare</h4>
       <ol class="sc-steps">
         <li>Bấm nút <b>Deploy to Cloudflare</b> bên dưới, đăng nhập (hoặc tạo) tài khoản Cloudflare miễn phí và cho phép kết nối GitHub. Cloudflare tạo trong GitHub của bạn một bản sao <b>mã</b> của trạm (thư mục <code>worker/</code> của app, không có dữ liệu nào) rồi tự triển khai. Giữ tên <b>tieugon-relay</b>, bấm <b>Create and deploy</b>.</li>
-        <li>Triển khai xong, chép địa chỉ dạng <b>https://tieugon-relay.&lt;tên&gt;.workers.dev</b>, dán vào ô dưới, bấm <b>Kiểm tra</b>. Lần kiểm tra đầu tiên gắn mã bí mật của máy này với trạm: từ đó chỉ ai có mã mới gửi và lấy được.</li>
+        <li>Triển khai xong, chép địa chỉ dạng <b>https://tieugon-relay.&lt;tên&gt;.workers.dev</b>, dán vào ô dưới, bấm <b>Kiểm tra</b>. Lần kiểm tra đầu tiên gắn mã bí mật của máy này với trạm: từ đó chỉ ai có mã mới gửi và lấy được. Trước khi bấm Kiểm tra, trạm từ chối mọi yêu cầu, kể cả từ phím tắt.</li>
         <li>Trong automation <b>TG · Lưu thông báo MB</b>, sau tác vụ 2 thêm <b>Get Contents of URL</b>: URL = địa chỉ workers.dev; ⌄ → Method <b>POST</b>, Request Body <b>JSON</b>, thêm 2 trường Text: <b>k</b> = mã bí mật bên dưới, <b>t</b> = biến <b>File</b> (tệp lấy ở tác vụ 2, không phải Body).</li>
         <li>Thêm <b>If</b>: <b>Contents of URL</b> <b>is</b> <b>TG_OK</b>. Bên trong If: thêm <b>Text</b> gõ một dấu cách, rồi <b>Save File</b>: tắt Ask Where to Save, chọn cùng folder, Subpath <b>TieuGon.txt</b>, bật <b>Overwrite If File Exists</b>. Tệp chỉ được xoá khi trạm đã nhận, nên không mất thông báo.</li>
         <li><b>Đang dùng Google Sheet từ bản cũ?</b> Chỉ cần làm bước 1, 2 rồi sửa URL trong tác vụ <b>Get Contents of URL</b> sẵn có thành địa chỉ workers.dev (giữ nguyên k, t và If). Chuyển các dòng sheet <b>ThuVien</b> vào <button type="button" class="linkbtn" data-go="setLib">Thư viện nội dung</button> (dán thẳng 2 cột), xong có thể xoá Sheet và dự án Apps Script.</li>
@@ -2717,7 +2717,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v158</p>
+      <p class="sync" id="appVersion">Phiên bản v159</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3218,10 +3218,10 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
 <input type="file" id="notifFileIn" accept=".txt,text/plain" hidden>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=158"></script>
-<script src="thu-vien-cau.js?v=158"></script>
-<script src="quy-tac.js?v=158"></script>
-<script src="lock.js?v=158"></script>
+<script src="parse-vi.js?v=159"></script>
+<script src="thu-vien-cau.js?v=159"></script>
+<script src="quy-tac.js?v=159"></script>
+<script src="lock.js?v=159"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -9588,8 +9588,8 @@ function startNgay50k(){
     if(!k){ const a = "abcdefghijkmnpqrstuvwxyz23456789"; k = ""; const r = new Uint32Array(10); (crypto.getRandomValues ? crypto.getRandomValues(r) : r.forEach((_, i) => r[i] = Math.random() * 1e9)); r.forEach(x => k += a[x % a.length]); lsSet(RELAY_KEY, k); }
     return k;
   }
-  var RELAY_V = "ngay50k:relayV";
-  async function relayFetch(){
+  var RELAY_V = "ngay50k:relayV", RELAY_WV = "ngay50k:relayWv", RELAY_WV_NEW = 2;   /* v159: bản trạm Cloudflare mới nhất (worker/src/index.js, WV) */
+  async function relayFetch(claim){
     const u = relayUrl(); if(!u) throw new Error("nourl");
     let since = Number(lsGet(RELAY_AT)) || 0;
     const all = [];
@@ -9598,10 +9598,11 @@ function startNgay50k(){
       const ctl = window.AbortController ? new AbortController() : null, to = setTimeout(() => ctl && ctl.abort(), 15000);
       let j;
       try{
-        const r = await fetch(u + (u.indexOf("?") >= 0 ? "&" : "?") + "k=" + encodeURIComponent(relayKey()) + "&since=" + since, { cache:"no-store", signal: ctl ? ctl.signal : undefined });
+        const r = await fetch(u + (u.indexOf("?") >= 0 ? "&" : "?") + "k=" + encodeURIComponent(relayKey()) + "&since=" + since + (claim ? "&claim=1" : ""), { cache:"no-store", signal: ctl ? ctl.signal : undefined });
         j = await r.json();
       } finally { clearTimeout(to); }
-      if(!j || !j.ok) throw new Error(j && j.err === "key" ? "key" : "bad");
+      if(j && (j.v || j.wv)) lsSet(RELAY_WV, String(j.wv || 1));
+      if(!j || !j.ok) throw new Error(j && (j.err === "key" || j.err === "unclaimed") ? j.err : "bad");
       lsSet(RELAY_V, String(j.v || 1));
       const items = j.items || [];
       all.push(...items);
@@ -9647,7 +9648,7 @@ function startNgay50k(){
       } else if(!auto) notifBarAct("✓ Không có giao dịch mới", "Chọn tệp", notifPickFile, "Dán", () => notifFromClip(clipRead(), "clip"), 6000);
     }catch(e){
       if(!quiet) syncShow("off");
-      if(!auto) notifBarAct(e && e.message === "key" ? "Chưa kết nối được, xem lại trong Cài đặt" : "Chưa cập nhật được giao dịch mới", "Chọn tệp", notifPickFile, "Dán", () => notifFromClip(clipRead(), "clip"));
+      if(!auto) notifBarAct(e && e.message === "unclaimed" ? "Trạm chưa gắn với máy này: vào Cài đặt → Tự ghi từ thông báo, bấm Kiểm tra" : e && e.message === "key" ? "Chưa kết nối được, xem lại trong Cài đặt" : "Chưa cập nhật được giao dịch mới", "Chọn tệp", notifPickFile, "Dán", () => notifFromClip(clipRead(), "clip"));
       return -1;
     } finally { relayBusy = false; }
     if(!quiet) syncShow(items.length ? "new" : "none");
@@ -9682,9 +9683,20 @@ function startNgay50k(){
     let ws;
     try{ ws = new WebSocket(relayWsUrl()); }catch(e){ return; }
     relayWs = ws;
-    ws.onopen = () => { relayWsTry = 0; };
+    ws.onopen = () => {
+      relayWsTry = 0;
+      /* v159: cứ 25 giây gửi ping (Cloudflare tự trả pong, không đánh thức trạm). Quá 10 giây không có pong
+         (vd đổi Wi-Fi sang 4G, iPhone giữ kết nối "ma") thì bỏ kết nối này, nối lại ngay */
+      ws._hb = setInterval(() => {
+        if(ws.readyState !== 1) return;
+        try{ ws.send('{"ping":1}'); }catch(x){}
+        clearTimeout(ws._to);
+        ws._to = setTimeout(() => relayWsDrop(ws, true), 10000);
+      }, 25000);
+    };
     ws.onmessage = async e => {
       let d = null; try{ d = JSON.parse(e.data); }catch(x){ return; }
+      if(d && d.pong){ clearTimeout(ws._to); return; }
       const items = d && Array.isArray(d.items) ? d.items.filter(x => Number(x.at) > (Number(lsGet(RELAY_AT)) || 0)) : [];
       if(!items.length){ if(d && d.items && d.items.length) relayAck(); return; }
       lsSet(RELAY_AT, String(Math.max.apply(null, items.map(x => Number(x.at) || 0))));
@@ -9693,6 +9705,7 @@ function startNgay50k(){
       syncShow("new");
     };
     ws.onclose = () => {
+      clearInterval(ws._hb); clearTimeout(ws._to);
       if(relayWs === ws) relayWs = null;
       if(document.hidden || !relayUrl() || !notifOn()) return;
       relayWsTry = Math.min(relayWsTry + 1, 6);
@@ -9700,7 +9713,15 @@ function startNgay50k(){
     };
     ws.onerror = () => {};
   }
-  function relayWsClose(){ clearTimeout(relayWsT); if(relayWs){ const w = relayWs; relayWs = null; try{ w.close(1000); }catch(e){} } }
+  function relayWsClose(){ clearTimeout(relayWsT); if(relayWs) relayWsDrop(relayWs, false); }
+  /* bỏ hẳn một kết nối (không chờ onclose: kết nối hỏng có khi cả phút sau iPhone mới báo đóng); again = nối lại ngay */
+  function relayWsDrop(ws, again){
+    clearInterval(ws._hb); clearTimeout(ws._to);
+    ws.onclose = ws.onmessage = ws.onerror = null;
+    try{ ws.close(1000); }catch(e){}
+    if(relayWs === ws) relayWs = null;
+    if(again){ relayWsTry = 0; relayWsOpen(); }
+  }
   var notifGoFn = null, notifGo2Fn = null;
   function notifBarAct(text, btn, fn, btn2, fn2, ms){
     const b = $("notifBar"), p = b.querySelector("p");
@@ -9731,6 +9752,9 @@ function startNgay50k(){
     $("relayState").innerHTML = relayUrl() ? "Đang dùng: <b>trạm Cloudflare</b> của bạn (mở app là lấy ngay; app đang mở thì giao dịch mới tự hiện)."
       : relayOld() ? "⚠️ Từ v158 app không dùng Google Sheet nữa. Làm Phần B bên dưới để chuyển sang trạm Cloudflare (nhanh hơn, không lưu lại gì), xong có thể xoá Sheet cũ."
       : "Đang dùng: <b>dán bộ nhớ tạm</b> (chưa có trạm Cloudflare), dự phòng chọn tệp.";
+    /* v159: trạm của người dùng cũ hơn mã trong kho → nhắc cập nhật (worker/README.md → Cập nhật trạm) */
+    const wv = Number(lsGet(RELAY_WV)) || 0;
+    if(relayUrl() && wv && wv < RELAY_WV_NEW) $("relayState").innerHTML += "<br>⚠️ Trạm Cloudflare đang là bản " + wv + ", đã có bản " + RELAY_WV_NEW + ": giữ kết nối tiết kiệm hơn và chặn người lạ nhận chủ trạm. Cập nhật: Worker nối GitHub thì đồng bộ kho; Worker tự dựng thì <b>Edit code</b>, dán đè <b>worker/src/index.js</b> mới → <b>Deploy</b>. Dữ liệu và mã bí mật giữ nguyên.";
     $("relayForget").hidden = !relayUrl();
     /* nút Deploy to Cloudflare trỏ tới thư mục worker/ của chính kho đang chạy app (GitHub Pages), không ghi cứng tên ai */
     const h = location.hostname, seg = location.pathname.split("/").filter(Boolean)[0];
@@ -9757,7 +9781,7 @@ function startNgay50k(){
     btn.disabled = true; btn.textContent = "Đang kiểm tra…"; say("Đang kết nối tới Cloudflare…");
     const t0 = Date.now();
     try{
-      const it = await relayFetch();
+      const it = await relayFetch(true);
       say("✓ Kết nối được (" + (Date.now() - t0) + " ms). Mã bí mật đã khớp" + (it.length ? ", đang có " + it.length + " thông báo chờ lấy." : ", chưa có thông báo nào chờ."));
       relayWsOpen();
     }catch(e){
@@ -9967,7 +9991,8 @@ function startNgay50k(){
   /* nút "Làm gọn nội dung" trong tin nhắn giao dịch ở Chat */
   document.addEventListener("click", e => { if(e.target.closest("[data-open-lib]")){ if(!settingsOpen) openSettings(); showSetPage("setLib"); } });
   document.addEventListener("visibilitychange", () => { if(!document.hidden) setTimeout(relayBurst, 100); else { relayBurstT.forEach(clearTimeout); relayBurstT = []; relayWsClose(); } });
-  window.addEventListener("online", () => relayPull(true));
+  window.addEventListener("online", () => { relayPull(true); relayWsOpen(); });
+  window.addEventListener("offline", relayWsClose);
   setTimeout(relayBurst, 100);
   renderClipBtn();
   $("notifX").onclick = hideNotifBar;
