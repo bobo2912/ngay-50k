@@ -1,6 +1,15 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v166, ngày 15/10/2026
+**Phiên bản hiện tại:** v167, ngày 15/10/2026
+
+---
+
+## Có gì mới trong v167 (so với v166) – dự báo số dư cuối tháng
+
+- Tab **Ví** có thẻ **Dự báo cuối tháng**: số dư các ví bây giờ − khoản sắp chi đã biết (định kỳ, trả thẻ, trả nợ, khoản ghi trước ngày) + khoản sắp thu − mức tiêu hằng ngày × số ngày còn lại. Chạm để xem cách tính.
+- Mức tiêu hằng ngày = trung bình chi thường 30 ngày qua (không tính khoản định kỳ; quẹt thẻ không trừ số dư nên không tính). Chưa đủ 3 ngày ghi thì dùng hạn mức ngày.
+- Đi từng ngày để báo **ngày số dư có thể xuống dưới 0**. Có hạn mức ngày thì kèm dự báo "nếu giữ đúng hạn mức". Có nợ thẻ thì nhắc ghi trước khoản Trả thẻ.
+- Chat hiểu câu hỏi: "cuối tháng còn bao nhiêu", "dự báo số dư", "có đủ tiền tiêu đến cuối tháng không" (máy tự trả lời, không cần AI). Thêm 4 câu thử vào `tests-parse-vi-2.js`.
 
 ---
 

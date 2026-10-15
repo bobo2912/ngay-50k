@@ -13,6 +13,11 @@ const D = n => { const d = new Date(now); d.setDate(d.getDate() - n); return d.g
 const TODAY = D(0), YDAY = D(1);
 
 const CASES = [
+  /* ---- v167: dự báo số dư cuối tháng ---- */
+  ["cuối tháng còn bao nhiêu", { q:"forecast" }],
+  ["cuoi thang con bn", { q:"forecast" }],
+  ["dự báo số dư cuối tháng", { q:"forecast" }],
+  ["có đủ tiền tiêu đến cuối tháng không", { q:"forecast" }],
   /* ---- không dấu ---- */
   ["an pho 45k", { kind:"out", amt:45000, cat:"an" }],
   ["tra sua 35k", { kind:"out", amt:35000, cat:"uong" }],

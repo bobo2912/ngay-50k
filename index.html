@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v166";
+  var K = "ngay50k:errlog", VER = "v167";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -1686,6 +1686,12 @@ body.searching .ledger-head{background:var(--top-c)}
 .mono, .lib-syntax code, .lib-k{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
 .lib-ops{display:flex; flex-wrap:wrap; gap:6px; margin-top:7px}
 /* v164: form quy tắc bằng lời thường */
+.wfc{display:flex; flex-wrap:wrap; align-items:baseline; gap:2px 8px; width:100%; margin:8px 0 2px; padding:10px 14px; border-radius:14px; border:1px solid var(--line); background:var(--surface); font:inherit; color:var(--ink); text-align:left}   /* v167 */
+.wfc-l{font-size:.84rem; color:var(--muted); font-weight:600} .wfc b{margin-left:auto; font-size:1.02rem} .wfc small{width:100%; font-size:.78rem; color:var(--muted)}
+.wfc.neg b{color:var(--over)} .wfc.warn small{color:#B07A0E; font-weight:600}
+.wfc-d{margin:4px 0 8px; padding:10px 14px; border-radius:14px; background:var(--note-soft); font-size:.86rem}
+.wfc-d .r{display:flex; justify-content:space-between; gap:10px; padding:3px 0} .wfc-d .r.t{border-top:1px solid var(--line); margin-top:4px; padding-top:7px; font-weight:700}
+.wfc-d p{margin:6px 0 0; color:var(--muted); font-size:.8rem}
 .lib-adv{margin-top:8px} .lib-adv > summary{cursor:pointer; list-style:none; font-size:.84rem; font-weight:600; color:var(--note)}
 .lib-adv > summary::-webkit-details-marker{display:none} .lib-adv > summary::after{content:" ›"} .lib-adv[open] > summary::after{content:" ⌄"}
 .lib-ops button{font-family:inherit !important}
@@ -1966,6 +1972,8 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
       </div>
       <span class="wh-acts" id="whActs"></span>
     </div>
+    <button type="button" class="wfc" id="wFc" hidden aria-expanded="false" aria-controls="wFcD"><span class="wfc-l">Dự báo cuối tháng</span><b class="num" id="wFcNum"></b><small id="wFcSub"></small></button>
+    <div class="wfc-d" id="wFcD" hidden></div>
     <p class="wtotal" hidden><span id="wTotLabel"></span><b class="num" id="wTotNum"></b><small id="wTotSub"></small></p>
     <div class="wstrip" id="wStrip" role="tablist" aria-label="Các ví"></div>
   </div>
@@ -2776,7 +2784,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v166</p>
+      <p class="sync" id="appVersion">Phiên bản v167</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3277,10 +3285,10 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
 <input type="file" id="notifFileIn" accept=".txt,text/plain" hidden>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=166"></script>
-<script src="thu-vien-cau.js?v=166"></script>
-<script src="quy-tac.js?v=166"></script>
-<script src="lock.js?v=166"></script>
+<script src="parse-vi.js?v=167"></script>
+<script src="thu-vien-cau.js?v=167"></script>
+<script src="quy-tac.js?v=167"></script>
+<script src="lock.js?v=167"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -5743,6 +5751,81 @@ function startNgay50k(){
     if(!all.length) h += "\n<i>Muốn ghi trước một khoản thì nhắn kèm ngày, ví dụ \u201cngày 20 cho Nam vay 2tr\u201d, \u201cngày mai đóng tiền điện 700k\u201d. Hạn trả của khoản vay đặt ở tab Khoản vay; khoản lặp lại hằng tháng ở Cài đặt → Khoản định kỳ.</i>";
     return h;
   }
+  /* ---------- v167: dự báo số dư cuối tháng ----------
+     Số dư các ví (trừ thẻ) bây giờ − khoản sắp chi đã biết (định kỳ, trả thẻ, trả nợ, khoản ghi trước) + khoản sắp thu
+     − mức tiêu hằng ngày × số ngày còn lại. Mức tiêu = trung bình chi thường 30 ngày qua (không tính khoản định kỳ;
+     quẹt thẻ không trừ số dư nên không tính). Đi từng ngày để tìm ngày số dư có thể xuống dưới 0. */
+  function forecastCalc(){
+    const T = walletsTotal(); if(!T.any) return null;
+    const now = new Date(), tk = todayKey(), end = new Date(now.getFullYear(), now.getMonth() + 1, 0), ek = keyOf(end);
+    const daySpend = k => (state.days[k] || []).reduce((a, it) => a + (it.rc ? 0 : (+it.amt || 0)), 0);
+    const keys = Object.keys(state.days).filter(k => (state.days[k] || []).length).sort();
+    const first = keys[0] || tk;
+    let n = 0, sum = 0;
+    for(let i = 1; i <= 30; i++){ const k = keyOf(new Date(now.getFullYear(), now.getMonth(), now.getDate() - i)); if(k < first) break; n++; sum += daySpend(k); }
+    const avg = n >= 3 ? sum / n : (state.budget > 0 ? state.budget : 0);
+    const up = upcomingList(tk, ek);
+    const outT = up.filter(x => x.sign < 0).reduce((a, x) => a + x.amt, 0), inT = up.filter(x => x.sign > 0).reduce((a, x) => a + x.amt, 0);
+    const daysLeft = Math.round((end - new Date(now.getFullYear(), now.getMonth(), now.getDate())) / 86400000);
+    const todayRest = Math.max(0, avg - daySpend(tk));
+    const val = T.cash - outT + inT - todayRest - avg * daysLeft;
+    /* đi từng ngày: ngày đầu tiên số dư có thể âm */
+    let run = T.cash - todayRest, low = null;
+    for(let d = 0; d <= daysLeft; d++){
+      const k = keyOf(new Date(now.getFullYear(), now.getMonth(), now.getDate() + d));
+      if(d > 0) run -= avg;
+      up.filter(x => x.k === k).forEach(x => { run += x.sign * x.amt; });
+      if(run < 0 && !low){ low = { k, v:run }; }
+    }
+    let bud = null;
+    if(state.budget > 0 && Math.abs(state.budget - avg) > 1000) bud = T.cash - outT + inT - Math.max(0, state.budget - daySpend(tk)) - state.budget * daysLeft;
+    return { debt:T.debt, cash:T.cash, outT, inT, nOut:up.filter(x => x.sign < 0).length, nIn:up.filter(x => x.sign > 0).length, avg, n, daysLeft, todayRest, val, low, bud, ek, end };
+  }
+  const fcD = k => (+String(k).slice(8, 10)) + "/" + (+String(k).slice(5, 7));
+  function forecastRows(f){
+    const r = (a, b, cls) => '<div class="r' + (cls ? " " + cls : "") + '"><span>' + a + '</span><b>' + b + '</b></div>';
+    let h = r("Số dư các ví bây giờ", sMoney(f.cash));
+    if(f.outT) h += r("− " + f.nOut + " khoản sắp chi đã biết", "−" + fmt(f.outT));
+    if(f.inT) h += r("+ " + f.nIn + " khoản sắp thu", "+" + fmt(f.inT));
+    if(f.avg) h += r("− Tiêu hằng ngày ~" + fmt(Math.round(f.avg / 1000) * 1000) + " × " + (f.daysLeft + (f.todayRest ? 1 : 0)) + " ngày", "−" + fmt(Math.round((f.todayRest + f.avg * f.daysLeft) / 1000) * 1000));
+    h += r("Dự báo ngày " + fcD(f.ek), sMoney(Math.round(f.val / 1000) * 1000), "t");
+    return h;
+  }
+  function forecastNotes(f){
+    const p = [];
+    p.push(f.n >= 3 ? "Mức tiêu hằng ngày là trung bình " + f.n + " ngày qua, không tính khoản định kỳ. Quẹt thẻ không trừ số dư nên không tính." : "Chưa đủ 3 ngày ghi chép nên tạm lấy hạn mức ngày làm mức tiêu.");
+    if(f.bud != null) p.push("Nếu giữ đúng hạn mức " + fmt(state.budget) + "/ngày: còn khoảng <b>" + sMoney(Math.round(f.bud / 1000) * 1000) + "</b>.");
+    if(f.low) p.push("⚠️ Số dư có thể xuống dưới 0 từ ngày <b>" + fcD(f.low.k) + "</b>.");
+    if(f.debt > 0) p.push("Nợ thẻ " + fmt(f.debt) + " chưa trừ vào dự báo. Định trả thẻ trong tháng thì ghi trước khoản Trả thẻ có ngày, dự báo sẽ tính vào.");
+    return p;
+  }
+  function forecastAnswer(){
+    const f = forecastCalc();
+    if(!f) return "Chưa dự báo được vì chưa có số dư ví. Vào tab Ví, nhập số dư đang có (đối chiếu) rồi hỏi lại nhé.";
+    const v = Math.round(f.val / 1000) * 1000;
+    let h = "Dự báo đến hết ngày " + fcD(f.ek) + " còn khoảng <b>" + sMoney(v) + "</b>" + (v < 0 ? " (thiếu tiền)" : "") + ".\n";
+    h += "• Số dư các ví bây giờ: " + sMoney(f.cash) + "\n";
+    if(f.outT) h += "• Sắp chi đã biết (" + f.nOut + " khoản): −" + fmt(f.outT) + "\n";
+    if(f.inT) h += "• Sắp thu (" + f.nIn + " khoản): +" + fmt(f.inT) + "\n";
+    if(f.avg) h += "• Tiêu hằng ngày ~" + fmt(Math.round(f.avg / 1000) * 1000) + " × " + (f.daysLeft + (f.todayRest ? 1 : 0)) + " ngày: −" + fmt(Math.round((f.todayRest + f.avg * f.daysLeft) / 1000) * 1000) + "\n";
+    return h + forecastNotes(f).join("\n");
+  }
+  function renderForecast(sel){
+    const b = $("wFc"), d = $("wFcD");
+    const f = sel.indexOf("card:") === 0 ? null : forecastCalc();
+    if(!f || (!f.avg && !f.outT && !f.inT)){ b.hidden = true; d.hidden = true; return; }
+    const v = Math.round(f.val / 1000) * 1000;
+    b.hidden = false;
+    b.classList.toggle("neg", v < 0); b.classList.toggle("warn", !!f.low);
+    $("wFcNum").textContent = sMoney(v);
+    $("wFcSub").textContent = f.low ? "⚠️ Có thể âm từ ngày " + fcD(f.low.k) : "đến hết ngày " + fcD(f.ek) + " · chạm để xem cách tính";
+    if(!d.hidden) d.innerHTML = forecastRows(f) + forecastNotes(f).map(t => "<p>" + t + "</p>").join("");
+  }
+  $("wFc").onclick = () => {
+    const d = $("wFcD"), open = d.hidden;
+    d.hidden = !open; $("wFc").setAttribute("aria-expanded", open ? "true" : "false");
+    if(open){ const f = forecastCalc(); if(f) d.innerHTML = forecastRows(f) + forecastNotes(f).map(t => "<p>" + t + "</p>").join(""); }
+  };
   /* ---------- v123: nên tiết kiệm gì → 5 nhóm chi nhiều nhất trong kỳ, so với kỳ trước, mẹo theo nhóm ---------- */
   const SAVE_TIP = {
     an:"Nấu ở nhà hoặc mang cơm vài bữa mỗi tuần; đặt đồ ăn online thường đắt hơn 20–30% vì phí ship và giá app.",
@@ -5970,6 +6053,7 @@ function startNgay50k(){
     if(q.q === "avg") return avgAnswer(q);
     if(q.q === "person") return personAnswer(q);
     if(q.q === "upcoming") return upcomingAnswer(q);
+    if(q.q === "forecast") return forecastAnswer();
     if(q.q === "save") return saveAnswer(q);
     if(q.q === "report") return report(q);
     if(q.q === "spent"){
@@ -6715,6 +6799,7 @@ function startNgay50k(){
       else if(Q.q === "count") query.period = "month";
       if(Q.q === "person" && !query.who) query = null;
     }
+    else if(o.query && typeof o.query === "object" && o.query.q === "forecast") query = { q:"forecast" };   /* v167 */
     else if(o.query && typeof o.query === "object" && ["upcoming","save"].includes(o.query.q)){
       /* v123: khoản sắp tới / gợi ý tiết kiệm: máy tự tính khoảng ngày nếu AI không đưa */
       const Q = o.query, isK = v => /^\d{4}-\d{2}-\d{2}$/.test(v || "");
@@ -7557,6 +7642,7 @@ function startNgay50k(){
     const acts = $("whActs"); acts.innerHTML = "";
     const btn = (txt, title, fn, cls) => { const b = el("button", "wh-btn" + (cls ? " " + cls : ""), txt); b.type = "button"; if(title) b.setAttribute("aria-label", title); b.onclick = fn; acts.appendChild(b); };
     const nameEl = $("whName"), num = $("whNum"), sub = $("whSub"), tot = $("whTot");
+    try{ renderForecast(sel); }catch(e){ $("wFc").hidden = true; }
     num.classList.remove("neg", "debt"); tot.hidden = true;
     acts.classList.toggle("col", sel.indexOf("card:") === 0);
     if(sel.indexOf("card:") === 0){

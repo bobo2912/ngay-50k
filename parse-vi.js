@@ -631,6 +631,14 @@
     else if(/ (khoan chi|chi tieu|phai chi|se chi|sap chi|thanh toan|phai tra tien|dong tien|hoa don) /.test(n)) only = "out";
     return { q:"upcoming", from:k(from), to:k(to), only, label };
   }
+  /* v167: dự báo số dư cuối tháng: "cuối tháng còn bao nhiêu", "dự báo số dư", "có đủ tiền tới cuối tháng không" → { q:"forecast" } */
+  function forecastOf(n){
+    const m = n.replace(/ so du /g, " sodu ");                                  /* "số dư bao nhiêu" không phải "dự báo" */
+    if(/ (du bao|du doan|uoc tinh|du tinh) /.test(m) && / (sodu|cuoi thang|het thang|con (lai )?(bao nhieu|bn|du|khoang)|tien con|con tien) /.test(m)) return true;
+    if(/ (cuoi thang|het thang|den cuoi thang|toi cuoi thang|ngay luong|ky luong) /.test(n) && / con (lai |du )?(bao nhieu|bn|khoang|duoc bao nhieu|may|du|tien|ko|khong) /.test(n)) return true;
+    if(/ (co |con )?du tien (tieu |de tieu )?(den|toi|cho den) (cuoi thang|het thang|ngay luong|ky luong) /.test(n)) return true;
+    return false;
+  }
   const SAVE_W = / (tiet kiem|bot tieu|giam chi|giam tieu|cat giam|cat bot|bot chi|chi it lai|tieu it lai|de danh|thắt lung|that lung buoc bung|bot lai|cat chi) /;
   const SAVE_ASK = / (gi|cai gi|khoan nao|nhom nao|muc nao|o dau|cho nao|the nao|ra sao|lam sao|lam the nao|nen|can|phai|goi y|tu van|bang cach nao|duoc khong|duoc o dau|cach nao|meo) /;
   function saveOf(n){ return SAVE_W.test(n) && SAVE_ASK.test(n) && !/ (tiet kiem|de danh) duoc (roi|nhieu|it|\d)/.test(n) ? true : false; }
@@ -802,6 +810,7 @@
       const T = tokenize(text).N; let hasAmt = false, amtV = 0;
       for(let i = 0; i < T.length; i++){ const a = amountAt(T, i); if(a && !["tren","hon","tu","duoi"].includes(T[i-1])){ hasAmt = true; amtV = a.v; break; } }
       if(!hasAmt){
+        if(forecastOf(n)) return { q:"forecast" };
         const up = upcomingOf(n, now); if(up) return up;
         if(saveOf(n)){ const p0 = periodOf(n, now); const q = { q:"save", period:p0.period || "month" }; if(p0.from){ q.from = p0.from; q.to = p0.to; } return q; }
       }
@@ -1003,7 +1012,7 @@
     const why = [], n = " " + norm(text).replace(/[?!.,;:]/g, " ").replace(/\s+/g, " ") + " ";
     if(!res) res = parse(text, ctx);
     if(res.query){
-      if(res.query.q === "unknown" || (ASK.test(n) && !["save","upcoming","find","last","count","avg","person"].includes(res.query.q))) why.push("query");
+      if(res.query.q === "unknown" || (ASK.test(n) && !["save","upcoming","forecast","find","last","count","avg","person"].includes(res.query.q))) why.push("query");
       return { local:!why.length, why };
     }
     if(!res.items.length){ why.push("noitem"); return { local:false, why }; }
