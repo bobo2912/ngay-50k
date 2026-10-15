@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v163";
+  var K = "ngay50k:errlog", VER = "v164";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -1681,6 +1681,12 @@ body.searching .ledger-head{background:var(--top-c)}
 /* v158: Thư viện nội dung */
 .mono, .lib-syntax code, .lib-k{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
 .lib-ops{display:flex; flex-wrap:wrap; gap:6px; margin-top:7px}
+/* v164: form quy tắc bằng lời thường */
+.lib-adv{margin-top:8px} .lib-adv > summary{cursor:pointer; list-style:none; font-size:.84rem; font-weight:600; color:var(--note)}
+.lib-adv > summary::-webkit-details-marker{display:none} .lib-adv > summary::after{content:" ›"} .lib-adv[open] > summary::after{content:" ⌄"}
+.lib-ops button{font-family:inherit !important}
+.lib-on{display:flex; align-items:center; gap:12px; margin-top:14px; padding:12px 14px; border-radius:14px; background:var(--flat); cursor:pointer}
+.lib-on > span{flex:1} .lib-on b{display:block; font-size:.95rem} .lib-on small{display:block; color:var(--muted); font-size:.8rem; margin-top:2px}
 .lib-ops button{border:1px solid var(--line); background:var(--flat); color:var(--ink); border-radius:8px; padding:4px 8px; font-size:.76rem; font-weight:600; font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
 .lib-explain{margin:2px 2px 0; font-size:.86rem; color:var(--ok); min-height:1.2em}
 .lib-explain.bad{color:var(--over)}
@@ -2672,35 +2678,42 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
 
       <section class="set-group lib-form" id="libForm" hidden aria-labelledby="libFormTitle">
         <h3 id="libFormTitle">Quy tắc mới</h3>
-        <div class="field"><label for="libK"><span>Khi thông báo có</span><span class="opt">cột A · từ khoá</span></label>
-          <input id="libK" class="inp mono" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="vd: GRABFOOD  ·  DEN:NGUYEN VAN A  ·  ^ck">
-          <div class="lib-ops" id="libKOps" aria-label="Chèn cú pháp">
-            <button type="button" data-ins="^" data-pos="start" title="Bắt đầu bằng">^ đầu</button>
-            <button type="button" data-ins="$" data-pos="end" title="Kết thúc bằng">$ cuối</button>
-            <button type="button" data-ins=", " title="Hoặc">, hoặc</button>
-            <button type="button" data-ins=" &amp; " title="Và">&amp; và</button>
-            <button type="button" data-ins=" &amp; -" title="Không có">− trừ</button>
-            <button type="button" data-ins="*" title="Đoạn bất kỳ">* bất kỳ</button>
-            <button type="button" data-ins="&quot;&quot;" data-mid="1" title="Nguyên từ">"" nguyên từ</button>
-            <button type="button" data-ins="DEN:" data-pos="field" title="Người nhận">DEN: người nhận</button>
-            <button type="button" data-ins="TU:" data-pos="field" title="Người gửi">TU: người gửi</button>
-            <button type="button" data-ins=" &amp; TIEN:&lt;" title="Số tiền">TIEN: số tiền</button>
-            <button type="button" data-ins="TK:" data-pos="field" title="Tài khoản của bạn">TK:</button>
+        <div class="field"><label><span>Tìm theo</span></label>
+          <div class="seg seg3" id="libBy" role="group" aria-label="Tìm theo">
+            <button type="button" data-by="" aria-pressed="true">Nội dung</button>
+            <button type="button" data-by="DEN:" aria-pressed="false">Người nhận</button>
+            <button type="button" data-by="TU:" aria-pressed="false">Người gửi</button>
           </div>
+        </div>
+        <div class="field"><label for="libK"><span id="libKLabel">Nội dung thông báo có chữ</span></label>
+          <input id="libK" class="inp mono" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="vd: GRABFOOD">
+          <details class="lib-adv" id="libAdv"><summary>Điều kiện nâng cao</summary>
+          <div class="lib-ops" id="libKOps" aria-label="Chèn điều kiện">
+            <button type="button" data-ins="^" data-pos="start">Bắt đầu bằng</button>
+            <button type="button" data-ins="$" data-pos="end">Kết thúc bằng</button>
+            <button type="button" data-ins=", ">Hoặc</button>
+            <button type="button" data-ins=" &amp; ">Và có thêm</button>
+            <button type="button" data-ins=" &amp; -">Không có</button>
+            <button type="button" data-ins="*">Đoạn bất kỳ</button>
+            <button type="button" data-ins="&quot;&quot;" data-mid="1">Nguyên từ</button>
+            <button type="button" data-ins=" &amp; TIEN:&lt;">Số tiền dưới</button>
+            <button type="button" data-ins="TK:" data-pos="field">Tài khoản của bạn</button>
+          </div>
+          </details>
         </div>
         <p class="lib-explain" id="libExplain" aria-live="polite"></p>
         <ul class="lib-warn" id="libWarn"></ul>
-        <div class="field"><label for="libR"><span>Đổi nội dung thành</span><span class="opt">cột B</span></label>
-          <input id="libR" class="inp" autocomplete="off" placeholder="vd: Ăn GrabFood  ·  {DEN}">
-          <div class="lib-ops" id="libROps" aria-label="Chèn chỗ tự điền">
-            <button type="button" data-ins="{DEN}" title="Tên người nhận">{DEN} người nhận</button>
-            <button type="button" data-ins="{TU}" title="Tên người gửi">{TU} người gửi</button>
-            <button type="button" data-ins="{ND}" title="Nội dung gốc, bỏ mã giao dịch">{ND} nội dung gốc</button>
-            <button type="button" data-ins="{TIEN}" title="Số tiền">{TIEN}</button>
+        <div class="field"><label for="libR"><span>Hiện thành</span></label>
+          <input id="libR" class="inp" autocomplete="off" placeholder="vd: Ăn sáng phở Thắng Bình">
+          <div class="lib-ops lib-ops-r" id="libROps" aria-label="Chèn chỗ tự điền">
+            <button type="button" data-ins="{DEN}">＋ Tên người nhận</button>
+            <button type="button" data-ins="{TU}">＋ Tên người gửi</button>
+            <button type="button" data-ins="{ND}">＋ Nội dung gốc</button>
+            <button type="button" data-ins="{TIEN}">＋ Số tiền</button>
           </div>
         </div>
-        <div class="field"><label for="libTag"><span>Tự gắn tag <span class="opt">(không bắt buộc)</span></span></label><select id="libTag" class="inp"></select></div>
-        <label class="sc-use"><input type="checkbox" id="libOn" checked> <span>Đang dùng quy tắc này</span></label>
+        <div class="field"><label for="libTag"><span>Xếp vào tag <span class="opt">(không bắt buộc)</span></span></label><select id="libTag" class="inp"></select></div>
+        <label class="lib-on"><span><b>Bật quy tắc</b><small>Tắt để tạm ngưng quy tắc mà không phải xoá</small></span><input type="checkbox" id="libOn" class="sw" checked></label>
         <h4 class="sub">Thử trên thông báo gần đây</h4>
         <div id="libTry"></div>
         <textarea id="libTryIn" class="inp lib-try-in" rows="2" placeholder="Hoặc dán một thông báo ngân hàng vào đây để thử"></textarea>
@@ -2759,7 +2772,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v163</p>
+      <p class="sync" id="appVersion">Phiên bản v164</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3260,10 +3273,10 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
 <input type="file" id="notifFileIn" accept=".txt,text/plain" hidden>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=163"></script>
-<script src="thu-vien-cau.js?v=163"></script>
-<script src="quy-tac.js?v=163"></script>
-<script src="lock.js?v=163"></script>
+<script src="parse-vi.js?v=164"></script>
+<script src="thu-vien-cau.js?v=164"></script>
+<script src="quy-tac.js?v=164"></script>
+<script src="lock.js?v=164"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -10030,7 +10043,7 @@ function startNgay50k(){
     libEdit = ex ? ex.id : null; libSample = sample || "";
     $("libFormTitle").textContent = ex ? "Sửa quy tắc" : "Quy tắc mới";
     $("libK").value = rule ? rule.k || "" : ""; $("libR").value = rule ? rule.r || "" : "";
-    $("libOn").checked = !(ex && ex.off); $("libTryIn").value = "";
+    $("libOn").checked = !(ex && ex.off); $("libTryIn").value = ""; $("libAdv").open = false; libBySync();
     const sel = $("libTag"); sel.innerHTML = '<option value="">Không gắn (app tự đoán)</option>';
     allTags().forEach(t => { const o = document.createElement("option"); o.value = t.id; o.textContent = (t.icon ? t.icon + " " : "") + (t.label || t.name || t.id); sel.appendChild(o); });   /* v163: tag dùng trường label, trước ghi nhầm name nên danh sách trống */
     sel.value = ex && ex.tag ? ex.tag : "";
@@ -10044,7 +10057,7 @@ function startNgay50k(){
   function libCheck(){
     const R = window.N50KRule, cur = libCur(), ex = $("libExplain"), wl = $("libWarn"), tr = $("libTry");
     wl.innerHTML = ""; tr.innerHTML = "";
-    if(!cur.k){ ex.textContent = "Gõ từ khoá, hoặc chạm các nút bên dưới ô để chèn cú pháp."; ex.classList.remove("bad"); $("libSave").disabled = true; return; }
+    if(!cur.k){ ex.textContent = "Gõ chữ có trong thông báo, vd tên quán hoặc tên người nhận."; ex.classList.remove("bad"); $("libSave").disabled = true; return; }
     const extra = $("libTryIn").value.split(/\r?\n/).map(x => x.trim()).filter(Boolean);
     const sample = [...new Set(extra.concat(libSample ? [libSample] : [], tbRawList().slice().reverse()))];
     const lt = R.lint(cur, libRules().filter(x => x.id !== libEdit), sample);
@@ -10098,6 +10111,23 @@ function startNgay50k(){
     box.addEventListener("click", e => { const b = e.target.closest("button[data-ins]"); if(b) libIns(inp, b); });
   });
   ["libK", "libR", "libTryIn"].forEach(id => $(id).addEventListener("input", libCheck));
+  /* v164: "Tìm theo" Nội dung / Người nhận / Người gửi = thêm hoặc bỏ tiền tố DEN:, TU: ở đầu ô từ khoá */
+  const LIB_ADV = /(^\^|\$$|,|&|\*|"|\bTIEN:|\bTK:|\bDONG:)/i;
+  function libBySync(){
+    const k = $("libK").value, by = /^\s*DEN:/i.test(k) ? "DEN:" : /^\s*TU:/i.test(k) ? "TU:" : "";
+    $("libBy").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", b.dataset.by === by ? "true" : "false"));
+    $("libK").placeholder = by === "DEN:" ? "tên hoặc số tài khoản người nhận" : by === "TU:" ? "tên hoặc số tài khoản người gửi" : "vd: GRABFOOD";
+    $("libKLabel").textContent = by === "DEN:" ? "Người nhận có chữ" : by === "TU:" ? "Người gửi có chữ" : "Nội dung thông báo có chữ";
+    if(LIB_ADV.test(k.replace(/^\s*(DEN|TU):/i, ""))) $("libAdv").open = true;
+  }
+  $("libBy").addEventListener("click", e => {
+    const b = e.target.closest("button[data-by]"); if(!b) return;
+    const inp = $("libK"), rest = inp.value.replace(/^\s*(DEN|TU):\s*/i, "");
+    inp.value = b.dataset.by + rest;
+    libBySync(); libCheck();
+    inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length);
+  });
+  $("libK").addEventListener("input", libBySync);
   ["libTag", "libOn"].forEach(id => $(id).addEventListener("change", libCheck));
   $("libAdd").onclick = () => libOpen(null);
   $("libCancel").onclick = () => { libClose(); };

@@ -1,6 +1,17 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v163, ngày 15/10/2026
+**Phiên bản hiện tại:** v164, ngày 15/10/2026
+
+---
+
+## Có gì mới trong v164 (so với v163) – form quy tắc Thư viện nội dung bằng lời thường
+
+- **Tìm theo:** Nội dung · Người nhận · Người gửi. Chọn Người nhận/Người gửi thì app tự thêm `DEN:` / `TU:`, chỉ cần gõ tên hoặc số tài khoản. Nhãn ô đổi theo: "Nội dung thông báo có chữ", "Người nhận có chữ"…
+- Nút ký hiệu gập vào **Điều kiện nâng cao**, ghi bằng lời: Bắt đầu bằng, Kết thúc bằng, Hoặc, Và có thêm, Không có, Đoạn bất kỳ, Nguyên từ, Số tiền dưới, Tài khoản của bạn. Quy tắc đang có ký hiệu thì mục này tự mở.
+- "Đổi nội dung thành" → **Hiện thành**; nút chèn ghi bằng lời: ＋ Tên người nhận, ＋ Tên người gửi, ＋ Nội dung gốc, ＋ Số tiền.
+- "Tự gắn tag" → **Xếp vào tag**.
+- Ô tick "Đang dùng quy tắc này" → **công tắc gạt Bật quy tắc**, kèm chú thích "Tắt để tạm ngưng quy tắc mà không phải xoá".
+- Bỏ chữ "cột A / cột B". Cách khớp quy tắc không đổi, quy tắc cũ chạy y nguyên.
 
 ---
 
