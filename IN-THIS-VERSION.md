@@ -1,6 +1,13 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v172, ngày 15/10/2026
+**Phiên bản hiện tại:** v173, ngày 15/10/2026
+
+---
+
+## Có gì mới trong v173 (so với v172)
+
+- Các khối trong một trang Cài đặt cách nhau 12px, không còn dính sát (Thiết lập chi tiêu, Tự ghi từ thông báo…).
+- Trang "Hạn mức, ngân hàng, định kỳ" đổi tên **Thiết lập chi tiêu** cho gọn một dòng; dòng tóm tắt ngoài danh sách viết ngắn: "100k/ngày · MB", không bị cắt "…". Tên mục trong danh sách Cài đặt không xuống dòng.
 
 ---
 

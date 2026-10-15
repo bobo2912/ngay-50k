@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v172";
+  var K = "ngay50k:errlog", VER = "v173";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -759,7 +759,7 @@ html, body{overscroll-behavior-y:none; overscroll-behavior-x:none}
   background:var(--glass); -webkit-backdrop-filter:blur(16px) saturate(170%); backdrop-filter:blur(16px) saturate(170%);
   border:1px solid var(--glass-border); box-shadow:inset 0 1px 0 var(--glass-hi), var(--shadow-s); color:var(--ink)}
 .set-nav:active{background:var(--note-soft)}
-.set-nav .nav-t{font-weight:600}
+.set-nav .nav-t{font-weight:600; white-space:nowrap}
 .set-nav .nav-v{margin-left:auto; color:var(--muted); font-size:.86rem; text-align:right; max-width:52%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
 .set-nav svg{width:18px; height:18px; flex:none; fill:none; stroke:var(--muted); stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round}
 .set-nav.tag-row .ic{font-size:1.25rem}
@@ -768,6 +768,7 @@ html, body{overscroll-behavior-y:none; overscroll-behavior-x:none}
 .tag-preview{display:flex; align-items:center; gap:10px; margin:0 0 6px; font-size:1.15rem; font-weight:700}
 .tag-preview .ic{font-size:1.8rem}
 .set-page .set-group{margin-top:0}
+.set-page > :is(.set-group, .set-list, .nst) + :is(.set-group, .set-list){margin-top:12px}   /* v173: các khối trong một trang Cài đặt cách nhau, không dính */
 
 /* ================= CLEAN GLASS (v21) ================= */
 :root{
@@ -2360,7 +2361,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
       <div class="set-list">
         <button class="set-nav" data-go="setLock"><span class="nav-t">Khoá app</span><span class="nav-v" id="navLock"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
         <button class="set-nav" data-go="setTheme"><span class="nav-t">Giao diện và mở đầu</span><span class="nav-v" id="navTheme"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
-        <button class="set-nav" data-go="setSpend"><span class="nav-t">Hạn mức, ngân hàng, định kỳ</span><span class="nav-v" id="navSpend"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+        <button class="set-nav" data-go="setSpend"><span class="nav-t">Thiết lập chi tiêu</span><span class="nav-v" id="navSpend"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
         <button class="set-nav" data-go="setPeople"><span class="nav-t">Người nhận</span><span class="nav-v" id="navPeople"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
         <button class="set-nav" data-go="setTags"><span class="nav-t">Quản lý tag</span><span class="nav-v" id="navTags"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
         <button class="set-nav" data-go="setSync"><span class="nav-t">Sao lưu và đồng bộ</span><span class="nav-v" id="navSync"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
@@ -2434,7 +2435,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
     </div>
 
     <div class="set-page" id="setSpend" hidden>
-      <div class="set-head"><button class="set-back" data-back>‹ Cài đặt</button><h2 tabindex="-1">Hạn mức, ngân hàng, định kỳ</h2></div>
+      <div class="set-head"><button class="set-back" data-back>‹ Cài đặt</button><h2 tabindex="-1">Thiết lập chi tiêu</h2></div>
 <section class="set-group" aria-labelledby="gBudget">
       <h4 class="sub" style="margin-top:0" id="gBudget">Hạn mức chi một ngày</h4>
       <p class="set-now">Đang đặt <strong class="num" id="budgetNow"></strong> mỗi ngày.</p>
@@ -2787,7 +2788,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v172</p>
+      <p class="sync" id="appVersion">Phiên bản v173</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3292,10 +3293,10 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
 <input type="file" id="phFile" accept="image/*" hidden>
 <div class="ph-view" id="phView" role="dialog" aria-modal="true" aria-label="Ảnh hoá đơn" hidden><img id="phImg" alt="Ảnh hoá đơn"><div class="ph-bar"><button type="button" id="phDel">Bỏ ảnh này</button><button type="button" id="phClose">Đóng</button></div></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=172"></script>
-<script src="thu-vien-cau.js?v=172"></script>
-<script src="quy-tac.js?v=172"></script>
-<script src="lock.js?v=172"></script>
+<script src="parse-vi.js?v=173"></script>
+<script src="thu-vien-cau.js?v=173"></script>
+<script src="quy-tac.js?v=173"></script>
+<script src="lock.js?v=173"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -10478,7 +10479,8 @@ function startNgay50k(){
     $("navAI").textContent = aiNav();
     $("navLearn").textContent = (state.learn || []).length ? state.learn.length + " câu" : "chưa có";
     $("navLib").textContent = (state.thuvien || []).length ? state.thuvien.length + " quy tắc" : "chưa có";
-    $("navSpend").textContent = fmt(state.budget) + "/ngày" + (myBank() ? " · " + myBank().name : "");
+    { const b = state.budget, k = b >= 1e6 ? (b / 1e6).toLocaleString("vi-VN", { maximumFractionDigits:1 }) + "tr" : Math.round(b / 1000) + "k";
+      $("navSpend").textContent = k + "/ngày" + (myBank() ? " · " + myBank().name.replace(/ ?Bank$/i, "") : ""); }   /* v173: ngắn, không bị "…" */
     $("navTags").textContent = allTags().length + " tag";
     $("navPeople").textContent = (state.contacts || []).length ? (state.contacts.length + " người") : "chưa có ai";
     const last = Number(lsGet(BK_KEY)) || 0;
