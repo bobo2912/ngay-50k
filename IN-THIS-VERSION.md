@@ -1,6 +1,13 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v171, ngày 15/10/2026
+**Phiên bản hiện tại:** v172, ngày 15/10/2026
+
+---
+
+## Có gì mới trong v172 (so với v171)
+
+- **Sửa lỗi "App mở chưa xong" của v171:** dòng phụ của khoản chi thẻ (icon nét mảnh mới) gọi hàm `esc` lúc app đang khởi động, khi hàm này chưa được khai báo, nên máy nào có khoản chi thẻ là không mở được app. `esc` đổi sang kiểu `function` để dùng được ở mọi thời điểm. Dữ liệu không bị ảnh hưởng.
+- Đã thử: mở lại app nhiều lần với dữ liệu có khoản thẻ và thẻ chờ trong Chat, đi qua mọi tab và mọi trang Cài đặt, không còn lỗi.
 
 ---
 
