@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v164";
+  var K = "ngay50k:errlog", VER = "v165";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -200,6 +200,10 @@ h2{font-size:.95rem; font-weight:600; margin:0 0 8px}
 .field > label{display:flex; justify-content:space-between; font-size:.8rem; color:var(--muted); margin-bottom:4px}
 .src{color:var(--ok); font-weight:600}
 .need{color:var(--over); font-weight:600}
+.inp-x{position:absolute; z-index:5; width:28px; height:28px; padding:0; border:0; border-radius:50%; background:color-mix(in srgb, var(--muted) 22%, transparent); color:var(--ink); display:flex; align-items:center; justify-content:center; cursor:pointer}   /* v165 */
+.inp-x[hidden]{display:none}
+.inp-x svg{width:14px; height:14px; fill:none; stroke:currentColor; stroke-width:2.6; stroke-linecap:round}
+input.x-on, textarea.x-on{padding-right:40px !important}
 .inp{box-sizing:border-box; width:100%; border:1.5px solid var(--line); background:var(--bg); border-radius:10px; padding:9px 11px; outline:none; font-size:16px}
 .inp:focus{border-color:var(--note)}
 .inp.missing{border-color:var(--over)}
@@ -2772,7 +2776,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v164</p>
+      <p class="sync" id="appVersion">Phiên bản v165</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3273,10 +3277,10 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
 <input type="file" id="notifFileIn" accept=".txt,text/plain" hidden>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=164"></script>
-<script src="thu-vien-cau.js?v=164"></script>
-<script src="quy-tac.js?v=164"></script>
-<script src="lock.js?v=164"></script>
+<script src="parse-vi.js?v=165"></script>
+<script src="thu-vien-cau.js?v=165"></script>
+<script src="quy-tac.js?v=165"></script>
+<script src="lock.js?v=165"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -9289,6 +9293,43 @@ function startNgay50k(){
   $("openCardsBtn").onclick = () => { if(cardOf(cardFilterId)){ openCardEdit(cardFilterId); return; } renderCardBank(); showSheet("cardsSheet", "cardsBack"); };
 
   $("kpiLoan").onclick = () => showTab("loans");
+  /* v165: nút ✕ ở cuối ô nhập chữ: hiện khi đang gõ trong ô và ô có chữ, bấm là xoá sạch (bàn phím vẫn mở).
+     Một nút dùng chung, gắn vào khung chứa ô đang gõ. Bỏ qua ô chat, ô ngày giờ, ô có data-nox. */
+  (function(){
+    const X_TYPES = /^(text|search|url|email|tel|password|number|)$/;
+    const ok = el => el && !el.disabled && !el.readOnly && el.id !== "chatIn" && !el.hasAttribute("data-nox") &&
+      (el.tagName === "TEXTAREA" || (el.tagName === "INPUT" && X_TYPES.test((el.getAttribute("type") || "").toLowerCase())));
+    const x = document.createElement("button");
+    x.type = "button"; x.className = "inp-x"; x.hidden = true; x.tabIndex = -1;
+    x.setAttribute("aria-label", "Xoá hết chữ trong ô");
+    x.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7 7 17"/></svg>';
+    let cur = null;
+    function place(){
+      if(!cur || !document.contains(cur) || !cur.value || cur !== document.activeElement){ x.hidden = true; if(cur) cur.classList.remove("x-on"); return; }
+      const p = cur.parentElement;
+      if(x.parentElement !== p) p.appendChild(x);
+      if(getComputedStyle(p).position === "static") p.style.position = "relative";
+      cur.classList.add("x-on");
+      const h = cur.tagName === "TEXTAREA" ? Math.min(cur.offsetHeight, 40) : cur.offsetHeight;
+      x.style.left = (cur.offsetLeft + cur.offsetWidth - 34) + "px";
+      x.style.top = (cur.offsetTop + (h - 28) / 2) + "px";
+      x.hidden = false;
+    }
+    document.addEventListener("focusin", e => { if(ok(e.target)){ if(cur && cur !== e.target) cur.classList.remove("x-on"); cur = e.target; place(); } });
+    document.addEventListener("focusout", e => { if(e.target === cur) setTimeout(place, 0); });
+    document.addEventListener("input", e => { if(e.target === cur) place(); }, true);
+    window.addEventListener("resize", place);
+    x.addEventListener("pointerdown", e => e.preventDefault());           /* giữ con trỏ trong ô, bàn phím không đóng */
+    x.addEventListener("mousedown", e => e.preventDefault());
+    x.addEventListener("click", () => {
+      if(!cur) return;
+      const el = cur;
+      el.value = "";
+      el.dispatchEvent(new Event("input", { bubbles:true }));
+      el.dispatchEvent(new Event("change", { bubbles:true }));
+      el.focus(); place();
+    });
+  })();
   document.addEventListener("click", e => {
     const b = e.target.closest(".ib[data-info]"); if(!b) return;
     const t = $(b.dataset.info); if(!t) return;

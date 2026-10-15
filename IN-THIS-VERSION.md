@@ -1,6 +1,12 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v164, ngày 15/10/2026
+**Phiên bản hiện tại:** v165, ngày 15/10/2026
+
+---
+
+## Có gì mới trong v165 (so với v164)
+
+- **Nút ✕ xoá nhanh** ở cuối mọi ô nhập chữ (kể cả ô số tiền, ô dán thông báo): hiện khi đang gõ trong ô và ô có chữ; bấm là xoá sạch, con trỏ vẫn ở trong ô, bàn phím không đóng. Không áp cho ô chat và ô chọn ngày giờ. Ô nào không muốn có nút thì thêm thuộc tính `data-nox`.
 
 ---
 
