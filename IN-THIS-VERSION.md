@@ -1,6 +1,15 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v165, ngày 15/10/2026
+**Phiên bản hiện tại:** v166, ngày 15/10/2026
+
+---
+
+## Có gì mới trong v166 (so với v165) – bảo mật
+
+- **Danh sách giao dịch đã hiện** (`ngay50k:notifSeen`, tới 1.500 dòng có số tiền, ngày giờ, số dư) chuyển từ localStorage vào kho IndexedDB, **được mã hoá khi bật mã PIN**. Trước đây nằm ngoài lớp mã hoá.
+- **Địa chỉ trạm và mã bí mật** (`ngay50k:relayUrl`, `ngay50k:relayKey`) cũng chuyển vào kho mã hoá. Chưa mở khoá thì app không tạo mã mới, không ghi đè danh sách.
+- Lần mở đầu tiên tự chuyển dữ liệu cũ sang (chép, đọc lại kiểm tra, rồi mới xoá bản cũ). File sao lưu cũ vẫn khôi phục được.
+- **Nhắc đặt mật khẩu file sao lưu một lần:** khi xuất file có khoá API hoặc mã bí mật trạm mà chưa bật mật khẩu.
 
 ---
 

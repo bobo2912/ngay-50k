@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v165";
+  var K = "ngay50k:errlog", VER = "v166";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -2776,7 +2776,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v165</p>
+      <p class="sync" id="appVersion">Phiên bản v166</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3277,10 +3277,10 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
 <div class="update-bar" id="updateBar" hidden><p>Đã có bản mới của app.</p><button id="reloadBtn">Tải lại</button></div>
 <input type="file" id="notifFileIn" accept=".txt,text/plain" hidden>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=165"></script>
-<script src="thu-vien-cau.js?v=165"></script>
-<script src="quy-tac.js?v=165"></script>
-<script src="lock.js?v=165"></script>
+<script src="parse-vi.js?v=166"></script>
+<script src="thu-vien-cau.js?v=166"></script>
+<script src="quy-tac.js?v=166"></script>
+<script src="lock.js?v=166"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -3290,7 +3290,7 @@ body.searching #soSeg, body.searching #wTabsBox, #tab-wal.searching > #walBox, #
    Khi bật khoá bằng mã PIN (lock.js): trong bộ nhớ là dữ liệu thường, lúc ghi xuống máy mới mã hoá ("enc1:…").
    Chưa mở khoá thì không ghi các khoá dữ liệu, chỉ ghi được thông tin khoá "ngay50k:lock". */
 window.N50K = (function(){
-  var DB_NAME = "ngay50k", STORE = "kv", MAIN = "ngay50k:v1", LOCK = "ngay50k:lock", KEYS = [MAIN, "ngay50k:beforeImport", "ngay50k:chat", "ngay50k:ai", "ngay50k:tbRaw", LOCK];
+  var DB_NAME = "ngay50k", STORE = "kv", MAIN = "ngay50k:v1", LOCK = "ngay50k:lock", KEYS = [MAIN, "ngay50k:beforeImport", "ngay50k:chat", "ngay50k:ai", "ngay50k:tbRaw", "ngay50k:notifSeen", "ngay50k:relayUrl", "ngay50k:relayKey", LOCK];   /* v166: thêm danh sách giao dịch đã hiện, địa chỉ trạm, mã bí mật (trước nằm thường trong localStorage); lần mở đầu tự chuyển */
   var mem = {}, sizes = {}, gen = {}, db = null, mode = "ls", chan = null, dirty = {}, writing = null;
   var why = "", trying = null, lastTry = 0, codec = null, unlocked = false;
   function isEnc(k){ return k !== LOCK; }
@@ -3412,6 +3412,7 @@ window.N50K = (function(){
   api.allKeys = function(){ return KEYS.slice(); };
   /* app không bật khoá */
   api.unlockPlain = function(){ unlocked = true; };
+  api.isOpen = function(){ return unlocked; };   /* v166: đã đọc được dữ liệu (không khoá, hoặc đã mở khoá) */
   /* giải mã dữ liệu đã đọc lên bằng khoá vừa mở; khoá nào còn dạng thường thì ghi lại cho được mã hoá */
   api.unlock = async function(c){
     var plain = {};
@@ -9592,8 +9593,9 @@ function startNgay50k(){
     return b;
   }
   var NOTIF_SEEN = "ngay50k:notifSeen";
-  function notifSeenList(){ try{ const a = JSON.parse(lsGet(NOTIF_SEEN) || "[]"); return Array.isArray(a) ? a : []; }catch(e){ return []; } }
-  function notifSeenAdd(keys){ const a = notifSeenList().filter(k => !keys.includes(k)).concat(keys); lsSet(NOTIF_SEEN, JSON.stringify(a.slice(-1500))); }
+  /* v166: nằm trong kho N50K (mã hoá khi bật PIN): mỗi dòng có số tiền, ngày giờ, số dư */
+  function notifSeenList(){ try{ const a = JSON.parse(N50K.get(NOTIF_SEEN) || "[]"); return Array.isArray(a) ? a : []; }catch(e){ return []; } }
+  function notifSeenAdd(keys){ if(!N50K.isOpen()) return; const a = notifSeenList().filter(k => !keys.includes(k)).concat(keys); N50K.set(NOTIF_SEEN, JSON.stringify(a.slice(-1500))); }
   /* đã có trong sổ chưa: cùng số tiền, cùng ngày, lệch không quá 2 phút.
      v145: chỉ so với khoản ghi tay (khoản ghi từ thông báo mang dấu vân tay nk riêng), mỗi khoản ghi tay chỉ khớp một thông báo */
   function notifInBook(it, used){
@@ -9679,10 +9681,11 @@ function startNgay50k(){
   var RELAY_URL = "ngay50k:relayUrl", RELAY_KEY = "ngay50k:relayKey", RELAY_AT = "ngay50k:relayAt", relayLast = 0, relayBusy = false;
   /* v158: trạm Cloudflare Worker của chính người dùng (https://…workers.dev hoặc tên miền riêng). Địa chỉ Google Apps Script cũ không dùng nữa */
   function relayIsGoogle(u){ return /^https:\/\/script\.google(usercontent)?\.com\//.test(String(u || "").trim()); }
-  function relayUrl(){ const u = (lsGet(RELAY_URL) || "").trim().replace(/\/+$/, ""); return (/^https:\/\/[a-z0-9.-]+\.[a-z]{2,}(\/|$)/i.test(u) || /^http:\/\/(127\.0\.0\.1|localhost)(:\d+)?$/.test(u)) && !relayIsGoogle(u) ? u : ""; }   /* http://localhost: chạy thử Worker trên máy (wrangler dev) */
+  function relayUrl(){ const u = (N50K.get(RELAY_URL) || "").trim().replace(/\/+$/, ""); return (/^https:\/\/[a-z0-9.-]+\.[a-z]{2,}(\/|$)/i.test(u) || /^http:\/\/(127\.0\.0\.1|localhost)(:\d+)?$/.test(u)) && !relayIsGoogle(u) ? u : ""; }   /* http://localhost: chạy thử Worker trên máy (wrangler dev) */
   function relayKey(){
-    let k = lsGet(RELAY_KEY);
-    if(!k){ const a = "abcdefghijkmnpqrstuvwxyz23456789"; k = ""; const r = new Uint32Array(10); (crypto.getRandomValues ? crypto.getRandomValues(r) : r.forEach((_, i) => r[i] = Math.random() * 1e9)); r.forEach(x => k += a[x % a.length]); lsSet(RELAY_KEY, k); }
+    if(!N50K.isOpen()) return "";                          /* v166: mã nằm trong kho mã hoá; chưa mở khoá thì không tạo mã mới */
+    let k = N50K.get(RELAY_KEY);
+    if(!k){ const a = "abcdefghijkmnpqrstuvwxyz23456789"; k = ""; const r = new Uint32Array(10); (crypto.getRandomValues ? crypto.getRandomValues(r) : r.forEach((_, i) => r[i] = Math.random() * 1e9)); r.forEach(x => k += a[x % a.length]); N50K.set(RELAY_KEY, k); }
     return k;
   }
   var RELAY_V = "ngay50k:relayV", RELAY_WV = "ngay50k:relayWv", RELAY_WV_NEW = 2;   /* v159: bản trạm Cloudflare mới nhất (worker/src/index.js, WV) */
@@ -9853,7 +9856,7 @@ function startNgay50k(){
   }
   function relayOldWv(){ const wv = Number(lsGet(RELAY_WV)) || 0; return relayUrl() && wv && wv < RELAY_WV_NEW ? wv : 0; }
   function renderRelaySet(){
-    $("relayUrl").value = relayIsGoogle(lsGet(RELAY_URL)) ? "" : (lsGet(RELAY_URL) || "");
+    $("relayUrl").value = relayIsGoogle(N50K.get(RELAY_URL)) ? "" : (N50K.get(RELAY_URL) || "");
     $("relayKey").textContent = relayKey();
     /* v159: trạm cũ hơn mã trong kho → nhắc cập nhật (worker/README.md → Cập nhật trạm) */
     const wv = relayOldWv();
@@ -9887,8 +9890,8 @@ function startNgay50k(){
   }
   function relaySetUrl(u){
     u = String(u || "").trim().replace(/\/+$/, "");
-    if(u === (lsGet(RELAY_URL) || "")) return;
-    relayWsClose(); lsSet(RELAY_URL, u); lsSet(RELAY_AT, String(Date.now() - 2 * 86400000));
+    if(u === (N50K.get(RELAY_URL) || "")) return;
+    relayWsClose(); N50K.set(RELAY_URL, u); lsSet(RELAY_AT, String(Date.now() - 2 * 86400000));
   }
   $("relayUrl").addEventListener("change", e => { relaySetUrl(e.target.value); renderRelaySet(); relayWsOpen(); });
   $("relayKeyCopy").onclick = async () => { try{ await navigator.clipboard.writeText(relayKey()); $("relayKeyCopy").textContent = "Đã chép ✓"; setTimeout(() => { $("relayKeyCopy").textContent = "Chép mã"; }, 2000); }catch(e){} };
@@ -9977,7 +9980,7 @@ function startNgay50k(){
         + '<h3>' + st.h + '</h3><p class="wz-p">' + st.p + '</p>';
       if(st.f) h += '<div class="wz-f">' + st.f.map(([k, v, cp]) => '<div class="wz-row' + (String(k).length + String(v).length > 30 ? " long" : "") + '"><span class="k">' + esc2(k) + '</span><span class="val' + (cp && /^[\x20-\x7e]+$/.test(v) ? " code" : "") + '">' + esc2(v) + '</span>' + (cp ? '<button type="button" class="wz-cp" data-cp="' + esc2(v) + '">Chép</button>' : "") + '</div>').join("") + '</div>';
       if(st.link) h += '<a class="primary deploy-btn" style="display:block;text-align:center;margin:10px 0" target="_blank" rel="noopener" href="' + esc2(st.link[0]) + '">' + st.link[1] + '</a>';
-      if(st.url) h += '<input id="wzUrl" class="inp" inputmode="url" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="https://tieugon-relay.<tên>.workers.dev" value="' + esc2(lsGet(RELAY_URL) && !relayIsGoogle(lsGet(RELAY_URL)) ? lsGet(RELAY_URL) : "") + '">'
+      if(st.url) h += '<input id="wzUrl" class="inp" inputmode="url" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="https://tieugon-relay.<tên>.workers.dev" value="' + esc2(N50K.get(RELAY_URL) && !relayIsGoogle(N50K.get(RELAY_URL)) ? N50K.get(RELAY_URL) : "") + '">'
         + '<div class="set-row"><button type="button" class="ghost grow" id="wzTest">Kiểm tra</button></div><p class="set-now" id="wzMsg" role="status" aria-live="polite" style="margin-top:8px"></p>';
       if(st.n) h += '<p class="wz-note">' + st.n + '</p>';
       h += '<div class="wz-nav"><button type="button" class="ghost" id="wzPrev">‹ Trước</button><button type="button" class="primary" id="wzNext">' + (wiz.i === n ? "Hoàn tất ›" : "Xong, tiếp ›") + '</button></div>';
@@ -10569,8 +10572,9 @@ function startNgay50k(){
   /* v150: thêm phần Tự ghi từ thông báo: bật/tắt, địa chỉ trạm (v158: Cloudflare), mã bí mật (phải giữ để khớp trạm) */
   const SET_LS = ["ngay50k-theme","ngay50k:home","ngay50k:bank","ngay50k:aiUse","ngay50k:aiBudget","ngay50k:aiSaved","ngay50k:usdVnd","ngay50k:scUse","ngay50k:lastW",
     "ngay50k:notifOn","ngay50k:relayUrl","ngay50k:relayKey","ngay50k:relayV"];
+  const SET_SEC = ["ngay50k:relayUrl","ngay50k:relayKey"];   /* v166: hai khoá này nằm trong kho mã hoá */
   function backupSettings(){
-    const ls = {}; SET_LS.forEach(k => { const v = lsGet(k); if(v != null) ls[k] = v; });
+    const ls = {}; SET_LS.forEach(k => { const v = SET_SEC.includes(k) ? N50K.get(k) : lsGet(k); if(v != null) ls[k] = v; });
     const out = { ls };
     /* mốc đã lấy tới đâu + các giao dịch đã từng hiện: để máy mới không hiện lại giao dịch cũ */
     const at = lsGet("ngay50k:relayAt"); if(at) out.relayAt = at;
@@ -10581,7 +10585,7 @@ function startNgay50k(){
   }
   function restoreSettings(st, full){
     if(!st || typeof st !== "object") return;
-    if(st.ls && typeof st.ls === "object") SET_LS.forEach(k => { if(typeof st.ls[k] === "string") lsSet(k, st.ls[k]); else if(full && k.indexOf("ngay50k:relay") !== 0 && k !== "ngay50k:notifOn") try{ localStorage.removeItem(k); }catch(e){} });   /* file cũ chưa có phần thông báo thì giữ cài đặt đang có */
+    if(st.ls && typeof st.ls === "object") SET_LS.forEach(k => { if(typeof st.ls[k] === "string"){ if(SET_SEC.includes(k)) N50K.set(k, st.ls[k]); else lsSet(k, st.ls[k]); } else if(full && k.indexOf("ngay50k:relay") !== 0 && k !== "ngay50k:notifOn") try{ localStorage.removeItem(k); }catch(e){} });   /* file cũ chưa có phần thông báo thì giữ cài đặt đang có */
     if(typeof st.ai === "string") N50K.set("ngay50k:ai", st.ai);
     /* gộp chứ không đè: lấy mốc muộn hơn, cộng dồn danh sách đã thấy (khôi phục trên chính máy này không làm hiện lại giao dịch) */
     if(st.relayAt && Number(st.relayAt) > (Number(lsGet("ngay50k:relayAt")) || 0)) lsSet("ngay50k:relayAt", String(st.relayAt));
@@ -10593,7 +10597,15 @@ function startNgay50k(){
     try{ renderClipBtn(); renderRelaySet(); }catch(e){}
   }
   function hasSetBackup(st){ return !!(st && typeof st === "object" && (st.ls || st.ai || st.chat)); }
+  /* v166: file có khoá API hoặc mã bí mật trạm mà chưa đặt mật khẩu → hỏi một lần */
+  const BK_NAG = "ngay50k:bkPwNag";
   async function backupText(){
+    if(!$("bkPwOn").checked && !lsGet(BK_NAG) && (N50K.get("ngay50k:relayKey") && relayUrl() || (aiCfg().key || "").trim())){
+      lsSet(BK_NAG, "1");
+      if(confirm("File sao lưu chứa khoá API và mã bí mật của trạm. Ai có file là dùng được.\n\nĐặt mật khẩu cho file trước khi xuất?\n(OK: đặt mật khẩu · Huỷ: vẫn xuất không mật khẩu. App chỉ hỏi lần này.)")){
+        $("bkPwOn").checked = true; $("bkPwBox").hidden = false; openSyncPw(); return null;
+      }
+    }
     const plain = JSON.stringify({ app:"ngay50k", format:1, exportedAt:new Date().toISOString(), data:state, settings:backupSettings() });
     if(!$("bkPwOn").checked) return plain;
     const pw = $("bkPw").value;
