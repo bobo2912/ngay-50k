@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v178";
+  var K = "ngay50k:errlog", VER = "v179";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -1990,6 +1990,101 @@ body::before, .settings::before, .lock, .welcome{background:var(--bg) !important
 .pbtns .ok, .ptry .ok, .nb-go{background:var(--btn); border-color:var(--btn)}
 /* sheet (bảng trượt lên) và bàn phím mã PIN */
 .lk{background:var(--surface); box-shadow:none}
+
+/* ================= v179: ĐỒNG NHẤT =================
+   Khối cùng loại thì cùng bố cục, theo kiểu đang dùng nhiều nhất:
+   1) Thẻ số tiền đầu màn: thẻ trắng, nhãn nhỏ ở trên, số to bên trái, dòng phụ (theo "Dòng tiền ròng" ở Sổ Tháng).
+   2) Nút hành động: một hàng nút nền nhạt cao 44px ngay dưới thẻ (theo Ghi chi / Ghi thu).
+   3) Thanh chọn: một kiểu viên thuốc (theo Ngày / Tháng).
+   4) Danh sách giao dịch: nằm trong thẻ, dòng ngày "T6, 16/10 … −40.000đ", dòng phụ "giờ · nhóm" (theo Sổ).
+   5) Tiêu đề khối: chữ thường, đậm, cùng cỡ.  6) Thanh chọn tháng: tên tháng ở giữa.
+   Khối này nằm cuối nên đè các kiểu cũ; bỏ khối là về như v178. */
+:root{--u-big:1.55rem; --u-lb:.8rem; --u-sub:.74rem; --u-h:.92rem}
+
+/* 1. thẻ số tiền đầu màn */
+#tab-today .note, .whead .wh-l, #tab-money .chero{
+  background:var(--surface) !important; border:1px solid var(--glass-border) !important; border-radius:var(--r-card,16px) !important;
+  box-shadow:var(--shadow) !important; padding:15px 17px !important}
+#tab-money .chero-lb, #tab-today .note .remain-label, .whead .wh-name{
+  font-size:var(--u-lb) !important; font-weight:600 !important; color:var(--muted) !important; text-transform:none !important; letter-spacing:0 !important}
+#tab-money .chero-big, #tab-today .note .remain, .whead .wh-big{
+  font-size:var(--u-big) !important; font-weight:800 !important; letter-spacing:-.03em !important; line-height:1.15 !important; margin:2px 0 0 !important}
+#tab-money .ov-sub, #tab-today .note .status, .whead .wh-sub{font-size:var(--u-sub) !important; color:var(--muted); line-height:1.4}
+#tab-today .note.over .remain, #tab-today .note.over .remain-label{color:var(--over) !important}
+/* Sổ Ngày: số xuống dưới nhãn, không còn nằm bên phải */
+#tab-today .note{display:block !important}
+#tab-today .note .hero-top{display:flex !important; justify-content:space-between !important; align-items:center; gap:8px}
+#tab-today .note .remain{display:block; white-space:nowrap}
+#tab-today .note .hero-bar{height:5px !important; margin:10px 0 0 !important}
+#tab-today .note .status{margin:8px 0 0 !important}
+/* Ví: thẻ số dư, nút xuống hàng dưới */
+.whead{display:flex !important; flex-direction:column !important; align-items:stretch !important; gap:10px; margin:0 0 10px !important}
+.whead .wh-l{min-width:0}
+.whead .wh-sub + .wh-sub{margin-top:2px}
+
+/* 2. hàng nút hành động */
+.whead .wh-acts, .whead .wh-acts.col{display:flex !important; flex-direction:row !important; gap:8px !important; align-self:stretch !important}
+.whead .wh-btn, #addLoanBtn, .quick2 .q-btn{
+  height:44px !important; border-radius:var(--r-ctl,12px) !important; font-size:.8rem !important; font-weight:700 !important;
+  padding:0 12px !important; border:0 !important; box-shadow:none !important}
+.whead .wh-btn{flex:1; background:var(--note-soft) !important; color:var(--note) !important}
+.whead .wh-btn.ic{flex:none; width:44px !important; padding:0 !important; font-size:1rem !important}
+.whead .wh-btn.ghost{background:var(--field) !important; color:var(--ink) !important}
+#addLoanBtn{width:100%; background:var(--note-soft) !important; color:var(--note) !important; margin-top:10px}
+#startBox{margin-top:10px !important}
+
+/* 3. thanh chọn: viên thuốc */
+#soSeg, #loanSeg, #netSeg{
+  display:flex !important; gap:0 !important; background:var(--field) !important; border:0 !important; border-radius:999px !important;
+  padding:3px !important; box-shadow:none !important}
+#soSeg button, #loanSeg button, #netSeg button{
+  flex:1; min-width:0; border:0 !important; border-radius:999px !important; padding:7px 4px !important; background:transparent !important;
+  font:inherit; font-size:.84rem !important; font-weight:600 !important; color:var(--muted) !important; white-space:nowrap; box-shadow:none !important}
+#soSeg button[aria-pressed="true"], #loanSeg button[aria-pressed="true"], #netSeg button[aria-pressed="true"]{
+  background:var(--surface) !important; color:var(--note) !important; box-shadow:0 1px 3px rgba(20,24,40,.10) !important}
+#netSeg{margin:12px 0 0 !important}
+#netSeg button + button{border-left:0 !important}
+#loanSeg{margin-top:14px !important}
+
+/* 4. danh sách giao dịch ở Ví: trong thẻ, giống Sổ */
+#tab-wal section{background:var(--surface); border:1px solid var(--line); border-radius:var(--r-card,16px); box-shadow:var(--shadow); padding:14px 16px}
+#tab-wal section + section{margin-top:12px}
+#walFlow .day-h, #walSoon .day-h{display:flex; justify-content:space-between; align-items:baseline; font-size:.78rem !important; font-weight:400 !important;
+  color:var(--muted); margin:18px 2px 0 !important; padding:0 0 4px !important; border-bottom:1px solid var(--line) !important}
+#walFlow .day-h:first-child{margin-top:6px !important}
+#walFlow .day-h span, #walFlow .day-h small{font-size:.78rem !important; font-weight:400 !important; color:var(--muted)}
+#walFlow li:not(.day-h), #walSoon li{padding:11px 2px !important; gap:10px !important}
+#walFlow .fd div:first-child, #walSoon .fd div:first-child{font-weight:500 !important; font-size:.88rem !important}
+#walFlow .fd div:last-child, #walSoon .fd div:last-child{font-size:.72rem !important}
+#walFlow .fa b, #walSoon .fa b{font-size:.88rem !important; font-weight:700 !important}
+#walFlow li.day-h + li{border-top:0}
+
+/* 5. tiêu đề khối */
+#tab-today section > h2, #tab-money section h2, #tab-wal section h2, #tab-loans .list-head h2, #walFlowTitle, #ledgerTitle, #activeTitle{
+  font-size:var(--u-h) !important; font-weight:700 !important; text-transform:none !important; letter-spacing:0 !important; color:var(--ink) !important; text-align:left}
+
+/* 6. thanh chọn tháng: tên tháng ở giữa, nút hai đầu */
+.month.cardmonth .mspace{display:none}
+.month.cardmonth > strong, .month.walmonth > strong{flex:1; text-align:center; margin:0 6px}
+.month strong, .cal-head h2, .day-pick{font-size:1rem !important; font-weight:700 !important}
+.day-pick{border:0 !important; background:transparent !important; box-shadow:none !important}
+
+/* khối đang ẩn vẫn ẩn (các luật display ở trên không được đè thuộc tính hidden) */
+#soSeg[hidden], #loanSeg[hidden], #netSeg[hidden], .whead[hidden], .whead .wh-acts:empty, #tab-wal section[hidden], #tab-today .note[hidden]{display:none !important}
+#tab-today .note .hero-top .badge{display:inline-block !important; white-space:nowrap}
+/* tiêu đề + ô tìm của danh sách Ví sát mép trên thẻ, như Sổ Tháng */
+#tab-wal section:has(#walFlow) > .ledger-head{margin-top:-14px; border-radius:var(--r-card,16px) var(--r-card,16px) 0 0}
+#tab-wal.searching section:has(#walFlow) > .ledger-head{margin-top:0}
+#tab-money section:has(#ledgerList) > .ledger-head{border-radius:var(--r-card,16px) var(--r-card,16px) 0 0}
+
+/* Khoản vay: hai số tổng là hai ô như ô Thu vào / Chi thường ở Sổ Tháng */
+#loansMain > .ledger{display:grid !important; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; background:none !important;
+  border:0 !important; box-shadow:none !important; padding:0 !important}
+#loansMain > .ledger .ledger-row{display:flex; flex-direction:column; align-items:flex-start; gap:2px; padding:11px 13px !important;
+  background:var(--surface); border:1px solid var(--line); border-radius:14px; box-shadow:var(--shadow)}
+#loansMain > .ledger .ledger-row span{font-size:.72rem !important; font-weight:600; color:var(--muted)}
+#loansMain > .ledger .ledger-row b{font-size:.98rem !important; font-weight:800; letter-spacing:-.02em}
+#loansMain > .ledger .ledger-note{grid-column:1 / -1; margin:0}
 </style>
 </head>
 <body>
@@ -2850,7 +2945,7 @@ body::before, .settings::before, .lock, .welcome{background:var(--bg) !important
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v178</p>
+      <p class="sync" id="appVersion">Phiên bản v179</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3355,10 +3450,10 @@ body::before, .settings::before, .lock, .welcome{background:var(--bg) !important
 <input type="file" id="phFile" accept="image/*" hidden>
 <div class="ph-view" id="phView" role="dialog" aria-modal="true" aria-label="Ảnh hoá đơn" hidden><img id="phImg" alt="Ảnh hoá đơn"><div class="ph-bar"><button type="button" id="phDel">Bỏ ảnh này</button><button type="button" id="phClose">Đóng</button></div></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=178"></script>
-<script src="thu-vien-cau.js?v=178"></script>
-<script src="quy-tac.js?v=178"></script>
-<script src="lock.js?v=178"></script>
+<script src="parse-vi.js?v=179"></script>
+<script src="thu-vien-cau.js?v=179"></script>
+<script src="quy-tac.js?v=179"></script>
+<script src="lock.js?v=179"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -7895,9 +7990,9 @@ function startNgay50k(){
       const list = byDay[k], tin = list.filter(x => x.amt > 0).reduce((a, x) => a + x.amt, 0), tout = list.filter(x => x.amt < 0).reduce((a, x) => a - x.amt, 0);
       const h = el("li", "day-h");
       h.innerHTML = '<span></span><small class="num"></small>';
-      h.querySelector("span").textContent = dateLabel(k);
-      const cardMode = String(walSel).indexOf("card:") === 0;
-      h.querySelector("small").textContent = [tin ? (cardMode ? "đã trả " : "thu ") + fmt(tin) : "", tout ? "chi " + fmt(tout) : ""].filter(Boolean).join(" · ");
+      const dd = new Date(k + "T00:00:00");
+      h.querySelector("span").textContent = WD[dd.getDay()] + ", " + dd.getDate() + "/" + (dd.getMonth() + 1);   /* v179: cùng kiểu dòng ngày ở Sổ */
+      h.querySelector("small").textContent = (tin ? "+" + fmt(tin) + "  " : "") + (tout ? "−" + fmt(tout) : "");
       ul.appendChild(h);
       list.forEach(x => { x.short = true; ul.appendChild(flowRow(x, false, true)); });
     });
@@ -7913,16 +8008,16 @@ function startNgay50k(){
   function balFlows(anchor, wid){
     wid = wid || wOf(anchor);
     const T = anchor.t || 0, out = [], main = wid === MAIN_W, inW = o => wOf(o) === wid;
-    const add = (t, amt, icon, label, kind, open, card, extra) => { if(t > T) out.push({ t, amt, icon, label, kind, open, card:!!card, extra:extra || "" }); };
+    const add = (t, amt, icon, label, kind, open, card, extra, tag) => { if(t > T) out.push({ t, amt, icon, label, kind, open, card:!!card, extra:extra || "", tag:tag || "" }); };
     for(const k in state.income) (state.income[k]||[]).forEach(it => {
       if(!inW(it)) return;
       const c = INC.find(x => x.id === it.cat) || INC[INC.length - 1];
-      add(recTime(k, it.t), Number(it.amt)||0, c.icon, (it.note || c.label) + (it.ph && it.ph.length ? " 📎" : ""), "Thu", () => openEdit(it.id, k, "in"), false, c.label);
+      add(recTime(k, it.t), Number(it.amt)||0, c.icon, (it.note || c.label) + (it.ph && it.ph.length ? " 📎" : ""), "Thu", () => openEdit(it.id, k, "in"), false, c.label, c.label);
     });
     for(const k in state.days) (state.days[k]||[]).forEach(it => {
       if(!inW(it)) return;
       const c = tagOf(it.cat);
-      add(recTime(k, it.t), -(Number(it.amt)||0), c.icon, (it.note || it.who || it.holder || c.label) + (it.ph && it.ph.length ? " 📎" : ""), it.fx ? "Định kỳ" : "Chi", () => openEdit(it.id, k, "out"), false, [c.label, it.who, it.holder, it.bank].filter(Boolean).join(" "));
+      add(recTime(k, it.t), -(Number(it.amt)||0), c.icon, (it.note || it.who || it.holder || c.label) + (it.ph && it.ph.length ? " 📎" : ""), it.fx ? "Định kỳ" : "Chi", () => openEdit(it.id, k, "out"), false, [c.label, it.who, it.holder, it.bank].filter(Boolean).join(" "), c.label + (it.fx ? " · định kỳ" : ""));
     });
     if(main) for(const k in state.cardTx) (state.cardTx[k]||[]).forEach(it => {
       const nm = cardName(it.cardId);
@@ -7955,7 +8050,7 @@ function startNgay50k(){
     setIcon(li.querySelector(".fi"), x.icon);
     li.querySelector(".fd div:first-child").textContent = x.label;
     const hm = new Date(x.t);
-    li.querySelector(".fd div:last-child").textContent = (x.short ? (untimed(x.t) ? "" : pad(hm.getHours()) + ":" + pad(hm.getMinutes()) + " · ") : (untimed(x.t) || soon ? stampText(x.t).replace(/ 00:00$/, "") : stampText(x.t)) + " · ") + x.kind;
+    li.querySelector(".fd div:last-child").textContent = (x.short ? (untimed(x.t) ? "" : pad(hm.getHours()) + ":" + pad(hm.getMinutes()) + " · ") : (untimed(x.t) || soon ? stampText(x.t).replace(/ 00:00$/, "") : stampText(x.t)) + " · ") + (x.short && x.tag ? x.tag : x.kind);
     const b = li.querySelector(".fa b");
     if(x.card){ b.textContent = fmt(x.amt); b.className = "num mute"; li.querySelector(".fa small").textContent = "nợ thẻ"; }
     else {

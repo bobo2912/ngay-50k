@@ -1,6 +1,20 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v178, ngày 16/10/2026
+**Phiên bản hiện tại:** v179, ngày 16/10/2026
+
+---
+
+## Có gì mới trong v179 (so với v178) – đồng nhất bố cục
+
+Khối cùng loại thì cùng bố cục, lấy kiểu đang dùng nhiều nhất làm chuẩn (không thêm kiểu mới):
+
+- **Thẻ số tiền đầu màn** (Sổ Ngày "Hôm nay còn", Sổ Tháng "Dòng tiền ròng", Ví "Tài khoản"/ví/thẻ): thẻ trắng, nhãn nhỏ chữ thường ở trên, số to bên trái, dòng phụ bên dưới. Sổ Ngày: số không còn nằm nhỏ bên phải. Ví: số dư nằm trong thẻ.
+- **Nút hành động**: hàng nút nền nhạt cao 44px ngay dưới thẻ (Ghi chi/Ghi thu, Cập nhật số dư ⇄ ✎, Trả thẻ/Sửa thẻ, Thêm khoản vay).
+- **Thanh chọn** Ngày/Tháng, Cả hai/Chi thường/Chi thẻ, Đi vay/Cho vay/Tất toán: cùng một kiểu viên thuốc.
+- **Danh sách giao dịch ở Ví** giống Sổ: nằm trong thẻ, dòng ngày "T6, 16/10 … +thu −chi", dòng phụ "giờ · nhóm" thay cho "Chi"/"Thu".
+- **Khoản vay**: hai số tổng thành hai ô như ô Thu vào / Chi thường ở Sổ Tháng.
+- **Tiêu đề khối** cùng cỡ, chữ thường ("7 ngày gần nhất" hết viết hoa). **Thanh chọn tháng**: tên tháng ở giữa ở mọi chỗ; "Hôm nay" ở Sổ Ngày cùng kiểu chữ với tên tháng.
+- Toàn bộ CSS nằm trong khối "v179: ĐỒNG NHẤT" cuối bảng kiểu; bỏ khối là về như v178. JS chỉ đổi dòng ngày và dòng phụ của danh sách Ví.
 
 ---
 
