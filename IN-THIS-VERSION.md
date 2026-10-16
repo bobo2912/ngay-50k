@@ -1,6 +1,13 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v181, ngày 16/10/2026
+**Phiên bản hiện tại:** v182, ngày 16/10/2026
+
+---
+
+## Có gì mới trong v182 (so với v181) – sửa lỗi "App mở chưa xong"
+
+- **Lỗi của v181:** máy có thẻ tín dụng mở app thì đứng ở "App mở chưa xong". Lúc khởi động, app vẽ nút thẻ (kèm chấm đỏ) và gọi `SEEN_KEY`, khi biến này (khai báo `const`) chưa được tạo. Đổi sang `function` để dùng được ở mọi thời điểm (giống lỗi `esc` ở v172). Dữ liệu không bị ảnh hưởng.
+- Đã thử: mở lại app khi đã có dữ liệu và thẻ, đi qua mọi tab, chấm đỏ vẫn chạy đúng.
 
 ---
 
