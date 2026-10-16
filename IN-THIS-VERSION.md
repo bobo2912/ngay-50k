@@ -1,6 +1,14 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v182, ngày 16/10/2026
+**Phiên bản hiện tại:** v183, ngày 16/10/2026
+
+---
+
+## Có gì mới trong v183 (so với v182) – nút "Phân tích lại bằng AI"
+
+- Khi AI đang tắt (chưa dán khoá API hoặc tắt "Dùng AI khi trò chuyện"), nút này trước đây vẫn hiện dưới mọi câu và bấm vào thì mở Cài đặt, trông như nút hỏng.
+- Giờ: AI tắt thì **không hiện nút dưới câu máy đã hiểu** (có thẻ ghi khoản). Câu máy chưa hiểu hiện nút **"✦ Chưa đúng? Bật AI để phân tích lại"**, ghi rõ là sẽ mở phần cài đặt AI. Trong Cài đặt có dòng nhắc quay lại Chat bấm lần nữa.
+- Kiểm tra AI lúc bấm nút chứ không phải lúc vẽ: bật AI xong, nút cũ trong Chat chạy được ngay.
 
 ---
 

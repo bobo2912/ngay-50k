@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v182";
+  var K = "ngay50k:errlog", VER = "v183";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -2947,7 +2947,7 @@ body::before, .settings::before, .lock, .welcome{background:var(--bg) !important
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v182</p>
+      <p class="sync" id="appVersion">Phiên bản v183</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3452,10 +3452,10 @@ body::before, .settings::before, .lock, .welcome{background:var(--bg) !important
 <input type="file" id="phFile" accept="image/*" hidden>
 <div class="ph-view" id="phView" role="dialog" aria-modal="true" aria-label="Ảnh hoá đơn" hidden><img id="phImg" alt="Ảnh hoá đơn"><div class="ph-bar"><button type="button" id="phDel">Bỏ ảnh này</button><button type="button" id="phClose">Đóng</button></div></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=182"></script>
-<script src="thu-vien-cau.js?v=182"></script>
-<script src="quy-tac.js?v=182"></script>
-<script src="lock.js?v=182"></script>
+<script src="parse-vi.js?v=183"></script>
+<script src="thu-vien-cau.js?v=183"></script>
+<script src="quy-tac.js?v=183"></script>
+<script src="lock.js?v=183"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -6652,10 +6652,16 @@ function startNgay50k(){
   }
   /* nút chọn nhanh dưới câu trả lời của máy: có AI thì phân tích lại; chưa cài AI thì chỉ hiện ở câu máy chưa hiểu, mở Cài đặt */
   function retryBtn(m, box){
+    /* v183: chưa bật AI thì không hiện nút dưới câu máy đã hiểu (có thẻ ghi khoản); câu còn lại ghi rõ là mở cài đặt AI.
+       Kiểm tra AI lúc bấm, không phải lúc vẽ: vừa bật AI xong bấm lại nút cũ vẫn chạy. */
+    const ready = aiReady();
+    if(!ready && m.items && m.items.length) return;
     const rb = document.createElement("button"); rb.type = "button"; rb.className = "ai-retry";
-    rb.textContent = "↻ Chưa đúng? Phân tích lại bằng AI";
-    if(aiReady()) rb.onclick = () => aiRetry(m);
-    else rb.onclick = () => { openSettings(); showSetPage("setAI"); const msg = $("aiMsg"); msg.className = "inline-ok warn"; msg.textContent = "Dán khoá API và bật \"Dùng AI khi trò chuyện\" để phân tích lại bằng AI."; msg.hidden = false; };
+    rb.textContent = ready ? "↻ Chưa đúng? Phân tích lại bằng AI" : "✦ Chưa đúng? Bật AI để phân tích lại";
+    rb.onclick = () => {
+      if(aiReady()) return aiRetry(m);
+      openSettings(); showSetPage("setAI"); const msg = $("aiMsg"); msg.className = "inline-ok warn"; msg.textContent = "AI đang tắt. Dán khoá API và bật \"Dùng AI khi trò chuyện\", rồi quay lại Chat bấm nút đó lần nữa."; msg.hidden = false;
+    };
     if(navigator.onLine === false) rb.disabled = true;
     box.appendChild(rb);
   }
