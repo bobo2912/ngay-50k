@@ -1,6 +1,14 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v180, ngày 16/10/2026
+**Phiên bản hiện tại:** v181, ngày 16/10/2026
+
+---
+
+## Có gì mới trong v181 (so với v180) – chấm đỏ = giao dịch thẻ mới
+
+- Chấm đỏ trên nút thẻ ở màn Ví giờ báo **có giao dịch thẻ mới** kể từ lần xem thẻ đó trước (trước đây báo "thẻ đang nợ", xem rồi vẫn không tắt). Bấm vào thẻ là tắt; đang mở thẻ mà có khoản mới thì cũng tính là đã xem.
+- "Mới" tính theo lúc khoản được ghi (kể cả khoản ghi bù ngày cũ), không theo ngày giao dịch.
+- Mốc "đã xem" lưu trên máy (`ngay50k:cardSeen:<mã thẻ>`), không vào file sao lưu. Lần đầu mở bản này coi như đã xem hết, chưa có chấm.
 
 ---
 
