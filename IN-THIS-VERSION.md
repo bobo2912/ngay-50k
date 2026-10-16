@@ -1,6 +1,14 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v177, ngày 16/10/2026
+**Phiên bản hiện tại:** v178, ngày 16/10/2026
+
+---
+
+## Có gì mới trong v178 (so với v177) – sửa số dư không giảm
+
+- **Lỗi:** gõ "Ăn tối 50k" lúc 18:32 thì khoản được ghi vào **20:00** (chữ "tối" được hiểu là 20h). Khoản nằm sau giờ hiện tại nên số dư chưa trừ tới 20h, trong khi hạn mức ngày đã tính, nên Chat báo vượt hạn mức mà số dư đứng yên.
+- **Sửa:** giờ đoán từ buổi (sáng 8h, trưa 12h, chiều 16h, tối 20h, đêm 22h) mà rơi vào sau lúc này của hôm nay thì lấy giờ hiện tại. "Hôm qua ăn tối", "tối mai", và giờ nói rõ ("lúc 21h") giữ nguyên như cũ. Sửa trong `parse-vi.js` (`dateIn` trả thêm `soft`).
+- Khoản đã ghi trước bản này vẫn tự trừ vào số dư khi tới giờ đã ghi.
 
 ---
 

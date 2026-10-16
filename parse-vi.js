@@ -92,7 +92,7 @@
       if(hasMarks(o)) return o === "tôi";
       return !(N[i+1] === "nay" || N[i+1] === "qua" || N[i-1] === "buoi");
     };
-    let date = null, hh = null, mm = null; const drop = new Set();
+    let date = null, hh = null, mm = null, partHH = null; const drop = new Set();
     const at = (i, words) => words.every((w, k) => N[i+k] === w);
     /* v123: câu nói về khoản sắp tới ("dự kiến", "sẽ", "sắp", "định", "hẹn", "tuần sau"…): "ngày 20", "thứ 6" hiểu là sắp tới, không lùi về trước */
     const oL = i => O && O[i] ? clean(O[i]).toLowerCase() : "";
@@ -102,7 +102,7 @@
       const w = N[i];
       /* ngày mai, sáng mai, tối mai; ngày kia / ngày mốt (không nhầm "chị Mai") */
       if((at(i, ["ngay","mai"]) || (PARTS[w] !== undefined && N[i+1] === "mai")) && !isCap(clean(O ? O[i+1] || "" : ""))){
-        date = keyOf(addDays(now, 1)); drop.add(i).add(i+1); if(PARTS[w] !== undefined && hh === null) hh = PARTS[w]; i++; continue;
+        date = keyOf(addDays(now, 1)); drop.add(i).add(i+1); if(PARTS[w] !== undefined && hh === null) hh = partHH = PARTS[w]; i++; continue;
       }
       if(at(i, ["ngay","kia"]) || (w === "ngay" && oL(i+1) === "mốt") || oL(i) === "mốt"){ date = keyOf(addDays(now, 2)); drop.add(i); if(w === "ngay") drop.add(i+1); continue; }
       if(w === "hnay" || w === "homnay" || at(i, ["hum","nay"])){ date = keyOf(now); drop.add(i); if(w === "hum") drop.add(i+1); }
@@ -115,7 +115,7 @@
       else if(at(i, ["bua","nay"]) || at(i, ["bua","qua"])){ date = keyOf(addDays(now, N[i+1] === "qua" ? -1 : 0)); drop.add(i).add(i+1); }
       else if(PARTS[w] !== undefined && (N[i+1] === "nay" || N[i+1] === "qua" || i === 0 || drop.has(i-1) || N[i-1] === "buoi" || N[i-1] === "an")
               && !(w === "toi" && isMe(i))){
-        if(hh === null) hh = PARTS[w];
+        if(hh === null) hh = partHH = PARTS[w];
         if(N[i+1] === "nay"){ drop.add(i).add(i+1); if(!date) date = keyOf(now); }
         else if(N[i+1] === "qua"){ drop.add(i).add(i+1); date = keyOf(addDays(now, -1)); }
         else if(N[i-1] !== "an") drop.add(i);                     /* "ăn trưa" giữ lại làm nội dung */
@@ -158,7 +158,8 @@
         }
       }
     }
-    return { date, hh, mm, drop };
+    /* soft (v177): giờ chỉ đoán từ buổi ("ăn tối" = 20h), không phải giờ người dùng nói rõ */
+    return { date, hh, mm, drop, soft: hh !== null && hh === partHH && mm === null };
   }
 
   /* ---------------- tag ---------------- */
@@ -391,14 +392,17 @@
     const calc = amt ? calcAmount(O, N, amtI, amtN, amt, drop) : null;
     if(calc){ amt = calc.amt; }
     const date = dt.date || carry.date || keyOf(now);
-    const hh = dt.hh !== null ? dt.hh : carry.hh;
+    const hh = dt.hh !== null ? dt.hh : carry.hh, soft = dt.hh !== null ? dt.soft : !!carry.soft;
     const item = { amt, date, cardId:null, who:"", loanId:null, src:"tk" };
     if(calc){ item.calc = calc.how; if(calc.split){ item.split = calc.split; item.total = calc.total; } }
     let t;
     if(date === keyOf(now) && hh === null) t = now.getTime();
     else { const d = new Date(date + "T12:00:00"); if(hh !== null){ d.setHours(hh, dt.mm || 0, 0, 0); } else d.setHours(now.getHours(), now.getMinutes(), 0, 0); t = d.getTime(); }
+    /* v177: "ăn tối 50k" gõ lúc 18:30 từng thành 20:00 hôm nay, tức khoản chưa tới giờ: số dư chưa trừ tới 20h.
+       Giờ đoán từ buổi mà rơi vào sau lúc này của hôm nay thì lấy giờ hiện tại. */
+    if(soft && date === keyOf(now) && t > now.getTime()) t = now.getTime();
     item.t = t;
-    const meta = { date:dt.date || carry.date, hh };
+    const meta = { date:dt.date || carry.date, hh, soft };
     if(!amt) return { item:null, meta, text:O.join(" ") };
 
     const txt = " " + N.join(" ") + " ";
@@ -973,7 +977,7 @@
     clauses(raw).forEach(c => {
       const r = oneClause(pendingText ? tokenize(pendingText + " " + c.O.join(" ")) : c, ctx, carry);
       if(r.meta.date) carry.date = r.meta.date;
-      if(r.meta.hh !== null && r.meta.hh !== undefined) carry.hh = r.meta.hh;
+      if(r.meta.hh !== null && r.meta.hh !== undefined){ carry.hh = r.meta.hh; carry.soft = !!r.meta.soft; }
       if(r.item){ items.push(r.item); pendingText = ""; }
       else pendingText = (pendingText ? pendingText + " " : "") + r.text;
     });
