@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v176";
+  var K = "ngay50k:errlog", VER = "v177";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -2850,7 +2850,7 @@ body::before, .settings::before, .lock, .welcome{background:var(--bg) !important
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v176</p>
+      <p class="sync" id="appVersion">Phiên bản v177</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3355,10 +3355,10 @@ body::before, .settings::before, .lock, .welcome{background:var(--bg) !important
 <input type="file" id="phFile" accept="image/*" hidden>
 <div class="ph-view" id="phView" role="dialog" aria-modal="true" aria-label="Ảnh hoá đơn" hidden><img id="phImg" alt="Ảnh hoá đơn"><div class="ph-bar"><button type="button" id="phDel">Bỏ ảnh này</button><button type="button" id="phClose">Đóng</button></div></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=176"></script>
-<script src="thu-vien-cau.js?v=176"></script>
-<script src="quy-tac.js?v=176"></script>
-<script src="lock.js?v=176"></script>
+<script src="parse-vi.js?v=177"></script>
+<script src="thu-vien-cau.js?v=177"></script>
+<script src="quy-tac.js?v=177"></script>
+<script src="lock.js?v=177"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -3640,6 +3640,60 @@ function startNgay50k(){
 
   const $ = id => document.getElementById(id);
   const fmt = n => Math.round(n).toLocaleString("vi-VN") + "đ";
+  /* v177: SỐ CHẠY. Số tiền đổi thì chạy từ số cũ tới số mới (~0,5–0,9 giây) thay vì nhảy ngay.
+     - Lần đầu ghi vào một ô, chữ không phải số tiền ("Chưa có"), hoặc đổi sang thứ khác (key khác, vd chọn ví khác): đặt thẳng.
+     - Ô đang ẩn (tab khác, app chạy nền): đặt thẳng nhưng nhớ số cũ; lúc ô hiện lại (đổi tab, mở lại app) mới chạy.
+     - Máy bật Giảm chuyển động: không chạy. */
+  var ROLL_PEND = new Set();
+  function rollParse(t){
+    const m = /^([−+-]?)(\d[\d.]*)đ$/.exec(String(t == null ? "" : t).trim());
+    return m ? (m[1] && m[1] !== "+" ? -1 : 1) * Number(m[2].replace(/\./g, "")) : null;
+  }
+  function rollRun(el, a, text){
+    if(el._roll){ cancelAnimationFrame(el._roll); el._roll = 0; }
+    const b = rollParse(text);
+    if(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches){ el.textContent = text; return; }
+    const plus = text.charAt(0) === "+", t0 = performance.now();
+    const show = v => { el.textContent = (v < 0 ? "−" : v > 0 && plus ? "+" : "") + fmt(Math.abs(v)); };
+    show(a);                                          /* khung đầu tiên đã là số cũ, không chớp số mới */
+    const dur = Math.min(900, 420 + Math.log10(Math.abs(b - a) + 1) * 70);
+    const step = now => {
+      const t = Math.min(1, (now - t0) / dur);
+      if(t >= 1){ el.textContent = text; el._roll = 0; return; }
+      show(Math.round(a + (b - a) * (1 - Math.pow(1 - t, 3))));
+      el._roll = requestAnimationFrame(step);
+    };
+    el._roll = requestAnimationFrame(step);
+  }
+  function rollTo(el, text, key){
+    if(!el) return;
+    text = String(text);
+    if(el._roll){ cancelAnimationFrame(el._roll); el._roll = 0; }
+    const first = !el._seen, keyOk = key === undefined || el._rk === key;
+    el._seen = true; el._rk = key;
+    const a = rollParse(el.textContent), b = rollParse(text);
+    if(first || !keyOk || a === null || b === null){ el._from = null; ROLL_PEND.delete(el); el.textContent = text; return; }
+    if(document.hidden || !el.getClientRects().length){
+      if(el._from == null) el._from = a;          /* giữ số người dùng thấy lần cuối */
+      ROLL_PEND.add(el); el.textContent = text; return;
+    }
+    const from = el._from != null ? el._from : a;
+    el._from = null; ROLL_PEND.delete(el);
+    if(from === b){ el.textContent = text; return; }
+    rollRun(el, from, text);
+  }
+  function rollPending(){
+    if(document.hidden) return;
+    ROLL_PEND.forEach(el => {
+      if(!el.isConnected){ ROLL_PEND.delete(el); return; }
+      if(!el.getClientRects().length) return;
+      ROLL_PEND.delete(el);
+      const from = el._from, text = el.textContent, b = rollParse(text); el._from = null;
+      if(from == null || b === null || from === b) return;
+      rollRun(el, from, text);
+    });
+  }
+  document.addEventListener("visibilitychange", () => { if(!document.hidden) rollPending(); });
   const pad = n => String(n).padStart(2,"0");
   const keyOf = d => d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
   const todayKey = () => keyOf(new Date());
@@ -4331,7 +4385,7 @@ function startNgay50k(){
     $("corner").textContent = Math.round(b/1000);
     $("mask").style.width = (left<0 ? 100 : pct) + "%";
     note.classList.toggle("over", left<0);
-    $("remain").textContent = left<0 ? "−" + fmt(-left) : fmt(left);
+    rollTo($("remain"), left<0 ? "−" + fmt(-left) : fmt(left));
     $("remainLabel").textContent = left<0 ? "Hôm nay vượt" : "Hôm nay còn";
     note.setAttribute("aria-label", left<0 ? "Đã vượt " + fmt(-left) : "Còn lại " + fmt(left) + " trên " + fmt(b));
     let s;
@@ -4474,15 +4528,15 @@ function startNgay50k(){
     }); }
     const tloan = loanFlowOfMonth(prefix);
 
-    $("sumIn").textContent = "+" + fmt(tin);
-    $("sumOut").textContent = "−" + fmt(tout);
-    $("sumCard").textContent = "−" + fmt(tcard);
-    $("sumLoan").textContent = (tloan < 0 ? "−" : tloan > 0 ? "+" : "") + fmt(Math.abs(tloan));
+    rollTo($("sumIn"), "+" + fmt(tin));
+    rollTo($("sumOut"), "−" + fmt(tout));
+    rollTo($("sumCard"), "−" + fmt(tcard));
+    rollTo($("sumLoan"), (tloan < 0 ? "−" : tloan > 0 ? "+" : "") + fmt(Math.abs(tloan)));
 
     const inc = netFilter !== "card", incC = netFilter !== "cash";
     const spend = (inc ? tout : 0) + (incC ? tcard : 0);
     const net = tin - spend, ne = $("sumNet");
-    ne.textContent = (net<0 ? "−" : net>0 ? "+" : "") + fmt(Math.abs(net));
+    rollTo(ne, (net<0 ? "−" : net>0 ? "+" : "") + fmt(Math.abs(net)));
     ne.style.color = net<0 ? "var(--over)" : net>0 ? "var(--ok)" : "var(--ink)";
     $("netLabel").textContent = netFilter === "cash" ? "Dòng tiền ròng (chỉ tính chi thường)"
       : netFilter === "card" ? "Dòng tiền ròng (chỉ tính chi thẻ)" : "Dòng tiền ròng tháng này";
@@ -5331,6 +5385,7 @@ function startNgay50k(){
     renderWTabs();
     if(name === "wal") renderWal();
     window.scrollTo(0,0);
+    rollPending();   /* v177: số ở tab vừa mở chạy từ số cũ (gọi ngay, trước khi trình duyệt vẽ, để không chớp số mới) */
     if(name === "chat"){ renderChat(); dockLast = { b:-1, h:-1 }; placeDock(); chatScrollEnd(false); setTimeout(() => { dockLast = { b:-1, h:-1 }; placeDock(); }, 250); }
   }
   function renderAll(){ renderToday(); renderCal(); renderMoney(); renderLoans(); renderPeople(); renderCards(); renderBalance(); }
@@ -6522,7 +6577,7 @@ function startNgay50k(){
       if(dk !== lastDay){ const tm = document.createElement("div"); tm.className = "msg-time"; tm.textContent = dk === todayKey() ? "Hôm nay" : fmtDate(dk); log.appendChild(tm); lastDay = dk; }
       log.appendChild(msgEl(m));
     });
-    const T = walletsTotal(); $("chatBal").textContent = T.any ? sMoney(T.cash) : "chưa có";
+    const T = walletsTotal(); rollTo($("chatBal"), T.any ? sMoney(T.cash) : "chưa có");
     aiBadge();
     const sg = $("chatSugg"); sg.innerHTML = "";
     ["Hôm nay tiêu bao nhiêu?", "Ai còn nợ mình?", "Số dư còn bao nhiêu?", "Tháng này ăn uống bao nhiêu?"].forEach(t => {
@@ -7676,7 +7731,7 @@ function startNgay50k(){
   function renderBalance(){
     const T = walletsTotal(), hasCards = (state.cards || []).length > 0, many = multiW(), tabs = stripOn();
     const big = $("balNow"), sub = $("balSub"), main = T.rows[0].r;
-    if($("chatBal")) $("chatBal").textContent = T.any ? sMon(T.cash) : "chưa có";
+    if($("chatBal")) rollTo($("chatBal"), T.any ? sMon(T.cash) : "chưa có");
     renderWTabs(T);
     $("wAddBtn").hidden = tabs;
     $("walletPay").hidden = true;   /* v101: trả thẻ nằm ở tab thẻ, không đặt ở tab Tài khoản nữa */
@@ -7689,7 +7744,7 @@ function startNgay50k(){
       $("balWhen").textContent = ""; $("balOpenLabel").textContent = "Nhập số dư hiện tại";
     } else {
       const v = tabs ? main.bal : T.net;
-      big.textContent = sMon(v); big.parentNode.classList.toggle("neg", v < 0);
+      rollTo(big, sMon(v), tabs ? "main" : "net"); big.parentNode.classList.toggle("neg", v < 0);
       const parts = [];
       if(!tabs && T.debt > 0) parts.push("Trong ví " + sMon(T.cash) + " · đang nợ thẻ " + fmt(T.debt));
       else if(!tabs && hasCards) parts.push("Không nợ thẻ");
@@ -7744,7 +7799,7 @@ function startNgay50k(){
         .reduce((a, p) => a + (Number(p.amt) || 0), 0) : 0;
       const net = tot - paid;
       nameEl.textContent = c ? c.name : "Thẻ tín dụng";
-      num.textContent = net > 0 ? "−" + fmt(net) : net < 0 ? "+" + fmt(-net) : "0đ";
+      rollTo(num, net > 0 ? "−" + fmt(net) : net < 0 ? "+" + fmt(-net) : "0đ", sel + "@" + mk);
       if(net > 0) num.classList.add("debt");
       const ml = (cm.getMonth() + 1) + "/" + cm.getFullYear();
       sub.textContent = paid ? "Chi " + fmt(tot) + " · đã trả " + fmt(paid) + " · tháng " + ml : "Chi tháng " + ml + (rows.length ? " · " + rows.length + " khoản" : "");
@@ -7753,7 +7808,7 @@ function startNgay50k(){
     }
     const wid = sel === MAIN_W ? MAIN_W : sel, w = walletById(wid), r = balCalc(null, wid);
     nameEl.textContent = w ? w.name : "Tài khoản";
-    num.textContent = r ? sMon(r.bal) : "Chưa có số dư";
+    rollTo(num, r ? sMon(r.bal) : "Chưa có số dư", sel);
     if(r && r.bal < 0) num.classList.add("neg");
     sub.textContent = r ? "Đối chiếu " + stampText(r.anchor.t) : "Nhập số dư đang có, app sẽ tự tính tiếp";
     btn(r ? "Cập nhật số dư" : "Nhập số dư", "", () => openBalance(wid));
@@ -8702,7 +8757,7 @@ function startNgay50k(){
     if(cardFilterId && !cardOf(cardFilterId)) cardFilterId = null;
     const shown = cardFilterId ? rows.filter(r => r.it.cardId === cardFilterId) : rows;
     const total = shown.reduce((a, r) => a + (Number(r.it.amt) || 0), 0);
-    $("cardMonthSum").textContent = fmt(total);
+    rollTo($("cardMonthSum"), fmt(total));
     $("cardSumLabel").textContent = cardFilterId === "__none" ? "Khoản chưa gán thẻ"
       : cardFilterId ? cardLabel(cardOf(cardFilterId)) : "Chi bằng thẻ tháng này";
     $("cardListTitle").textContent = "Lịch sử giao dịch";

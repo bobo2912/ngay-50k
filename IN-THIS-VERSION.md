@@ -1,6 +1,15 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v176, ngày 15/10/2026
+**Phiên bản hiện tại:** v177, ngày 16/10/2026
+
+---
+
+## Có gì mới trong v177 (so với v176) – số chạy
+
+- Số tiền đổi thì **chạy từ số cũ tới số mới** (0,5–0,9 giây, chậm dần về cuối) thay vì nhảy ngay: "Hôm nay còn", số dư Tài khoản, số dư ví và thẻ ở màn Ví, số dư ở Chat, Dòng tiền ròng và 4 ô Thu vào / Chi thường / Chi thẻ / Khoản vay ở Tổng quan, tổng chi thẻ tháng.
+- Ghi ở Chat rồi mở tab khác: số ở tab đó chạy từ số bạn thấy lần trước. Ứng dụng chạy nền (vd phím tắt tự ghi) rồi mở lại: số cũng chạy.
+- Không chạy khi: mở app lần đầu, chuyển sang ví khác hoặc thẻ khác (số của ví khác), chữ không phải số tiền ("Chưa có"), hoặc máy bật **Giảm chuyển động** trong Cài đặt trợ năng.
+- Hàm dùng chung `rollTo(el, text, key)`; muốn ô nào chạy số thì thay `el.textContent = …` bằng `rollTo(el, …)`.
 
 ---
 
