@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v179";
+  var K = "ngay50k:errlog", VER = "v180";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -1861,7 +1861,7 @@ body.kb #tab-chat > .chip-veil{display:none}
 .so-seg{display:flex; background:var(--field, rgba(0,0,0,.05)); border-radius:999px; padding:3px; margin:0 0 12px}
 .so-seg button{flex:1; border:0; background:transparent; border-radius:999px; padding:7px 0; font:inherit; font-size:.86rem; font-weight:600; color:var(--muted)}
 .so-seg button[aria-pressed="true"]{background:var(--glass-strong, var(--surface)); color:var(--note); box-shadow:var(--shadow-s)}
-#list .item.inc-it .amt, #ledgerList .item.inc-it .amt{color:#23955f}
+#list .item.inc-it .amt, #ledgerList .item.inc-it .amt, #walFlow .item.inc-it .amt{color:#23955f}
 .srcic{display:inline-block; margin-left:5px; font-size:.7em; line-height:1; font-style:normal; vertical-align:middle; position:relative; top:-.17em}
 /* v110 */
 .walmonth{margin:2px 0 10px}
@@ -1882,7 +1882,7 @@ body.kb #tab-chat > .chip-veil{display:none}
 .wh-btn.ghost{background:transparent; border:1px solid var(--line); color:var(--ink)}
 /* v109: lúc tìm, khối chứa ô tìm không còn nền trắng thừa phía trên */
 /* v111: Sổ → Tháng: dải tiêu đề + ô tìm sát mép trên khung, không còn đường trắng phía trên */
-#tab-money section:has(#ledgerList){overflow:clip}
+#tab-money section:has(#ledgerList), #tab-wal section:has(#walFlow){overflow:clip}
 #tab-money section:has(#ledgerList) > .ledger-head{margin-top:-14px; border-radius:0}
 #tab-money.searching section:has(#ledgerList) > .ledger-head{margin-top:0}
 #tab-money.searching > section, #tab-wal.searching > section{background:transparent!important; border:0!important; box-shadow:none!important; padding-top:0!important}
@@ -2058,6 +2058,8 @@ body::before, .settings::before, .lock, .welcome{background:var(--bg) !important
 #walFlow .fd div:last-child, #walSoon .fd div:last-child{font-size:.72rem !important}
 #walFlow .fa b, #walSoon .fa b{font-size:.88rem !important; font-weight:700 !important}
 #walFlow li.day-h + li{border-top:0}
+#walFlow > ul{list-style:none; margin:0; padding:0}
+#walFlow > .day-head:first-child{margin-top:6px}
 
 /* 5. tiêu đề khối */
 #tab-today section > h2, #tab-money section h2, #tab-wal section h2, #tab-loans .list-head h2, #walFlowTitle, #ledgerTitle, #activeTitle{
@@ -2187,7 +2189,7 @@ body::before, .settings::before, .lock, .welcome{background:var(--bg) !important
           <button type="button" class="sx" id="walSearchClear" hidden aria-label="Xoá tìm kiếm">✕</button>
         </div>
       </div>
-      <ul class="flow" id="walFlow"></ul>
+      <div id="walFlow"></div>
       <button type="button" class="linkbtn" id="walMore" hidden>Xem thêm</button>
     </section>
   </div>
@@ -2945,7 +2947,7 @@ body::before, .settings::before, .lock, .welcome{background:var(--bg) !important
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v179</p>
+      <p class="sync" id="appVersion">Phiên bản v180</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3450,10 +3452,10 @@ body::before, .settings::before, .lock, .welcome{background:var(--bg) !important
 <input type="file" id="phFile" accept="image/*" hidden>
 <div class="ph-view" id="phView" role="dialog" aria-modal="true" aria-label="Ảnh hoá đơn" hidden><img id="phImg" alt="Ảnh hoá đơn"><div class="ph-bar"><button type="button" id="phDel">Bỏ ảnh này</button><button type="button" id="phClose">Đóng</button></div></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=179"></script>
-<script src="thu-vien-cau.js?v=179"></script>
-<script src="quy-tac.js?v=179"></script>
-<script src="lock.js?v=179"></script>
+<script src="parse-vi.js?v=180"></script>
+<script src="thu-vien-cau.js?v=180"></script>
+<script src="quy-tac.js?v=180"></script>
+<script src="lock.js?v=180"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -7944,6 +7946,42 @@ function startNgay50k(){
     const N = Date.now(); const past = out.filter(x => x.t <= N); past.soon = out.filter(x => x.t > N);
     return past;
   }
+  /* v180: mọi giao dịch của một ví (hoặc thẻ) theo từng ngày, mỗi dòng vẽ bằng hàm của Sổ (itemRow, incDayRow, cardDayRow, moveDayRow) */
+  function walRows(sel){
+    const out = [], isCard = String(sel).indexOf("card:") === 0, cid = isCard ? sel.slice(5) : null;
+    const only = (state.cards || []).length === 1, wid = isCard ? null : (sel || MAIN_W), main = wid === MAIN_W;
+    const push = (k, t, amt, txt, din, dout, el) => out.push({ k, t, amt, txt, din, dout, el });
+    if(isCard){
+      for(const k in (state.cardTx || {})) (state.cardTx[k] || []).forEach(it => {
+        if(it.cardId !== cid && !(only && !it.cardId)) return;
+        const n = Number(it.amt) || 0;
+        push(k, recTime(k, it.t), -n, (it.where || "") + " " + tagOf(it.cat).label, 0, n, () => cardDayRow(it, k, true));
+      });
+    } else {
+      for(const k in state.days) (state.days[k] || []).forEach(it => {
+        if(wOf(it) !== wid) return;
+        const n = Number(it.amt) || 0;
+        push(k, recTime(k, it.t), -n, [it.note, it.who, it.holder, it.bank, tagOf(it.cat).label].filter(Boolean).join(" "), 0, it.fx ? 0 : n, () => itemRow(it, { day:k, sign:true }));
+      });
+      for(const k in state.income) (state.income[k] || []).forEach(it => {
+        if(wOf(it) !== wid) return;
+        const n = Number(it.amt) || 0, c = INC.find(x => x.id === it.cat) || INC[INC.length - 1];
+        push(k, recTime(k, it.t), n, (it.note || "") + " " + c.label, n, 0, () => incDayRow(it, k));
+      });
+    }
+    /* khoản không tính thu chi: trả thẻ, chuyển giữa ví, vay */
+    const keys = new Set();
+    (state.cardPay || []).forEach(p => keys.add(p.date)); (state.xfer || []).forEach(x => keys.add(x.date));
+    if(main) state.loans.forEach(l => [l].concat(l.draws || [], l.payments || []).forEach(e => keys.add(e.date)));
+    keys.forEach(k => dayMoves(k).forEach(mv => {
+      let mine = false;
+      if(mv.kind === "pay") mine = isCard ? (mv.o.cardId === cid || (only && !mv.o.cardId)) : (mv.o.from || MAIN_W) === wid;
+      else if(mv.kind === "xfer") mine = !isCard && ((mv.o.from || MAIN_W) === wid || (mv.o.to || MAIN_W) === wid);
+      else if(mv.kind === "loan") mine = main;
+      if(mine) push(k, mv.t, mv.amt, mv.name, 0, 0, () => moveDayRow(mv));
+    }));
+    return out;
+  }
   var walMonth = null;
   function renderWal(){
     if(!walMonth){ walMonth = new Date(); walMonth.setDate(1); }
@@ -7970,31 +8008,30 @@ function startNgay50k(){
     soon.slice(0, 20).forEach(x => us.appendChild(flowRow(x, true, true)));
     ul.innerHTML = "";
     $("walFlowTitle").textContent = "Lịch sử giao dịch";
-    /* v108: tìm trong lịch sử của ví đang chọn (không dấu cũng được, gõ số tiền từ 3 chữ số) */
+    /* v180: lịch sử ví vẽ bằng đúng các dòng của Sổ Tháng (cùng dòng ngày, dòng phụ, biểu tượng nguồn tiền, nút ✕), chỉ lọc theo ví đang chọn */
+    let rows = walRows(walSel).filter(r => r.t <= Date.now());
     const q = walQ.trim();
     if(q){
       const P = window.N50KParse, nq = P ? P.norm(q) : q.toLowerCase(), dq = q.replace(/[^\d]/g, "");
-      all = all.concat(soon).filter(x => {
-        const txt = (x.label + " " + x.kind + " " + (x.extra || "")).toLowerCase();
-        return (P ? P.norm(txt) : txt).indexOf(nq) >= 0 || (dq.length >= 3 && String(Math.abs(x.amt)).indexOf(dq) === 0);
-      }).sort((a, b) => b.t - a.t);
-      const tin = all.filter(x => x.amt > 0).reduce((a, x) => a + x.amt, 0), tout = all.filter(x => x.amt < 0).reduce((a, x) => a - x.amt, 0);
-      $("walFlowTitle").textContent = all.length ? "Tìm thấy " + all.length + " khoản" + (tin ? " · thu " + fmt(tin) : "") + (tout ? " · chi " + fmt(tout) : "") : "Không tìm thấy khoản nào";
-      if(!all.length){ ul.innerHTML = '<p class="empty">Thử tên nơi chi, tên nhóm hoặc số tiền.</p>'; $("walMore").hidden = true; return; }
-    }
-    if(!q) all = all.filter(x => keyOf(new Date(x.t)).slice(0, 7) === mk);   /* không tìm: chỉ tháng đang xem */
-    if(!all.length){ ul.innerHTML = '<p class="empty">Chưa có giao dịch nào trong tháng này.</p>'; $("walMore").hidden = true; return; }
-    const days = []; const byDay = {};
-    all.forEach(x => { const k = keyOf(new Date(x.t)); if(!byDay[k]){ byDay[k] = []; days.push(k); } byDay[k].push(x); });
-    days.slice(0, 400).forEach(k => {
-      const list = byDay[k], tin = list.filter(x => x.amt > 0).reduce((a, x) => a + x.amt, 0), tout = list.filter(x => x.amt < 0).reduce((a, x) => a - x.amt, 0);
-      const h = el("li", "day-h");
-      h.innerHTML = '<span></span><small class="num"></small>';
-      const dd = new Date(k + "T00:00:00");
-      h.querySelector("span").textContent = WD[dd.getDay()] + ", " + dd.getDate() + "/" + (dd.getMonth() + 1);   /* v179: cùng kiểu dòng ngày ở Sổ */
-      h.querySelector("small").textContent = (tin ? "+" + fmt(tin) + "  " : "") + (tout ? "−" + fmt(tout) : "");
-      ul.appendChild(h);
-      list.forEach(x => { x.short = true; ul.appendChild(flowRow(x, false, true)); });
+      rows = rows.filter(r => { const txt = r.txt.toLowerCase(); return (P ? P.norm(txt) : txt).indexOf(nq) >= 0 || (dq.length >= 3 && String(Math.abs(r.amt)).indexOf(dq) === 0); });
+      const tin = rows.reduce((a, r) => a + r.din, 0), tout = rows.reduce((a, r) => a + r.dout, 0);
+      $("walFlowTitle").textContent = rows.length ? "Tìm thấy " + rows.length + " khoản" + (tin ? " · thu " + fmt(tin) : "") + (tout ? " · chi " + fmt(tout) : "") : "Không tìm thấy khoản nào";
+      if(!rows.length){ ul.innerHTML = '<p class="empty">Thử tên nơi chi, tên nhóm hoặc số tiền.</p>'; $("walMore").hidden = true; return; }
+    } else rows = rows.filter(r => r.k.slice(0, 7) === mk);   /* không tìm: chỉ tháng đang xem */
+    if(!rows.length){ ul.innerHTML = '<p class="empty">Chưa có giao dịch nào trong tháng này.</p>'; $("walMore").hidden = true; return; }
+    const byDay = {}, days = [];
+    rows.forEach(r => { if(!byDay[r.k]){ byDay[r.k] = []; days.push(r.k); } byDay[r.k].push(r); });
+    days.sort().reverse().forEach(k => {
+      const list = byDay[k].sort((a, b) => b.t - a.t), d = new Date(k + "T00:00:00");
+      const din = list.reduce((a, r) => a + r.din, 0), dout = list.reduce((a, r) => a + r.dout, 0);
+      const head = document.createElement("div"); head.className = "day-head";
+      head.innerHTML = "<span></span><span class='num'></span>";
+      head.children[0].textContent = WD[d.getDay()] + ", " + d.getDate() + "/" + (d.getMonth()+1);
+      head.children[1].textContent = (din ? "+" + fmt(din) + "  " : "") + (dout ? "−" + fmt(dout) : "");
+      ul.appendChild(head);
+      const box = document.createElement("ul");
+      list.forEach(r => box.appendChild(r.el()));
+      ul.appendChild(box);
     });
     $("walMore").hidden = true;
   }

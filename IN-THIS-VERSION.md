@@ -1,6 +1,14 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v179, ngày 16/10/2026
+**Phiên bản hiện tại:** v180, ngày 16/10/2026
+
+---
+
+## Có gì mới trong v180 (so với v179) – lịch sử Ví giống Sổ Tháng
+
+- Lịch sử giao dịch ở Ví (tài khoản, ví khác, thẻ) giờ vẽ bằng đúng các dòng của Sổ Tháng: dòng ngày, dòng phụ "giờ · nhóm", biểu tượng nguồn tiền (🏦 💳…), khoản thu màu xanh, khoản không tính thu chi ghi "không tính thu chi", và nút ✕ xoá (chạm hai lần như ở Sổ).
+- Chỉ khác Sổ ở chỗ lọc theo ví đang chọn. Ô tìm vẫn tìm trong mọi tháng của ví đó.
+- Hàm mới `walRows(sel)`; `#walFlow` đổi từ danh sách `flow` sang khối như `#ledgerList`.
 
 ---
 
