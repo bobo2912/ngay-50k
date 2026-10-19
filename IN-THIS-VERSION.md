@@ -1,6 +1,12 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v184, ngày 19/10/2026
+**Phiên bản hiện tại:** v185, ngày 19/10/2026
+
+---
+
+## Có gì mới trong v185 (so với v184)
+
+- Nút mũi tên chuyển ngày / tháng (Sổ Ngày, Lịch chi tiêu, Sổ Tháng, màn Ví, màn thẻ) nằm **đúng giữa hình tròn**. Trước đây dùng ký tự ‹ › của font nên bị lệch lên và lệch sang một bên; giờ vẽ bằng CSS.
 
 ---
 

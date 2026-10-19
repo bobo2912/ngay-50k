@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v184";
+  var K = "ngay50k:errlog", VER = "v185";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -2079,6 +2079,16 @@ body::before, .settings::before, .lock, .welcome{background:var(--bg) !important
 #tab-wal.searching section:has(#walFlow) > .ledger-head{margin-top:0}
 #tab-money section:has(#ledgerList) > .ledger-head{border-radius:var(--r-card,16px) var(--r-card,16px) 0 0}
 
+/* v185: nút mũi tên ‹ › vẽ bằng CSS, nằm đúng giữa hình tròn (ký tự ‹ › của font lệch lên và lệch trái) */
+#walPrev, #walNext, #prevDay, #nextDay, #calPrev, #calNext, #prevMonth, #nextMonth, #prevCardMonth, #nextCardMonth{
+  position:relative; display:inline-flex !important; align-items:center; justify-content:center; padding:0 !important;
+  font-size:0 !important; line-height:0 !important; color:var(--ink); flex:none}
+#walPrev::before, #walNext::before, #prevDay::before, #nextDay::before, #calPrev::before, #calNext::before,
+#prevMonth::before, #nextMonth::before, #prevCardMonth::before, #nextCardMonth::before{
+  content:""; width:8px; height:8px; border-left:2px solid currentColor; border-bottom:2px solid currentColor; box-sizing:border-box;
+  transform:translateX(1.5px) rotate(45deg)}
+#walNext::before, #nextDay::before, #calNext::before, #nextMonth::before, #nextCardMonth::before{transform:translateX(-1.5px) rotate(-135deg)}
+
 /* Khoản vay: hai số tổng là hai ô như ô Thu vào / Chi thường ở Sổ Tháng */
 #loansMain > .ledger{display:grid !important; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; background:none !important;
   border:0 !important; box-shadow:none !important; padding:0 !important}
@@ -2947,7 +2957,7 @@ body::before, .settings::before, .lock, .welcome{background:var(--bg) !important
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v184</p>
+      <p class="sync" id="appVersion">Phiên bản v185</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3453,10 +3463,10 @@ body::before, .settings::before, .lock, .welcome{background:var(--bg) !important
 <input type="file" id="phFile" accept="image/*" hidden>
 <div class="ph-view" id="phView" role="dialog" aria-modal="true" aria-label="Ảnh hoá đơn" hidden><img id="phImg" alt="Ảnh hoá đơn"><div class="ph-bar"><button type="button" id="phDel">Bỏ ảnh này</button><button type="button" id="phClose">Đóng</button></div></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=184"></script>
-<script src="thu-vien-cau.js?v=184"></script>
-<script src="quy-tac.js?v=184"></script>
-<script src="lock.js?v=184"></script>
+<script src="parse-vi.js?v=185"></script>
+<script src="thu-vien-cau.js?v=185"></script>
+<script src="quy-tac.js?v=185"></script>
+<script src="lock.js?v=185"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
