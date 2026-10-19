@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v183";
+  var K = "ngay50k:errlog", VER = "v184";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -2947,7 +2947,7 @@ body::before, .settings::before, .lock, .welcome{background:var(--bg) !important
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v183</p>
+      <p class="sync" id="appVersion">Phiên bản v184</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3212,6 +3212,7 @@ body::before, .settings::before, .lock, .welcome{background:var(--bg) !important
     <div class="chips wchips" id="pWChips" style="margin-top:0"></div>
   </div>
   <div class="sheet-foot">
+    <button class="ghost" id="payDel" hidden style="color:var(--over)">Xoá</button>
     <button class="ghost" id="payCancel">Huỷ</button>
     <button class="primary" id="paySave" style="margin:0" disabled>Lưu</button>
   </div>
@@ -3452,10 +3453,10 @@ body::before, .settings::before, .lock, .welcome{background:var(--bg) !important
 <input type="file" id="phFile" accept="image/*" hidden>
 <div class="ph-view" id="phView" role="dialog" aria-modal="true" aria-label="Ảnh hoá đơn" hidden><img id="phImg" alt="Ảnh hoá đơn"><div class="ph-bar"><button type="button" id="phDel">Bỏ ảnh này</button><button type="button" id="phClose">Đóng</button></div></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=183"></script>
-<script src="thu-vien-cau.js?v=183"></script>
-<script src="quy-tac.js?v=183"></script>
-<script src="lock.js?v=183"></script>
+<script src="parse-vi.js?v=184"></script>
+<script src="thu-vien-cau.js?v=184"></script>
+<script src="quy-tac.js?v=184"></script>
+<script src="lock.js?v=184"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -4345,8 +4346,10 @@ function startNgay50k(){
     li.querySelector(".desc div:first-child").textContent = mv.name;
     li.querySelector(".desc div:last-child").textContent = (untimed(mv.t) ? "" : pad(d.getHours()) + ":" + pad(d.getMinutes()) + " · ") + "không tính thu chi";
     if(mv.src && srcLabels()) addSrc(li, mv.src);
-    li.querySelector(".amt").textContent = mv.neutral ? fmt(Math.abs(mv.amt)) : (mv.amt < 0 ? "−" : "+") + fmt(Math.abs(mv.amt));
-    const go = mv.kind === "pay" && cardOf(mv.o.cardId) ? () => selectWallet("card:" + mv.o.cardId) : mv.kind === "loan" ? () => showTab("loans") : null;
+    const a = mv.flip ? -mv.amt : mv.amt;   /* v184: ở màn thẻ, trả thẻ là tiền vào thẻ: dấu + */
+    li.querySelector(".amt").textContent = mv.neutral ? fmt(Math.abs(a)) : (a < 0 ? "−" : "+") + fmt(Math.abs(a));
+    if(mv.flip && a > 0) li.querySelector(".amt").classList.add("plus");
+    const go = mv.kind === "pay" ? () => openPayCard(mv.o.id) : mv.kind === "loan" ? () => showTab("loans") : null;
     if(go){ li.classList.add("tap"); li.tabIndex = 0; li.setAttribute("role", "button"); li.addEventListener("click", e => { if(e.target.closest(".del")) return; go(); }); }
     const del = li.querySelector(".del");
     if(del) del.onclick = e => {
@@ -8002,7 +8005,8 @@ function startNgay50k(){
       if(mv.kind === "pay") mine = isCard ? (mv.o.cardId === cid || (only && !mv.o.cardId)) : (mv.o.from || MAIN_W) === wid;
       else if(mv.kind === "xfer") mine = !isCard && ((mv.o.from || MAIN_W) === wid || (mv.o.to || MAIN_W) === wid);
       else if(mv.kind === "loan") mine = main;
-      if(mine) push(k, mv.t, mv.amt, mv.name, 0, 0, () => moveDayRow(mv));
+      if(mine && isCard && mv.kind === "pay"){ mv.flip = true; mv.name = "Trả thẻ từ " + walletName(mv.o.from || MAIN_W); }
+      if(mine) push(k, mv.t, mv.flip ? -mv.amt : mv.amt, mv.name, mv.flip ? Math.abs(mv.amt) : 0, 0, () => moveDayRow(mv));
     }));
     return out;
   }
@@ -8404,9 +8408,25 @@ function startNgay50k(){
       box.appendChild(b);
     });
   }
-  function openPayCard(){
+  /* v184: openPayCard(id) mở lại một lần trả thẻ đã ghi để sửa số tiền, ngày, thẻ, ví trả, hoặc xoá */
+  var payEditing = null;
+  function openPayCard(editId){
     const cards = state.cards || [];
+    const ed = typeof editId === "string" ? (state.cardPay || []).find(p => p.id === editId) : null;
+    payEditing = ed ? ed.id : null;
+    $("payTitle").textContent = ed ? "Sửa trả thẻ" : "Trả thẻ";
+    $("payDel").hidden = !ed;
     payCardId = cards.length === 1 ? cards[0].id : (cardFilterId && cardFilterId !== "__none" ? cardFilterId : null);
+    if(ed){
+      payCardId = ed.cardId || (cards.length === 1 ? cards[0].id : null);
+      $("payDebt").textContent = "Tiền trả thẻ trừ vào số dư ví, cộng lại vào thẻ, không tính là chi tiêu.";
+      $("payAmt").value = (Number(ed.amt) || 0).toLocaleString("vi-VN");
+      $("payDate").value = ed.date; $("payDate").max = todayKey();
+      renderPayChips(); payCheck();
+      wPicker("pWField", "pWChips", ed.from || MAIN_W);
+      showSheet("paySheet", "payBack");
+      return;
+    }
     const r = balCalc(), debt = r ? r.debt : 0;
     $("payDebt").textContent = !r ? "Chưa có số dư ví. Tiền trả thẻ vẫn được ghi, và sẽ trừ vào số dư sau khi bạn nhập số dư ở Tổng quan."
       : debt > 0 ? "Đang nợ thẻ " + fmt(debt) + ". Tiền trả thẻ trừ vào số dư ví, không tính là chi tiêu." : "Tiền trả thẻ trừ vào số dư ví, không tính là chi tiêu.";
@@ -8420,15 +8440,32 @@ function startNgay50k(){
   function savePayCard(){
     const v = balVal("payAmt"); if(!v) return;
     const date = /^\d{4}-\d{2}-\d{2}$/.test($("payDate").value) ? $("payDate").value : todayKey();
+    const ed = payEditing ? (state.cardPay || []).find(p => p.id === payEditing) : null;
+    if(ed){
+      ed.amt = v;
+      if(ed.date !== date){   /* đổi ngày: giữ giờ cũ nếu có, không thì 12h */
+        const old = new Date(ed.t || 0), d = new Date(date + "T12:00:00");
+        if(ed.t && keyOf(old) === ed.date) d.setHours(old.getHours(), old.getMinutes(), 0, 0);
+        ed.date = date; ed.t = date === todayKey() && d.getTime() > Date.now() ? Date.now() : d.getTime();
+      }
+      if(payCardId) ed.cardId = payCardId; else delete ed.cardId;
+      const pw = pickedW("pWChips"); if(pw) ed.from = pw; else delete ed.from;
+      payEditing = null; persist(true); renderAll(); closePayCard(); return;
+    }
     const rec = { id:uid(), amt:v, date, t: date === todayKey() ? Date.now() : new Date(date + "T12:00:00").getTime() };
     if(payCardId) rec.cardId = payCardId;
     const pw = pickedW("pWChips"); if(pw) rec.from = pw;    /* v99: trả thẻ = chuyển tiền từ một ví sang thẻ */
     (state.cardPay = state.cardPay || []).push(rec);
     persist(true); renderAll(); closePayCard();
   }
-  $("payCardBtn").onclick = openPayCard;
+  $("payCardBtn").onclick = () => openPayCard();
   $("closePay").onclick = closePayCard; $("payCancel").onclick = closePayCard; $("payBack").onclick = closePayCard;
   $("paySave").onclick = savePayCard;
+  $("payDel").onclick = e => {
+    if(!payEditing || !armed(e.currentTarget)) return;
+    state.cardPay = (state.cardPay || []).filter(p => p.id !== payEditing);
+    payEditing = null; persist(true); renderAll(); closePayCard();
+  };
   $("payAmt").addEventListener("input", () => { fmtInput("payAmt"); payCheck(); });
   $("payAmt000").addEventListener("pointerdown", e => e.preventDefault());
   $("payAmt000").onclick = () => { const v = balVal("payAmt"); if(!v) return; $("payAmt").value = (v * 1000).toLocaleString("vi-VN"); payCheck(); };

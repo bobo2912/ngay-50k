@@ -1,6 +1,13 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v183, ngày 16/10/2026
+**Phiên bản hiện tại:** v184, ngày 19/10/2026
+
+---
+
+## Có gì mới trong v184 (so với v183) – sửa được khoản trả thẻ
+
+- **Chạm vào một lần trả thẻ** (ở Sổ hoặc ở Ví) mở bảng **Sửa trả thẻ**: đổi số tiền, ngày, thẻ, ví trả; có nút **Xoá** (chạm hai lần). Trước đây chạm vào chỉ chuyển sang màn thẻ.
+- **Dấu đúng theo từng màn:** ở ví trả (Tài khoản) là **−** (tiền ra), ở màn thẻ là **+** màu xanh và ghi "Trả thẻ từ Tài khoản" (tiền vào thẻ, giảm nợ). Dòng ngày ở màn thẻ cũng cộng khoản trả vào phần "+". Lỗi dấu − ở màn thẻ có từ v180.
 
 ---
 
