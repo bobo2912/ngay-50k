@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v185";
+  var K = "ngay50k:errlog", VER = "v186";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -2089,6 +2089,10 @@ body::before, .settings::before, .lock, .welcome{background:var(--bg) !important
   transform:translateX(1.5px) rotate(45deg)}
 #walNext::before, #nextDay::before, #calNext::before, #nextMonth::before, #nextCardMonth::before{transform:translateX(-1.5px) rotate(-135deg)}
 
+/* v186: chân bảng có 3 nút (Xoá · Huỷ · Lưu) xếp cùng một hàng, không còn rớt nút Lưu xuống dòng dưới */
+.sheet-foot:has(> button:nth-child(3)):has(> button:first-child:not([hidden])){grid-template-columns:1fr 1fr 1.6fr}
+.sheet-foot button{white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0}
+
 /* Khoản vay: hai số tổng là hai ô như ô Thu vào / Chi thường ở Sổ Tháng */
 #loansMain > .ledger{display:grid !important; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; background:none !important;
   border:0 !important; box-shadow:none !important; padding:0 !important}
@@ -2957,7 +2961,7 @@ body::before, .settings::before, .lock, .welcome{background:var(--bg) !important
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v185</p>
+      <p class="sync" id="appVersion">Phiên bản v186</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3222,7 +3226,7 @@ body::before, .settings::before, .lock, .welcome{background:var(--bg) !important
     <div class="chips wchips" id="pWChips" style="margin-top:0"></div>
   </div>
   <div class="sheet-foot">
-    <button class="ghost" id="payDel" hidden style="color:var(--over)">Xoá</button>
+    <button class="ghost danger" id="payDel" hidden>Xoá</button>
     <button class="ghost" id="payCancel">Huỷ</button>
     <button class="primary" id="paySave" style="margin:0" disabled>Lưu</button>
   </div>
@@ -3463,10 +3467,10 @@ body::before, .settings::before, .lock, .welcome{background:var(--bg) !important
 <input type="file" id="phFile" accept="image/*" hidden>
 <div class="ph-view" id="phView" role="dialog" aria-modal="true" aria-label="Ảnh hoá đơn" hidden><img id="phImg" alt="Ảnh hoá đơn"><div class="ph-bar"><button type="button" id="phDel">Bỏ ảnh này</button><button type="button" id="phClose">Đóng</button></div></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=185"></script>
-<script src="thu-vien-cau.js?v=185"></script>
-<script src="quy-tac.js?v=185"></script>
-<script src="lock.js?v=185"></script>
+<script src="parse-vi.js?v=186"></script>
+<script src="thu-vien-cau.js?v=186"></script>
+<script src="quy-tac.js?v=186"></script>
+<script src="lock.js?v=186"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -8406,7 +8410,7 @@ function startNgay50k(){
     (state.cardPay || []).forEach(p => { if(p.cardId === cardId && recTime(p.date, p.t) > T && recTime(p.date, p.t) <= N) d -= Number(p.amt)||0; });
     return Math.max(0, Math.min(d, r.debt));
   }
-  function payCheck(){ const v = balVal("payAmt"); $("paySave").disabled = !v; $("paySave").textContent = v ? "Lưu trả thẻ " + fmt(v) : "Lưu"; }
+  function payCheck(){ const v = balVal("payAmt"); $("paySave").disabled = !v; $("paySave").textContent = payEditing ? "Lưu" : v ? "Lưu trả thẻ " + fmt(v) : "Lưu"; }
   function renderPayChips(){
     const box = $("payCardChips"); box.innerHTML = "";
     const cards = state.cards || [];

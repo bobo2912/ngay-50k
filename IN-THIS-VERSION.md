@@ -1,6 +1,12 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v185, ngày 19/10/2026
+**Phiên bản hiện tại:** v186, ngày 19/10/2026
+
+---
+
+## Có gì mới trong v186 (so với v185)
+
+- Bảng có ba nút ở chân (**Xoá · Huỷ · Lưu**: Sửa trả thẻ, Sửa khoản định kỳ) xếp **cùng một hàng**; trước đây nút Lưu bị rớt xuống dòng dưới. Nút Lưu khi sửa trả thẻ ghi gọn "Lưu".
 
 ---
 
