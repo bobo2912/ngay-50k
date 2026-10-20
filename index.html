@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v189";
+  var K = "ngay50k:errlog", VER = "v190";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -2088,6 +2088,13 @@ body::before, .settings::before, .lock, .welcome{background:var(--bg) !important
   transform:translateX(1.5px) rotate(45deg)}
 #walNext::before, #nextDay::before, #calNext::before, #nextMonth::before, #nextCardMonth::before{transform:translateX(-1.5px) rotate(-135deg)}
 
+/* v190: dấu ✕ của nút đóng (.x) vẽ bằng CSS, nằm đúng giữa hình tròn. Ký tự ✕ lấy từ font dự phòng
+   (trên iPhone là font khác Plus Jakarta Sans) nên lệch lên và lệch ngang tuỳ máy. Chữ ✕ vẫn giữ trong HTML cho trình đọc màn hình. */
+.x{position:relative; font-size:0 !important; line-height:0 !important; color:var(--muted)}
+.x::before, .x::after{content:""; position:absolute; left:50%; top:50%; width:12px; height:1.5px; border-radius:1px;
+  background:currentColor; transform:translate(-50%, -50%) rotate(45deg)}
+.x::after{transform:translate(-50%, -50%) rotate(-45deg)}
+
 /* v186: chân bảng có 3 nút (Xoá · Huỷ · Lưu) xếp cùng một hàng, không còn rớt nút Lưu xuống dòng dưới */
 .sheet-foot:has(> button:nth-child(3)):has(> button:first-child:not([hidden])){grid-template-columns:1fr 1fr 1.6fr}
 .sheet-foot button{white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0}
@@ -2968,7 +2975,7 @@ body::before, .settings::before, .lock, .welcome{background:var(--bg) !important
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v189</p>
+      <p class="sync" id="appVersion">Phiên bản v190</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3472,11 +3479,11 @@ body::before, .settings::before, .lock, .welcome{background:var(--bg) !important
 <input type="file" id="phFile" accept="image/*" hidden>
 <div class="ph-view" id="phView" role="dialog" aria-modal="true" aria-label="Ảnh hoá đơn" hidden><img id="phImg" alt="Ảnh hoá đơn"><div class="ph-bar"><button type="button" id="phDel">Bỏ ảnh này</button><button type="button" id="phClose">Đóng</button></div></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=189"></script>
-<script src="thu-vien-cau.js?v=189"></script>
-<script src="quy-tac.js?v=189"></script>
-<script src="native.js?v=189"></script>
-<script src="lock.js?v=189"></script>
+<script src="parse-vi.js?v=190"></script>
+<script src="thu-vien-cau.js?v=190"></script>
+<script src="quy-tac.js?v=190"></script>
+<script src="native.js?v=190"></script>
+<script src="lock.js?v=190"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.

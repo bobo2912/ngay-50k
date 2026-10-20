@@ -1,6 +1,12 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v189, ngày 20/10/2026
+**Phiên bản hiện tại:** v190, ngày 20/10/2026
+
+---
+
+## Có gì mới trong v190 (so với v189)
+
+- Dấu **✕ của nút đóng** (góc trên các bảng: Ghi chi, Nhập khoản chi, Lọc khoản vay, Sửa khoản chi…) nằm **đúng giữa hình tròn**. Trước đây dùng ký tự ✕ của font nên trên iPhone bị lệch lên và lệch sang một bên; giờ vẽ bằng CSS, giống cách sửa mũi tên ‹ › ở v185.
 
 ---
 
