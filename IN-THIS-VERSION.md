@@ -1,6 +1,16 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v186, ngày 19/10/2026
+**Phiên bản hiện tại:** v187, ngày 20/10/2026
+
+---
+
+## Có gì mới trong v187 (so với v186) – chuẩn bị lên Google Play
+
+- **Trang chính sách quyền riêng tư** (`privacy.html`), mở từ Cài đặt → Phiên bản → *Chính sách quyền riêng tư*, có sẵn khi không có mạng. Google Play bắt buộc có đường link này. Trang nói rõ dữ liệu nằm trên máy và liệt kê đúng những gì rời khỏi máy khi bật Trợ lý AI, Tự ghi từ thông báo, đọc chữ trong ảnh và mở app ngân hàng.
+- **Trợ lý AI phải được đồng ý trước khi gửi dữ liệu.** Trang Trợ lý AI có khung *Dữ liệu sẽ được gửi cho Anthropic / OpenAI / Google* nêu đúng những gì được gửi, kèm nút **Tôi đồng ý**. Đồng ý riêng cho từng nhà cung cấp; bấm *Rút lại* thì AI tắt. Chưa đồng ý thì bật "Dùng AI khi trò chuyện" hay "Thử kết nối" đều chỉ ra khung đồng ý.
+  Máy đã bật AI từ trước: AI tạm dừng tới khi bấm đồng ý; Chat báo một lần và dùng bộ hiểu câu trên máy.
+- **manifest:** thêm ảnh chụp màn hình (`store/`), `purpose` cho icon, `prefer_related_applications: false`, để PWABuilder đóng gói đầy đủ.
+- **`store/`:** 5 ảnh chụp 1080×1920 (dữ liệu mẫu) và ảnh nổi bật 1024×500 cho trang Google Play.
 
 ---
 

@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v186";
+  var K = "ngay50k:errlog", VER = "v187";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -1211,6 +1211,11 @@ html{scroll-padding-top:var(--head-h, 100px)}
 .sc-use{display:flex; align-items:center; gap:8px; margin-top:10px; font-size:.86rem; color:var(--muted)}
 /* v160: trang cài đặt gọn: một dòng mô tả, giải thích nằm sau nút i, trạng thái và trình từng bước */
 .set-lead{margin:2px 2px 10px; font-size:.9rem; color:var(--muted)}
+.ai-consent{margin:12px 0 14px; padding:12px 14px; border-radius:16px; background:var(--note-soft); font-size:.9rem}
+.ai-consent p{margin:0 0 8px}
+.ai-consent a{color:var(--note); font-weight:600}
+.ai-consent.flash{outline:2px solid var(--note); outline-offset:2px}
+#aiAgreed button{font:inherit; color:var(--note); background:none; border:0; padding:0; margin-left:4px; text-decoration:underline; cursor:pointer}
 .set-now.info{margin:0 0 10px; padding:10px 12px; border-radius:12px; background:var(--note-soft); color:var(--ink); font-size:.86rem}
 .set-now.info[hidden]{display:none}
 .set-now.info p{margin:0 0 6px} .set-now.info p:last-child{margin:0}
@@ -2555,6 +2560,7 @@ body::before, .settings::before, .lock, .welcome{background:var(--bg) !important
       <h3 class="set-label">Phiên bản</h3>
       <div class="set-list">
         <button class="set-nav" id="updCheck" type="button"><span class="nav-t">Kiểm tra cập nhật</span><span class="nav-v" id="navUpd"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.6-6.4M21 4v5h-5"/></svg></button>
+        <a class="set-nav" id="privacyLink" href="privacy.html" style="text-decoration:none; color:inherit"><span class="nav-t">Chính sách quyền riêng tư</span><span class="nav-v"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></a>
       </div>
       <button class="primary upd-go" id="updGo" type="button" hidden>Cập nhật</button>
       <p class="set-ver" id="appVersionHome"></p>
@@ -2649,6 +2655,13 @@ body::before, .settings::before, .lock, .welcome{background:var(--bg) !important
         <div class="amt-row"><input id="aiKey" class="inp" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" style="flex:1"><button type="button" class="k000" id="aiShow">Hiện</button></div>
         <p class="set-now" id="aiWhere" style="margin-top:6px"></p>
       </div>
+      <div class="ai-consent" id="aiConsent" hidden>
+        <p><b>Dữ liệu sẽ được gửi cho <span id="aiOrg">Anthropic</span></b></p>
+        <p>Khi bật AI, câu bạn gõ trong Chat, ảnh bạn nhờ AI đọc và ngữ cảnh để hiểu câu (hạn mức, nhóm chi, tên thẻ và ví, tên người vay kèm số còn nợ, nội dung một số khoản gần đây, vài lượt Chat gần nhất) được gửi từ máy này tới <span id="aiOrg2">Anthropic</span> bằng khoá API của bạn. Dữ liệu được xử lý theo chính sách của nhà cung cấp. Toàn bộ sổ thu chi không được gửi.</p>
+        <p><a href="privacy.html">Xem chính sách quyền riêng tư</a></p>
+        <div class="set-row"><button type="button" class="primary grow" id="aiAgree">Tôi đồng ý</button></div>
+      </div>
+      <p class="set-now" id="aiAgreed" hidden></p>
       <div class="field">
         <label for="aiModel"><span>Mô hình <span class="opt">(để trống dùng mặc định)</span></span></label>
         <input id="aiModel" class="inp" list="aiModels" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -2961,7 +2974,7 @@ body::before, .settings::before, .lock, .welcome{background:var(--bg) !important
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v186</p>
+      <p class="sync" id="appVersion">Phiên bản v187</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3467,10 +3480,10 @@ body::before, .settings::before, .lock, .welcome{background:var(--bg) !important
 <input type="file" id="phFile" accept="image/*" hidden>
 <div class="ph-view" id="phView" role="dialog" aria-modal="true" aria-label="Ảnh hoá đơn" hidden><img id="phImg" alt="Ảnh hoá đơn"><div class="ph-bar"><button type="button" id="phDel">Bỏ ảnh này</button><button type="button" id="phClose">Đóng</button></div></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=186"></script>
-<script src="thu-vien-cau.js?v=186"></script>
-<script src="quy-tac.js?v=186"></script>
-<script src="lock.js?v=186"></script>
+<script src="parse-vi.js?v=187"></script>
+<script src="thu-vien-cau.js?v=187"></script>
+<script src="quy-tac.js?v=187"></script>
+<script src="lock.js?v=187"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -6677,7 +6690,9 @@ function startNgay50k(){
     rb.textContent = ready ? "↻ Chưa đúng? Phân tích lại bằng AI" : "✦ Chưa đúng? Bật AI để phân tích lại";
     rb.onclick = () => {
       if(aiReady()) return aiRetry(m);
-      openSettings(); showSetPage("setAI"); const msg = $("aiMsg"); msg.className = "inline-ok warn"; msg.textContent = "AI đang tắt. Dán khoá API và bật \"Dùng AI khi trò chuyện\", rồi quay lại Chat bấm nút đó lần nữa."; msg.hidden = false;
+      openSettings(); showSetPage("setAI");
+      if(aiWaitsConsent()) return aiNeedConsent();
+      const msg = $("aiMsg"); msg.className = "inline-ok warn"; msg.textContent = "AI đang tắt. Dán khoá API và bật \"Dùng AI khi trò chuyện\", rồi quay lại Chat bấm nút đó lần nữa."; msg.hidden = false;
     };
     if(navigator.onLine === false) rb.disabled = true;
     box.appendChild(rb);
@@ -6726,14 +6741,18 @@ function startNgay50k(){
      Lỗi, hết hạn chờ hoặc mất mạng thì dùng bộ hiểu câu trên máy (parse-vi.js). */
   var AI_KEY = "ngay50k:ai";
   const AI_PROVIDERS = {
-    claude: { name:"Claude", model:"claude-haiku-4-5-20251001", models:["claude-haiku-4-5-20251001","claude-sonnet-5-5","claude-opus-5-5"], keyHint:"sk-ant-…", where:"console.anthropic.com → API Keys" },
-    openai: { name:"ChatGPT", model:"gpt-5-mini", models:["gpt-5-mini","gpt-5"], keyHint:"sk-…", where:"platform.openai.com → API keys" },
-    gemini: { name:"Gemini", model:"gemini-flash-latest", models:["gemini-flash-latest","gemini-pro-latest"], keyHint:"AIza…", where:"aistudio.google.com → Get API key" }
+    claude: { name:"Claude", model:"claude-haiku-4-5-20251001", models:["claude-haiku-4-5-20251001","claude-sonnet-5-5","claude-opus-5-5"], keyHint:"sk-ant-…", where:"console.anthropic.com → API Keys", org:"Anthropic" },
+    openai: { name:"ChatGPT", model:"gpt-5-mini", models:["gpt-5-mini","gpt-5"], keyHint:"sk-…", where:"platform.openai.com → API keys", org:"OpenAI" },
+    gemini: { name:"Gemini", model:"gemini-flash-latest", models:["gemini-flash-latest","gemini-pro-latest"], keyHint:"AIza…", where:"aistudio.google.com → Get API key", org:"Google" }
   };
   function aiCfg(){ let c = null; try{ c = JSON.parse(N50K.get(AI_KEY) || "null"); }catch(e){} c = c || {}; if(!AI_PROVIDERS[c.provider]) c.provider = "claude"; if(c.on === undefined) c.on = !!(c.key && String(c.key).trim()); if(c.smart === undefined) c.smart = true; return c; }
   function aiSet(c){ N50K.set(AI_KEY, JSON.stringify(c)); aiBadge(); }
   function aiBadge(){ const b = $("chatAI"); if(!b) return; const c = aiCfg(); b.hidden = !aiReady(); b.textContent = "✦ AI · " + AI_PROVIDERS[c.provider].name; }
-  function aiReady(){ const c = aiCfg(); return !!(c.on && c.key && String(c.key).trim()); }
+  function aiReady(){ const c = aiCfg(); return !!(c.on && c.key && String(c.key).trim() && aiAgreed(c)); }
+  /* v187: Google Play / App Store yêu cầu báo rõ và xin đồng ý trước khi gửi dữ liệu cá nhân cho AI bên thứ ba.
+     Đồng ý riêng cho từng nhà cung cấp (c.consent[provider] = thời điểm bấm). Chưa đồng ý thì AI coi như tắt, Chat dùng bộ hiểu câu trên máy. */
+  function aiAgreed(c){ c = c || aiCfg(); return !!(c.consent && c.consent[c.provider]); }
+  function aiWaitsConsent(){ const c = aiCfg(); return !!(c.on && c.key && String(c.key).trim() && !aiAgreed(c)); }
   function aiModel(c){ return (c.model && String(c.model).trim()) || AI_PROVIDERS[c.provider].model; }
   /* ---- Đếm chi phí AI: token mỗi lần gọi × bảng giá niêm yết (USD / 1 triệu token, cập nhật 10/2026) ---- */
   var AI_USE_KEY = "ngay50k:aiUse", AI_RATE_KEY = "ngay50k:usdVnd";
@@ -6956,7 +6975,7 @@ function startNgay50k(){
     });
     return out;
   }
-  var aiNoLean = false;
+  var aiNoLean = false, aiConsentNoted = false;
   async function aiCall(text, cfgOverride, imgs){
     const c = cfgOverride || aiCfg(), model = aiModel(c), key = String(c.key || "").trim();
     imgs = imgs || [];
@@ -7487,6 +7506,7 @@ function startNgay50k(){
     }
     if(!aiReady() || (navigator.onLine === false)){
       chat.msgs.push(...tagRetry(localReply(text, res0), text));
+      if(aiWaitsConsent() && !aiConsentNoted){ aiConsentNoted = true; chat.msgs.push({ id:uid(), role:"bot", html:"<i>(Trợ lý AI đang chờ bạn đồng ý gửi dữ liệu cho " + esc(AI_PROVIDERS[aiCfg().provider].org) + ". Vào Cài đặt → Trợ lý AI để xem và bấm Tôi đồng ý. Trong lúc chờ, mình dùng bộ hiểu câu trên máy.)</i>", t:Date.now() }); }
       if(aiReady()) chat.msgs.push({ id:uid(), role:"bot", html:"<i>(Đang không có mạng, mình dùng bộ hiểu câu trên máy.)</i>", t:Date.now() });
       chatSave(); renderChat(); chatScrollEnd(true); return;
     }
@@ -7517,8 +7537,32 @@ function startNgay50k(){
     $("aiWhere").textContent = "Lấy khoá ở: " + P.where;
     $("aiOn").checked = !!c.on; $("aiSmart").checked = c.smart !== false;
     $("aiDel").hidden = !c.key;
+    renderAIConsent(c);
     renderAIUse(); renderAIBud();
   }
+  function renderAIConsent(c){
+    c = c || aiCfg(); const org = AI_PROVIDERS[c.provider].org, ok = aiAgreed(c);
+    $("aiOrg").textContent = $("aiOrg2").textContent = org;
+    $("aiConsent").hidden = ok;
+    const line = $("aiAgreed"); line.hidden = !ok;
+    if(ok){ const d = new Date(c.consent[c.provider]); line.innerHTML = "✓ Đã đồng ý gửi dữ liệu cho " + esc(org) + " ngày " + pad(d.getDate()) + "/" + pad(d.getMonth() + 1) + "/" + d.getFullYear() + '.<button type="button" id="aiRevoke">Rút lại</button>'; }
+  }
+  function aiNeedConsent(){
+    const box = $("aiConsent"), msg = $("aiMsg");
+    renderAIConsent(); box.classList.add("flash"); setTimeout(() => box.classList.remove("flash"), 1600);
+    try{ box.scrollIntoView({ block:"center", behavior:"smooth" }); }catch(e){}
+    msg.className = "inline-ok warn"; msg.textContent = "Đọc và bấm \"Tôi đồng ý\" ở trên trước khi dùng AI."; msg.hidden = false;
+  }
+  $("aiAgree").onclick = () => {
+    const c = aiCfg(); c.consent = c.consent || {}; c.consent[c.provider] = Date.now();
+    if(c.key && String(c.key).trim()) c.on = true;
+    aiSet(c); renderAISet(); $("aiMsg").hidden = true;
+  };
+  $("aiAgreed").addEventListener("click", e => {
+    if(!e.target.closest("#aiRevoke")) return;
+    const c = aiCfg(); if(c.consent) delete c.consent[c.provider]; c.on = false; aiSet(c); renderAISet();
+    flash("aiMsg", "✓ Đã rút lại đồng ý. AI đã tắt, Chat dùng bộ hiểu câu trên máy.");
+  });
   $("aiNotif").onclick = async () => {
     try{ if("Notification" in window && Notification.permission === "default") await Notification.requestPermission(); }catch(e){}
     renderAIBud();
@@ -7527,13 +7571,14 @@ function startNgay50k(){
   [...$("aiUseSeg").children].forEach(b => b.onclick = () => { aiUseRange = b.dataset.r; renderAIUse(); });
   $("aiRate").addEventListener("change", () => { const v = parseInt($("aiRate").value.replace(/\D/g, ""), 10); if(v > 1000 && v < 1e6) lsSet(AI_RATE_KEY, String(v)); renderAIUse(); });
   $("aiUseReset").onclick = e => { if(!armed(e.currentTarget)) return; lsSet(AI_USE_KEY, "{}"); renderAIUse(); };
-  function aiNav(){ const c = aiCfg(); return c.key ? AI_PROVIDERS[c.provider].name + (c.on ? " · bật" : " · tắt") : "chưa cài"; }
+  function aiNav(){ const c = aiCfg(); return c.key ? AI_PROVIDERS[c.provider].name + (!aiAgreed(c) ? " · chờ đồng ý" : c.on ? " · bật" : " · tắt") : "chưa cài"; }
   function aiSaveForm(){ const c = aiCfg(); c.key = $("aiKey").value.trim(); c.model = $("aiModel").value.trim(); c.on = $("aiOn").checked && !!c.key; c.smart = $("aiSmart").checked; aiSet(c); $("aiDel").hidden = !c.key; $("aiOn").checked = c.on; }
   [...$("aiProv").children].forEach(b => b.onclick = () => { const c = aiCfg(); if(c.provider !== b.dataset.p){ c.provider = b.dataset.p; c.model = ""; c.key = (c.keys && c.keys[b.dataset.p]) || ""; } aiSet(c); renderAISet(); $("aiMsg").hidden = true; });
   $("aiKey").addEventListener("change", () => { aiSaveForm(); const c = aiCfg(); c.keys = c.keys || {}; c.keys[c.provider] = c.key; aiSet(c); });
   $("aiModel").addEventListener("change", aiSaveForm);
   $("aiOn").addEventListener("change", () => {
     if($("aiOn").checked && !$("aiKey").value.trim()){ $("aiOn").checked = false; const msg = $("aiMsg"); msg.className = "inline-ok warn"; msg.textContent = "Dán khoá API vào trước đã."; msg.hidden = false; return; }
+    if($("aiOn").checked && !aiAgreed()){ $("aiOn").checked = false; aiNeedConsent(); return; }
     aiSaveForm();
   });
   $("aiSmart").addEventListener("change", aiSaveForm);
@@ -7543,6 +7588,7 @@ function startNgay50k(){
     aiSaveForm();
     const c = aiCfg(), b = $("aiTest"), msg = $("aiMsg");
     if(!c.key){ msg.textContent = "Dán khoá API vào trước đã."; msg.className = "inline-ok warn"; msg.hidden = false; return; }
+    if(!aiAgreed(c)) return aiNeedConsent();
     b.disabled = true; b.textContent = "Đang thử…"; msg.hidden = true;
     const t0 = Date.now(), tick = setInterval(() => { b.textContent = "Đang thử… " + Math.round((Date.now() - t0) / 1000) + " giây"; }, 1000);
     try{

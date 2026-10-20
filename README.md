@@ -92,7 +92,9 @@ tests-kho-cau.js        chạy kho câu mẫu, in tỉ lệ máy tự hiểu đ�
 tests-parse-vi.js       bộ câu mẫu: node tests-parse-vi.js
 tests-notif.js          bộ thông báo ngân hàng mẫu (MB, VCB, TCB, ACB, TPBank, VPBank, BIDV…) cho parseNotif trong index.html: node tests-notif.js
 sw.js                   service worker, giữ app chạy được khi mất mạng
-manifest.webmanifest    tên, icon, màu, chế độ standalone
+manifest.webmanifest    tên, icon, màu, chế độ standalone, ảnh chụp cho trang cài đặt
+privacy.html            chính sách quyền riêng tư (link cho Google Play)
+store/                  ảnh chụp màn hình và ảnh nổi bật cho trang Google Play
 fonts/                  font Plus Jakarta Sans dạng woff2 (từ v176)
 icons/                  icon app
 HUONG-DAN.md            hướng dẫn đưa lên GitHub Pages và cài lên máy
