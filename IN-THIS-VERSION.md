@@ -1,6 +1,14 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v188, ngày 20/10/2026
+**Phiên bản hiện tại:** v189, ngày 20/10/2026
+
+---
+
+## Có gì mới trong v189 (so với v188) – xoá phần mở app ngân hàng
+
+- Xoá hẳn danh sách **ngân hàng hay dùng** (liên kết VietQR `dl.vietqr.io`, `mbbank://`), nút **Sao chép và mở** app ngân hàng, và bước chọn ngân hàng còn sót trong màn hình chào (đã bỏ khỏi giao diện từ v174). Dọn khoá `ngay50k:bank` trên máy; file sao lưu không còn mang khoá này.
+- Thẻ kết quả sau khi ghi chuyển khoản chỉ còn nút **Sao chép đoạn này**, kèm dòng nhắc mở app ngân hàng của bạn rồi dán.
+- Áp dụng cho cả bản web và bản iOS (dùng chung mã).
 
 ---
 
