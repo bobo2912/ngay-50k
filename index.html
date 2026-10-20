@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v187";
+  var K = "ngay50k:errlog", VER = "v188";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -1211,6 +1211,10 @@ html{scroll-padding-top:var(--head-h, 100px)}
 .sc-use{display:flex; align-items:center; gap:8px; margin-top:10px; font-size:.86rem; color:var(--muted)}
 /* v160: trang cài đặt gọn: một dòng mô tả, giải thích nằm sau nút i, trạng thái và trình từng bước */
 .set-lead{margin:2px 2px 10px; font-size:.9rem; color:var(--muted)}
+/* v188: bản iOS đóng gói (native.js thêm lớp native-app vào <html>) */
+.app-only{display:none !important}
+.native-app .app-only{display:revert !important}
+.native-app .web-only{display:none !important}
 .ai-consent{margin:12px 0 14px; padding:12px 14px; border-radius:16px; background:var(--note-soft); font-size:.9rem}
 .ai-consent p{margin:0 0 8px}
 .ai-consent a{color:var(--note); font-weight:600}
@@ -2484,6 +2488,7 @@ body::before, .settings::before, .lock, .welcome{background:var(--bg) !important
       <button class="primary" id="wStart">Bắt đầu thiết lập</button>
       <button class="ghost w-wide" id="wDemo">Xem thử với dữ liệu mẫu</button>
       <button class="lock-link" id="wRestore">Tôi đã có file sao lưu</button>
+      <p class="w-note app-only">Đang dùng Tiêu Gọn trên Safari? Mở bản đó, vào Cài đặt → Sao lưu và đồng bộ → Xuất file, rồi bấm "Tôi đã có file sao lưu" ở đây để chuyển dữ liệu sang.</p>
     </section>
 
     <section class="w-step" data-step="1" hidden>
@@ -2589,6 +2594,11 @@ body::before, .settings::before, .lock, .welcome{background:var(--bg) !important
         <h4 class="sub">Face ID</h4>
         <p class="set-now" id="pkState"></p>
         <div class="set-row" style="margin-top:10px"><button class="ghost grow" id="pkToggle"></button></div>
+        <div class="app-only">
+          <h4 class="sub">Widget</h4>
+          <label class="sc-use"><input type="checkbox" id="wgShow"> Hiện số tiền trên widget khi app đang khoá</label>
+          <p class="set-now" style="margin:4px 0 0 28px">Tắt thì widget chỉ ghi "Tiêu Gọn đang khoá".</p>
+        </div>
         <h4 class="sub">Mã PIN</h4>
         <div class="set-row"><button class="ghost grow" id="lockChange">Đổi mã PIN</button><button class="ghost grow" id="lockNowBtn">Khoá ngay</button></div>
         <div class="set-row" style="margin-top:10px"><button class="ghost danger grow" id="lockDisable">Tắt khoá</button></div>
@@ -2833,6 +2843,7 @@ body::before, .settings::before, .lock, .welcome{background:var(--bg) !important
       <div class="set-head"><button class="set-back" data-back>‹ Cài đặt</button><h2 tabindex="-1">Tự ghi từ thông báo</h2><button class="ib" type="button" data-info="infoNotif" aria-expanded="false" aria-label="Giải thích">i</button></div>
       <div class="set-now info" id="infoNotif" hidden>
         <p>iPhone không cho app tự đọc thông báo của app khác, nên một automation của Phím tắt chuyển hộ mỗi khi MB Bank báo biến động số dư.</p>
+        <p class="app-only"><b>Bản app:</b> automation dùng tác vụ <b>Ghi vào Tiêu Gọn</b>, gửi thẳng vào app ngay trên máy, không cần mạng hay trạm Cloudflare. App đang mở thì giao dịch hiện ngay; app đóng thì hiện khi mở lại.</p>
         <p><b>Có trạm Cloudflare:</b> mở app là lấy ngay, app đang mở thì giao dịch tự hiện. Mất mạng thì bấm 📋 để chọn tệp TieuGon.txt.<br><b>Chưa có trạm:</b> bấm 📋 → Paste để dán từ bộ nhớ tạm.</p>
         <p>Giao dịch đã ghi hoặc đã bỏ không hiện lại; giao dịch cũ hơn 35 ngày được bỏ qua. Nội dung được làm gọn theo <button type="button" class="linkbtn" data-go="setLib">Thư viện nội dung</button> ngay trên máy.</p>
       </div>
@@ -2841,7 +2852,7 @@ body::before, .settings::before, .lock, .welcome{background:var(--bg) !important
       <button class="primary nst-go" type="button" id="wizOpen">Cài đặt từng bước</button>
       <div class="set-list nst-list">
         <label class="set-nav nst-tg"><span class="nav-t">Hiện nút 📋 cạnh ô chat</span><input type="checkbox" id="notifOn" class="sw"></label>
-        <button class="set-nav" data-go="setRelay"><span class="nav-t">Trạm và mã bí mật</span><span class="nav-v" id="navRelay"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+        <button class="set-nav web-only" data-go="setRelay"><span class="nav-t">Trạm và mã bí mật</span><span class="nav-v" id="navRelay"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
       </div>
       <section class="set-group">
         <h4 class="sub" style="margin-top:0">Thử</h4>
@@ -2974,7 +2985,7 @@ body::before, .settings::before, .lock, .welcome{background:var(--bg) !important
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v187</p>
+      <p class="sync" id="appVersion">Phiên bản v188</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3480,10 +3491,11 @@ body::before, .settings::before, .lock, .welcome{background:var(--bg) !important
 <input type="file" id="phFile" accept="image/*" hidden>
 <div class="ph-view" id="phView" role="dialog" aria-modal="true" aria-label="Ảnh hoá đơn" hidden><img id="phImg" alt="Ảnh hoá đơn"><div class="ph-bar"><button type="button" id="phDel">Bỏ ảnh này</button><button type="button" id="phClose">Đóng</button></div></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=187"></script>
-<script src="thu-vien-cau.js?v=187"></script>
-<script src="quy-tac.js?v=187"></script>
-<script src="lock.js?v=187"></script>
+<script src="parse-vi.js?v=188"></script>
+<script src="thu-vien-cau.js?v=188"></script>
+<script src="quy-tac.js?v=188"></script>
+<script src="native.js?v=188"></script>
+<script src="lock.js?v=188"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -4503,6 +4515,19 @@ function startNgay50k(){
       };
     }
   }
+  /* v188: bản iOS gửi số liệu cho widget "Hôm nay còn được tiêu": hạn mức và số đã tính vào hạn mức của hôm nay
+     và 2 ngày tới (khoản định kỳ đã lên lịch), để qua nửa đêm widget tự đổi đúng. Khoá app bằng mã PIN thì mặc định ẩn số. */
+  function widgetPush(){
+    if(!N50KNative.isApp) return;
+    const t = todayKey();
+    N50KNative.widget({
+      budget:state.budget,
+      days:[0, 1, 2].map(i => { const k = shiftKey(t, i); return { d:k, spent:dayLimit(k) }; }),
+      hidden:!!(window.N50KLock && N50KLock.isOn() && lsGet("ngay50k:wgShow") !== "1"),
+      demo:lsGet("ngay50k:demo") === "1",
+      updated:Date.now()
+    });
+  }
   function renderToday(){
     const now = new Date();
     $("dateSmall").textContent = ["Chủ nhật","Thứ hai","Thứ ba","Thứ tư","Thứ năm","Thứ sáu","Thứ bảy"][now.getDay()];
@@ -4514,6 +4539,7 @@ function startNgay50k(){
     note.classList.toggle("over", left<0);
     rollTo($("remain"), left<0 ? "−" + fmt(-left) : fmt(left));
     $("remainLabel").textContent = left<0 ? "Hôm nay vượt" : "Hôm nay còn";
+    widgetPush();
     note.setAttribute("aria-label", left<0 ? "Đã vượt " + fmt(-left) : "Còn lại " + fmt(left) + " trên " + fmt(b));
     let s;
     if(spent===0) s = "Chưa tiêu đồng nào. Cứ thế nhé.";
@@ -6817,7 +6843,14 @@ function startNgay50k(){
     }
     aiBudSet(all);
   }
+  /* v188: bản iOS dùng thông báo của iPhone (native.js); trạng thái quyền hỏi không đồng bộ nên giữ sẵn ở đây */
+  const NV = window.N50KNative && N50KNative.isApp ? N50KNative : null;
+  let nvNotif = "default";
+  const nvMap = st => st === "granted" ? "granted" : st === "denied" ? "denied" : "default";
+  if(NV) NV.notifyState().then(st => { nvNotif = nvMap(st); if(!$("setAI").hidden) renderAIBud(); });
+  function notifPerm(){ return NV ? nvNotif : "Notification" in window ? Notification.permission : "none"; }
   function aiNotify(title, body, tag){
+    if(NV){ if(nvNotif === "granted") NV.notify(title, body, tag); return; }
     try{
       if(!("Notification" in window) || Notification.permission !== "granted") return;
       const opt = { body, tag, icon:"icons/icon-192.png", badge:"icons/icon-192.png" };
@@ -6840,7 +6873,7 @@ function startNgay50k(){
       if(v > 0) all2[p] = { amt: Math.round(v * 100) / 100, spent:0, t:Date.now(), warned:[] }; else delete all2[p];
       aiBudSet(all2); renderAIBud();
     }));
-    const n = "Notification" in window ? Notification.permission : "none";
+    const n = notifPerm();
     $("aiNotif").hidden = n !== "default";
     $("aiNotifMsg").textContent = n === "granted" ? "✓ Thông báo đẩy đã bật. Luôn có thêm lời nhắc ngay trong Trò chuyện."
       : n === "denied" ? "Thông báo đang bị chặn. Bật lại ở Cài đặt iPhone → Thông báo → Tiêu Gọn. Lời nhắc vẫn hiện trong Trò chuyện."
@@ -7564,6 +7597,11 @@ function startNgay50k(){
     flash("aiMsg", "✓ Đã rút lại đồng ý. AI đã tắt, Chat dùng bộ hiểu câu trên máy.");
   });
   $("aiNotif").onclick = async () => {
+    if(NV){
+      nvNotif = nvMap(await NV.notifyAsk()); renderAIBud();
+      if(nvNotif === "granted") aiNotify("Đã bật thông báo", "App sẽ báo khi ngân sách AI sắp hết.", "ai-test");
+      return;
+    }
     try{ if("Notification" in window && Notification.permission === "default") await Notification.requestPermission(); }catch(e){}
     renderAIBud();
     if("Notification" in window && Notification.permission === "granted") aiNotify("Đã bật thông báo", "App sẽ báo khi ngân sách AI sắp hết.", "ai-test");
@@ -10420,13 +10458,14 @@ function startNgay50k(){
     const live = relayWs && relayWs.readyState === 1;
     const row = (cls, t, v, go) => '<' + (go ? 'button type="button" data-go="' + go + '"' : 'div') + ' class="nst-r ' + cls + '"><i class="d"></i><span class="t">' + t + '</span><span class="v">' + v + '</span></' + (go ? 'button' : 'div') + '>';
     let h = row(last ? "ok" : "warn", "Phím tắt", last ? "nhận lần cuối " + agoText(last) : "chưa nhận thông báo nào");
-    h += url ? row("ok", "Trạm Cloudflare", live ? "kết nối trực tiếp" : notifOn() ? "đã cài, mở app là lấy" : "đã cài", "setRelay")
+    if(N50KNative.isApp && !url) h += row(last ? "ok" : "", "Gửi thẳng vào app", "tác vụ Ghi vào Tiêu Gọn");
+    else h += url ? row("ok", "Trạm Cloudflare", live ? "kết nối trực tiếp" : notifOn() ? "đã cài, mở app là lấy" : "đã cài", "setRelay")
              : row("", "Trạm Cloudflare", "chưa cài · dán bộ nhớ tạm", "setRelay");
     if(wv) h += row("warn", "Trạm bản " + wv, "Cập nhật ›", "setRelay");
     el.innerHTML = h;
     el.querySelectorAll("[data-go]").forEach(b => b.onclick = () => showSetPage(b.dataset.go));
     $("navRelay").textContent = url ? (wv ? "cần cập nhật" : "đang dùng") : "chưa cài";
-    $("wizOpen").textContent = last && url ? "Xem lại cách cài" : "Cài đặt từng bước";
+    $("wizOpen").textContent = last && (url || N50KNative.isApp) ? "Xem lại cách cài" : "Cài đặt từng bước";
   }
   function relaySetUrl(u){
     u = String(u || "").trim().replace(/\/+$/, "");
@@ -10468,7 +10507,19 @@ function startNgay50k(){
   var wiz = { i:0, mode:"" };
   const WZ_FILE = "TieuGon.txt", WZ_NAME = "TG · Lưu thông báo MB", WZ_TITLE = "Thông báo biến động số dư";
   function wizSteps(){
-    const auto = wiz.mode !== "paste", A = "Phần bắt buộc", B = "Trạm Cloudflare";
+    const A = "Phần bắt buộc", B = "Trạm Cloudflare";
+    if(wiz.mode === "app"){
+      /* v188: bản iOS: tác vụ "Ghi vào Tiêu Gọn" gửi thẳng vào app, không cần tệp hay trạm */
+      return [
+        { part:A, h:"Tạo automation", p:"Mở <b>Phím tắt</b> → tab <b>Tự động hoá</b> → <b>＋</b> → <b>Thông báo</b> → chọn app <b>MB Bank</b>.",
+          f:[["Add Filter · Title contains", WZ_TITLE, 1], ["Automation", "Bật"], ["Notify", "Tắt"]] },
+        { part:A, h:"Gửi vào Tiêu Gọn", p:"Bấm <b>New Blank Automation</b>, tìm và thêm tác vụ <b>Ghi vào Tiêu Gọn</b>:",
+          f:[["Nội dung", "Shortcut Input → Body"]],
+          n:"Chưa thấy Body thì chạm Shortcut Input, đổi Type sang Notification. Không thấy tác vụ thì mở Tiêu Gọn một lần rồi tìm lại." },
+        { part:A, h:"Đặt tên automation", p:"Chạm tên ở trên cùng của automation, đặt:", f:[["Tên", WZ_NAME, 1]] }
+      ];
+    }
+    const auto = wiz.mode !== "paste";
     const st = [
       { part:A, h:"Tạo automation", p:"Mở <b>Phím tắt</b> → tab <b>Tự động hoá</b> → <b>＋</b> → <b>Thông báo</b> → chọn app <b>MB Bank</b>.",
         f:[["Add Filter · Title contains", WZ_TITLE, 1], ["Automation", "Bật"], ["Notify", "Tắt"]] },
@@ -10502,16 +10553,18 @@ function startNgay50k(){
     const esc2 = x => esc(String(x));
     let h = "";
     if(wiz.i === 0){
-      const cur = wiz.mode || (relayUrl() ? "auto" : "");
+      const cur = wiz.mode || (N50KNative.isApp ? "app" : relayUrl() ? "auto" : "");
       h = '<div class="wz-meta">Chọn cách nhận giao dịch</div><div class="wz-bar"><i style="width:4%"></i></div>'
         + '<h3>App nhận thông báo bằng cách nào?</h3>'
-        + '<button type="button" class="wz-opt" data-m="auto" aria-pressed="' + (cur === "auto") + '"><b>Tự động (khuyên dùng)</b><span>Qua trạm Cloudflare miễn phí: giao dịch tự hiện, không cần bấm. ' + (n + (wiz.mode === "paste" ? 3 : 0)) + ' bước.</span></button>'
+        + (N50KNative.isApp
+          ? '<button type="button" class="wz-opt" data-m="app" aria-pressed="' + (cur === "app") + '"><b>Gửi thẳng vào app (khuyên dùng)</b><span>Phím tắt ghi vào Tiêu Gọn ngay trên máy, không cần tài khoản hay mạng. 3 bước.</span></button>'
+          : '<button type="button" class="wz-opt" data-m="auto" aria-pressed="' + (cur === "auto") + '"><b>Tự động (khuyên dùng)</b><span>Qua trạm Cloudflare miễn phí: giao dịch tự hiện, không cần bấm. ' + (n + (wiz.mode === "paste" ? 3 : 0)) + ' bước.</span></button>')
         + '<button type="button" class="wz-opt" data-m="paste" aria-pressed="' + (cur === "paste") + '"><b>Dán thủ công</b><span>Không cần tài khoản nào: mở app bấm 📋 → Paste. 5 bước.</span></button>'
         + '<div class="wz-nav"><button type="button" class="primary" id="wzNext"' + (cur ? "" : " disabled") + '>Bắt đầu ›</button></div>';
       wiz.mode = cur;
     } else if(wiz.i > n){
       h = '<div class="wz-meta">Hoàn tất</div><div class="wz-bar"><i style="width:100%"></i></div><h3>Xong rồi ✓</h3>'
-        + '<p class="wz-p">' + (wiz.mode === "auto" ? "Lần tới MB Bank báo biến động số dư, giao dịch sẽ tự hiện trong Chat." : "Lần tới có thông báo MB Bank, mở app bấm 📋 → Paste để ghi.") + '</p>'
+        + '<p class="wz-p">' + (wiz.mode === "app" ? "Lần tới MB Bank báo biến động số dư, mở Tiêu Gọn là thấy giao dịch trong Chat; app đang mở thì hiện ngay." : wiz.mode === "auto" ? "Lần tới MB Bank báo biến động số dư, giao dịch sẽ tự hiện trong Chat." : "Lần tới có thông báo MB Bank, mở app bấm 📋 → Paste để ghi.") + '</p>'
         + '<p class="wz-note">Muốn thử ngay: chuyển một khoản nhỏ, hoặc bấm Dán thử / Chọn tệp thử ở trang trước.</p>'
         + '<div class="wz-nav"><button type="button" class="ghost" id="wzPrev">‹ Trước</button><button type="button" class="primary" id="wzDone">Xong</button></div>';
     } else {
@@ -10761,6 +10814,24 @@ function startNgay50k(){
   window.addEventListener("online", () => { relayPull(true); relayWsOpen(); });
   window.addEventListener("offline", relayWsClose);
   setTimeout(relayBurst, 100);
+  /* v188: bản iOS: giao dịch Phím tắt gửi bằng tác vụ "Ghi vào Tiêu Gọn" nằm trong hàng đợi trên máy.
+     Lấy khi mở app, khi quay lại app, và ngay lúc Phím tắt gửi nếu app đang mở. Xử lý y như thông báo từ trạm. */
+  if(N50KNative.isApp){
+    let qBusy = false;
+    const queueDrain = async () => {
+      if(qBusy || document.hidden) return;
+      qBusy = true;
+      try{
+        const items = await N50KNative.queueTake();
+        if(items.length) await notifFromClip(Promise.resolve(items.map(x => String(x.t || "")).join("\n")), "relay", true);
+        if(items.length && setPage === "setNotif") renderNotifStatus();
+      }catch(e){ window.__n50kLog && window.__n50kLog("hàng đợi", e && e.message || e); }
+      finally{ qBusy = false; }
+    };
+    document.addEventListener("visibilitychange", () => { if(!document.hidden) setTimeout(queueDrain, 150); });
+    N50KNative.onQueue(queueDrain);
+    setTimeout(queueDrain, 300);
+  }
   renderClipBtn();
   $("notifX").onclick = hideNotifBar;
   $("notifTest").onclick = () => notifFromClip(clipRead(), "clip");
@@ -10905,6 +10976,11 @@ function startNgay50k(){
     location.reload();
   }
   $("updCheck").onclick = () => checkUpdate(false);
+  if(N50KNative.isApp){
+    /* bản iOS cập nhật qua App Store: bỏ nút kiểm tra bản web */
+    $("updCheck").hidden = true;
+    N50KNative.info().then(i => { if(i && i.version) $("appVersion").textContent += " · iOS " + i.version + " (" + i.build + ")"; $("appVersionHome").textContent = $("appVersion").textContent; });
+  }
   $("updGo").onclick = applyUpdate;
   document.querySelectorAll("[data-go]").forEach(b => b.onclick = () => showSetPage(b.dataset.go));
   document.querySelectorAll("[data-back]").forEach(b => b.onclick = () => showSetPage(b.dataset.back || "setHome", true));
@@ -10918,7 +10994,9 @@ function startNgay50k(){
     $("lockState").innerHTML = on
       ? "<b>Đang bật.</b> Mở app phải nhập mã PIN " + m.len + " số" + (m.pk ? " hoặc dùng Face ID" : "") + ". Dữ liệu trên máy đã được mã hoá."
       : "Đang tắt: ai cầm máy của bạn cũng mở được app. Đặt mã PIN để khoá app và mã hoá dữ liệu trên máy.";
+    widgetPush();
     if(!on) return;
+    $("wgShow").checked = lsGet("ngay50k:wgShow") === "1";
     document.querySelectorAll("#lockAutoSeg button").forEach(b => b.setAttribute("aria-pressed", String(Number(b.dataset.auto) === m.auto)));
     $("pkToggle").textContent = m.pk ? "Tắt mở bằng Face ID" : "Bật mở bằng Face ID";
     $("pkState").textContent = m.pk ? "Đang bật. Mã PIN vẫn dùng được khi Face ID không nhận." : "Mở app bằng Face ID thay cho nhập mã PIN.";
@@ -10942,6 +11020,7 @@ function startNgay50k(){
     catch(e){ if(!(e && e.message === "cancel")) lockFlash(false, "Chưa tắt được: " + (e && e.message ? e.message : e)); }
     renderLockSet();
   };
+  $("wgShow").addEventListener("change", () => { lsSet("ngay50k:wgShow", $("wgShow").checked ? "1" : "0"); widgetPush(); });
   $("lockNowBtn").onclick = () => { closeSettings(); setTimeout(() => N50KLock.lockNow(), 280); };
   document.querySelectorAll("#lockAutoSeg button").forEach(b => b.onclick = () => { N50KLock.setAuto(Number(b.dataset.auto)); renderLockSet(); });
   $("pkToggle").onclick = async () => {
@@ -11086,12 +11165,18 @@ function startNgay50k(){
     /* dấu chấm phẩy để Excel tiếng Việt tách cột đúng, BOM để không lỗi dấu */
     return "\ufeff" + body.map(r => r.map(csvCell).join(";")).join("\r\n");
   }
+  /* v188: bản iOS mở bảng chia sẻ của iPhone (lưu vào Tệp, iCloud Drive, gửi Zalo…); trả về "done" | "cancel" | "error" */
+  async function nativeShare(name, text){
+    try{ const r = await N50KNative.shareFile(name, text); return r && r.completed ? "done" : "cancel"; }
+    catch(e){ showSyncErr("Chưa mở được bảng chia sẻ: " + (e && e.message ? e.message : e)); return "error"; }
+  }
   async function exportCSV(){
     $("syncErr").hidden = true;
     const n = countAll(state);
     if(!n){ showSyncErr("Chưa có khoản nào để xuất."); return; }
     const name = "tieugon-" + fileStamp() + ".csv";
     const text = buildCSV();
+    if(N50KNative.isApp){ await nativeShare(name, text); return; }
     const coarse = window.matchMedia && matchMedia("(pointer:coarse)").matches;
     if(coarse && navigator.canShare && typeof File === "function"){
       try{
@@ -11162,6 +11247,7 @@ function startNgay50k(){
     $("syncErr").hidden = true;
     const name = "tieugon-saoluu-" + fileStamp() + ".json";
     const text = await backupText(); if(text == null) return;
+    if(N50KNative.isApp){ if(await nativeShare(name, text) === "done") doneExport(); return; }
     const coarse = window.matchMedia && matchMedia("(pointer:coarse)").matches;
     if(coarse && navigator.canShare && typeof File === "function"){
       try{
@@ -11338,6 +11424,11 @@ function startNgay50k(){
     $("syncErr").hidden = true;
     const name = "tieugon-" + todayKey() + ".json";
     const text = await backupText(); if(text == null) return false;
+    if(N50KNative.isApp){
+      const r = await nativeShare(name, text);
+      if(r === "done"){ doneExport("✓ Đã lưu bản sao lưu " + name + "."); return true; }
+      return false;
+    }
     let t0 = 0;
     if(!(navigator.canShare && typeof File === "function")){ showSyncErr("Máy này không mở được bảng chia sẻ. Hãy dùng nút Xuất file sao lưu."); return false; }
     try{

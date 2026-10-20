@@ -81,6 +81,8 @@ Hệ quả cần biết:
 ```
 index.html              toàn bộ app: giao diện, CSS và JavaScript trong một file
 lock.js                 khoá app bằng mã PIN, mã hoá dữ liệu, Face ID (passkey PRF), sao lưu có mật khẩu
+native.js               nối với bản iOS đóng gói (Face ID gốc, Phím tắt, widget, thông báo, chia sẻ); trên web không làm gì
+ios-app/                bản iOS (Capacitor + Swift: plugin, tác vụ Phím tắt, widget), xem ios-app/README.md
 parse-vi.js             bộ hiểu câu tiếng Việt cho màn Trò chuyện (chạy trên máy)
 quy-tac.js              Thư viện nội dung: khớp quy tắc làm gọn thông báo ngân hàng, giải thích cú pháp, gợi ý (không chứa quy tắc của ai)
 tests-quy-tac.js        bài thử Thư viện nội dung (dữ liệu giả): node tests-quy-tac.js
@@ -110,7 +112,7 @@ App không tải gì từ bên ngoài khi chạy. Riêng chức năng đọc ch�
 1. Sửa code.
 2. Tăng số phiên bản ở **ba chỗ**, cùng một số:
    - `sw.js` → `const V = "NN";`
-   - `index.html` → các thẻ `<script src="…?v=NN">` (parse-vi, thu-vien-cau, quy-tac, lock), và dòng `Phiên bản vNN` trong phần Cài đặt (cùng `VER` trong đoạn lưới an toàn đầu trang).
+   - `index.html` → các thẻ `<script src="…?v=NN">` (parse-vi, thu-vien-cau, quy-tac, native, lock), và dòng `Phiên bản vNN` trong phần Cài đặt (cùng `VER` trong đoạn lưới an toàn đầu trang).
    - Lệnh gợi ý: `sed -i 's/const V = "OLD"/const V = "NN"/' sw.js && sed -i 's/?v=OLD/?v=NN/g; s/Phiên bản vOLD/Phiên bản vNN/; s/VER = "vOLD"/VER = "vNN"/' index.html`
 3. Ghi lại thay đổi vào `IN-THIS-VERSION.md`.
 4. Đẩy lên GitHub.

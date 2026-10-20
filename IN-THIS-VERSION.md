@@ -1,6 +1,22 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v187, ngày 20/10/2026
+**Phiên bản hiện tại:** v188, ngày 20/10/2026
+
+---
+
+## Có gì mới trong v188 (so với v187) – chuẩn bị bản iOS
+
+Bản web chạy y như cũ. Thêm phần để đóng gói thành app iOS (thư mục `ios-app/`, xem `ios-app/README.md`):
+
+- **`native.js`** (mới, nạp trước `lock.js`): nhận ra đang chạy trong app iOS (Capacitor) và dùng phần gốc của iPhone; trên web không làm gì.
+- **Face ID trong bản iOS:** khoá dữ liệu cất trong Keychain, chỉ lấy ra sau khi Face ID xác nhận (`meta.nk` trong `lock.js`). Thêm/bớt khuôn mặt trong Cài đặt iPhone thì app báo nhập mã PIN rồi bật lại.
+- **Tác vụ Phím tắt "Ghi vào Tiêu Gọn":** automation gửi thông báo ngân hàng thẳng vào app, không cần trạm Cloudflare. App lấy hàng đợi khi mở, khi quay lại, và ngay lập tức nếu đang mở. Trình cài từng bước có lựa chọn *Gửi thẳng vào app*; phần trạm Cloudflare ẩn trong bản iOS.
+- **Widget "Hôm nay còn được tiêu"** cho màn hình chính (nhỏ, vừa) và màn hình khoá (tròn, chữ nhật, một dòng). App gửi số liệu hôm nay và 2 ngày tới nên qua nửa đêm widget tự đổi. Bật mã PIN thì mặc định widget không hiện số tiền (Cài đặt → Khoá app → Widget).
+- **Thông báo ngân sách AI, sao lưu, xuất CSV** dùng thông báo và bảng chia sẻ của iPhone. Link ra ngoài mở bằng Safari.
+- **Đọc chữ trong ảnh:** bản iOS có sẵn Tesseract và dữ liệu tiếng Việt/Anh, không tải từ mạng.
+- Bản iOS ẩn nút *Kiểm tra cập nhật* (cập nhật qua App Store); màn chào có dòng hướng dẫn chuyển dữ liệu từ bản Safari.
+- **Chính sách quyền riêng tư:** thêm mục riêng cho bản App Store; bỏ dòng về mở app ngân hàng (tính năng đã bỏ từ trước).
+- `.github/workflows/ios-testflight.yml`: build trên máy Mac của GitHub và đẩy lên TestFlight, chỉ chạy khi bấm tay.
 
 ---
 

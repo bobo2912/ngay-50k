@@ -1,0 +1,21 @@
+{
+  "name": "tieugon-ios",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Tiêu Gọn – bản iOS đóng gói bằng Capacitor. Mã web dùng chung với thư mục gốc của repo.",
+  "scripts": {
+    "web": "node scripts/build-web.mjs",
+    "sync": "node scripts/build-web.mjs && npx cap sync ios",
+    "open": "npx cap open ios"
+  },
+  "dependencies": {
+    "@capacitor/core": "8.5.3",
+    "@capacitor/ios": "8.5.3"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "8.5.3",
+    "@tesseract.js-data/eng": "1.0.0",
+    "@tesseract.js-data/vie": "1.0.0",
+    "tesseract.js": "5.1.1"
+  }
+}

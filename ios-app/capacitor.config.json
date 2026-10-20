@@ -1,0 +1,11 @@
+{
+  "appId": "io.github.bobo2912.tieugon",
+  "appName": "Tiêu Gọn",
+  "webDir": "www",
+  "ios": {
+    "contentInset": "never",
+    "scheme": "TieuGon",
+    "backgroundColor": "#F3F4F7",
+    "allowsLinkPreview": false
+  }
+}

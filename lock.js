@@ -7,6 +7,9 @@
    - Mở bằng Face ID: một passkey trên máy có tiện ích PRF trả về 32 byte bí mật mỗi lần
      xác thực; khoá dữ liệu được bọc thêm một bản bằng bí mật đó. Máy không hỗ trợ PRF thì
      không bật được, vì mở bằng Face ID mà không có bí mật thật thì chỉ là khoá cửa giả.
+   - Bản iOS đóng gói (native.js, v188): không dùng passkey mà cất khoá dữ liệu trong Keychain của iPhone,
+     chỉ lấy ra được sau khi Face ID xác nhận (meta.nk = true). Thêm/bớt khuôn mặt trong Cài đặt iPhone
+     thì iOS huỷ bản cất đó, người dùng nhập mã PIN rồi bật lại.
    - Thông tin mở khoá (muối, bản bọc) nằm ở khoá "ngay50k:lock", không mã hoá; không chứa mã PIN.
 
    Mã PIN 4–6 số chống người khác cầm máy mở app. Ai lấy được bản sao bộ nhớ trình duyệt
@@ -68,7 +71,10 @@ window.N50KLock = (function(){
   }
 
   /* ---------- passkey + PRF (Face ID) ---------- */
+  var NV = window.N50KNative && window.N50KNative.isApp ? window.N50KNative : null;
+  function hasBio(){ return !!(meta && (meta.pk || meta.nk)); }
   function pkAvailable(){
+    if(NV) return NV.bioAvailable();
     if(!(window.PublicKeyCredential && navigator.credentials && PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable)) return Promise.resolve(false);
     return PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().catch(function(){ return false; });
   }
@@ -84,6 +90,13 @@ window.N50KLock = (function(){
     return new Uint8Array(first);
   }
   async function pkUnlock(signal){
+    if(NV && meta && meta.nk){
+      try{ return unb64(await NV.bioLoad("Mở khoá Tiêu Gọn")); }
+      catch(e){
+        if(e && e.name === "BioChanged"){ meta.nk = false; saveMeta(); if(ui) ui.bio.classList.add("off"); }
+        throw e;
+      }
+    }
     if(!meta || !meta.pk) throw new Error("nopk");
     var secret = await pkSecret(meta.pk.id, meta.pk.salt, signal);
     return unwrap(await prfKey(secret), meta.pk.wp);
@@ -164,7 +177,7 @@ window.N50KLock = (function(){
       ui.forgot.hidden = true; ui.pad.hidden = false; ui.dots.hidden = false;
       ui.alt.textContent = "Quên mã PIN?"; ui.alt.hidden = !!opts.cancel;
       ui.cancel.hidden = !opts.cancel;
-      ui.bio.classList.toggle("off", !(meta.pk && !opts.noBio));
+      ui.bio.classList.toggle("off", !(hasBio() && !opts.noBio));
       dots(0, len); setErr(""); ui.err.hidden = false;
       function lockedOut(){
         var ms = waitLeft();
@@ -182,7 +195,11 @@ window.N50KLock = (function(){
         /* tự gọi lúc mở app mà 6 giây không có gì thì thôi, để người dùng nhập mã PIN */
         var guard = auto && ctl ? setTimeout(function(){ if(bioCtl === ctl) stopBio(); }, 6000) : null;
         try{ var raw = await pkUnlock(ctl ? ctl.signal : undefined); if(guard) clearTimeout(guard); if(bioCtl === ctl || !finished){ bioCtl = null; noteOk(); done(raw); } }
-        catch(e){ if(guard) clearTimeout(guard); if(bioCtl === ctl) bioCtl = null; if(!auto && e && e.name !== "NotAllowedError" && e.name !== "AbortError") setErr("Không mở được bằng Face ID. Hãy nhập mã PIN."); }
+        catch(e){
+          if(guard) clearTimeout(guard); if(bioCtl === ctl) bioCtl = null;
+          if(e && e.name === "BioChanged") setErr("Khuôn mặt hoặc vân tay trên máy vừa thay đổi. Nhập mã PIN, rồi bật lại Face ID trong Cài đặt.");
+          else if(!auto && e && e.name !== "NotAllowedError" && e.name !== "AbortError") setErr("Không mở được bằng Face ID. Hãy nhập mã PIN.");
+        }
       }
       ui.handler = async function(k){
         if(busy || finished) return;
@@ -207,7 +224,7 @@ window.N50KLock = (function(){
         if(ui.wipe.dataset.armed !== "1"){ ui.wipe.dataset.armed = "1"; ui.wipe.textContent = "Bấm lần nữa để xoá vĩnh viễn"; return; }
         wipeAll();
       };
-      if(meta.pk && !opts.noBio && opts.autoBio && document.visibilityState === "visible") setTimeout(function(){ bio(true); }, 300);
+      if(hasBio() && !opts.noBio && opts.autoBio && document.visibilityState === "visible") setTimeout(function(){ bio(true); }, 300);
     });
   }
 
@@ -267,6 +284,7 @@ window.N50KLock = (function(){
   }
 
   async function wipeAll(){
+    if(NV) try{ await NV.bioDelete(); }catch(e){}
     try{ await N50K.wipe(); }catch(e){}
     try{ Object.keys(localStorage).filter(function(k){ return k.indexOf("ngay50k:") === 0; }).forEach(function(k){ localStorage.removeItem(k); }); }catch(e){}
     meta = null; dek = null; dekRaw = null;
@@ -293,7 +311,7 @@ window.N50KLock = (function(){
   api.KEY = LOCK_KEY;
   api.supported = function(){ return !!(C && window.TextEncoder); };
   api.isOn = function(){ return !!meta; };
-  api.meta = function(){ return meta ? { len:meta.len, auto:meta.auto, pk:!!meta.pk } : null; };
+  api.meta = function(){ return meta ? { len:meta.len, auto:meta.auto, pk:hasBio() } : null; };
 
   /* Chạy trước khi app khởi động: có khoá thì hỏi mã PIN rồi giải mã. */
   api.gate = async function(){
@@ -339,6 +357,7 @@ window.N50KLock = (function(){
     await askUnlock({ title:"Nhập mã PIN để tắt khoá", cancel:true, noBio:true });
     hide();
     await N50K.setCodec(null);
+    if(NV && meta.nk) await NV.bioDelete();
     meta = null; dek = null; dekRaw = null; saveMeta();
     await N50K.flush();
   };
@@ -349,6 +368,18 @@ window.N50KLock = (function(){
   /* Bật Face ID: tạo passkey trên máy, lấy bí mật PRF, bọc thêm một bản khoá dữ liệu. */
   api.enablePasskey = async function(){
     if(!meta || !dekRaw) throw new Error("Hãy bật mã PIN trước.");
+    if(NV){
+      if(!(await NV.bioAvailable())) throw new Error("Máy chưa bật Face ID hoặc Touch ID trong Cài đặt iPhone.");
+      await NV.bioSave(b64(dekRaw));
+      /* thử lấy lại ngay: vừa xác nhận người dùng nhìn được Face ID, vừa chắc bản cất đọc ra đúng */
+      try{
+        var back = await NV.bioLoad("Bật mở Tiêu Gọn bằng Face ID");
+        if(back !== b64(dekRaw)) throw new Error("Keychain trả về sai khoá");
+      }catch(e){ await NV.bioDelete(); throw e; }
+      meta.nk = true; meta.pk = null;
+      saveMeta(); await N50K.flush();
+      return;
+    }
     if(!(await pkAvailable())) throw new Error("Máy này không có Face ID hoặc Touch ID cho web app.");
     var salt = rand(32);
     var cred = await navigator.credentials.create({ publicKey:{
@@ -365,10 +396,10 @@ window.N50KLock = (function(){
     meta.pk = { id:id, salt:b64(salt), wp:await wrap(await prfKey(secret), dekRaw) };
     saveMeta(); await N50K.flush();
   };
-  api.disablePasskey = async function(){ if(!meta) return; meta.pk = null; saveMeta(); await N50K.flush(); };
+  api.disablePasskey = async function(){ if(!meta) return; if(NV && meta.nk) await NV.bioDelete(); meta.pk = null; meta.nk = false; saveMeta(); await N50K.flush(); };
   api.wipeAll = wipeAll;
   /* App tự xoá toàn bộ dữ liệu: bỏ luôn khoá */
-  api.forget = function(){ meta = null; dek = null; dekRaw = null; N50K.setCodec(null, true); N50K.del(LOCK_KEY); };
+  api.forget = function(){ if(NV) NV.bioDelete(); meta = null; dek = null; dekRaw = null; N50K.setCodec(null, true); N50K.del(LOCK_KEY); };
 
   /* ---------- file sao lưu có mật khẩu ---------- */
   /* sinh khoá từ mật khẩu trước (lúc gõ xong mật khẩu), để lúc bấm xuất chỉ còn mã hoá nhanh:
