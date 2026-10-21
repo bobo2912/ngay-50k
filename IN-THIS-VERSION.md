@@ -1,6 +1,12 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v190, ngày 20/10/2026
+**Phiên bản hiện tại:** v191, ngày 21/10/2026
+
+---
+
+## Có gì mới trong v191 (so với v190)
+
+- Tab **thẻ** trong màn Ví: khối đầu tiên hiện **4 số cuối thẻ** ngay cạnh tên thẻ (ví dụ *VIB Online Plus •••• 1234*), để phân biệt các thẻ trùng ngân hàng. Thẻ chưa nhập 4 số cuối thì chỉ hiện tên như cũ.
 
 ---
 

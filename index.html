@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v190";
+  var K = "ngay50k:errlog", VER = "v191";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -1830,6 +1830,7 @@ body.kb #tab-chat > .chip-veil{display:none}
 .whead{margin:0 2px 10px}
 .wh-top{display:flex; align-items:center; gap:8px; min-height:30px}
 .wh-name{display:block; min-width:0; font-size:.86rem; font-weight:600; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.wh-l4{margin-left:6px; font-weight:500; opacity:.75; font-variant-numeric:tabular-nums; letter-spacing:.02em}
 .wh-acts{display:flex; gap:6px; flex:none}
 .wh-btn{border:0; border-radius:999px; padding:6px 12px; font:inherit; font-size:.78rem; font-weight:700; white-space:nowrap; background:var(--note-soft, rgba(0,0,0,.06)); color:var(--note)}
 .wh-btn.ic{width:30px; padding:6px 0; text-align:center}
@@ -2975,7 +2976,7 @@ body::before, .settings::before, .lock, .welcome{background:var(--bg) !important
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v190</p>
+      <p class="sync" id="appVersion">Phiên bản v191</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3479,11 +3480,11 @@ body::before, .settings::before, .lock, .welcome{background:var(--bg) !important
 <input type="file" id="phFile" accept="image/*" hidden>
 <div class="ph-view" id="phView" role="dialog" aria-modal="true" aria-label="Ảnh hoá đơn" hidden><img id="phImg" alt="Ảnh hoá đơn"><div class="ph-bar"><button type="button" id="phDel">Bỏ ảnh này</button><button type="button" id="phClose">Đóng</button></div></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=190"></script>
-<script src="thu-vien-cau.js?v=190"></script>
-<script src="quy-tac.js?v=190"></script>
-<script src="native.js?v=190"></script>
-<script src="lock.js?v=190"></script>
+<script src="parse-vi.js?v=191"></script>
+<script src="thu-vien-cau.js?v=191"></script>
+<script src="quy-tac.js?v=191"></script>
+<script src="native.js?v=191"></script>
+<script src="lock.js?v=191"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -7977,6 +7978,8 @@ function startNgay50k(){
         .reduce((a, p) => a + (Number(p.amt) || 0), 0) : 0;
       const net = tot - paid;
       nameEl.textContent = c ? c.name : "Thẻ tín dụng";
+      /* v191: 4 số cuối thẻ cạnh tên thẻ */
+      if(c && c.last4){ const l4 = el("span", "wh-l4", "•••• " + c.last4); nameEl.appendChild(l4); }
       rollTo(num, net > 0 ? "−" + fmt(net) : net < 0 ? "+" + fmt(-net) : "0đ", sel + "@" + mk);
       if(net > 0) num.classList.add("debt");
       const ml = (cm.getMonth() + 1) + "/" + cm.getFullYear();
