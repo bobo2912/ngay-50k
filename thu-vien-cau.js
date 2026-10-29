@@ -314,6 +314,30 @@
         ["tuần này nên bớt tiêu cái gì", { q:"save", period:"week" }],
         ["nen tiet kiem o dau", { q:"save" }]
       ]},
+    { id:"hoi_dinhky", ten:"Khoản chi định kỳ", y_nghia:"Chỉ các khoản định kỳ (tiền nhà, điện, học phí… đánh dấu định kỳ hoặc do Cài đặt tự ghi). mode: list (mặc định), top, compare, avg (trung bình mỗi tháng), upcoming (sắp tới / chưa trả), detect (khoản lặp lại chưa đánh dấu).",
+      tra_loi:"Tổng định kỳ của kỳ, tỉ trọng trong tổng chi, từng khoản so kỳ trước, lịch chưa tới ngày, gợi ý khoản quên đánh dấu. Tính trên máy.",
+      mau:[
+        ["tiêu gì các khoản định kỳ", { q:"fixed", mode:"list", period:"month" }],
+        ["các khoản cố định tháng trước", { q:"fixed", mode:"list", period:"lastmonth" }],
+        ["khoản định kỳ nào lớn nhất", { q:"fixed", mode:"top" }],
+        ["trung bình mỗi tháng chi định kỳ bao nhiêu", { q:"fixed", mode:"avg" }],
+        ["còn khoản định kỳ nào chưa trả", { q:"fixed", mode:"upcoming" }],
+        ["khoản nào có vẻ là định kỳ", { q:"fixed", mode:"detect" }],
+        ["định kỳ bằng thẻ năm nay", { q:"fixed", period:"year", src:"card" }]
+      ]},
+    { id:"hoi_ngoai_dinhky", ten:"Chi tiêu ngoài khoản định kỳ", y_nghia:"Câu hỏi chi tiêu thường (tổng, tiêu gì, liệt kê…) nhưng BỎ các khoản định kỳ: thêm fx:\"no\". Dấu hiệu: ngoài / trừ / không tính / bỏ + định kỳ / cố định / hàng tháng; \"chi tiêu thường ngày\".",
+      tra_loi:"Trả lời như câu hỏi thường, chỉ tính khoản không định kỳ, ghi riêng phần định kỳ.",
+      mau:[
+        ["Tiêu gì ngoài cố định hàng tháng hôm nay", { q:"report", period:"today", fx:"no" }],
+        ["hôm nay tiêu gì ngoài khoản định kỳ", { q:"report", period:"today", fx:"no" }],
+        ["ngoài định kỳ hôm nay tiêu bao nhiêu", { q:"spent", period:"today", fx:"no" }],
+        ["tháng này tiêu gì trừ các khoản hàng tháng", { q:"report", period:"month", fx:"no" }],
+        ["không tính cố định thì tuần này tiêu bao nhiêu", { q:"spent", period:"week", fx:"no" }],
+        ["tháng này tiêu bao nhiêu không tính định kỳ", { q:"spent", period:"month", fx:"no" }],
+        ["liệt kê chi tiêu tháng này trừ khoản cố định", { q:"report", period:"month", list:true, fx:"no" }],
+        ["chi tiêu thường ngày tháng này", { q:"report", period:"month", fx:"no" }],
+        ["tieu gi ngoai dinh ky hom nay", { q:"report", period:"today", fx:"no" }]
+      ]},
     { id:"hoi_ngay", ten:"Ngày tiêu nhiều nhất", y_nghia:"Ngày chi lớn nhất trong kỳ.",
       tra_loi:"\"Tháng này bạn chi nhiều nhất ngày {d}: {x}.\"",
       mau:[
@@ -330,6 +354,9 @@
       mau:[
         ["tháng này tiêu gì", "còn thẻ thì sao", { q:"report", period:"month", src:"card" }],
         ["tháng này tiêu gì", "tháng trước thì sao", { q:"report", period:"lastmonth" }],
+        ["hôm nay tiêu gì ngoài định kỳ", "tháng này thì sao", { q:"report", period:"month", fx:"no" }],
+        ["tiêu gì các khoản định kỳ", "tháng trước thì sao", { q:"fixed", period:"lastmonth" }],
+        ["tiêu gì các khoản định kỳ", "cái nào lớn nhất", { q:"fixed", mode:"top" }],
         ["tháng này tiêu gì", "chỉ tính từ tài khoản", { q:"report", src:"tk" }],
         ["tháng này tiêu gì", "theo ngày", { q:"report", group:"day" }],
         ["tháng này tiêu gì", "liệt kê ra", { q:"report", list:true }],

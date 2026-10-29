@@ -41,8 +41,16 @@ check("dinh ky thang nay bao nhieu", { q:"fixed", period:"month" });
 /* bỏ khoản định kỳ khỏi câu hỏi thường */
 check("tháng này tiêu bao nhiêu không tính định kỳ", { q:"spent", period:"month", fx:"no" });
 check("liệt kê chi tiêu tháng này trừ khoản cố định", { q:"report", fx:"no" });
-check("tuần này tiêu bao nhiêu ngoài các khoản định kỳ", { q:"report", period:"week", fx:"no" });
+check("tuần này tiêu bao nhiêu ngoài các khoản định kỳ", { q:"spent", period:"week", fx:"no" });
 check("tháng này tiêu bao nhiêu", { q:"spent", fx:undefined });
+/* v196: "ngoài / trừ … hàng tháng" không được hiểu thành "trung bình mỗi tháng" */
+check("Tiêu gì ngoài cố định hàng tháng hôm nay", { q:"report", period:"today", fx:"no" });
+check("tháng này tiêu gì trừ các khoản hàng tháng", { q:"report", period:"month", fx:"no" });
+check("không tính cố định thì tuần này tiêu bao nhiêu", { q:"spent", period:"week", fx:"no" });
+check("chi tiêu thường ngày tháng này", { q:"report", period:"month", fx:"no" });
+check("chi tiêu thường ngày tháng này bao nhiêu", { q:"spent", period:"month", fx:"no" });
+check("ngoài khoản hàng tháng thì tháng trước tiêu gì", { q:"report", period:"lastmonth", fx:"no" });
+check("mỗi tháng tiêu bao nhiêu", { q:"avg", fx:undefined });
 /* câu kể kèm định kỳ → khoản định kỳ */
 check("tiền nhà 3tr định kỳ", { items:1, fx:1, note:"Tiền nhà", kind:"out" });
 check("học phí hàng tháng 2tr", { items:1, fx:1, note:"Học phí" });

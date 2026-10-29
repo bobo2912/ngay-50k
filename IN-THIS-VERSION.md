@@ -1,6 +1,15 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v195, ngày 29/10/2026
+**Phiên bản hiện tại:** v196, ngày 29/10/2026
+
+---
+
+## Có gì mới trong v196 (so với v195)
+
+- **Lỗi:** "Tiêu gì ngoài cố định hàng tháng hôm nay" bị hiểu thành "trung bình mỗi tháng" (chữ "hàng tháng"); "tháng này tiêu gì trừ các khoản hàng tháng" bị hiểu ngược thành "chỉ xem định kỳ"; "chi tiêu thường ngày tháng này" không hiểu.
+- Bộ hiểu câu: gặp cụm **ngoài / trừ / không tính / bỏ / loại + (các khoản) định kỳ / cố định / hàng tháng / mỗi tháng** thì cắt cụm đó ra, hiểu phần còn lại như câu hỏi thường ("tiêu gì hôm nay", "tuần này tiêu bao nhiêu"…) rồi bỏ khoản định kỳ (fx:"no"). "chi tiêu thường ngày / linh tinh / sinh hoạt" cũng là bỏ định kỳ.
+- Báo cáo bỏ định kỳ ghi thêm **"Định kỳ để riêng …"**. Câu nối tiếp ("tháng này thì sao") giữ điều kiện bỏ định kỳ.
+- Tri thức của Máy: thư viện câu thêm nhóm **hoi_dinhky** (7 câu mẫu) và **hoi_ngoai_dinhky** (9 câu mẫu), 3 câu nối tiếp; AI cũng học từ các câu mẫu này. `tests-dinh-ky.js` lên 46 câu.
 
 ---
 

@@ -833,9 +833,23 @@
      "tháng này tiêu bao nhiêu không tính định kỳ" → câu hỏi thường kèm fx:"no" (xem fxOf).
      Số liệu tính trên máy (index.html, fixedAnswer), không cần AI. */
   const FX_W = / (dinh ky|co dinh|lap lai|lap di lap lai|khoan hang thang|khoan moi thang|phai tra hang thang|phai dong hang thang|hoa don hang thang) /;
-  const FX_NO = / (khong tinh|khong ke|chua tinh|chua ke|ngoai|tru|tru di|tru ra|bo|bo qua|bo ra|loai|loai bo|loai ra|khong gom|khong bao gom|khong lay|tach) (het |cac |nhung |may )?(khoan )?(chi )?(tien )?(phi )?(dinh ky|co dinh) | (chi tieu|tieu|chi) (hang ngay|thuong ngay|thuong xuyen hang ngay|linh tinh|thuong) /;
+  /* v196: "ngoài cố định hàng tháng", "trừ các khoản hàng tháng", "không tính định kỳ", "chi tiêu thường ngày" → bỏ khoản định kỳ */
+  const FX_NO_SPAN = new RegExp("^ (khong tinh|khong ke|chua tinh|chua ke|ngoai|ngoai ra|tru|tru di|tru ra|bo|bo qua|bo ra|loai|loai bo|loai ra|khong gom|khong bao gom|khong lay|tach|tach rieng|ngoai tru) (het |cac |nhung |may )?(khoan )?(chi )?(tien )?(phi )?(dinh ky|co dinh|hang thang|moi thang|thang nao cung (tra|dong|chi))( hang thang| moi thang| dinh ky)? $");
+  const FX_NO = / (khong tinh|khong ke|chua tinh|chua ke|ngoai|ngoai ra|tru|tru di|tru ra|bo|bo qua|bo ra|loai|loai bo|loai ra|khong gom|khong bao gom|khong lay|tach|tach rieng|ngoai tru) (het |cac |nhung |may )?(khoan )?(chi )?(tien )?(phi )?(dinh ky|co dinh|hang thang|moi thang|thang nao cung (tra|dong|chi))( hang thang| moi thang| dinh ky)? | (chi tieu|tieu|chi|xai) (hang ngay|thuong ngay|thuong xuyen hang ngay|linh tinh|thuong|le|vat|vat vanh|sinh hoat)( |$)/;
   const FX_HOW = / (la gi|nghia la|lam sao|lam the nao|cach|huong dan|cai dat|o dau de|cho nao de|duoc khong|dc khong|bang cach nao|kieu gi|tu ghi|tu dong ghi|tu dong) | (them|tao|dat|cai|sua|xoa|tat|bat|danh dau|bo danh dau) (mot |1 )?(khoan )?(chi )?(dinh ky|lap lai) /;
   function fxOf(n){ return FX_NO.test(n) ? "no" : FX_W.test(n) ? "only" : null; }
+  /* cắt cụm "ngoài các khoản cố định hàng tháng" khỏi câu (giữ dấu phần còn lại) để hiểu phần câu hỏi chính */
+  function stripFx(text){
+    const W = String(text).trim().split(/\s+/), Nw = W.map(w => norm(clean(w)));
+    let best = null;
+    for(let i = 0; i < W.length; i++) for(let j = Math.min(W.length, i + 9); j > i + 1; j--){
+      if(FX_NO_SPAN.test(" " + Nw.slice(i, j).join(" ") + " ")){ if(!best || j - i > best[1] - best[0]) best = [i, j]; break; }
+    }
+    if(!best) return null;
+    let a = best[0], b = best[1];
+    if(["thi","nhe","nha"].includes(Nw[b])) b++;            /* "không tính cố định thì …" */
+    return W.slice(0, a).concat(W.slice(b)).join(" ").replace(/\s+/g, " ").trim();
+  }
   function fixedOf(text, n, ctx, now){
     if(fxOf(n) !== "only" || FX_HOW.test(n)) return null;
     const { N } = tokenize(text);
@@ -873,6 +887,29 @@
     if(/^ (so du|so du vi|kiem tra so du|check so du|xem so du|so du tai khoan|so du tk) $/.test(n) || /^ so du [a-z]+ $/.test(n)) n = n.replace(/ $/, " bao nhieu ");
     const now = (ctx && ctx.now) || new Date();
     /* v193: hỏi về khoản chi định kỳ (trước cả khoản sắp tới, trung bình, lần cuối…) */
+    /* v196: "tiêu gì ngoài cố định hàng tháng hôm nay" → hiểu "tiêu gì hôm nay" rồi bỏ khoản định kỳ */
+    if(fxOf(n) === "no" && !(ctx && ctx._noFx)){
+      const st = stripFx(text);
+      if(st && st.split(" ").length >= 1){
+        let q = asQuery(st, Object.assign({}, ctx, { _noFx:true }));
+        if(!q || q.q === "unknown" || q.q === "avg" || q.q === "fixed"){
+          /* câu còn lại cụt ("tiêu gì hôm nay", "hôm nay") → báo cáo chi tiêu của kỳ đó */
+          const pr = periodOf(" " + norm(st) + " ", now);
+          q = { q:"report", period: pr.period || "month", src:"all", cardId:null, tag:null, group:"tag", list:false, top:0, minAmt:0, kind:"out", compare:false };
+          if(pr.from){ q.from = pr.from; q.to = pr.to; }
+          if(!pr.period) q.noPeriod = true;
+          if(/ (bao nhieu|bn|het|ton) /.test(" " + norm(st) + " ") && !/ (gi|nhung gi|khoan nao|liet ke) /.test(" " + norm(st) + " ")){ q = { q:"spent", period: q.period === "month" && !pr.period ? "today" : q.period, tag:null, src:"all" }; if(pr.from){ q.period = "custom"; q.from = pr.from; q.to = pr.to; } }
+        }
+        if(["report","spent"].includes(q.q)){ q.fx = "no"; return q; }
+        return q;
+      }
+      if(/ (chi tieu|tieu|chi|xai) (hang ngay|thuong ngay|linh tinh|thuong|le|vat|sinh hoat) /.test(n)){
+        const pr = periodOf(n, now), q = { q:"report", period: pr.period || "month", src:"all", cardId:null, tag:null, group:"tag", list:false, top:0, minAmt:0, kind:"out", compare:false, fx:"no" };
+        if(pr.from){ q.from = pr.from; q.to = pr.to; }
+        if(/ (bao nhieu|bn|het|tong) /.test(n) && !/ (gi|nhung gi|liet ke) /.test(n)) return Object.assign({ q:"spent", period:q.period, tag:null, src:"all", fx:"no" }, pr.from ? { period:"custom", from:pr.from, to:pr.to } : {});
+        return q;
+      }
+    }
     { const fq = fixedOf(text, n, ctx, now); if(fq) return fq; }
     /* v123: khoản sắp tới, gợi ý tiết kiệm (câu không kèm số tiền) */
     {

@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v195";
+  var K = "ngay50k:errlog", VER = "v196";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -2986,7 +2986,7 @@ body::before, .settings::before, .lock, .welcome{background:var(--bg) !important
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v195</p>
+      <p class="sync" id="appVersion">Phiên bản v196</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3493,11 +3493,11 @@ body::before, .settings::before, .lock, .welcome{background:var(--bg) !important
 <input type="file" id="phFile" accept="image/*" hidden>
 <div class="ph-view" id="phView" role="dialog" aria-modal="true" aria-label="Ảnh hoá đơn" hidden><img id="phImg" alt="Ảnh hoá đơn"><div class="ph-bar"><button type="button" id="phDel">Bỏ ảnh này</button><button type="button" id="phClose">Đóng</button></div></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=195"></script>
-<script src="thu-vien-cau.js?v=195"></script>
-<script src="quy-tac.js?v=195"></script>
-<script src="native.js?v=195"></script>
-<script src="lock.js?v=195"></script>
+<script src="parse-vi.js?v=196"></script>
+<script src="thu-vien-cau.js?v=196"></script>
+<script src="quy-tac.js?v=196"></script>
+<script src="native.js?v=196"></script>
+<script src="lock.js?v=196"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -5923,6 +5923,7 @@ function startNgay50k(){
     if(kind === "out" && q.src === "all" && !q.cardId){ const acc = list.filter(x => x.src === "tk").reduce((s, x) => s + x.amt, 0); if(acc && acc < total) sub.push("Tài khoản " + fmt(acc), "Thẻ " + fmt(total - acc)); }
     const lastDay = b > todayKey() ? todayKey() : b, nDays = Math.max(1, Math.round((new Date(lastDay + "T12:00:00") - new Date(a + "T12:00:00")) / 86400000) + 1);
     if(nDays > 1) sub.push("TB " + fmt(total / nDays) + "/ngày");
+    if(q.fx === "no" && kind === "out"){ const fxT = rptTx(a, b, Object.assign({}, q, { fx:"only", top:0, minAmt:0 })).reduce((t, x) => t + x.amt, 0); sub.push(fxT ? "Định kỳ để riêng " + fmt(fxT) : "Không có khoản định kỳ"); }
     let prevTot = null, prevBy = null, pa, pb;
     if(q.compare || q.group === "tag"){
       [pa, pb] = prevRange(a, b);
