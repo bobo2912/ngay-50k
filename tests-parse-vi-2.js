@@ -128,6 +128,17 @@ const CASES = [
   ["hoàn tiền shopee 50k", { kind:"in", amt:50000 }],
   ["lãi tiết kiệm 120k", { kind:"in", amt:120000 }],
   ["bố cho 1tr", { kind:"in", amt:1000000, cat:"cho" }],
+  /* v194: người khác trả / chuyển tiền cho mình mà không nợ khoản nào → khoản thu (trước bị ghi thành chi) */
+  ["Tèo trả 1,5 triệu", { kind:"in", amt:1500000, note:"Tèo trả" }],
+  ["Tèo trả mình 1tr", { kind:"in", amt:1000000 }],
+  ["Tèo trả lại 300k", { kind:"in", amt:300000 }],
+  ["Tèo chuyển 1tr", { kind:"in", amt:1000000 }],
+  ["Tèo gửi 500k", { kind:"in", amt:500000 }],
+  ["Lan ck 300k", { kind:"in", amt:300000 }],
+  ["Hào trả 500k", { kind:"collect", amt:500000, loan:"l3" }],
+  ["Tèo gửi xe 10k", { kind:"out", amt:10000 }],
+  ["Chuyển Tèo 1tr", { kind:"out", amt:1000000 }],
+  ["Cơm trưa trả 40k", { kind:"out", amt:40000 }],
 
   /* ---- câu hỏi ---- */
   ["tuần này tiêu bao nhiêu", { q:"spent", period:"week" }],

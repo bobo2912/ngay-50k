@@ -482,14 +482,24 @@
         const after = nameFrom(O, N, st, N.length, drop);
         const meAfter = N.slice(it).some(w => w === "minh" || w === "toi" || w === "tao" || w === "em");
         const isDebtWord = hasW("no") || hasW("tra lai") || hasW("tra tien") || hasW("gui") || hasW("hoan");
-        if(before && (meAfter || isDebtWord || findLoan(ctx, before, "lend"))){ kind = "collect"; item.who = before; }
+        /* v194: "Tèo trả 1,5 triệu": người khác trả, ngay sau "trả" là số tiền → tiền vào (trước chỉ hiểu khi Tèo đang nợ) */
+        let s2 = it + 1; while(["lai","tien","cho"].includes(N[s2])) s2++;
+        const amtNext = !!amountAt(N, s2) || ["minh","toi","em","tao"].includes(N[s2]);   /* "trả tiền học 2tr": còn mơ hồ, không tính */
+        if(amtNext) item._dp = 1;
+        const beforeIsPerson = before && it <= 3 && !after && amtNext && guessTag(before, ctx) === "khac" && N.slice(0, it).every(w => !["chi","mua","tieu","an","uong","nap","dong","nop","phi","hoc","thue","tien"].includes(w));
+        if(before && (meAfter || isDebtWord || findLoan(ctx, before, "lend") || beforeIsPerson)){ kind = "collect"; item.who = before; }
         else if(after && (hasW("no") || findLoan(ctx, after, "borrow") || hasW("tra lai"))){ kind = "repay"; item.who = after; }
       }
       if(kind === "lend" || kind === "borrow" || kind === "repay" || kind === "collect"){
         const type = (kind === "lend" || kind === "collect") ? "lend" : "borrow";
         const l = findLoan(ctx, item.who, type);
         if(l){ item.loanId = l.id; item.who = l.who; }
-        if((kind === "repay" || kind === "collect") && !l){
+        const dp = item._dp; delete item._dp;
+        if(kind === "collect" && !l && dp && !hasW("no") && !(ctx && (ctx.loans || []).some(x => x.type === "lend" && norm(x.who || "").split(" ").pop() === norm(item.who || "").split(" ").pop()))){
+          /* v194: người này không nợ mình khoản nào → đây là khoản thu ("Tèo trả 1,5 triệu", "mẹ trả tiền ăn 300k") */
+          kind = "in"; item.cat = "khac"; item.payer = item.who; item.who = "";
+        }
+        else if((kind === "repay" || kind === "collect") && !l){
           /* không tìm thấy khoản vay để trả: để người dùng chọn trong thẻ xác nhận */
           item.loanMissing = true;
         }
@@ -505,7 +515,13 @@
       const SPENDW = [hasMarks(clean(O[0] || "")) && clean(O[0]).toLowerCase() === "chị" ? "chi_" : "chi","mua","tra","tieu","an","nap","gui","dong","nop","chuyen","tang","dat","thue","lam","sua","gop","mung","bieu","uong","tien","phi","hoc","xin"];
       const nameLike = O.slice(0, ic).every(w => isCap(clean(w)));
       const giverSend = ic > 0 && ic <= 3 && GIVERS.has(N[0]) && ["chuyen","gui","ck","bank"].includes(N[ic-1]) && (ic + 1 >= N.length || amountAt(N, ic + 1) || ["minh","toi","em"].includes(N[ic+1]));
+      /* v194: "Tèo chuyển 1tr", "Tèo gửi mình 500k", "Lan ck 300k": người khác chuyển tiền cho mình → khoản thu */
+      const iSend = N.findIndex(w => ["chuyen","gui","ck"].includes(w));
+      let sNext = iSend + 1; while(["khoan","tien","cho","lai","ve"].includes(N[sNext])) sNext++;
+      const senderNamed = iSend > 0 && iSend <= 3 && ic < 0 && O.slice(0, iSend).every(w => isCap(clean(w))) && guessTag(O.slice(0, iSend).join(" "), ctx) === "khac"
+        && (amountAt(N, sNext) || (["minh","toi","em"].includes(N[sNext]) && !isCap(clean(O[sNext] || "x"))));
       if(giverSend){ kind = "in"; item.cat = "cho"; item.who = clean(O[0]); }
+      else if(senderNamed){ kind = "in"; item.cat = "khac"; item.payer = nameFrom(O, N, 0, iSend, drop); }
       else if(ic > 0 && ic <= 3 && !diNotAunt && N.indexOf("vay") < 0 && N.indexOf("muon") < 0 && (GIVERS.has(N[0]) || nameLike) && N.slice(0, ic).every(w => !SPENDW.includes(w))){
         kind = "in"; item.cat = "cho"; item.who = nameFrom(O, N, 0, ic, drop);
       }
@@ -526,6 +542,7 @@
       /* "nhận 1 triệu từ công đoàn", "tôi nhận 500k" → khoản thu (v103); "nhận hàng", "nhận ship" là chi */
       if(!kind && hasW("nhan") && !hasW("nhan hang") && !hasW("nhan don") && !hasW("ship") && !hasW("mua") && !hasW("tra")){ kind = "in"; item.cat = "khac"; }
     }
+    delete item._dp;
     /* chi bằng thẻ hay tài khoản */
     if(!kind){
       const card = findCard(ctx, N);

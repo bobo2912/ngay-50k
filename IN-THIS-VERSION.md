@@ -1,6 +1,17 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v193, ngày 29/10/2026
+**Phiên bản hiện tại:** v194, ngày 29/10/2026
+
+---
+
+## Có gì mới trong v194 (so với v193)
+
+- **Lỗi:** "Tèo trả 1,5 triệu" bị hiểu thành **khoản chi**. Trước đây câu "<tên> trả <số tiền>" chỉ thành tiền vào khi người đó đang nợ bạn hoặc câu có chữ "tiền/nợ/mình". Giờ người khác trả mà ngay sau "trả" là số tiền (hoặc "mình", "lại", "tiền") thì luôn là tiền vào:
+  - người đó đang nợ bạn → **được trả nợ** (trừ vào khoản cho vay), như trước;
+  - không nợ khoản nào → **khoản thu** "Tèo trả".
+- Tương tự: "Tèo chuyển 1tr", "Tèo gửi mình 500k", "Lan ck 300k" → khoản thu (trước là chi). "Tèo gửi xe 10k", "Chuyển Tèo 1tr", "Cơm trưa trả 40k" vẫn là chi.
+- Câu còn mơ hồ như "con trả tiền học 2tr" (có thể là bạn đóng học phí cho con) vẫn để bạn chọn như cũ.
+- Thêm 10 câu thử vào `tests-parse-vi-2.js`.
 
 ---
 
