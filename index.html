@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v192";
+  var K = "ngay50k:errlog", VER = "v193";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -2979,7 +2979,7 @@ body::before, .settings::before, .lock, .welcome{background:var(--bg) !important
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v192</p>
+      <p class="sync" id="appVersion">Phiên bản v193</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3486,11 +3486,11 @@ body::before, .settings::before, .lock, .welcome{background:var(--bg) !important
 <input type="file" id="phFile" accept="image/*" hidden>
 <div class="ph-view" id="phView" role="dialog" aria-modal="true" aria-label="Ảnh hoá đơn" hidden><img id="phImg" alt="Ảnh hoá đơn"><div class="ph-bar"><button type="button" id="phDel">Bỏ ảnh này</button><button type="button" id="phClose">Đóng</button></div></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=192"></script>
-<script src="thu-vien-cau.js?v=192"></script>
-<script src="quy-tac.js?v=192"></script>
-<script src="native.js?v=192"></script>
-<script src="lock.js?v=192"></script>
+<script src="parse-vi.js?v=193"></script>
+<script src="thu-vien-cau.js?v=193"></script>
+<script src="quy-tac.js?v=193"></script>
+<script src="native.js?v=193"></script>
+<script src="lock.js?v=193"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -5847,7 +5847,10 @@ function startNgay50k(){
       if(q.minAmt && amt < q.minAmt) return;
       if(!okKw(name, it.cat)) return;
       if(q.wid && (src === "card" || wOf(it) !== q.wid)) return;      /* v98: lọc theo ví */
-      out.push({ k, t:it.t || 0, amt, cat:it.cat || "", note:name || "", src, cardId:it.cardId || null, cash:it.src === "cash", w:wOf(it) });
+      const fx = src !== "in" && isFx(it);
+      if(q.fx === "only" && !fx) return;                                /* v193: chỉ khoản định kỳ */
+      if(q.fx === "no" && fx) return;                                   /* v193: bỏ khoản định kỳ */
+      out.push({ k, t:it.t || 0, amt, cat:it.cat || "", note:name || "", src, cardId:it.cardId || null, cash:it.src === "cash", w:wOf(it), fx, rc:it.rc || null });
     };
     if(q.kind === "in"){
       for(const k in state.income) if(k >= a && k <= b) (state.income[k] || []).forEach(it => push(k, it, "in", it.note || (INC.find(x => x.id === it.cat) || {}).label || "Khoản thu"));
@@ -5898,7 +5901,7 @@ function startNgay50k(){
     rptHideSrc = !!q.wid || (q.src === "card" && (!!q.cardId || (state.cards || []).length <= 1));
     const tags = rptTags(q);
     const what = tags ? " cho " + esc(q.tag === "an+uong" ? "ăn uống" : tags.map(t => tagOf(t).label.toLowerCase()).join(", ")) : "";
-    const kwTxt = q.kw ? " có chữ “" + esc(q.kw) + "”" : "", minTxt = q.minAmt ? " (khoản từ " + fmt(q.minAmt) + ")" : "";
+    const kwTxt = q.kw ? " có chữ “" + esc(q.kw) + "”" : "", minTxt = (q.minAmt ? " (khoản từ " + fmt(q.minAmt) + ")" : "") + (q.fx === "no" ? " (không tính khoản định kỳ)" : q.fx === "only" ? " (chỉ khoản định kỳ)" : "");
     const Lbl = lbl.charAt(0).toUpperCase() + lbl.slice(1);
     if(!list.length){
       const many = [q.src !== "all" || q.cardId, tags, q.kw, q.minAmt].filter(Boolean).length;
@@ -5964,7 +5967,7 @@ function startNgay50k(){
   function map2arr(list, q){ const g = q.group === "none" ? "tag" : q.group, m = {}; list.forEach(x => { const k = rptGroupKey(x, g); m[k] = (m[k] || 0) + x.amt; }); return Object.entries(m); }
 
   /* nhớ câu hỏi chi tiêu gần nhất để hiểu câu nối tiếp ("chỉ tính từ tài khoản", "tháng trước thì sao") */
-  function rememberQ(q){ if(chat && q && (q.q === "report" || q.q === "spent" || q.q === "card" || q.q === "upcoming")){ chat.lastQ = Object.assign({}, q); } }
+  function rememberQ(q){ if(chat && q && (q.q === "report" || q.q === "spent" || q.q === "card" || q.q === "upcoming" || q.q === "fixed")){ chat.lastQ = Object.assign({}, q); } }
   /* ---------- v123: khoản sắp tới (dự kiến) ----------
      Gom mọi thứ có ngày từ bây giờ tới cuối khoảng hỏi: khoản chi / quẹt thẻ / khoản thu / chuyển ví / trả thẻ ghi trước ngày,
      khoản vay lập hoặc vay thêm, trả nợ ghi trước ngày, hạn trả của khoản vay còn dở, và khoản định kỳ chưa tới ngày. */
@@ -6326,6 +6329,262 @@ function startNgay50k(){
       return "Bạn muốn biết gì về <b>" + esc(what) + "</b>?" + [...new Set(opts)].slice(0, 5).map(o => '<button type="button" class="chat-q" data-say="' + esc(o) + '">' + esc(o) + ' ›</button>').join("");
     }catch(e){ return ""; }
   }
+
+  /* =================== v193: KHOẢN CHI ĐỊNH KỲ TRONG TRÒ CHUYỆN ===================
+     Câu hỏi đã bóc tách ở parse-vi.js ({ q:"fixed", mode }). Mọi con số tính trên máy từ sổ, không cần AI:
+       • khoản đã đánh dấu định kỳ (fx, hoặc do Cài đặt → Khoản định kỳ tự ghi)
+       • lịch Khoản định kỳ trong Cài đặt: đã ghi / chưa tới ngày
+       • thống kê khoản lặp lại hằng tháng mà chưa đánh dấu: cùng nội dung, có mặt ≥ 2 tháng (gần như tháng nào cũng có),
+         tối đa 2 lần mỗi tháng, số tiền mỗi tháng lệch dưới 25%, từ 50.000đ. */
+  const fxMk = d => d.getFullYear() + "-" + pad(d.getMonth() + 1);
+  const fxMonthRange = mk => { const [y, m] = mk.split("-").map(Number); return [mk + "-01", keyOf(new Date(y, m, 0))]; };
+  const fxMLbl = mk => "T" + (+mk.slice(5)) + (mk.slice(0, 4) !== todayKey().slice(0, 4) ? "/" + mk.slice(2, 4) : "");
+  const fxCap = t => t.charAt(0).toUpperCase() + t.slice(1);
+  const fxShort = n => n >= 1e6 ? String(Math.round(n / 1e4) / 100).replace(".", ",") + "tr" : fmtShort(n);
+  function fxName(x){ if(x.rc){ const r = recurList().find(y => y.id === x.rc); if(r && r.name) return r.name; } return x.note || tagOf(x.cat).label; }
+  const fxKeyOf = x => window.N50KParse.norm(fxName(x)).trim() || x.cat || "khac";
+  function fxGroups(list){
+    const m = new Map();
+    list.forEach(x => { const k = fxKeyOf(x); if(!m.has(k)) m.set(k, { key:k, name:fxName(x), cat:x.cat, sum:0, items:[], months:new Set() }); const g = m.get(k); g.sum += x.amt; g.items.push(x); g.months.add(x.k.slice(0, 7)); });
+    return [...m.values()].sort((a, b) => b.sum - a.sum);
+  }
+  function fxFirstMonth(){
+    let f = null;
+    [state.days, state.cardTx || {}].forEach(B => { for(const k in B) if((B[k] || []).length && (!f || k < f)) f = k; });
+    return f ? f.slice(0, 7) : null;
+  }
+  /* các tháng đủ (trước tháng này) có ghi chép, mới nhất trước, tối đa n tháng */
+  function fxPastMonths(n){
+    const now = new Date(), first = fxFirstMonth(), out = [];
+    for(let i = 1; i <= n; i++){ const mk = fxMk(new Date(now.getFullYear(), now.getMonth() - i, 1)); if(!first || mk < first) break; out.push(mk); }
+    return out;
+  }
+  /* lịch Khoản định kỳ (Cài đặt) trong một tháng: đã ghi chưa */
+  function fxSchedule(mk){
+    const [a, b] = fxMonthRange(mk), tk = todayKey(), dim = +b.slice(8);
+    return recurList().filter(r => r && r.amt && r.day).map(r => {
+      const key = mk + "-" + pad(Math.min(+r.day, dim));
+      if(r.from && key < r.from) return null;
+      const card = r.card && cardOf(r.card) ? r.card : "";
+      const B = card ? state.cardTx : state.days; let done = null;
+      for(const k in B) if(k >= a && k <= b){ const it = (B[k] || []).find(x => x.rc === r.id); if(it){ done = { k, amt:+it.amt || 0, off:it.fx === 0 }; break; } }
+      return { r, key, card, done, future:key > tk };
+    }).filter(Boolean).sort((x, y) => x.key.localeCompare(y.key));
+  }
+  /* khoản lặp lại hằng tháng chưa đánh dấu định kỳ (thống kê 6 tháng gần nhất) */
+  function fxGuess(){
+    const P = window.N50KParse, now = new Date(), cur = fxMk(now), first = fxFirstMonth();
+    const months = [cur].concat(fxPastMonths(5));
+    if(!first || months.length < 2) return [];
+    const a = fxMonthRange(months[months.length - 1])[0], b = todayKey();
+    const marked = new Set(rptTx(a, b, { src:"all", kind:"out", fx:"only" }).map(fxKeyOf));
+    recurList().forEach(r => r && r.name && marked.add(P.norm(r.name).trim()));
+    const by = new Map();
+    rptTx(a, b, { src:"all", kind:"out", fx:"no" }).forEach(x => {
+      const nm = String(x.note || "").trim(), k = P.norm(nm).trim();
+      if(!k || k === P.norm(tagOf(x.cat).label).trim() || marked.has(k)) return;
+      if(!by.has(k)) by.set(k, { name:nm, cat:x.cat, src:x.src, cardId:x.cardId, per:{}, days:[], n:0 });
+      const g = by.get(k), mk = x.k.slice(0, 7); g.per[mk] = (g.per[mk] || 0) + x.amt; g.days.push(+x.k.slice(8)); g.n++;
+    });
+    const out = [];
+    by.forEach(g => {
+      const ms = Object.keys(g.per).sort();
+      if(ms.length < 2 || g.n / ms.length > 2) return;                  /* một tháng nhiều lần → chi tiêu thường ngày */
+      const vals = ms.map(m => g.per[m]), avg = vals.reduce((s, v) => s + v, 0) / vals.length;
+      if(avg < 50000) return;
+      const cv = Math.sqrt(vals.reduce((s, v) => s + (v - avg) * (v - avg), 0) / vals.length) / avg;
+      if(cv > 0.25) return;
+      const span = months.filter(m => m >= ms[0] && (m !== cur || g.per[cur]));   /* tháng này chưa có thì chưa tính là trượt */
+      if(ms.length / span.length < 0.66) return;
+      const dd = g.days.slice().sort((x, y) => x - y), day = dd[Math.floor(dd.length / 2)], spread = dd[dd.length - 1] - dd[0];
+      out.push({ name:g.name, cat:g.cat, src:g.src, cardId:g.cardId, avg, months:ms.length, day, steady:spread <= 7, seenNow:!!g.per[cur], last:g.per[ms[ms.length - 1]],
+        score:ms.length + (spread <= 7 ? 1 : 0) + (cv < 0.1 ? 1 : 0) });
+    });
+    return out.sort((x, y) => y.score - x.score || y.avg - x.avg).slice(0, 6);
+  }
+  function fxGuessHtml(full){
+    const G = fxGuess(); if(!G.length) return "";
+    const show = full ? G : G.slice(0, 3);
+    return '<p class="rpt-t">' + (full ? "Có vẻ là định kỳ nhưng chưa đánh dấu" : "Có thể bạn quên đánh dấu định kỳ") + '</p><ul class="rpt-n">' + show.map(g =>
+      "<li>" + icH(tagOf(g.cat).icon) + " " + esc(g.name) + ": khoảng <b>" + fmt(Math.round(g.avg / 1000) * 1000) + "</b>/tháng, " + g.months + " tháng" + (g.steady ? ", thường ngày " + g.day : "") + (g.seenNow ? "" : " · tháng này chưa thấy") + "</li>").join("") + "</ul>" +
+      '<p class="rpt-tip">Đánh dấu để khoản này không trừ hạn mức ngày: chạm vào khoản trong Sổ, bật <b>Khoản chi định kỳ</b>; hoặc đặt ở Cài đặt → Hạn mức và định kỳ để app tự ghi.</p>';
+  }
+  function fxScheduleHtml(mk, onlyDue){
+    const S = fxSchedule(mk); if(!S.length) return "";
+    const due = S.filter(x => !x.done), dueT = due.reduce((s, x) => s + (+x.r.amt || 0), 0);
+    const rows = (onlyDue ? due : S).map(x => "<li>" + (x.done ? "✓ " : "⏳ ") + esc(x.r.name || "Khoản định kỳ") + " · " + fmt(x.done ? x.done.amt : +x.r.amt) + " · " + (x.done ? "đã ghi " + dm(x.done.k) + (x.done.off ? " (đã tắt định kỳ)" : "") : "ngày " + dm(x.key)) + (x.card ? " · " + esc(cardLbl(x.card)) : "") + "</li>").join("");
+    if(!rows) return "";
+    return '<p class="rpt-t">Lịch định kỳ ' + fxMLbl(mk) + (dueT ? ' · còn <b>' + fmt(dueT) + '</b> chưa tới ngày' : " · đã ghi đủ") + '</p><ul class="rpt-n">' + rows + '</ul>';
+  }
+  function fxBtns(list){ return list.map(t => '<button type="button" class="chat-q" data-say="' + esc(t) + '">' + esc(t) + ' ›</button>').join(""); }
+
+  function fixedAnswer(q){
+    q = Object.assign({ mode:"list", src:"all" }, q || {});
+    if(q.mode === "avg") return fixedAvg(q);
+    if(q.mode === "upcoming") return fixedUpcoming(q);
+    if(q.mode === "detect") return fixedDetect(q);
+    const [a, b, lbl] = qRange(q), Lbl = fxCap(lbl), tk = todayKey(), curMk = fxMk(new Date());
+    const base = { src:q.src, cardId:q.cardId, kind:"out", kw:q.kw, minAmt:q.minAmt };
+    const list = rptTx(a, b, Object.assign({}, base, { fx:"only" }));
+    const allOut = rptTx(a, b, { src:q.src, cardId:q.cardId, kind:"out" }).reduce((s, x) => s + x.amt, 0);
+    const srcTxt = q.cardId ? " bằng " + esc(cardLbl(q.cardId).replace(/^Thẻ/, "thẻ")) : q.src === "card" ? " bằng thẻ" : q.src === "tk" ? " từ tài khoản" : "";
+    const what = (q.kw ? " “" + esc(q.kwLabel || q.kw) + "”" : "") + srcTxt + (q.minAmt ? " (từ " + fmt(q.minAmt) + ")" : "");
+    const inCur = a <= tk && b >= curMk + "-01";
+    let h = '<div class="rpt">';
+    if(!list.length){
+      h += '<p class="rpt-h">' + Lbl + ' chưa có khoản chi định kỳ' + what + ' nào.</p>';
+      if(allOut && !q.kw) h += '<p class="rpt-s">Tổng chi ' + esc(lbl) + ' ' + fmt(allOut) + ' đều tính vào hạn mức ngày.</p>';
+      if(inCur && q.src === "all" && !q.cardId){ h += fxScheduleHtml(curMk); h += fxGuessHtml(true); }
+      if(!fxGuess().length && !recurList().length) h += '<p class="rpt-tip">Khi ghi tiền nhà, điện nước, học phí… bật <b>Khoản chi định kỳ</b> trong form, hoặc nhắn kèm chữ “định kỳ” (vd “tiền điện 820k định kỳ”).</p>';
+      h += fxBtns(["khoản định kỳ tháng trước", "trung bình định kỳ mỗi tháng"]);
+      return h + "</div>";
+    }
+    const total = list.reduce((s, x) => s + x.amt, 0);
+    let groups = fxGroups(list);
+    const top = q.mode === "top" ? (q.top || 5) : 0;
+    h += '<p class="rpt-h">' + Lbl + ' bạn chi định kỳ' + what + ' <b>' + fmt(total) + '</b> · ' + groups.length + ' khoản' + (list.length > groups.length ? ' (' + list.length + ' lần ghi)' : "") + '</p>';
+    /* dòng phụ: tỉ trọng, nguồn tiền, so với kỳ trước, so với trung bình */
+    const sub = [];
+    if(allOut > total && !q.kw) sub.push("chiếm " + Math.round(total / allOut * 100) + "% tổng chi " + fmt(allOut));
+    if(q.src === "all" && !q.cardId){ const acc = list.filter(x => x.src !== "card").reduce((s, x) => s + x.amt, 0); if(acc && acc < total) sub.push("Tài khoản " + fmt(acc), "Thẻ " + fmt(total - acc)); }
+    const [pa, pb] = prevRange(a, b);
+    const prevList = rptTx(pa, pb, Object.assign({}, base, { fx:"only" })), prevT = prevList.reduce((s, x) => s + x.amt, 0);
+    const pFull = pa.slice(8) === "01" && pa.slice(0, 7) === pb.slice(0, 7) ? fxMonthRange(pa.slice(0, 7))[1] : pb;
+    const pLbl = pFull !== pb ? "cùng kỳ " + fxMLbl(pa.slice(0, 7)) + " (1–" + dm(pb) + ")" : rangeLabel(pa, pb);
+    if(prevT) sub.push(pctTxt((total - prevT) / prevT * 100) + " so với " + pLbl + " (" + fmt(prevT) + ")");
+    if(pFull !== pb){ const fT = rptTx(pa, pFull, Object.assign({}, base, { fx:"only" })).reduce((t, z) => t + z.amt, 0); if(fT !== prevT) sub.push("cả " + fxMLbl(pa.slice(0, 7)) + " " + fmt(fT)); }
+    const oneMonth = a.slice(8) === "01" && a.slice(0, 7) === b.slice(0, 7);
+    if(oneMonth){
+      const pm = fxPastMonths(4).filter(m => m < a.slice(0, 7)).slice(0, 3);
+      if(pm.length >= 2){ const avg = pm.reduce((s, m) => { const [x, y] = fxMonthRange(m); return s + rptTx(x, y, Object.assign({}, base, { fx:"only" })).reduce((t, z) => t + z.amt, 0); }, 0) / pm.length; if(avg) sub.push("TB " + pm.length + " tháng trước " + fmt(Math.round(avg / 1000) * 1000)); }
+    }
+    if(sub.length) h += '<p class="rpt-s">' + sub.map(fxCap).join(" · ") + '</p>';
+    /* kỳ dài hơn một tháng: số theo từng tháng */
+    if(a.slice(0, 7) !== b.slice(0, 7)){
+      const pm = {}; list.forEach(x => { const m = x.k.slice(0, 7); pm[m] = (pm[m] || 0) + x.amt; });
+      h += '<p class="rpt-s">Theo tháng: ' + Object.keys(pm).sort().map(m => fxMLbl(m) + " " + fxShort(pm[m])).join(" · ") + '</p>';
+    }
+    /* từng khoản (gom theo tên), so với kỳ trước */
+    const prevBy = {}; prevList.forEach(x => { const k = fxKeyOf(x); prevBy[k] = (prevBy[k] || 0) + x.amt; });
+    if(top){ groups = groups.slice(0, top); h += '<p class="rpt-t">' + groups.length + ' khoản định kỳ lớn nhất</p>'; }
+    const max = Math.max(...groups.map(g => g.sum)), openAll = list.length <= 12;
+    h += '<div class="rpt-g">' + groups.map(g => {
+      const p = prevBy[g.key] || 0; let delta = "";
+      if(p){ const d = (g.sum - p) / p * 100; if(Math.abs(d) >= 10 && Math.abs(g.sum - p) >= 20000) delta = '<i class="' + (d > 0 ? "up" : "down") + '">' + pctTxt(d) + '</i>'; }
+      else if(prevT) delta = '<i class="up">mới</i>';
+      g.items.sort((x, y) => y.k.localeCompare(x.k) || (y.t || 0) - (x.t || 0));
+      const srcs = [...new Set(g.items.map(x => x.src === "card" ? cardLbl(x.cardId) : x.w && x.w !== MAIN_W ? walletName(x.w) : "Tài khoản"))].join(", ");
+      const info = g.items.length + " lần" + (g.months.size > 1 ? " · " + g.months.size + " tháng" : " · " + dm(g.items[0].k)) + " · " + srcs + " · " + Math.round(g.sum / total * 100) + "%";
+      return '<details' + (openAll ? "" : "") + '><summary><span class="i">' + icH(tagOf(g.cat).icon) + '</span><span class="n">' + esc(g.name) + '<small>' + esc(info) + '</small></span>' + delta + '<b>' + fmt(g.sum) + '</b><span class="bar"><i style="width:' + Math.max(3, Math.round(g.sum / max * 100)) + '%"></i></span></summary>' + rptList(g.items, "out", 12) + '</details>';
+    }).join("") + '</div>';
+    /* nhận xét tính trên máy */
+    const notes = [];
+    if(prevT){
+      const moved = groups.filter(g => prevBy[g.key] && Math.abs(g.sum - prevBy[g.key]) >= Math.max(20000, prevBy[g.key] * 0.1)).sort((x, y) => Math.abs(y.sum - prevBy[y.key]) - Math.abs(x.sum - prevBy[x.key])).slice(0, 3);
+      moved.forEach(g => notes.push(esc(g.name) + " " + fmt(g.sum) + ", " + (g.sum > prevBy[g.key] ? "tăng " : "giảm ") + fmt(Math.abs(g.sum - prevBy[g.key])) + " so với " + pLbl + " (" + fmt(prevBy[g.key]) + ")"));
+      if(!top){
+        const now = new Set(groups.map(g => g.key)), gone = fxGroups(prevList).filter(g => !now.has(g.key));
+        if(gone.length) notes.push((inCur ? "Kỳ trước có mà kỳ này chưa thấy: " : "Kỳ trước có, kỳ này không có: ") + gone.slice(0, 4).map(g => esc(g.name) + " " + fmt(g.sum)).join(", "));
+      }
+    }
+    if(!q.kw && q.src === "all" && !q.cardId && allOut > total){
+      const lastDay = b > tk ? tk : b, nDays = Math.max(1, Math.round((new Date(lastDay + "T12:00:00") - new Date(a + "T12:00:00")) / 86400000) + 1);
+      notes.push("Chi thường ngày (tính hạn mức) " + esc(lbl) + ": " + fmt(allOut - total) + (nDays > 1 ? ", TB " + fmt(Math.round((allOut - total) / nDays / 1000) * 1000) + "/ngày" : ""));
+    }
+    if(notes.length) h += '<ul class="rpt-n">' + notes.map(t => "<li>" + t + "</li>").join("") + "</ul>";
+    const allSrc = q.src === "all" && !q.cardId;
+    if(inCur && !q.kw && allSrc) h += fxScheduleHtml(curMk, true);
+    if(!q.kw && !top && allSrc && inCur) h += fxGuessHtml(false);
+    h += fxBtns(q.period === "lastmonth" ? ["định kỳ tháng này", "trung bình định kỳ mỗi tháng"] : inCur ? ["khoản định kỳ sắp tới", "so với tháng trước", "trung bình định kỳ mỗi tháng"] : ["trung bình định kỳ mỗi tháng"]);
+    return h + "</div>";
+  }
+
+  /* "trung bình mỗi tháng chi định kỳ bao nhiêu": tính trên các tháng đủ đã có ghi chép (tối đa 6) */
+  function fixedAvg(q){
+    const base = { src:q.src || "all", cardId:q.cardId, kind:"out", kw:q.kw, fx:"only" }, tk = todayKey(), curMk = fxMk(new Date());
+    const ms = fxPastMonths(6), what = q.kw ? " “" + esc(q.kwLabel || q.kw) + "”" : "";
+    const [ca] = fxMonthRange(curMk), curList = rptTx(ca, tk, base), curT = curList.reduce((s, x) => s + x.amt, 0);
+    let h = '<div class="rpt">';
+    if(!ms.length){
+      h += '<p class="rpt-h">Chưa đủ một tháng trọn vẹn để tính trung bình.</p>' + (curT ? '<p class="rpt-s">Tháng này đến nay đã chi định kỳ' + what + ' ' + fmt(curT) + '.</p>' : "");
+      return h + fxScheduleHtml(curMk) + "</div>";
+    }
+    const per = ms.map(m => { const [a, b] = fxMonthRange(m), L = rptTx(a, b, base); return { m, list:L, t:L.reduce((s, x) => s + x.amt, 0), all:rptTx(a, b, { src:base.src, cardId:base.cardId, kind:"out" }).reduce((s, x) => s + x.amt, 0) }; });
+    const avg = per.reduce((s, x) => s + x.t, 0) / per.length, avgAll = per.reduce((s, x) => s + x.all, 0) / per.length;
+    const range = per.length > 1 ? fxMLbl(per[per.length - 1].m) + "–" + fxMLbl(per[0].m) : fxMLbl(per[0].m);
+    if(!avg){ h += '<p class="rpt-h">' + per.length + ' tháng gần đây (' + range + ') chưa có khoản chi định kỳ' + what + ' nào.</p>' + fxGuessHtml(true) + "</div>"; return h; }
+    h += '<p class="rpt-h">Trung bình mỗi tháng bạn chi định kỳ' + what + ' <b>' + fmt(Math.round(avg / 1000) * 1000) + '</b></p>';
+    const sub = ["tính " + per.length + " tháng " + range];
+    if(per.length > 1){ const lo = per.reduce((m, x) => x.t < m.t ? x : m), hi = per.reduce((m, x) => x.t > m.t ? x : m); if(hi.t !== lo.t) sub.push("thấp nhất " + fxMLbl(lo.m) + " " + fmt(lo.t), "cao nhất " + fxMLbl(hi.m) + " " + fmt(hi.t)); }
+    if(avgAll > avg && !q.kw) sub.push("≈ " + Math.round(avg / avgAll * 100) + "% tổng chi mỗi tháng");
+    h += '<p class="rpt-s">' + sub.map(fxCap).join(" · ") + '</p>';
+    h += '<p class="rpt-s">Theo tháng: ' + per.slice().reverse().map(x => fxMLbl(x.m) + " " + fxShort(x.t)).join(" · ") + '</p>';
+    /* trung bình từng khoản */
+    const G = fxGroups([].concat(...per.map(x => x.list)));
+    h += '<ul class="rpt-n">' + G.slice(0, 8).map(g => "<li>" + icH(tagOf(g.cat).icon) + " " + esc(g.name) + ": <b>" + fmt(Math.round(g.sum / per.length / 1000) * 1000) + "</b>/tháng" + (g.months.size < per.length ? " (có " + g.months.size + "/" + per.length + " tháng)" : "") + "</li>").join("") + "</ul>";
+    /* tháng này so với trung bình, kể cả lịch chưa tới ngày */
+    const due = fxSchedule(curMk).filter(x => !x.done).reduce((s, x) => s + (+x.r.amt || 0), 0);
+    const proj = curT + due;
+    h += '<p class="rpt-s">Tháng này đến nay ' + fmt(curT) + (due ? ", cộng " + fmt(due) + " chưa tới ngày = dự kiến " + fmt(proj) : "") + " · " + (proj > avg * 1.1 ? "cao hơn" : proj < avg * 0.9 ? "thấp hơn" : "ngang") + " trung bình" + (Math.abs(proj - avg) >= avg * 0.1 ? " " + fmt(Math.round(Math.abs(proj - avg) / 1000) * 1000) : "") + '.</p>';
+    return h + fxBtns(["định kỳ tháng này", "khoản định kỳ sắp tới"]) + "</div>";
+  }
+
+  /* "còn khoản định kỳ nào chưa trả", "định kỳ tháng sau": lịch Cài đặt + khoản ghi trước ngày + đoán từ các tháng trước */
+  function fixedUpcoming(q){
+    const tk = todayKey(), now = new Date(), curMk = fxMk(now);
+    const from = isKey(q.from) && q.from > tk ? q.from : tk, to = isKey(q.to) ? q.to : keyOf(new Date(now.getFullYear(), now.getMonth() + 1, 0));
+    const label = q.label || ("từ nay đến hết " + dm(to)), P = window.N50KParse, rows = [], seen = new Set();
+    const add = (k, name, amt, how, cat) => { const key = P.norm(name).trim() + "|" + k.slice(0, 7); if(seen.has(key)) return; seen.add(key); rows.push({ k, name, amt, how, cat }); };
+    /* 1. lịch Cài đặt chưa ghi */
+    const mks = []; for(let d = new Date(from.slice(0, 7) + "-01T12:00:00"); fxMk(d) <= to.slice(0, 7); d.setMonth(d.getMonth() + 1)) mks.push(fxMk(d));
+    mks.forEach(mk => fxSchedule(mk).forEach(x => { if(!x.done && x.key >= from && x.key <= to) add(x.key, x.r.name || "Khoản định kỳ", +x.r.amt || 0, "lịch tự ghi" + (x.card ? ", " + cardLbl(x.card) : ""), x.r.cat || "nha"); }));
+    /* 2. khoản định kỳ đã ghi trước ngày */
+    rptTx(from, to, { src:"all", kind:"out", fx:"only" }).forEach(x => { if(x.k > tk || (x.k === tk && x.t > Date.now())) add(x.k, fxName(x), x.amt, "đã ghi trước", x.cat); });
+    /* 3. tháng trước có (đã đánh dấu) mà tháng này chưa thấy → dự kiến cùng ngày */
+    const [pa, pb] = fxMonthRange(fxMk(new Date(now.getFullYear(), now.getMonth() - 1, 1))), [ca] = fxMonthRange(curMk);
+    const curKeys = new Set(rptTx(ca, tk, { src:"all", kind:"out", fx:"only" }).map(fxKeyOf));
+    fxGroups(rptTx(pa, pb, { src:"all", kind:"out", fx:"only" }).filter(x => !x.rc)).forEach(g => {
+      if(curKeys.has(g.key)) return;
+      mks.forEach(mk => { const dim = +fxMonthRange(mk)[1].slice(8), d = Math.min(+g.items[0].k.slice(8), dim), k = mk + "-" + pad(d); if(k >= from && k <= to) add(k, g.name, g.sum, "như tháng trước", g.cat); });
+    });
+    /* 4. khoản lặp lại chưa đánh dấu (thống kê) */
+    const guess = fxGuess().filter(g => g.steady && !g.seenNow);
+    guess.forEach(g => mks.forEach(mk => { const dim = +fxMonthRange(mk)[1].slice(8), k = mk + "-" + pad(Math.min(g.day, dim)); if(k >= from && k <= to) add(k, g.name, Math.round(g.avg / 1000) * 1000, "đoán từ " + g.months + " tháng trước, chưa đánh dấu", g.cat); }));
+    rows.sort((x, y) => x.k.localeCompare(y.k) || y.amt - x.amt);
+    /* thường đã trả trước hôm nay mà tháng này chưa thấy: có thể quên ghi */
+    const late = from.slice(0, 7) === curMk ? fxGuess().filter(g => g.steady && !g.seenNow && g.day < +tk.slice(8)) : [];
+    fxGroups(rptTx(pa, pb, { src:"all", kind:"out", fx:"only" }).filter(x => !x.rc)).forEach(g => { const d = +g.items[0].k.slice(8); if(from.slice(0, 7) === curMk && !curKeys.has(g.key) && d < +tk.slice(8)) late.push({ name:g.name, avg:g.sum, day:d, cat:g.cat }); });
+    const lateHtml = late.length ? '<p class="rpt-t">Thường đã trả mà tháng này chưa thấy</p><ul class="rpt-n">' + late.map(g => "<li>" + icH(tagOf(g.cat).icon) + " " + esc(g.name) + " · khoảng " + fmt(Math.round(g.avg / 1000) * 1000) + " · thường ngày " + g.day + "</li>").join("") + '</ul><p class="rpt-tip">Đã trả mà chưa ghi thì ghi bù kèm ngày, vd “' + esc(late[0].name.toLowerCase()) + ' ' + fmtShort(Math.round(late[0].avg / 1000) * 1000) + ' ngày ' + late[0].day + ' định kỳ”.</p>' : "";
+    const paid = from.slice(0, 7) === curMk ? rptTx(ca, tk, { src:"all", kind:"out", fx:"only" }).reduce((s, x) => s + x.amt, 0) : 0;
+    let h = '<div class="rpt">';
+    if(!rows.length){
+      h += '<p class="rpt-h">' + fxCap(esc(label)) + ' không còn khoản định kỳ nào phải trả.</p>';
+      if(paid) h += '<p class="rpt-s">Tháng này đã chi định kỳ ' + fmt(paid) + '.</p>';
+      return h + lateHtml + fxBtns(["định kỳ tháng này", "khoản định kỳ tháng sau"]) + "</div>";
+    }
+    const tot = rows.reduce((s, x) => s + x.amt, 0), sure = rows.filter(x => !/^đoán/.test(x.how)).reduce((s, x) => s + x.amt, 0);
+    h += '<p class="rpt-h">' + fxCap(esc(label)) + ' còn khoảng <b>' + fmt(tot) + '</b> định kỳ · ' + rows.length + ' khoản</p>';
+    const sub = []; if(sure !== tot) sub.push("chắc chắn " + fmt(sure) + ", phần còn lại đoán từ lịch sử"); if(paid) sub.push("tháng này đã chi " + fmt(paid));
+    if(sub.length) h += '<p class="rpt-s">' + sub.map(fxCap).join(" · ") + '</p>';
+    h += '<ul class="rpt-l">' + rows.map(x => '<li><span class="d">' + dm(x.k) + '</span><span class="i">' + icH(tagOf(x.cat).icon) + '</span><span class="n">' + esc(x.name) + '<em>' + esc(x.how) + '</em></span><b>' + fmt(x.amt) + '</b></li>').join("") + '</ul>';
+    h += lateHtml + '<p class="rpt-tip">Các khoản này không trừ hạn mức ngày khi ghi là định kỳ.</p>';
+    return h + fxBtns(["định kỳ tháng này", "trung bình định kỳ mỗi tháng"]) + "</div>";
+  }
+
+  /* "khoản nào có vẻ là định kỳ": khoản đã đánh dấu + khoản lặp lại chưa đánh dấu */
+  function fixedDetect(q){
+    const tk = todayKey(), first = fxPastMonths(3).slice(-1)[0] || fxMk(new Date());
+    const marked = fxGroups(rptTx(fxMonthRange(first)[0], tk, { src:"all", kind:"out", fx:"only" }));
+    let h = '<div class="rpt">';
+    const G = fxGuess();
+    h += '<p class="rpt-h">' + (G.length ? "Mình thấy <b>" + G.length + "</b> khoản lặp lại hằng tháng chưa đánh dấu định kỳ" : "Không thấy khoản lặp lại hằng tháng nào chưa đánh dấu") + '</p>';
+    h += '<p class="rpt-s">Xét 6 tháng gần nhất: cùng nội dung, gần như tháng nào cũng có, tối đa 2 lần một tháng, số tiền ổn định, từ 50.000đ.</p>';
+    if(G.length) h += fxGuessHtml(true).replace(/^<p class="rpt-t">[^<]*<\/p>/, "");
+    if(marked.length) h += '<p class="rpt-t">Đang là định kỳ</p><ul class="rpt-n">' + marked.slice(0, 8).map(g => "<li>" + icH(tagOf(g.cat).icon) + " " + esc(g.name) + " · " + fmt(Math.round(g.sum / Math.max(1, g.months.size))) + "/tháng</li>").join("") + "</ul>";
+    if(recurList().length) h += '<p class="rpt-tip">' + recurList().length + ' khoản trong Cài đặt → Hạn mức và định kỳ đang tự ghi mỗi tháng.</p>';
+    return h + fxBtns(["định kỳ tháng này", "khoản định kỳ sắp tới"]) + "</div>";
+  }
+
   function answer(q){
     rememberQ(q);
     if(q.q === "find") return findAnswer(q);
@@ -6337,12 +6596,13 @@ function startNgay50k(){
     if(q.q === "forecast") return forecastAnswer();
     if(q.q === "save") return saveAnswer(q);
     if(q.q === "report") return report(q);
+    if(q.q === "fixed") return fixedAnswer(q);
     if(q.q === "spent"){
       const [a, b, lbl] = qRange(q);
       const tags = q.tag === "an+uong" ? ["an","uong"] : q.tag ? [q.tag] : null;
       if(q.wid) return report(Object.assign({}, q, { q:"report", group:"tag" }));   /* v98: hỏi chi theo ví → báo cáo lọc ví */
       let r = spentIn(a, b, tags); const src = q.src || "all";
-      if(q.kw){ const xs = rptTx(a, b, q); r = { acc:xs.filter(x => x.src !== "card").reduce((s, x) => s + x.amt, 0), card:xs.filter(x => x.src === "card").reduce((s, x) => s + x.amt, 0) }; }
+      if(q.kw || q.fx){ const xs = rptTx(a, b, Object.assign({ kind:"out" }, q, { src:"all" })); r = { acc:xs.filter(x => x.src !== "card").reduce((s, x) => s + x.amt, 0), card:xs.filter(x => x.src === "card").reduce((s, x) => s + x.amt, 0) }; }
       const tot = src === "tk" ? r.acc : src === "card" ? r.card : r.acc + r.card;
       /* v124: không nói kỳ mà hôm nay chưa có ("tiền điện bao nhiêu") → lùi ra tháng này, rồi lần gần nhất */
       if(!tot && q.noPeriod && q.period === "today" && (tags || q.kw)){
@@ -6351,9 +6611,10 @@ function startNgay50k(){
         if(mt) return "Hôm nay chưa có. " + answer(m);
         return lastAnswer(Object.assign({}, q, { q:"last" })).replace(/^Lần gần nhất/, "Tháng này chưa có. Lần gần nhất");
       }
-      const what = (q.kwLabel ? " cho “" + esc(q.kwLabel) + "”" : q.tag === "an+uong" ? " cho ăn uống" : q.tag ? " cho " + tagOf(q.tag).label.toLowerCase() : "") + (src === "tk" ? " từ tài khoản" : src === "card" ? " bằng thẻ" : "");
+      const what = (q.kwLabel ? " cho “" + esc(q.kwLabel) + "”" : q.tag === "an+uong" ? " cho ăn uống" : q.tag ? " cho " + tagOf(q.tag).label.toLowerCase() : "") + (src === "tk" ? " từ tài khoản" : src === "card" ? " bằng thẻ" : "") + (q.fx === "no" ? " (không tính khoản định kỳ)" : "");
       let t = tot ? lbl.charAt(0).toUpperCase() + lbl.slice(1) + " bạn đã chi" + what + " <b>" + fmt(tot) + "</b>" + (src === "all" && r.card ? " (tài khoản " + fmt(r.acc) + ", thẻ " + fmt(r.card) + ")" : "") + "."
                   : "Chưa thấy khoản chi nào" + what + " " + lbl + ".";
+      if(q.fx === "no" && tot){ const xs = rptTx(a, b, { src, kind:"out", fx:"only" }), fxT = xs.reduce((s, x) => s + x.amt, 0); if(fxT) t += " Khoản định kỳ để riêng: " + fmt(fxT) + "."; }
       if(q.period === "today" && !tags && src === "all") t += " " + todayLeftText();
       /* nút xem chi tiết: mở báo cáo gom nhóm ngay trên máy, không tốn AI */
       if(tot) t += '<button type="button" class="chat-q" data-q="' + esc(JSON.stringify(Object.assign({}, q, { q:"report", group:q.kw ? "none" : "tag", list:!!q.kw }))) + '">Xem chi tiết từng khoản ›</button>';
@@ -6424,8 +6685,9 @@ function startNgay50k(){
     let ref = { kind:it.kind, id, day:k };
     const wv = it.w && it.w !== MAIN_W && walletById(it.w) ? { w:it.w } : {};     /* v98: ví của khoản */
     const nkv = it.nk ? { nk:it.nk } : {};                                          /* v145: khoản ghi từ thông báo ngân hàng nhớ dấu vân tay */
-    if(it.kind === "out"){ (state.days[k] = state.days[k] || []).push(Object.assign({ id, amt:it.amt, cat:it.cat || "khac", note:it.note || "", t }, wv, nkv)); }
-    else if(it.kind === "card"){ (state.cardTx[k] = state.cardTx[k] || []).push(Object.assign({ id, amt:it.amt, where:it.note || "Chi thẻ", cardId:it.cardId || null, cat:it.cat || "", t }, nkv)); }
+    const fxv = it.fx ? { fx:1 } : {};                                               /* v193: khoản kể kèm "định kỳ" */
+    if(it.kind === "out"){ (state.days[k] = state.days[k] || []).push(Object.assign({ id, amt:it.amt, cat:it.cat || "khac", note:it.note || "", t }, wv, nkv, fxv)); }
+    else if(it.kind === "card"){ (state.cardTx[k] = state.cardTx[k] || []).push(Object.assign({ id, amt:it.amt, where:it.note || "Chi thẻ", cardId:it.cardId || null, cat:it.cat || "", t }, nkv, fxv)); }
     else if(it.kind === "in"){ (state.income[k] = state.income[k] || []).push(Object.assign({ id, amt:it.amt, cat:it.cat || "khac", note:it.note || "", t }, wv, nkv)); }
     else if(it.kind === "xfer"){ (state.xfer = state.xfer || []).push({ id, amt:it.amt, from:it.from || MAIN_W, to:it.to || MAIN_W, date:k, t, note:it.note || "" }); }
     else if(it.kind === "lend" || it.kind === "borrow"){
@@ -6507,6 +6769,7 @@ function startNgay50k(){
     if(it.kind === "xfer") what = walletName(it.from) + " → " + walletName(it.to);
     if((it.kind === "out" || it.kind === "in" || it.kind === "bal") && it.w && it.w !== MAIN_W && multiW()) what = (what ? what + " · " : "") + walletName(it.w);
     const icon = it.kind === "out" || it.kind === "card" ? tagOf(it.cat).icon : it.kind === "in" ? (INC.find(x => x.id === it.cat) || INC[INC.length-1]).icon : KIND_ICON[it.kind];
+    if(it.fx && (it.kind === "out" || it.kind === "card")) what = (what ? what + " · " : "") + "định kỳ";
     return icon + " " + KIND_LABEL[it.kind] + (what ? ": " + what : "") + " · " + fmt(it.amt) + (it.kind !== "bal" && it.date !== todayKey() ? " · " + dateLabel(it.date) : "");
   }
   function optionList(list, sel){ return list.map(o => '<option value="' + esc(o[0]) + '"' + (o[0] === sel ? " selected" : "") + ">" + esc(o[1]) + "</option>").join(""); }
@@ -7512,7 +7775,8 @@ function startNgay50k(){
     if(!res0.items.length && chat.lastQ && !res0.learned){
       const fresh = res0.query && res0.query.q;
       /* câu hỏi mới đủ ý (báo cáo mới, số dư, nợ, còn tiêu được) thì giữ; câu ngắn kiểu "còn thẻ thì sao" thì nối vào câu trước */
-      if(!fresh || fresh === "unknown" || (chat.lastQ.q === "report" && (fresh === "spent" || fresh === "card") && /(^|\s)(thì sao|thi sao|còn|con|thôi|thoi|chỉ|chi tinh|vậy|vay)(\s|$)/i.test(text.trim().toLowerCase()) && !/bao nhiêu|bao nhieu|\bbn\b/i.test(text)) || (fresh === "report" && res0.query.noPeriod && text.trim().split(/\s+/).length <= 8)){
+      const fxFollow = chat.lastQ.q === "fixed" && fresh !== "fixed" && text.trim().split(/\s+/).length <= 9 && /(^|\s)(thì sao|thi sao|còn|con|vậy|vay|thôi|thoi|chỉ|so với|so voi|cái nào|khoản nào|lớn nhất|trung bình|sắp tới|chưa trả|liệt kê)(\s|$)/i.test(text.trim().toLowerCase());
+      if(!fresh || fresh === "unknown" || fxFollow || (chat.lastQ.q === "report" && (fresh === "spent" || fresh === "card") && /(^|\s)(thì sao|thi sao|còn|con|thôi|thoi|chỉ|chi tinh|vậy|vay)(\s|$)/i.test(text.trim().toLowerCase()) && !/bao nhiêu|bao nhieu|\bbn\b/i.test(text)) || (fresh === "report" && res0.query.noPeriod && text.trim().split(/\s+/).length <= 8)){
         try{ const rq = window.N50KParse.refine(text, chat.lastQ, chatCtx()); if(rq) res0 = { items:[], query:rq, unknown:[] }; }catch(e){}
       }
     }

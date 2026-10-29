@@ -799,6 +799,43 @@
     return null;
   }
 
+
+  /* ---------------- v193: khoản chi định kỳ ----------------
+     "tiêu gì các khoản định kỳ", "định kỳ tháng trước", "khoản định kỳ nào lớn nhất", "trung bình định kỳ mỗi tháng",
+     "còn khoản định kỳ nào chưa trả", "khoản nào có vẻ là định kỳ" → { q:"fixed", mode, period, from?, to?, src, cardId, kw?, minAmt }
+       mode: list (mặc định) · top · compare · avg · upcoming · detect
+     "tháng này tiêu bao nhiêu không tính định kỳ" → câu hỏi thường kèm fx:"no" (xem fxOf).
+     Số liệu tính trên máy (index.html, fixedAnswer), không cần AI. */
+  const FX_W = / (dinh ky|co dinh|lap lai|lap di lap lai|khoan hang thang|khoan moi thang|phai tra hang thang|phai dong hang thang|hoa don hang thang) /;
+  const FX_NO = / (khong tinh|khong ke|chua tinh|chua ke|ngoai|tru|tru di|tru ra|bo|bo qua|bo ra|loai|loai bo|loai ra|khong gom|khong bao gom|khong lay|tach) (het |cac |nhung |may )?(khoan )?(chi )?(tien )?(phi )?(dinh ky|co dinh) | (chi tieu|tieu|chi) (hang ngay|thuong ngay|thuong xuyen hang ngay|linh tinh|thuong) /;
+  const FX_HOW = / (la gi|nghia la|lam sao|lam the nao|cach|huong dan|cai dat|o dau de|cho nao de|duoc khong|dc khong|bang cach nao|kieu gi|tu ghi|tu dong ghi|tu dong) | (them|tao|dat|cai|sua|xoa|tat|bat|danh dau|bo danh dau) (mot |1 )?(khoan )?(chi )?(dinh ky|lap lai) /;
+  function fxOf(n){ return FX_NO.test(n) ? "no" : FX_W.test(n) ? "only" : null; }
+  function fixedOf(text, n, ctx, now){
+    if(fxOf(n) !== "only" || FX_HOW.test(n)) return null;
+    const { N } = tokenize(text);
+    /* có số tiền mà không đứng sau "trên/hơn/từ/dưới" là câu kể ("tiền nhà 3tr định kỳ"), không phải câu hỏi */
+    let minAmt = 0;
+    for(let i = 0; i < N.length; i++){ const a = amountAt(N, i); if(!a) continue; if(["tren","hon","tu"].includes(N[i-1]) && a.v >= 1000){ minAmt = a.v; i += a.n - 1; continue; } if(!/\?\s*$/.test(text) && !/ (bao nhieu|bn) /.test(n)) return null; i += a.n - 1; }
+    const q = { q:"fixed", mode:"list", period:"month", src:"all", cardId:null, minAmt };
+    if(/ (sap toi|sap den|sap phai|chua tra|chua dong|chua thanh toan|chua ghi|chua toi|con phai|phai tra|phai dong|den han|toi han|con lai|con nhung|con khoan|du kien|cuoi thang|het thang|thang sau|thang toi|tuan sau|tuan toi|ngay mai|sap) /.test(n)) q.mode = "upcoming";
+    else if(/ (khoan nao (la|co the la|co ve|nen la|giong)|co ve (la )?dinh ky|phat hien|nhan dien|nhan ra|doan|goi y|nen danh dau|chua danh dau|quen danh dau|tu tim|tim giup|co khoan nao lap) /.test(n)) q.mode = "detect";
+    else if(/ (trung binh|tb|binh quan|thuong (het|ton|mat|tra|chi)|moi thang (het|ton|mat|tieu|chi|tra|dong|khoang)|1 thang (het|ton|mat)|mot thang (het|ton|mat)) /.test(n)) q.mode = "avg";
+    else if(/ (top \d{1,2}|lon nhat|to nhat|nhieu nhat|ton nhat|dat nhat|nang nhat|khoan to) /.test(n)) q.mode = "top";
+    else if(/ (so voi|so sanh|tang|giam|nhieu hon|it hon|chenh|khac gi) /.test(n)) q.mode = "compare";
+    const tm = n.match(/ top (\d{1,2}) /); if(tm) q.top = +tm[1];
+    const n0 = n.replace(/ (moi thang|hang thang) /g, " "), ca = n0.search(/ (so voi|so sanh voi|voi) /);
+    const pr = ca > 0 && periodOf(n0.slice(0, ca + 1), now).period ? periodOf(n0.slice(0, ca + 1), now) : periodOf(n0, now);
+    if(pr.period){ q.period = pr.period; if(pr.from){ q.from = pr.from; q.to = pr.to; } } else q.noPeriod = true;
+    if(q.mode === "upcoming"){ const up = upcomingOf(" sap toi co khoan nao " + n, now); if(up){ q.from = up.from; q.to = up.to; q.label = up.label; q.period = "custom"; } }
+    const card = findCard(ctx || {}, N);
+    if(card){ q.src = "card"; q.cardId = card.id; }
+    else if(/ (the|quet the|bang the|the tin dung|credit) /.test(n)) q.src = "card";
+    else if(/ (tai khoan|tk|chuyen khoan|ck|tien mat|tm) /.test(n)) q.src = "tk";
+    const K = knownIn(text, ctx);
+    if(K && !/^(dinh ky|co dinh|khoan|thang)/.test(K.kw) && !(card && norm(card.name || "").includes(K.kw))){ q.kw = K.kw; q.kwLabel = K.label; }
+    return q;
+  }
+
   function asQuery(text, ctx){
     text = String(text).replace(/vậy/gi, "vậy_").replace(/\bvay\s*\??\s*$/i, "vậy_");   /* "sao tiêu nhiều vậy" không phải vay nợ */
     let n = " " + norm(text).replace(/[?!.,:;]/g, " ").replace(/\s+/g, " ") + " ";
@@ -809,6 +846,8 @@
     if(!mayQ) n = n.replace(/ may /g, " may_ ");
     if(/^ (so du|so du vi|kiem tra so du|check so du|xem so du|so du tai khoan|so du tk) $/.test(n) || /^ so du [a-z]+ $/.test(n)) n = n.replace(/ $/, " bao nhieu ");
     const now = (ctx && ctx.now) || new Date();
+    /* v193: hỏi về khoản chi định kỳ (trước cả khoản sắp tới, trung bình, lần cuối…) */
+    { const fq = fixedOf(text, n, ctx, now); if(fq) return fq; }
     /* v123: khoản sắp tới, gợi ý tiết kiệm (câu không kèm số tiền) */
     {
       const T = tokenize(text).N; let hasAmt = false, amtV = 0;
@@ -868,6 +907,7 @@
       { const K = knownIn(text, ctx); if(K && !(qw && norm(qw.name || "") === K.kw) && !(card && norm(card.name || "").includes(K.kw))){ q.kw = K.kw; q.kwLabel = K.label; q.tag = null; if(q.group === "tag") q.group = "none"; } }
       if(!period) q.noPeriod = true;                        /* không nói kỳ: có thể là câu nối tiếp câu trước */
       if(pr.from){ q.from = pr.from; q.to = pr.to; }
+      if(fxOf(n) === "no") q.fx = "no";
       if(/ (thu nhap|thu vao|thu duoc|khoan thu|kiem duoc|tien ve|nhan duoc) /.test(n)) q.kind = "in";
       if(/ theo ngay /.test(n)) q.group = "day";
       else if(/ theo tuan /.test(n)) q.group = "week";
@@ -891,6 +931,7 @@
       if(!period) q.noPeriod = true;                        /* v124: không nói kỳ, hôm nay chưa có thì app lùi ra tháng này, rồi lần gần nhất */
       { const K = knownIn(text, ctx); if(K && !(card && norm(card.name || "").includes(K.kw))){ q.kw = K.kw; q.kwLabel = K.label; q.tag = null; } }
       if(pr.from){ q.period = "custom"; q.from = pr.from; q.to = pr.to; }
+      if(fxOf(n) === "no") q.fx = "no";
       return q;
     }
     return { q:"unknown" };
@@ -914,6 +955,7 @@
       if(up.only) q.only = up.only; else if(/ (tat ca|het|moi khoan|cac khoan) /.test(n0)) q.only = null;
       return (hasRange || up.only || q.only !== prev.only) ? q : null;
     }
+    if(prev && prev.q === "fixed") return refineFixed(text, prev, ctx);
     if(!prev || !(prev.q === "report" || prev.q === "spent" || prev.q === "card")) return null;
     ctx = ctx || {}; const now = ctx.now || new Date();
     const n = " " + norm(text).replace(/[?!.,:;]/g, " ").replace(/\s+/g, " ") + " ";
@@ -958,6 +1000,33 @@
     return q;
   }
 
+
+  /* v193: nối tiếp câu hỏi định kỳ: "tháng trước thì sao", "còn thẻ", "năm nay", "so với tháng trước", "cái nào lớn nhất" */
+  function refineFixed(text, prev, ctx){
+    ctx = ctx || {}; const now = ctx.now || new Date();
+    const n = " " + norm(text).replace(/[?!.,:;]/g, " ").replace(/\s+/g, " ") + " ";
+    const { N } = tokenize(text);
+    if(N.length > 14) return null;
+    for(let i = 0; i < N.length; i++){ const a = amountAt(N, i); if(a && !["tren","hon","tu"].includes(N[i-1])) return null; if(a) i += a.n - 1; }
+    const q = Object.assign({}, prev); let changed = false;
+    const cmpAt = n.search(/ (so voi|so sanh) /);
+    const pr = cmpAt >= 0 ? periodOf(n.slice(0, cmpAt + 1), now) : periodOf(n, now);   /* "so với tháng trước": giữ kỳ đang xem */
+    if(pr.period){ q.period = pr.period; delete q.from; delete q.to; delete q.label; delete q.noPeriod; if(pr.from){ q.from = pr.from; q.to = pr.to; } if(q.mode === "upcoming" || q.mode === "avg") q.mode = "list"; changed = true; }
+    if(/ (sap toi|chua tra|chua dong|con phai|phai tra|du kien|thang sau|tuan sau|con lai) /.test(n)){ const up = upcomingOf(" sap toi co khoan nao " + n, now); q.mode = "upcoming"; if(up){ q.from = up.from; q.to = up.to; q.label = up.label; q.period = "custom"; } changed = true; }
+    else if(/ (trung binh|tb|binh quan|moi thang) /.test(n)){ q.mode = "avg"; changed = true; }
+    else if(/ (lon nhat|to nhat|nhieu nhat|top) /.test(n)){ q.mode = "top"; changed = true; }
+    else if(/ (so voi|so sanh|tang|giam) /.test(n)){ q.mode = "compare"; changed = true; }
+    else if(/ (phat hien|goi y|co ve|chua danh dau|khoan nao la) /.test(n)){ q.mode = "detect"; changed = true; }
+    else if(/ (liet ke|chi tiet|tung khoan|cac khoan|ke ra|ke het) /.test(n) && q.mode !== "list"){ q.mode = "list"; changed = true; }
+    const card = findCard(ctx, N);
+    if(card){ q.src = "card"; q.cardId = card.id; changed = true; }
+    else if(/ (ca hai|tat ca|gop het|bo loc|tong het) /.test(n)){ q.src = "all"; q.cardId = null; delete q.kw; delete q.kwLabel; changed = true; }
+    else if(/ (tai khoan|tk|chuyen khoan|ck|tien mat|tm) /.test(n)){ q.src = "tk"; q.cardId = null; changed = true; }
+    else if(/ (the|quet the|the tin dung) /.test(n)){ q.src = "card"; q.cardId = null; changed = true; }
+    const cue = / (con|thi sao|the con|vay con|chi|xem|thoi|nua|so voi|liet ke) /.test(n) || N.length <= 6;
+    return changed && cue ? q : null;
+  }
+
   /* ---------------- đầu vào chính ---------------- */
   /* v123: "Sai rồi ý tôi là trong các ngày tới", "không phải, ý mình là …" → chỉ hiểu phần sau */
   const LEAD = /^\s*(?:(?:sai|nhầm|nham|không phải|khong phai|ko phải|ko phai|k phải|chưa đúng|chua dung|không đúng|khong dung)(?:\s+(?:rồi|roi|r|nha|nhé|nhe))?[\s,.!:;-]*)?(?:(?:ý|y)\s+(?:tôi|toi|mình|minh|em|tao|là|la)(?:\s+(?:là|la|muốn hỏi|muon hoi|hỏi|hoi))?|(?:tôi|toi|mình|minh|em)\s+(?:muốn hỏi|muon hoi|hỏi là|hoi la|định hỏi|dinh hoi)|tức là|tuc la|nghĩa là|nghia la|à mà|a ma)[\s,.:;-]+/i;
@@ -974,8 +1043,13 @@
     const items = [], unknown = [];
     let carry = { date:null, hh:null };
     let pendingText = "";
-    clauses(raw).forEach(c => {
+    /* v193: "tiền nhà 3tr định kỳ", "học phí hàng tháng 2tr" → khoản đánh dấu định kỳ (fx:1, không trừ hạn mức ngày) */
+    const FXR = /(^|\s)(?:khoản\s+|khoan\s+)?(?:định\s+kỳ|dinh\s+ky|cố\s+định|co\s+dinh|hằng\s+tháng|(?<!ng[âa]n\s)h[àa]ng\s+th[áa]ng)(?=$|\s|[,.;!])/gi;
+    clauses(raw).forEach(c0 => {
+      let c = c0, fx = false;
+      { const ct = c0.O.join(" "); FXR.lastIndex = 0; if(FXR.test(ct)){ const t2 = ct.replace(FXR, " ").replace(/\s+/g, " ").trim(); if(t2){ c = tokenize(t2); fx = true; } } }
       const r = oneClause(pendingText ? tokenize(pendingText + " " + c.O.join(" ")) : c, ctx, carry);
+      if(r.item && fx && (r.item.kind === "out" || r.item.kind === "card")) r.item.fx = 1;
       if(r.meta.date) carry.date = r.meta.date;
       if(r.meta.hh !== null && r.meta.hh !== undefined){ carry.hh = r.meta.hh; carry.soft = !!r.meta.soft; }
       if(r.item){ items.push(r.item); pendingText = ""; }
@@ -1016,7 +1090,7 @@
     const why = [], n = " " + norm(text).replace(/[?!.,;:]/g, " ").replace(/\s+/g, " ") + " ";
     if(!res) res = parse(text, ctx);
     if(res.query){
-      if(res.query.q === "unknown" || (ASK.test(n) && !["save","upcoming","forecast","find","last","count","avg","person"].includes(res.query.q))) why.push("query");
+      if(res.query.q === "unknown" || (ASK.test(n) && !["save","upcoming","forecast","find","last","count","avg","person","fixed"].includes(res.query.q))) why.push("query");
       return { local:!why.length, why };
     }
     if(!res.items.length){ why.push("noitem"); return { local:false, why }; }

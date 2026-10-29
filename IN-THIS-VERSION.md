@@ -1,6 +1,20 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v192, ngày 29/10/2026
+**Phiên bản hiện tại:** v193, ngày 29/10/2026
+
+---
+
+## Có gì mới trong v193 (so với v192)
+
+- **Hỏi về khoản chi định kỳ trong Chat trả lời bằng số liệu thật, tính trên máy, không cần AI.** Trước đây mọi câu có chữ "định kỳ" đều bị thư viện câu trả bằng hướng dẫn cài đặt, còn bộ hiểu câu bỏ qua chữ "định kỳ" nên ra danh sách mọi khoản chi.
+  - "tiêu gì các khoản định kỳ", "định kỳ tháng trước", "chi cố định tháng 9", "định kỳ bằng thẻ năm nay": tổng, số khoản, tỉ trọng trong tổng chi, tài khoản/thẻ, so với cùng kỳ tháng trước và trung bình 3 tháng; từng khoản gom theo tên (tăng/giảm so với kỳ trước); chi thường ngày còn lại; lịch Cài đặt chưa tới ngày.
+  - "khoản định kỳ nào lớn nhất", "so với tháng trước", "trung bình mỗi tháng chi định kỳ bao nhiêu" (tính trên các tháng đủ, kèm dự kiến tháng này), "còn khoản định kỳ nào chưa trả" / "tháng sau" (lịch tự ghi, khoản ghi trước, khoản tháng trước có mà tháng này chưa thấy).
+  - **Tự phát hiện khoản lặp lại chưa đánh dấu** ("khoản nào có vẻ là định kỳ"): cùng nội dung, gần như tháng nào cũng có, tối đa 2 lần/tháng, số tiền lệch dưới 25%, từ 50.000đ, xét 6 tháng.
+  - Câu nối tiếp: "tháng trước thì sao", "còn thẻ", "cái nào lớn nhất", "so với tháng trước" (giữ kỳ đang xem).
+- "tháng này tiêu bao nhiêu **không tính định kỳ**" (cũng: trừ / ngoài / bỏ khoản cố định) → chỉ tính chi thường, ghi riêng phần định kỳ.
+- Nhắn kèm chữ **"định kỳ" / "cố định" / "hàng tháng"** khi ghi ("tiền điện 820k định kỳ", "học phí hàng tháng 2tr") → khoản tự bật định kỳ, không trừ hạn mức ngày. "ngân hàng tháng này" không bị nhầm.
+- Câu hỏi cách dùng ("khoản định kỳ là gì", "thêm khoản định kỳ thế nào") vẫn ra hướng dẫn, nay nói đủ 3 cách đánh dấu.
+- Bài thử mới `tests-dinh-ky.js` (39 câu).
 
 ---
 
