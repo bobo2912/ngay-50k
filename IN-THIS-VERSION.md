@@ -1,6 +1,18 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v194, ngày 29/10/2026
+**Phiên bản hiện tại:** v195, ngày 29/10/2026
+
+---
+
+## Có gì mới trong v195 (so với v194)
+
+- **Hỏi lại khi "trả" chưa rõ là tiền vào hay tiền ra.** "Tèo trả 1,5 triệu", "con trả tiền học 2tr", "Chị Hoa trả 300k" mà người đó không nợ bạn khoản nào: thẻ xác nhận hiện "“Tèo trả” ở đây là:" với 2 nút
+  - 💰 **Tèo trả tiền cho mình** → khoản thu;
+  - 💸 **Trả tiền cho một khoản chi** (vd "tiền học") → khoản chi, nhóm đoán theo nội dung.
+  Chưa chọn thì nút Ghi tắt. Đổi ô loại khoản bằng tay cũng được.
+- **Nhớ theo người:** đã chọn cho Tèo một lần thì lần sau "Tèo trả …" tự theo lựa chọn đó, không hỏi nữa (lưu ở `state.payKind`, đi theo file sao lưu).
+- Không hỏi khi câu đã rõ: người đó đang nợ bạn (→ được trả nợ), "trả mình", "trả lại", "hoàn" (→ khoản thu), "trả nợ" (→ chọn khoản vay).
+- "con trả tiền học 2tr" trước đây phải nhờ AI đoán, giờ máy hỏi thẳng bạn.
 
 ---
 

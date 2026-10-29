@@ -129,13 +129,16 @@ const CASES = [
   ["lãi tiết kiệm 120k", { kind:"in", amt:120000 }],
   ["bố cho 1tr", { kind:"in", amt:1000000, cat:"cho" }],
   /* v194: người khác trả / chuyển tiền cho mình mà không nợ khoản nào → khoản thu (trước bị ghi thành chi) */
-  ["Tèo trả 1,5 triệu", { kind:"in", amt:1500000, note:"Tèo trả" }],
-  ["Tèo trả mình 1tr", { kind:"in", amt:1000000 }],
-  ["Tèo trả lại 300k", { kind:"in", amt:300000 }],
+  /* v195: không rõ tiền vào hay ra → hỏi lại (ask:"tra"); nói rõ "trả mình / trả lại" thì không hỏi */
+  ["Tèo trả 1,5 triệu", { kind:"in", amt:1500000, note:"Tèo trả", ask:"tra" }],
+  ["con trả tiền học 2tr", { kind:"in", amt:2000000, ask:"tra" }],
+  ["Chị Hoa trả 300k", { kind:"in", amt:300000, ask:"tra" }],
+  ["Tèo trả mình 1tr", { kind:"in", amt:1000000, ask:"" }],
+  ["Tèo trả lại 300k", { kind:"in", amt:300000, ask:"" }],
   ["Tèo chuyển 1tr", { kind:"in", amt:1000000 }],
   ["Tèo gửi 500k", { kind:"in", amt:500000 }],
   ["Lan ck 300k", { kind:"in", amt:300000 }],
-  ["Hào trả 500k", { kind:"collect", amt:500000, loan:"l3" }],
+  ["Hào trả 500k", { kind:"collect", amt:500000, loan:"l3", ask:"" }],
   ["Tèo gửi xe 10k", { kind:"out", amt:10000 }],
   ["Chuyển Tèo 1tr", { kind:"out", amt:1000000 }],
   ["Cơm trưa trả 40k", { kind:"out", amt:40000 }],
@@ -162,6 +165,7 @@ function match(it, want){
   if(want.card && it.cardId !== want.card) bad.push("card " + it.cardId);
   if(want.loan && it.loanId !== want.loan) bad.push("loan " + it.loanId);
   if(want.src && it.src !== want.src) bad.push("src " + it.src);
+  if(want.ask !== undefined && (it.ask || "") !== want.ask) bad.push("ask " + (it.ask || "-"));
   if(want.who && !String(it.who || "").toLowerCase().includes(want.who.toLowerCase())) bad.push("who " + it.who);
   if(want.note && !String(it.note || "").toLowerCase().includes(want.note.toLowerCase())) bad.push("note " + it.note);
   return bad.join(", ");

@@ -23,7 +23,8 @@ const CASES = [
   ["hôm qua với mấy đứa bạn đi ăn uống linh tinh tốn khoảng 200k gì đó rồi về nhà", "ai"],
   ["mua đồ ăn sáng cho cả nhà", "ai"], ["tuần sau có nên mua laptop không?", "ai"],
   ["tháng này so với tháng trước tiêu nhiều hơn không?", "may"], ["sao tháng này tiêu nhiều thế?", "may"] /* v122: báo cáo so với tháng trước, máy tự làm */,
-  ["con trả tiền học 2tr", "ai"]
+  ["con trả tiền học 2tr", "may"],   /* v195: máy hỏi lại tiền vào hay tiền ra, không cần AI */
+  ["Tèo trả 1,5 triệu", "may"]
 ];
 let fail = 0;
 CASES.forEach(([t, want]) => {

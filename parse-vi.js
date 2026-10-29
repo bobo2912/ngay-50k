@@ -485,8 +485,8 @@
         /* v194: "Tèo trả 1,5 triệu": người khác trả, ngay sau "trả" là số tiền → tiền vào (trước chỉ hiểu khi Tèo đang nợ) */
         let s2 = it + 1; while(["lai","tien","cho"].includes(N[s2])) s2++;
         const amtNext = !!amountAt(N, s2) || ["minh","toi","em","tao"].includes(N[s2]);   /* "trả tiền học 2tr": còn mơ hồ, không tính */
-        if(amtNext) item._dp = 1;
-        const beforeIsPerson = before && it <= 3 && !after && amtNext && guessTag(before, ctx) === "khac" && N.slice(0, it).every(w => !["chi","mua","tieu","an","uong","nap","dong","nop","phi","hoc","thue","tien"].includes(w));
+        const capNames = O.slice(0, it).every(w => isCap(clean(w)));   /* "Nam", "Chị Lan" (chữ "Nam" bị đoán là nhóm chợ) */
+        const beforeIsPerson = before && it <= 3 && (!after || !isCap(after)) && amtNext && (guessTag(before, ctx) === "khac" || capNames) && N.slice(0, it).every((w, i) => !["chi","mua","tieu","an","uong","nap","dong","nop","phi","hoc","thue","tien"].includes(w) || (w === "chi" && clean(O[i]).toLowerCase() === "chị"));
         if(before && (meAfter || isDebtWord || findLoan(ctx, before, "lend") || beforeIsPerson)){ kind = "collect"; item.who = before; }
         else if(after && (hasW("no") || findLoan(ctx, after, "borrow") || hasW("tra lai"))){ kind = "repay"; item.who = after; }
       }
@@ -494,10 +494,19 @@
         const type = (kind === "lend" || kind === "collect") ? "lend" : "borrow";
         const l = findLoan(ctx, item.who, type);
         if(l){ item.loanId = l.id; item.who = l.who; }
-        const dp = item._dp; delete item._dp;
-        if(kind === "collect" && !l && dp && !hasW("no") && !(ctx && (ctx.loans || []).some(x => x.type === "lend" && norm(x.who || "").split(" ").pop() === norm(item.who || "").split(" ").pop()))){
-          /* v194: người này không nợ mình khoản nào → đây là khoản thu ("Tèo trả 1,5 triệu", "mẹ trả tiền ăn 300k") */
-          kind = "in"; item.cat = "khac"; item.payer = item.who; item.who = "";
+        if(kind === "collect" && !l && !hasW("no") && !(ctx && (ctx.loans || []).some(x => x.type === "lend" && norm(x.who || "").split(" ").pop() === norm(item.who || "").split(" ").pop()))){
+          /* v195: người này không nợ mình khoản nào. "Tèo trả 1,5 triệu" có thể là Tèo trả tiền cho mình (khoản thu)
+             hoặc trả cho một khoản chi → hỏi lại (item.ask = "tra"), trừ khi câu nói rõ "trả mình / trả lại / hoàn"
+             hoặc người dùng đã chọn cho người này trước đây (ctx.payKind). Tạm để khoản thu. */
+          const payer = item.who, pk = ctx && ctx.payKind ? ctx.payKind[norm(payer).trim()] : "";
+          const toMe = N.slice(traIdx + 1).some((w, i) => ["minh","toi","tao"].includes(w) && !isCap(clean(O[traIdx + 1 + i]))) || hasW("tra lai") || hasW("hoan");
+          let s3 = traIdx + 1; while(["cho","lai"].includes(N[s3])) s3++;
+          const rw = []; for(let i = s3; i < N.length; i++){ const a = amountAt(N, i); if(a){ i += a.n - 1; continue; } if(!drop.has(i) && clean(O[i])) rw.push(clean(O[i])); }
+          let restO = rw.join(" ").trim(); if(/^(tiền|tien)$/i.test(restO)) restO = "";
+          const outNote = restO ? restO.charAt(0).toUpperCase() + restO.slice(1) : "";
+          kind = "in"; item.cat = "khac"; item.payer = payer; item.who = "";
+          if(!toMe && pk === "out"){ kind = "out"; item.cat = guessTag(restO || payer, ctx); if(outNote) item.outNote = outNote; }
+          else if(!toMe && pk !== "in"){ item.ask = "tra"; item.outNote = outNote; item.outCat = guessTag(restO, ctx); }
         }
         else if((kind === "repay" || kind === "collect") && !l){
           /* không tìm thấy khoản vay để trả: để người dùng chọn trong thẻ xác nhận */

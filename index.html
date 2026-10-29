@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v194";
+  var K = "ngay50k:errlog", VER = "v195";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -1363,6 +1363,13 @@ body.kb #tab-chat .chat-sugg{display:none}
 .pb-fold{display:flex; align-items:center; justify-content:space-between; font-size:.8rem; color:var(--muted)}
 .pb-fold button{border:0; background:none; font:inherit; font-weight:700; color:var(--note); padding:2px 0}
 .pcard.skip{opacity:.45}
+.pask{display:flex; flex-direction:column; gap:6px}
+.pask p{margin:2px 2px 0; font-size:.88rem; color:var(--muted)}
+.pask button{display:grid; grid-template-columns:28px 1fr; column-gap:8px; align-items:center; text-align:left; font:inherit; color:var(--ink); background:var(--field, #fff); border:1.5px solid var(--line); border-radius:12px; padding:9px 11px; cursor:pointer}
+.pask button span{grid-row:1 / 3; font-size:1.2rem; text-align:center}
+.pask button b{font-weight:700; font-size:.95rem}
+.pask button small{color:var(--muted); font-size:.78rem}
+.pask button:active{transform:scale(.98)}
 .prow{display:flex; flex-wrap:wrap; gap:6px; align-items:center; min-width:0}
 .prow > *{min-width:0}
 .pcard select, .pcard input{font:inherit; font-size:16px; border:1px solid var(--line); background:var(--field, #fff); color:var(--ink); border-radius:10px; padding:7px 9px; height:38px}
@@ -2979,7 +2986,7 @@ body::before, .settings::before, .lock, .welcome{background:var(--bg) !important
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v194</p>
+      <p class="sync" id="appVersion">Phiên bản v195</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3486,11 +3493,11 @@ body::before, .settings::before, .lock, .welcome{background:var(--bg) !important
 <input type="file" id="phFile" accept="image/*" hidden>
 <div class="ph-view" id="phView" role="dialog" aria-modal="true" aria-label="Ảnh hoá đơn" hidden><img id="phImg" alt="Ảnh hoá đơn"><div class="ph-bar"><button type="button" id="phDel">Bỏ ảnh này</button><button type="button" id="phClose">Đóng</button></div></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=194"></script>
-<script src="thu-vien-cau.js?v=194"></script>
-<script src="quy-tac.js?v=194"></script>
-<script src="native.js?v=194"></script>
-<script src="lock.js?v=194"></script>
+<script src="parse-vi.js?v=195"></script>
+<script src="thu-vien-cau.js?v=195"></script>
+<script src="quy-tac.js?v=195"></script>
+<script src="native.js?v=195"></script>
+<script src="lock.js?v=195"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -3875,6 +3882,7 @@ function startNgay50k(){
       miss: Array.isArray(s.miss) ? s.miss.filter(r => r && r.id && r.key) : [],
       /* v125: viết tắt bạn đã chọn ("hl" → "Highlands"); aliasM: lúc đặt, để gộp hai máy lấy bản mới hơn */
       alias: obj(s.alias), aliasM: obj(s.aliasM),
+      payKind: obj(s.payKind),   /* v195: "Tèo trả …" của người này là tiền vào ("in") hay tiền ra ("out"), nhớ từ lần chọn trước */
       /* v158 – Thư viện nội dung (thay sheet ThuVien): quy tắc làm gọn nội dung thông báo ngân hàng, { id, k, r, tag?, off? }.
          Nằm trong dữ liệu chính: mã hoá khi bật PIN, đi theo file sao lưu, không bao giờ nằm trong mã nguồn */
       thuvien: Array.isArray(s.thuvien) ? s.thuvien.filter(r => r && r.id && typeof r.k === "string") : []
@@ -5769,7 +5777,7 @@ function startNgay50k(){
     const use = {}, last = {}, from = keyOf(new Date(Date.now() - 60 * 86400000));
     for(const k in state.cardTx){ if(k < from) continue; (state.cardTx[k] || []).forEach(it => { const c = it.cardId; if(!c) return; use[c] = (use[c] || 0) + 1; last[c] = Math.max(last[c] || 0, it.t || 0); }); }
     const defaultCard = Object.keys(use).filter(id => (state.cards || []).some(c => c.id === id)).sort((a, b) => use[b] - use[a] || last[b] - last[a])[0] || (((state.cards || [])[0]) || {}).id || null;
-    return { now:new Date(), know:chatKnow(), alias:state.alias || {}, defaultCard, tags:(state.tags || []).filter(t => t && t.id && t.label).map(t => ({ id:t.id, label:t.label })), cards:(state.cards || []).map(c => ({ id:c.id, name:c.name || "" })), loans,
+    return { now:new Date(), know:chatKnow(), alias:state.alias || {}, payKind:state.payKind || {}, defaultCard, tags:(state.tags || []).filter(t => t && t.id && t.label).map(t => ({ id:t.id, label:t.label })), cards:(state.cards || []).map(c => ({ id:c.id, name:c.name || "" })), loans,
       wallets:(state.wallets || []).filter(w => !w.off).map(w => ({ id:w.id, name:w.name || "" })),
       history: text => { const k = String(text).trim().toLowerCase(); return recent[k] || ""; } };
   }
@@ -6669,6 +6677,7 @@ function startNgay50k(){
   function loansFor(kind){ const type = (kind === "lend" || kind === "collect") ? "lend" : "borrow"; return state.loans.filter(l => l.type === type); }
   function validate(it){
     if(!(it.amt > 0)) return "Thiếu số tiền";
+    if(it.ask === "tra") return "Chọn tiền vào hay tiền ra ở trên";
     if((it.kind === "repay" || it.kind === "collect") && !it.loanId) return it.kind === "collect" ? "Chọn khoản cho vay được trả" : "Chọn khoản vay để trả";
     if((it.kind === "lend" || it.kind === "borrow") && !it.loanId && !String(it.who || "").trim()) return "Ghi tên người";
     if(it.kind === "card" && !(state.cards || []).length) return "Chưa có thẻ nào, thêm thẻ ở tab Ví → Thêm ví → Thẻ tín dụng";
@@ -6791,6 +6800,13 @@ function startNgay50k(){
     const loanOpts = l => [["", l.length ? "— chọn khoản vay —" : "— chưa có khoản nào —"]].concat(l.map(x => [x.id, x.who + " · còn " + fmt(leftOf(x))]));
     const isLoan = ["lend","borrow","repay","collect"].includes(it.kind);
     let html = '<div class="prow"><select class="pk" aria-label="Loại">' + optionList(kinds, it.kind) + '</select><input class="pa num" inputmode="numeric" aria-label="Số tiền" value="' + (it.amt ? it.amt.toLocaleString("vi-VN") : "") + '"></div>';
+    /* v195: "Tèo trả 1,5 triệu" mà Tèo không nợ mình: hỏi lại tiền vào hay tiền ra */
+    if(it.ask === "tra"){
+      const who = esc(it.payer || "Người này"), what = it.outNote ? esc(it.outNote.toLowerCase()) : "một khoản chi";
+      html += '<div class="pask" role="group" aria-label="Tiền vào hay tiền ra"><p>“' + who + ' trả” ở đây là:</p>'
+        + '<button type="button" data-ask="in"><span>💰</span><b>' + who + ' trả tiền cho mình</b><small>Tiền vào · ghi khoản thu</small></button>'
+        + '<button type="button" data-ask="out"><span>💸</span><b>Trả tiền cho ' + what + '</b><small>Tiền ra · ghi khoản chi</small></button></div>';
+    }
     if(it.kind === "out" || it.kind === "card" || it.kind === "in") html += '<div class="prow"><input class="pn" placeholder="Nội dung" aria-label="Nội dung" value="' + esc(it.note) + '"></div>';
     if(it.kind === "lend" || it.kind === "borrow"){
       const l = loansFor(it.kind);
@@ -6812,8 +6828,9 @@ function startNgay50k(){
     el.innerHTML = html;
     const q = s => el.querySelector(s), warn = q(".pwarn"), okB = q(".ok");
     const check = () => { const w = validate(it); warn.textContent = w; warn.hidden = !w; okB.disabled = !!w; };
+    el.querySelectorAll("[data-ask]").forEach(b => b.onclick = () => askPick(it, b.dataset.ask));
     q(".pk").onchange = e => {
-      it.kind = e.target.value; it.loanId = null;
+      it.kind = e.target.value; it.loanId = null; delete it.ask;
       if(it.kind === "in" && !INC.find(x => x.id === it.cat)) it.cat = "khac";
       if(it.kind === "xfer" && !it.from && !it.to){ it.from = MAIN_W; it.to = ((state.wallets || [])[0] || {}).id || MAIN_W; }
       if((it.kind === "out" || it.kind === "card") && !allTags().some(t => t.id === it.cat)) it.cat = window.N50KParse.guessTag(it.note || "", chatCtx());
@@ -6836,6 +6853,15 @@ function startNgay50k(){
     okB.onclick = () => saveItems(m, [idx]);
     check();
     return el;
+  }
+  /* v195: chọn tiền vào / tiền ra cho câu "X trả …"; nhớ theo người để lần sau không hỏi lại */
+  function askPick(it, k){
+    if(k === "out"){ it.kind = "out"; if(it.outNote) it.note = it.outNote; it.cat = it.outCat && it.outCat !== "khac" ? it.outCat : window.N50KParse.guessTag(it.note || "", chatCtx()); }
+    else { it.kind = "in"; it.cat = "khac"; }
+    delete it.ask;
+    const key = it.payer ? window.N50KParse.norm(it.payer).trim() : "";
+    if(key){ state.payKind = state.payKind || {}; state.payKind[key] = k; persist(); }
+    chatSave(); renderChat(true);
   }
   /* v133: nhiều khoản (nhất là dán nhiều thông báo ngân hàng) → một khung, mỗi giao dịch một dòng có số thứ tự,
      số tiền chi đỏ / thu xanh, giờ, nhóm; chạm dòng để mở thẻ sửa đầy đủ. Thẻ số dư tách riêng ở cuối. */
@@ -6919,7 +6945,7 @@ function startNgay50k(){
       const intro = document.createElement("div"); intro.className = "msg bot";
       /* v129: thẻ số dư từ thông báo ngân hàng là lệnh riêng, không nằm trong "Ghi tất cả" */
       const sep = i => !!(m.items[i] && m.items[i].balAt), pend = m.status.filter((s, i) => s === "pending" && !sep(i)).length;
-      if(m.introHtml) intro.innerHTML = m.intro; else intro.innerHTML = (m.intro ? esc(m.intro) + "\n" : "") + (m.items.length > 1 ? "Mình hiểu là có <b>" + m.items.length + " khoản</b>, chạm vào từng dòng nếu cần sửa:" : (m.intro ? "Bạn xem lại rồi bấm Ghi nhé:" : "Mình hiểu vậy, đúng không?"));
+      if(m.introHtml) intro.innerHTML = m.intro; else intro.innerHTML = (m.intro ? esc(m.intro) + "\n" : "") + (m.items.length > 1 ? "Mình hiểu là có <b>" + m.items.length + " khoản</b>, chạm vào từng dòng nếu cần sửa:" : (m.intro ? "Bạn xem lại rồi bấm Ghi nhé:" : m.items[0] && m.items[0].ask === "tra" && m.status[0] === "pending" ? "Tiền vào hay tiền ra? Bạn chọn giúp mình nhé:" : "Mình hiểu vậy, đúng không?"));
       if(m.ai) markAI(intro); else if(m.src === "local" || m.src === "learn") markLocal(intro, m.src === "learn");
       box.appendChild(intro);
       if(m.items.length > 1) box.appendChild(batchEl(m, sep));
@@ -11572,6 +11598,7 @@ function startNgay50k(){
       wallets: byId(a.wallets, b.wallets), xfer: byId(a.xfer, b.xfer),
       alias: (() => { const o = Object.assign({}, a.alias || {}); for(const k in (b.alias || {})) if(!(k in o) || ((b.aliasM || {})[k] || 0) > ((a.aliasM || {})[k] || 0)) o[k] = b.alias[k]; return o; })(),
       aliasM: Object.assign({}, a.aliasM || {}, b.aliasM || {}),
+      payKind: Object.assign({}, a.payKind || {}, b.payKind || {}),
       thuvien: byId(a.thuvien, b.thuvien).sort((x, y) => (x.o || 0) - (y.o || 0)),
       learn: byId(a.learn, b.learn), miss: byId(a.miss, b.miss).filter(x => !byId(a.learn, b.learn).some(r => r.key === x.key)),
       payees: Object.assign({}, b.payees, a.payees), tagOff: mergeTagOff(a.tagOff, b.tagOff),
