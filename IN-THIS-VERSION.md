@@ -1,6 +1,22 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v196, ngày 29/10/2026
+**Phiên bản hiện tại:** v197, ngày 29/10/2026
+
+---
+
+## Có gì mới trong v197 (so với v196)
+
+- **Ba loại dòng giao dịch, hiển thị đồng nhất** ở Sổ Ngày, Sổ Tháng, lịch sử Ví và thẻ:
+  - **Chi trong ngày** (số đen): vào tổng đầu ngày, trừ hạn mức;
+  - **Định kỳ** (số hồng): không vào chi trong ngày, vẫn cộng chi tháng; đầu ngày ghi riêng "định kỳ …";
+  - **Không tính thu chi** (số xám): trả thẻ, chuyển ví, cho vay, vay, trả nợ. Dòng phụ ghi loại (Trả thẻ, Cho vay thêm…) và ví 🏦 như mọi dòng; bỏ chữ nghiêng "không tính thu chi".
+- **Cài đặt → Giao diện và mở đầu → Hiển thị giao dịch**: **Gom cuối ngày** (mặc định: chi trong ngày ở trên, cuối mỗi ngày có khung *Định kỳ* và *Không tính chi*, mỗi khung có tổng, chạm để thu gọn) hoặc **Huy hiệu** (giữ thứ tự giờ, biểu tượng có huy hiệu ↻ / →, dưới số tiền có chữ nhỏ). Lưu riêng trên máy (`ngay50k:txv`).
+- **Bỏ nút ✕ trên các dòng**; chạm dòng nào cũng mở bảng sửa ngay tại chỗ, chân bảng **Xoá · Huỷ · Lưu** (Xoá bấm 2 lần):
+  - Sửa khoản chi / thu, Sửa khoản chi thẻ: thêm nút Xoá;
+  - Chuyển ví: mở lại để sửa hoặc xoá (trước đây không chạm được);
+  - Cho vay / vay / vay thêm / trả nợ: bảng sửa số tiền, ngày, xoá, kèm "Xem khoản vay với … ›" (trước đây nhảy sang tab Khoản vay). Xoá dòng khoản vay gốc là xoá cả khoản vay (có cảnh báo).
+- **Sửa khoản chi → "Ghi là: Khoản chi / Trả thẻ"**: đổi khoản ghi nhầm thành trả thẻ để không bị tính chi 2 lần; tự gợi ý khi nội dung giống "thanh toán thẻ", tự chọn thẻ khi tên khớp.
+- **Lỗi:** tổng đầu ngày ở **Sổ Tháng** và **lịch sử thẻ tín dụng** còn cộng khoản định kỳ; giờ không cộng.
 
 ---
 
