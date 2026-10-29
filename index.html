@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v191";
+  var K = "ngay50k:errlog", VER = "v192";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -1715,6 +1715,9 @@ body.searching .ledger-head{background:var(--top-c)}
 .lib-adv > summary::-webkit-details-marker{display:none} .lib-adv > summary::after{content:" ›"} .lib-adv[open] > summary::after{content:" ⌄"}
 .lib-ops button{font-family:inherit !important}
 .lib-on{display:flex; align-items:center; gap:12px; margin-top:14px; padding:12px 14px; border-radius:14px; background:var(--flat); cursor:pointer}
+.fx-row{display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:14px; background:var(--flat); cursor:pointer; margin:4px 0 14px}
+.fx-row > span{flex:1; min-width:0} .fx-row b{display:block; font-size:.92rem; font-weight:600} .fx-row small{display:block; color:var(--muted); font-size:.78rem; margin-top:2px; line-height:1.35}
+.blk .fx-row{background:none; padding:6px 0 2px; margin:0 0 10px}
 .lib-on > span{flex:1} .lib-on b{display:block; font-size:.95rem} .lib-on small{display:block; color:var(--muted); font-size:.8rem; margin-top:2px}
 .lib-ops button{border:1px solid var(--line); background:var(--flat); color:var(--ink); border-radius:8px; padding:4px 8px; font-size:.76rem; font-weight:600; font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
 .lib-explain{margin:2px 2px 0; font-size:.86rem; color:var(--ok); min-height:1.2em}
@@ -2976,7 +2979,7 @@ body::before, .settings::before, .lock, .welcome{background:var(--bg) !important
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v191</p>
+      <p class="sync" id="appVersion">Phiên bản v192</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3031,6 +3034,7 @@ body::before, .settings::before, .lock, .welcome{background:var(--bg) !important
     <label><span>Nhóm <span class="opt">(để tính ngân sách)</span></span></label>
     <div class="chips" id="cxTagChips" style="margin-top:0"></div>
   </div>
+  <label class="fx-row" id="cxFxRow"><span><b>Khoản chi định kỳ</b><small>Tiền nhà, điện nước, học phí… không trừ vào hạn mức mỗi ngày</small></span><input type="checkbox" id="cxFx" class="sw"></label>
   <div class="field ph-field"><label><span>Ảnh hoá đơn <span class="opt">(không bắt buộc)</span></span></label><div class="ph-row" id="cxPhRow"></div></div>
   <div class="sheet-foot">
     <button class="ghost" id="cxCancel">Huỷ</button>
@@ -3358,6 +3362,7 @@ body::before, .settings::before, .lock, .welcome{background:var(--bg) !important
           <label><span>Trả từ ví</span></label>
           <div class="chips wchips" id="fWChips" style="margin-top:0"></div>
         </div>
+        <label class="fx-row" id="fFxRow"><span><b>Khoản chi định kỳ</b><small>Tiền nhà, điện nước, học phí… không trừ vào hạn mức mỗi ngày</small></span><input type="checkbox" id="fFx" class="sw"></label>
 
         <div class="save-contact" id="saveContactBox" hidden>
           <label class="check"><input type="checkbox" id="saveContact"> Lưu vào danh sách người hay chuyển</label>
@@ -3416,6 +3421,7 @@ body::before, .settings::before, .lock, .welcome{background:var(--bg) !important
     <label><span id="eWLabel">Ví</span></label>
     <div class="chips wchips" id="eWChips" style="margin-top:0"></div>
   </div>
+  <label class="fx-row" id="eFxRow"><span><b>Khoản chi định kỳ</b><small>Tiền nhà, điện nước, học phí… không trừ vào hạn mức mỗi ngày</small></span><input type="checkbox" id="eFx" class="sw"></label>
   <div class="field ph-field"><label><span>Ảnh hoá đơn <span class="opt">(không bắt buộc)</span></span></label><div class="ph-row" id="ePhRow"></div></div>
   <p class="edit-hint" id="editHint" hidden>Chỉ sửa trong sổ chi tiêu, không thay đổi giao dịch đã chuyển ở ngân hàng.</p>
   <div class="sheet-foot">
@@ -3480,11 +3486,11 @@ body::before, .settings::before, .lock, .welcome{background:var(--bg) !important
 <input type="file" id="phFile" accept="image/*" hidden>
 <div class="ph-view" id="phView" role="dialog" aria-modal="true" aria-label="Ảnh hoá đơn" hidden><img id="phImg" alt="Ảnh hoá đơn"><div class="ph-bar"><button type="button" id="phDel">Bỏ ảnh này</button><button type="button" id="phClose">Đóng</button></div></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=191"></script>
-<script src="thu-vien-cau.js?v=191"></script>
-<script src="quy-tac.js?v=191"></script>
-<script src="native.js?v=191"></script>
-<script src="lock.js?v=191"></script>
+<script src="parse-vi.js?v=192"></script>
+<script src="thu-vien-cau.js?v=192"></script>
+<script src="quy-tac.js?v=192"></script>
+<script src="native.js?v=192"></script>
+<script src="lock.js?v=192"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -4024,7 +4030,10 @@ function startNgay50k(){
     return fmt(n);
   }
   /* khoản định kỳ không tính vào hạn mức ngày */
-  const sumLimit = items => (items||[]).reduce((a,b)=> a + (b.fx ? 0 : (Number(b.amt)||0)), 0);
+  /* v192: người dùng tự đánh dấu khoản định kỳ khi ghi/sửa (fx:1), bỏ đánh dấu thì fx:0.
+     Khoản do lịch định kỳ tự ghi (có rc) mà chưa có fx, kể cả quẹt thẻ, vẫn coi là định kỳ. */
+  const isFx = it => !!it && (it.fx === 0 ? false : !!(it.fx || it.rc));
+  const sumLimit = items => (items||[]).reduce((a,b)=> a + (isFx(b) ? 0 : (Number(b.amt)||0)), 0);
   /* v107: hạn mức ngày tính cả chi từ tài khoản/ví lẫn quẹt thẻ (không tính khoản định kỳ) */
   function dayLimit(k){ return sumLimit(state.days[k]) + sumLimit((state.cardTx || {})[k]); }
   function flash(id, text){ const el = $(id); el.textContent = text; el.hidden = false; clearTimeout(el._t); el._t = setTimeout(()=>el.hidden = true, 3000); }
@@ -4058,7 +4067,7 @@ function startNgay50k(){
     [...$("amtChips").children].forEach(c=>c.setAttribute("aria-pressed","false"));
     $("saveContact").checked = false; $("contactNameField").hidden = true;
     $("txDate").max = todayKey(); $("txDate").value = curDay(); updateTxHint();
-    selectCat("an");
+    selectCat("an"); $("fFx").checked = false;
     wPicker("fWField", "fWChips", lastW(m === "cash"), m === "cash");   /* Ghi chi chọn được ví hoặc thẻ; chuyển khoản chỉ chọn ví */
     $("fWField").querySelector("label span").textContent = m === "cash" ? "Chi từ" : "Trả từ ví";
 
@@ -4099,7 +4108,7 @@ function startNgay50k(){
     renderTagChips($("catChips"), id, selectCat);
   }
   function lockForm(on){
-    $("formBox").querySelectorAll(".inp,.chip,.k000,#saveContact").forEach(el => el.disabled = on);
+    $("formBox").querySelectorAll(".inp,.chip,.k000,#saveContact,#fFx").forEach(el => el.disabled = on);
     $("saveBtn").hidden = on; $("saveErr").hidden = true; $("preview").hidden = on; locked = on;
   }
   function missingFields(){
@@ -4131,11 +4140,13 @@ function startNgay50k(){
     if(!a){ pv.className="preview"; pv.textContent = "Nhập số tiền để xem hôm nay còn bao nhiêu."; }
     else{
       const k = txDay(), pre = k === todayKey() ? "" : dayName(k) + ": ";
-      const after = state.budget - dayLimit(k) - a;
+      const fxOn = $("fFx").checked;
+      const after = state.budget - dayLimit(k) - (fxOn ? 0 : a);
       pv.className = "preview" + (after<0 ? " bad" : "");
-      pv.innerHTML = pre + (after>=0 ? "sau khoản này còn <strong>"+fmt(after)+"</strong>."
+      if(fxOn){ pv.className = "preview"; pv.innerHTML = (pre || "Hôm nay: ") + "khoản định kỳ, không trừ hạn mức. Vẫn còn <strong>" + fmt(after) + "</strong>."; }
+      else pv.innerHTML = pre + (after>=0 ? "sau khoản này còn <strong>"+fmt(after)+"</strong>."
                               : "khoản này làm vượt hạn mức <strong>"+fmt(-after)+"</strong>.");
-      if(!pre) pv.innerHTML = pv.innerHTML.charAt(0).toUpperCase() + pv.innerHTML.slice(1);
+      if(!pre && !fxOn) pv.innerHTML = pv.innerHTML.charAt(0).toUpperCase() + pv.innerHTML.slice(1);
     }
     const btn = $("saveBtn");
     btn.disabled = miss.length > 0;
@@ -4159,12 +4170,13 @@ function startNgay50k(){
     const k = txDay(), now = new Date();
     const when = k === todayKey() ? now.getTime() : new Date(k + "T" + pad(now.getHours()) + ":" + pad(now.getMinutes()) + ":00").getTime();
     const it = { id:uid(), amt:amtValue(), cat:selectedCat, note:$("desc").value.trim(), t:when };
+    if($("fFx").checked) it.fx = 1;
     const fw = pickedW("fWChips"); if(fw) it.w = fw;
     const fc = mode === "cash" ? pickedCard("fWChips") : null;
     if(!$("fWField").hidden) lsSet(LASTW_KEY, fc ? "card:" + fc : (fw || MAIN_W));
     if(fc && cardOf(fc)){
       /* chi bằng thẻ: ghi vào sổ thẻ (cộng vào nợ thẻ, tính vào hạn mức ngày) */
-      (state.cardTx[k] = state.cardTx[k] || []).push({ id:it.id, amt:it.amt, where:it.note || "Chi thẻ", cardId:fc, cat:it.cat, t:it.t });
+      (state.cardTx[k] = state.cardTx[k] || []).push(Object.assign({ id:it.id, amt:it.amt, where:it.note || "Chi thẻ", cardId:fc, cat:it.cat, t:it.t }, it.fx ? { fx:1 } : {}));
       viewDay = k === todayKey() ? null : k;
       persist(true); renderAll(); closeForm(); return;
     }
@@ -4323,8 +4335,7 @@ function startNgay50k(){
     li.innerHTML = '<span class="cat" aria-hidden="true"></span><div class="desc"><div></div><div></div></div><span class="amt num"></span><button class="del" aria-label="Xoá khoản này">✕</button>';
     setIcon(li.querySelector(".cat"), c.icon);
     li.querySelector(".desc div:first-child").textContent = it.note || it.who || it.holder || (it.bank ? "Chuyển khoản " + it.bank : c.label);
-    li.querySelector(".desc div:last-child").textContent = pad(t.getHours())+":"+pad(t.getMinutes()) + " · " + (it.bank ? (it.who && it.note && it.note !== it.who ? it.who + " · " : "") + it.bank : c.label)
-;
+    li.querySelector(".desc div:last-child").textContent = pad(t.getHours())+":"+pad(t.getMinutes()) + " · " + (it.bank ? (it.who && it.note && it.note !== it.who ? it.who + " · " : "") + it.bank : c.label) + (isFx(it) ? " · định kỳ" : "");
     if(srcLabels()) addSrc(li, it.w || MAIN_W);
     if(it.ph && it.ph.length) li.querySelector(".desc div:first-child").textContent += " 📎";
     li.querySelector(".amt").textContent = (opts && opts.sign ? "−" : "") + fmt(it.amt);
@@ -4403,7 +4414,7 @@ function startNgay50k(){
     li.innerHTML = '<span class="cat" aria-hidden="true"></span><div class="desc"><div></div><div></div></div><span class="amt num"></span><button class="del" aria-label="Xoá khoản này">✕</button>';
     setIcon(li.querySelector(".cat"), c.icon);
     li.querySelector(".desc div:first-child").textContent = it.where || c.label;
-    li.querySelector(".desc div:last-child").textContent = pad(t.getHours()) + ":" + pad(t.getMinutes()) + " · " + c.label;
+    li.querySelector(".desc div:last-child").textContent = pad(t.getHours()) + ":" + pad(t.getMinutes()) + " · " + c.label + (isFx(it) ? " · định kỳ" : "");
     addSrc(li, "card", nm ? "Thẻ " + nm.replace(/^thẻ\s*/i, "") : "Thẻ tín dụng");
     li.querySelector(".amt").textContent = (sign ? "−" : "") + fmt(it.amt);
     li.classList.add("tap"); li.tabIndex = 0; li.setAttribute("role", "button");
@@ -4570,7 +4581,7 @@ function startNgay50k(){
     const items = (state.days[dk] || []).slice();
     const cards = ((state.cardTx || {})[dk] || []).slice();
     const incs = (state.income[dk] || []).slice();
-    const dsum = dayLimit(dk), dfx = sumOf(items) - sumLimit(items), dIn = sumOf(incs);
+    const dsum = dayLimit(dk), dfx = sumOf(items) - sumLimit(items) + sumOf(cards) - sumLimit(cards), dIn = sumOf(incs);
     $("daySum").innerHTML = (items.length || cards.length || incs.length)
       ? "Đã chi <strong>" + fmt(dsum) + "</strong> / " + fmt(b) + (dsum > b ? " · vượt <strong style='color:var(--over)'>" + fmt(dsum-b) + "</strong>" : "")
         + (dfx ? " · định kỳ <strong>" + fmt(dfx) + "</strong>" : "")
@@ -4913,7 +4924,7 @@ function startNgay50k(){
       const tt = new Date(r.it.t || 0), bits = [];
       if(r.it.t) bits.push(pad(tt.getHours()) + ":" + pad(tt.getMinutes()));
       if(r.kind === "card"){ const cd = cardOf(r.it.cardId); if(cd) bits.push(cd.name); }
-      if(r.it.fx) bits.push("định kỳ");
+      if(isFx(r.it)) bits.push("định kỳ");
       li.querySelector(".desc div:last-child").textContent = bits.join(" · ");
       const src = li.querySelector(".src");
       src.textContent = r.kind === "card" ? "Thẻ" : "Chi";
@@ -5603,6 +5614,7 @@ function startNgay50k(){
     refreshForm();
   });
   $("contactName").addEventListener("input", refreshForm);
+  $("fFx").addEventListener("change", refreshForm);
   $("txDate").addEventListener("change", () => { updateTxHint(); refreshForm(); });
   $("txDate").addEventListener("input", () => { updateTxHint(); refreshForm(); });
   $("prevDay").onclick = () => { viewDay = shiftKey(curDay(), -1); renderToday(); };
@@ -6027,7 +6039,7 @@ function startNgay50k(){
   function forecastCalc(){
     const T = walletsTotal(); if(!T.any) return null;
     const now = new Date(), tk = todayKey(), end = new Date(now.getFullYear(), now.getMonth() + 1, 0), ek = keyOf(end);
-    const daySpend = k => (state.days[k] || []).reduce((a, it) => a + (it.rc ? 0 : (+it.amt || 0)), 0);
+    const daySpend = k => (state.days[k] || []).reduce((a, it) => a + (isFx(it) ? 0 : (+it.amt || 0)), 0);
     const keys = Object.keys(state.days).filter(k => (state.days[k] || []).length).sort();
     const first = keys[0] || tk;
     let n = 0, sum = 0;
@@ -7841,7 +7853,8 @@ function startNgay50k(){
     const vals = []; let total = 0, fixed = 0, maxV = 0, maxK = null, spentDays = 0, overDays = 0;
     for(let d = 1; d <= nDays; d++){
       const k = prefix + pad(d), v = dayLimit(k);
-      fixed += sumOf(state.days[k]) - v;
+      const ck = (state.cardTx || {})[k];
+      fixed += sumOf(state.days[k]) - sumLimit(state.days[k]) + sumOf(ck) - sumLimit(ck);
       vals.push(v); total += v;
       if(v > 0) spentDays++;
       if(v > b) overDays++;
@@ -8062,7 +8075,7 @@ function startNgay50k(){
       for(const k in state.days) (state.days[k] || []).forEach(it => {
         if(wOf(it) !== wid) return;
         const n = Number(it.amt) || 0;
-        push(k, recTime(k, it.t), -n, [it.note, it.who, it.holder, it.bank, tagOf(it.cat).label].filter(Boolean).join(" "), 0, it.fx ? 0 : n, () => itemRow(it, { day:k, sign:true }));
+        push(k, recTime(k, it.t), -n, [it.note, it.who, it.holder, it.bank, tagOf(it.cat).label].filter(Boolean).join(" "), 0, isFx(it) ? 0 : n, () => itemRow(it, { day:k, sign:true }));
       });
       for(const k in state.income) (state.income[k] || []).forEach(it => {
         if(wOf(it) !== wid) return;
@@ -8156,7 +8169,7 @@ function startNgay50k(){
     for(const k in state.days) (state.days[k]||[]).forEach(it => {
       if(!inW(it)) return;
       const c = tagOf(it.cat);
-      add(recTime(k, it.t), -(Number(it.amt)||0), c.icon, (it.note || it.who || it.holder || c.label) + (it.ph && it.ph.length ? " 📎" : ""), it.fx ? "Định kỳ" : "Chi", () => openEdit(it.id, k, "out"), false, [c.label, it.who, it.holder, it.bank].filter(Boolean).join(" "), c.label + (it.fx ? " · định kỳ" : ""));
+      add(recTime(k, it.t), -(Number(it.amt)||0), c.icon, (it.note || it.who || it.holder || c.label) + (it.ph && it.ph.length ? " 📎" : ""), isFx(it) ? "Định kỳ" : "Chi", () => openEdit(it.id, k, "out"), false, [c.label, it.who, it.holder, it.bank].filter(Boolean).join(" "), c.label + (isFx(it) ? " · định kỳ" : ""));
     });
     if(main) for(const k in state.cardTx) (state.cardTx[k]||[]).forEach(it => {
       const nm = cardName(it.cardId);
@@ -8653,6 +8666,7 @@ function startNgay50k(){
     if(kind === "in") selectEInc(it.cat || "luong"); else selectECat(it.cat);
     $("eWLabel").textContent = kind === "in" ? "Vào ví" : "Trả từ ví";
     wPicker("eWField", "eWChips", it.w);
+    $("eFxRow").hidden = kind === "in"; $("eFx").checked = kind === "out" && isFx(it);
     const parts = [pad(d.getHours()) + ":" + pad(d.getMinutes()) + " ngày " + fmtDate(f.day)];
     if(kind === "out") parts.push(it.bank ? "chuyển khoản " + it.bank + (it.acct ? " · " + it.acct : "") : it.w && it.w !== MAIN_W ? walletName(it.w) : "tiền mặt");
     else parts.push("khoản thu");
@@ -8678,6 +8692,7 @@ function startNgay50k(){
     it.amt = v; it.note = $("eNote").value.trim();
     it.cat = kind === "in" ? eInc : eCat;
     if(!$("eWField").hidden){ const ew = pickedW("eWChips"); if(ew) it.w = ew; else delete it.w; }
+    if(kind === "out") setFx(it, $("eFx").checked);
     phApply(it, "ePhRow");
     if(kind === "out" && it.contactId){ const c = state.contacts.find(x => x.id === it.contactId); if(c) c.cat = eCat; }
     const newDay = $("eDate").value || f.day;
@@ -8695,6 +8710,8 @@ function startNgay50k(){
     }
     persist(); renderAll(); closeEdit();
   };
+  /* v192: bật = fx:1; tắt = xoá fx, riêng khoản do lịch định kỳ tự ghi thì để fx:0 cho khỏi bị coi là định kỳ */
+  function setFx(it, on){ if(on) it.fx = 1; else if(it.rc) it.fx = 0; else delete it.fx; }
   $("cancelEdit").onclick = closeEdit;
   $("closeEdit").onclick = closeEdit;
   $("editBack").onclick = closeEdit;
@@ -9234,6 +9251,7 @@ function startNgay50k(){
     const bits = [];
     if(it.t) bits.push(pad(t.getHours()) + ":" + pad(t.getMinutes()));
     if(it.cat){ const tg = tagOf(it.cat); bits.push(icH(tg.icon) + " " + esc(tg.label)); }
+    if(isFx(it)) bits.push("định kỳ");
     li.querySelector(".desc div:last-child").innerHTML = bits.join(" · ");
     if(showCard){
       const c = cardOf(it.cardId);
@@ -9304,6 +9322,7 @@ function startNgay50k(){
     $("cxDate").value = f ? f.day : todayKey(); $("cxDate").max = todayKey();
     selectCxCard(it ? it.cardId : ((state.cards || [])[0] || {}).id || null);
     selectCxTag(it ? (it.cat || "") : guessTag($("cxWhere").value));
+    $("cxFx").checked = !!it && isFx(it);
     const wc = $("cxWhereChips"); wc.innerHTML = "";
     recentWheres().forEach(w => {
       const b = document.createElement("button"); b.type = "button"; b.className = "chip"; b.textContent = w;
@@ -9329,7 +9348,7 @@ function startNgay50k(){
     if(cxEditing){
       const f = findCardTx(cxEditing.id, cxEditing.day);
       if(f){
-        const it = f.it; it.amt = v; it.where = where; it.cardId = cxCard || null; it.cat = cxTag || ""; phApply(it, "cxPhRow");
+        const it = f.it; it.amt = v; it.where = where; it.cardId = cxCard || null; it.cat = cxTag || ""; setFx(it, $("cxFx").checked); phApply(it, "cxPhRow");
         if(day !== f.day){
           const old = new Date(it.t || Date.now()), nd = new Date(day + "T00:00:00");
           if(!isNaN(nd)){ nd.setHours(old.getHours(), old.getMinutes(), 0, 0); it.t = nd.getTime(); }
@@ -9341,11 +9360,11 @@ function startNgay50k(){
     } else {
       const now = new Date(), nd = new Date(day + "T00:00:00");
       if(!isNaN(nd)) nd.setHours(now.getHours(), now.getMinutes(), 0, 0);
-      const nit = { id:uid(), amt:v, where, cardId:cxCard || null, cat:cxTag || "", t:(isNaN(nd) ? Date.now() : nd.getTime()) }; phApply(nit, "cxPhRow");
+      const nit = { id:uid(), amt:v, where, cardId:cxCard || null, cat:cxTag || "", t:(isNaN(nd) ? Date.now() : nd.getTime()) }; if($("cxFx").checked) nit.fx = 1; phApply(nit, "cxPhRow");
       (state.cardTx[day] = state.cardTx[day] || []).push(nit);
     }
     cardMonth = new Date(day + "T00:00:00"); cardMonth.setDate(1);
-    persist(); renderCards(); closeCardTx();
+    persist(); renderAll(); renderCards(); closeCardTx();
   };
   $("cxWhere").addEventListener("blur", () => { if(!cxTag) selectCxTag(guessTag($("cxWhere").value)); });
   $("cxCancel").onclick = closeCardTx;
@@ -11130,7 +11149,7 @@ function startNgay50k(){
     const rows = [["Ngày","Loại","Số tiền","Nhóm","Nội dung","Thẻ","Định kỳ"]];
     const push = (day, loai, amt, nhom, nd, the, dk) => rows.push([day, loai, amt, nhom, nd, the, dk]);
     for(const k in state.days) (state.days[k]||[]).forEach(it =>
-      push(k, "Chi", it.amt, tagOf(it.cat).label, it.note || "", "", it.fx ? "x" : ""));
+      push(k, "Chi", it.amt, tagOf(it.cat).label, it.note || "", "", isFx(it) ? "x" : ""));
     for(const k in state.income) (state.income[k]||[]).forEach(it =>
       push(k, "Thu", it.amt, ((INC.find(x => x.id === it.cat) || INC[4]).label), it.note || "", "", ""));
     for(const k in state.cardTx) (state.cardTx[k]||[]).forEach(it => {

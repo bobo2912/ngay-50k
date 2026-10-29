@@ -1,6 +1,17 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v191, ngày 21/10/2026
+**Phiên bản hiện tại:** v192, ngày 29/10/2026
+
+---
+
+## Có gì mới trong v192 (so với v191)
+
+- **Đánh dấu khoản chi định kỳ ngay khi ghi:** form Nhập khoản chi có công tắc **Khoản chi định kỳ**. Bật lên thì khoản đó (tiền nhà, điện nước, học phí…) **không trừ vào hạn mức mỗi ngày**, kể cả khi chi bằng thẻ tín dụng. Dòng xem trước đổi thành "khoản định kỳ, không trừ hạn mức".
+- **Sửa được sau khi ghi:** màn Sửa khoản chi và Sửa khoản chi thẻ có cùng công tắc để bật/tắt. Khoản do Cài đặt → Khoản định kỳ tự ghi cũng tắt được (lưu `fx:0`).
+- Khoản định kỳ hiện chữ **"định kỳ"** ở dòng phụ trong Sổ, màn thẻ; tổng "định kỳ" ở đầu Sổ ngày tính cả quẹt thẻ.
+- Quẹt thẻ do Khoản định kỳ tự ghi trước đây vẫn bị trừ hạn mức ngày; giờ không trừ nữa, đúng như mô tả trong Cài đặt.
+- Lịch chi tiêu tháng: dòng "Chưa kể khoản định kỳ…" trước đây trừ nhầm cả tiền quẹt thẻ, giờ tính đúng.
+- Dự báo số dư cuối tháng không tính khoản định kỳ ghi tay vào mức tiêu trung bình mỗi ngày.
 
 ---
 
