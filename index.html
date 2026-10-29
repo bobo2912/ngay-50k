@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v197";
+  var K = "ngay50k:errlog", VER = "v198";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -2166,6 +2166,14 @@ body::before, .settings::before, .lock, .welcome{background:var(--bg) !important
 #walFlow li.txg.txg, #walSoon li.txg.txg, #list li.txg.txg, #ledgerList li.txg.txg, li.txg.txg{display:block !important; padding:0 !important; gap:0 !important; min-height:0 !important}
 li.txg > details.txd{margin:0 !important; padding:0 !important; border:0 !important; background:none !important; box-shadow:none !important}
 li.txg > details.txd > ul{margin:0 !important}
+/* v198: dòng ngày 2 tầng, thống kê căn trái dưới ngày */
+.day-head.dh2, #walFlow .day-head.dh2{display:flex; flex-direction:column; align-items:flex-start; justify-content:flex-start; gap:2px}
+.day-head.dh2 .dd{color:var(--ink); font-weight:600}
+.day-head.dh2 .ds{display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 6px; font-size:.78rem; text-align:left}
+.day-head.dh2 .ds .in{color:var(--ok, #23955f); font-weight:600}
+.day-head.dh2 .ds .out{color:var(--ink); font-weight:600}
+.day-head.dh2 .ds .fx{color:var(--note); font-weight:600}
+.day-head.dh2 .ds .sep{font-style:normal; color:var(--muted)}
 </style>
 </head>
 <body>
@@ -3040,7 +3048,7 @@ li.txg > details.txd > ul{margin:0 !important}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v197</p>
+      <p class="sync" id="appVersion">Phiên bản v198</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3580,11 +3588,11 @@ li.txg > details.txd > ul{margin:0 !important}
 <input type="file" id="phFile" accept="image/*" hidden>
 <div class="ph-view" id="phView" role="dialog" aria-modal="true" aria-label="Ảnh hoá đơn" hidden><img id="phImg" alt="Ảnh hoá đơn"><div class="ph-bar"><button type="button" id="phDel">Bỏ ảnh này</button><button type="button" id="phClose">Đóng</button></div></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=197"></script>
-<script src="thu-vien-cau.js?v=197"></script>
-<script src="quy-tac.js?v=197"></script>
-<script src="native.js?v=197"></script>
-<script src="lock.js?v=197"></script>
+<script src="parse-vi.js?v=198"></script>
+<script src="thu-vien-cau.js?v=198"></script>
+<script src="quy-tac.js?v=198"></script>
+<script src="native.js?v=198"></script>
+<script src="lock.js?v=198"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -4487,13 +4495,17 @@ function startNgay50k(){
       li.appendChild(dt); ul.appendChild(li);
     });
   }
-  /* dòng ngày: tổng thu, tổng chi trong ngày, dòng nhỏ định kỳ */
+  /* dòng ngày (v198): ngày ở trên, bên dưới một dòng thống kê căn trái: thu · chi trong ngày · định kỳ */
   function txDayHead(k, din, dout, dfx){
-    const d = new Date(k + "T00:00:00"), head = document.createElement("div"); head.className = "day-head";
-    head.innerHTML = "<span></span><span class='num'></span>";
+    const d = new Date(k + "T00:00:00"), head = document.createElement("div"); head.className = "day-head dh2";
+    head.innerHTML = "<span class='dd'></span><span class='ds num'></span>";
     head.children[0].textContent = WD[d.getDay()] + ", " + d.getDate() + "/" + (d.getMonth()+1);
-    head.children[1].textContent = (din ? "+" + fmt(din) + "  " : "") + (dout ? "−" + fmt(dout) : "");
-    if(dfx){ const e = document.createElement("em"); e.className = "dfx"; e.textContent = "định kỳ " + fmt(dfx); head.children[1].appendChild(e); }
+    const st = head.children[1];
+    const add = (cls, txt) => { if(st.childNodes.length){ const sp = document.createElement("i"); sp.className = "sep"; sp.textContent = "·"; st.appendChild(sp); } const e = document.createElement("span"); e.className = cls; e.textContent = txt; st.appendChild(e); };
+    if(din) add("in", "+" + fmt(din));
+    if(dout) add("out", "−" + fmt(dout));
+    if(dfx) add("fx", "định kỳ " + fmt(dfx));
+    if(!st.childNodes.length) st.remove();
     return head;
   }
   /* các khoản tiền di chuyển nhưng không phải thu chi: trả thẻ, chuyển giữa ví, vay / cho vay / trả nợ */

@@ -1,6 +1,12 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v197, ngày 29/10/2026
+**Phiên bản hiện tại:** v198, ngày 29/10/2026
+
+---
+
+## Có gì mới trong v198 (so với v197)
+
+- **Dòng ngày** ở Sổ Tháng và lịch sử Ví / thẻ: ngày ở trên, bên dưới **một dòng thống kê căn trái**: thu (xanh) · chi trong ngày (đậm) · định kỳ (hồng). Trước đây số tiền dồn bên phải, định kỳ xuống dòng riêng.
 
 ---
 
