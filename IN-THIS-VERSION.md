@@ -1,6 +1,17 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v200, ngày 30/10/2026
+**Phiên bản hiện tại:** v201, ngày 30/10/2026
+
+---
+
+## Có gì mới trong v201 (so với v200) – vuốt sang trái để xoá giao dịch
+
+- Ở **Sổ Ngày, Sổ Tháng, lịch sử Ví, lịch sử thẻ** (và danh sách màn thẻ cũ): **vuốt một dòng sang trái** để hiện nút **Xoá** màu đỏ.
+  - Bấm **Xoá**, hoặc vuốt dài quá nửa dòng → hiện bảng **"Xoá giao dịch này?"** ghi tên và số tiền, hai nút **Xoá / Huỷ**. Chỉ xoá khi bấm Xoá; Huỷ, chạm ra ngoài hay phím Esc thì dòng trở lại như cũ.
+  - Vuốt chưa tới nửa nút thì dòng tự bật lại. Chạm vào dòng đang mở nút Xoá thì dòng đóng lại, không mở bảng sửa. Mở dòng khác thì dòng trước tự đóng.
+  - Vuốt dọc vẫn cuộn danh sách như thường; chạm bình thường vẫn mở bảng sửa.
+- Xoá được mọi loại dòng: khoản chi, khoản thu, quẹt thẻ, trả thẻ, chuyển ví, cho vay / đi vay / vay thêm / trả nợ. Xoá dòng khoản vay gốc là xoá cả khoản vay: bảng xác nhận ghi rõ điều này.
+- Xoá theo đúng cách nút Xoá trong bảng sửa (cùng dữ liệu, cùng cách gộp hai máy).
 
 ---
 

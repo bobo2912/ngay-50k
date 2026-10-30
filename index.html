@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v200";
+  var K = "ngay50k:errlog", VER = "v201";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -448,6 +448,22 @@ header .date{color:var(--ink); font-size:1rem; font-weight:700}
 .sheet.top{z-index:83} .sheet-back.top{z-index:82}
 .sheet.top2{z-index:86} .sheet-back.top2{z-index:85}
 .item.tap{cursor:pointer; -webkit-tap-highlight-color:transparent}
+/* v201: vuốt sang trái để xoá (swipeDel). Nút Xoá đỏ rộng ra theo ngón tay, nội dung dòng trượt sang trái */
+.item.sw{position:relative; overflow:hidden; touch-action:pan-y; -webkit-user-select:none; user-select:none; -webkit-touch-callout:none}
+.item.sw > :not(.swd){transform:translateX(var(--sx, 0px)); transition:transform .22s ease}
+.item.sw .swd{position:absolute; top:3px; bottom:3px; right:0; width:calc(-1 * var(--sx, 0px)); max-width:100%; overflow:hidden; border:0; padding:0; border-radius:12px;
+  background:var(--over); color:#fff; font:inherit; font-size:.9rem; font-weight:700; white-space:nowrap; transition:width .22s ease; cursor:pointer}
+.item.sw.sw-drag > :not(.swd), .item.sw.sw-drag .swd{transition:none}
+.item.sw.sw-on, .item.sw.sw-drag{background:transparent !important}
+.swcf{position:fixed; inset:0; z-index:120; display:flex; align-items:flex-end; justify-content:center; background:rgba(0,0,0,.35); padding:12px 12px calc(12px + env(safe-area-inset-bottom))}
+.swcf[hidden]{display:none}
+.swcf-box{width:100%; max-width:420px; display:flex; flex-direction:column; gap:8px}
+.swcf-card{background:var(--surface); border-radius:16px; padding:16px 16px 14px; text-align:center}
+.swcf-card b{display:block; font-size:1rem; color:var(--ink)}
+.swcf-card p{margin:6px 0 0; font-size:.88rem; color:var(--muted); white-space:pre-line}
+.swcf button{font:inherit; font-size:1rem; font-weight:700; border:0; border-radius:14px; padding:14px; cursor:pointer}
+.swcf .swcf-del{background:var(--over); color:#fff}
+.swcf .swcf-no{background:var(--surface); color:var(--ink)}
 .item.tap:active{background:var(--note-soft)}
 .edit-meta{margin:2px 0 4px; font-size:.85rem; color:var(--muted)}
 .edit-hint{margin:10px 0 0; font-size:.82rem; color:var(--muted); line-height:1.45}
@@ -3052,7 +3068,7 @@ li.txg > details.txd > ul{margin:0 !important}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v200</p>
+      <p class="sync" id="appVersion">Phiên bản v201</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3592,12 +3608,12 @@ li.txg > details.txd > ul{margin:0 !important}
 <input type="file" id="phFile" accept="image/*" hidden>
 <div class="ph-view" id="phView" role="dialog" aria-modal="true" aria-label="Ảnh hoá đơn" hidden><img id="phImg" alt="Ảnh hoá đơn"><div class="ph-bar"><button type="button" id="phDel">Bỏ ảnh này</button><button type="button" id="phClose">Đóng</button></div></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=200"></script>
-<script src="thu-vien-cau.js?v=200"></script>
-<script src="quy-tac.js?v=200"></script>
-<script src="du-lieu.js?v=200"></script>
-<script src="native.js?v=200"></script>
-<script src="lock.js?v=200"></script>
+<script src="parse-vi.js?v=201"></script>
+<script src="thu-vien-cau.js?v=201"></script>
+<script src="quy-tac.js?v=201"></script>
+<script src="du-lieu.js?v=201"></script>
+<script src="native.js?v=201"></script>
+<script src="lock.js?v=201"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -4472,10 +4488,92 @@ function startNgay50k(){
     if(LINE_IC[tok.replace(/️/g, "")]) el.innerHTML = icH(tok) + escI(i > 0 ? str.slice(i) : "");
     else el.textContent = str;
   }
+  /* ---------- v201: vuốt sang trái để xoá giao dịch ----------
+     Vuốt dòng sang trái: hiện nút Xoá đỏ; vuốt quá nửa dòng hoặc bấm Xoá: hỏi xác nhận rồi mới xoá.
+     Chạm dòng đang mở nút Xoá thì đóng lại (không mở bảng sửa). Một lúc chỉ mở một dòng.
+     info: { name, amt (chuỗi đã có dấu), warn?, del() } — del() chỉ sửa state, việc lưu và vẽ lại làm ở đây. */
+  var swOpen = null;
+  function swipeDel(li, info){
+    const W = 84;
+    li.classList.add("sw");
+    const bt = document.createElement("button"); bt.type = "button"; bt.className = "swd"; bt.textContent = "Xoá";
+    bt.tabIndex = -1; bt.setAttribute("aria-hidden", "true");
+    li.appendChild(bt);
+    let x0 = 0, y0 = 0, dx = 0, mode = 0, pid = null, open = false, moved = false;
+    const set = v => { dx = v; li.style.setProperty("--sx", v + "px"); li.classList.toggle("sw-on", v < 0); };
+    const shut = () => { set(0); open = false; if(swOpen === li) swOpen = null; };
+    li._swShut = shut;
+    li.addEventListener("pointerdown", e => {
+      if(e.target === bt || (e.pointerType === "mouse" && e.button !== 0)) return;
+      if(swOpen && swOpen !== li && swOpen._swShut) swOpen._swShut();
+      x0 = e.clientX; y0 = e.clientY; mode = 0; pid = e.pointerId; moved = false;
+    });
+    li.addEventListener("pointermove", e => {
+      if(e.pointerId !== pid) return;
+      const ddx = e.clientX - x0, ddy = e.clientY - y0;
+      if(!mode){
+        if(Math.abs(ddx) > 10 && Math.abs(ddx) > Math.abs(ddy) * 1.3 && (ddx < 0 || open)){ mode = 1; li.classList.add("sw-drag"); try{ li.setPointerCapture(pid); }catch(_){} }
+        else if(Math.abs(ddy) > 10 || Math.abs(ddx) > 10) mode = 2;
+      }
+      if(mode === 1){ e.preventDefault(); set(Math.max(-li.offsetWidth * 0.92, Math.min(0, (open ? -W : 0) + ddx))); }
+    });
+    const end = e => {
+      if(e.pointerId !== pid) return; pid = null;
+      if(mode === 1){
+        moved = true; li.classList.remove("sw-drag");
+        if(dx < -li.offsetWidth * 0.5){ set(-W); open = true; swOpen = li; ask(); }
+        else if(dx < -W / 2){ set(-W); open = true; swOpen = li; }
+        else shut();
+      }
+      mode = 0;
+    };
+    li.addEventListener("pointerup", end);
+    li.addEventListener("pointercancel", e => { if(e.pointerId !== pid) return; pid = null; li.classList.remove("sw-drag"); if(mode === 1) (open ? set(-W) : shut()); mode = 0; });
+    /* đăng ký trước listener mở bảng sửa của dòng, nên chặn được cú chạm ngay sau khi vuốt / khi nút Xoá đang mở */
+    li.addEventListener("click", e => {
+      if(e.target === bt) return;
+      if(moved){ moved = false; e.stopImmediatePropagation(); e.preventDefault(); return; }   /* cú click trình duyệt tự gửi ngay sau khi vuốt */
+      if(open){ e.stopImmediatePropagation(); e.preventDefault(); shut(); }
+    });
+    bt.addEventListener("click", e => { e.stopPropagation(); ask(); });
+    function ask(){
+      swConfirm(info, ok => {
+        if(!ok){ shut(); return; }
+        try{ info.del(); }catch(err){ shut(); return; }
+        swOpen = null;
+        persist(true); renderAll();
+        if(info.after) try{ info.after(); }catch(_){}
+      });
+    }
+  }
+  function swConfirm(info, cb){
+    let ov = $("swCf");
+    if(!ov){
+      ov = document.createElement("div"); ov.id = "swCf"; ov.className = "swcf"; ov.hidden = true;
+      ov.setAttribute("role", "alertdialog"); ov.setAttribute("aria-modal", "true"); ov.setAttribute("aria-labelledby", "swCfT");
+      ov.innerHTML = '<div class="swcf-box"><div class="swcf-card"><b id="swCfT"></b><p id="swCfS"></p></div><button type="button" class="swcf-del" id="swCfOk">Xoá</button><button type="button" class="swcf-no" id="swCfNo">Huỷ</button></div>';
+      document.body.appendChild(ov);
+    }
+    $("swCfT").textContent = info.title || "Xoá giao dịch này?";
+    $("swCfS").textContent = [info.name, info.amt].filter(Boolean).join(" · ") + (info.warn ? "\n" + info.warn : "");
+    const done = ok => { ov.hidden = true; ov.onclick = null; document.removeEventListener("keydown", key); cb(ok); };
+    const key = e => { if(e.key === "Escape") done(false); };
+    $("swCfOk").onclick = () => done(true);
+    $("swCfNo").onclick = () => done(false);
+    ov.onclick = e => { if(e.target === ov) done(false); };
+    document.addEventListener("keydown", key);
+    ov.hidden = false; setTimeout(() => { try{ $("swCfNo").focus(); }catch(_){} }, 30);
+  }
+  /* xoá một khoản chi / thu (như nút Xoá trong bảng Sửa khoản) */
+  function delDayItem(id, day, kind){
+    const src = kind === "in" ? state.income : state.days, f = findItem(id, day, kind);
+    if(f){ src[f.day] = (src[f.day] || []).filter(x => x.id !== id); if(!src[f.day].length) delete src[f.day]; }
+  }
   function itemRow(it, opts){
     const c = tagOf(it.cat), t = new Date(it.t);
     const li = document.createElement("li"); li.className = "item";
     li.innerHTML = '<span class="cat" aria-hidden="true"></span><div class="desc"><div></div><div></div></div><span class="amt num"></span>';   /* v197: xoá trong bảng sửa, không còn ✕ trên dòng */
+    { const dk0 = opts && opts.day ? opts.day : (viewDay || todayKey()); swipeDel(li, { name:it.note || it.who || c.label, amt:"−" + fmt(it.amt), del:() => delDayItem(it.id, dk0) }); }   /* v201 */
     setIcon(li.querySelector(".cat"), c.icon);
     li.querySelector(".desc div:first-child").textContent = it.note || it.who || it.holder || (it.bank ? "Chuyển khoản " + it.bank : c.label);
     li.querySelector(".desc div:last-child").textContent = pad(t.getHours())+":"+pad(t.getMinutes()) + " · " + (it.bank ? (it.who && it.note && it.note !== it.who ? it.who + " · " : "") + it.bank : c.label);
@@ -4565,6 +4663,17 @@ function startNgay50k(){
   function moveDayRow(mv){
     const li = document.createElement("li"); li.className = "item move";
     li.innerHTML = '<span class="cat" aria-hidden="true"></span><div class="desc"><div></div><div></div></div><span class="amt num"></span>';
+    /* v201: vuốt để xoá trả thẻ / chuyển ví / lần vay, trả nợ (như nút Xoá trong bảng sửa của từng loại) */
+    { const amtS = fmt(Math.abs(mv.amt)), o = mv.o;
+      const del = mv.kind === "pay" ? () => { state.cardPay = (state.cardPay || []).filter(p => p.id !== o.id); }
+        : mv.kind === "xfer" ? () => { state.xfer = (state.xfer || []).filter(x => x.id !== o.id); }
+        : mv.kind === "loan" ? () => {
+            if(mv.sub === "base") state.loans = state.loans.filter(x => x.id !== o.id);
+            else if(mv.sub === "draw") o.draws = (o.draws || []).filter(x => x.id !== mv.rec.id);
+            else o.payments = (o.payments || []).filter(x => x.id !== mv.rec.id);
+          } : null;
+      if(del) swipeDel(li, { name:mv.name, amt:amtS, del, after:mv.kind === "pay" && typeof renderCards === "function" ? renderCards : null,
+        warn: mv.kind === "loan" && mv.sub === "base" ? "Xoá dòng này là xoá cả khoản vay với " + (o.who || "người này") + ", gồm mọi lần vay thêm và trả nợ." : "" }); }
     const d = new Date(mv.t);
     setIcon(li.querySelector(".cat"), mv.icon);
     li.querySelector(".desc div:first-child").textContent = mv.name;
@@ -4594,6 +4703,8 @@ function startNgay50k(){
     const c = tagOf(it.cat), t = new Date(it.t || 0), nm = cardName(it.cardId);
     const li = document.createElement("li"); li.className = "item card-it";
     li.innerHTML = '<span class="cat" aria-hidden="true"></span><div class="desc"><div></div><div></div></div><span class="amt num"></span>';
+    swipeDel(li, { name:(it.where || c.label) + (nm ? " (thẻ " + nm.replace(/^thẻ\s*/i, "") + ")" : ""), amt:"−" + fmt(it.amt), after:() => { if(typeof renderCards === "function") renderCards(); },   /* v201 */
+      del:() => { const f = findCardTx(it.id, dk); if(f){ state.cardTx[f.day] = (state.cardTx[f.day] || []).filter(x => x.id !== it.id); if(!state.cardTx[f.day].length) delete state.cardTx[f.day]; } } });
     setIcon(li.querySelector(".cat"), c.icon);
     li.querySelector(".desc div:first-child").textContent = it.where || c.label;
     li.querySelector(".desc div:last-child").textContent = pad(t.getHours()) + ":" + pad(t.getMinutes()) + " · " + c.label;
@@ -4610,6 +4721,7 @@ function startNgay50k(){
     const c = INC.find(x => x.id === it.cat) || INC[INC.length - 1], t = new Date(it.t || 0);
     const li = document.createElement("li"); li.className = "item inc-it";
     li.innerHTML = '<span class="cat" aria-hidden="true"></span><div class="desc"><div></div><div></div></div><span class="amt num"></span>';
+    swipeDel(li, { title:"Xoá khoản thu này?", name:it.note || c.label, amt:"+" + fmt(it.amt), del:() => delDayItem(it.id, dk, "in") });   /* v201 */
     setIcon(li.querySelector(".cat"), c.icon);
     li.querySelector(".desc div:first-child").textContent = it.note || c.label;
     li.querySelector(".desc div:last-child").textContent = (untimed(it.t || 0) ? "" : pad(t.getHours()) + ":" + pad(t.getMinutes()) + " · ") + c.label;
@@ -9907,6 +10019,8 @@ function startNgay50k(){
     const li = document.createElement("li"); li.className = "item tap"; li.tabIndex = 0; li.setAttribute("role","button");
     li.setAttribute("aria-label", "Sửa khoản thẻ " + (it.where || "") + " " + fmt(it.amt));
     li.innerHTML = '<div class="desc"><div></div><div></div></div><span class="amt num"></span><button class="del" aria-label="Xoá khoản này">✕</button>';
+    swipeDel(li, { name:it.where || "Chi bằng thẻ", amt:"−" + fmt(it.amt), after:() => renderCards(),   /* v201 */
+      del:() => { state.cardTx[day] = (state.cardTx[day] || []).filter(x => x.id !== it.id); if(!state.cardTx[day].length) delete state.cardTx[day]; } });
     li.querySelector(".desc div:first-child").textContent = (it.where || "Chi bằng thẻ") + (it.ph && it.ph.length ? " 📎" : "");
     const t = new Date(it.t || 0);
     const bits = [];
