@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v198";
+  var K = "ngay50k:errlog", VER = "v199";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -3048,7 +3048,7 @@ li.txg > details.txd > ul{margin:0 !important}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v198</p>
+      <p class="sync" id="appVersion">Phiên bản v199</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3588,11 +3588,12 @@ li.txg > details.txd > ul{margin:0 !important}
 <input type="file" id="phFile" accept="image/*" hidden>
 <div class="ph-view" id="phView" role="dialog" aria-modal="true" aria-label="Ảnh hoá đơn" hidden><img id="phImg" alt="Ảnh hoá đơn"><div class="ph-bar"><button type="button" id="phDel">Bỏ ảnh này</button><button type="button" id="phClose">Đóng</button></div></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=198"></script>
-<script src="thu-vien-cau.js?v=198"></script>
-<script src="quy-tac.js?v=198"></script>
-<script src="native.js?v=198"></script>
-<script src="lock.js?v=198"></script>
+<script src="parse-vi.js?v=199"></script>
+<script src="thu-vien-cau.js?v=199"></script>
+<script src="quy-tac.js?v=199"></script>
+<script src="du-lieu.js?v=199"></script>
+<script src="native.js?v=199"></script>
+<script src="lock.js?v=199"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -3602,7 +3603,7 @@ li.txg > details.txd > ul{margin:0 !important}
    Khi bật khoá bằng mã PIN (lock.js): trong bộ nhớ là dữ liệu thường, lúc ghi xuống máy mới mã hoá ("enc1:…").
    Chưa mở khoá thì không ghi các khoá dữ liệu, chỉ ghi được thông tin khoá "ngay50k:lock". */
 window.N50K = (function(){
-  var DB_NAME = "ngay50k", STORE = "kv", MAIN = "ngay50k:v1", LOCK = "ngay50k:lock", KEYS = [MAIN, "ngay50k:beforeImport", "ngay50k:chat", "ngay50k:ai", "ngay50k:tbRaw", "ngay50k:notifSeen", "ngay50k:relayUrl", "ngay50k:relayKey", "ngay50k:photos", LOCK];   /* v166: thêm danh sách giao dịch đã hiện, địa chỉ trạm, mã bí mật (trước nằm thường trong localStorage); lần mở đầu tự chuyển */
+  var DB_NAME = "ngay50k", STORE = "kv", MAIN = "ngay50k:v1", LOCK = "ngay50k:lock", KEYS = [MAIN, "ngay50k:beforeImport", "ngay50k:chat", "ngay50k:ai", "ngay50k:tbRaw", "ngay50k:notifSeen", "ngay50k:relayUrl", "ngay50k:relayKey", "ngay50k:photos", "ngay50k:v2", LOCK];   /* v166: thêm danh sách giao dịch đã hiện, địa chỉ trạm, mã bí mật (trước nằm thường trong localStorage); lần mở đầu tự chuyển */
   var mem = {}, sizes = {}, gen = {}, db = null, mode = "ls", chan = null, dirty = {}, writing = null;
   var why = "", trying = null, lastTry = 0, codec = null, unlocked = false;
   function isEnc(k){ return k !== LOCK; }
@@ -3778,7 +3779,7 @@ window.N50K = (function(){
     for(var i = 0; i < KEYS.length; i++){
       var k = KEYS[i], g0 = gen[k] || 0, inDb = await idbGet(k), inLs = lsGet(k), val = inDb;
       if(inLs != null){
-        if(inDb == null || (k === MAIN && updatedOf(inLs) > updatedOf(inDb))){ await idbPut(k, inLs); val = inLs; }
+        if(inDb == null || ((k === MAIN || k === "ngay50k:v2") && updatedOf(inLs) > updatedOf(inDb))){ await idbPut(k, inLs); val = inLs; }
         if(await idbGet(k) === val) lsDel(k);
         else throw new Error("verify failed");
       }
@@ -3852,7 +3853,7 @@ function startNgay50k(){
     "970439":"Public Bank","970410":"Standard Chartered","970446":"Co-op Bank","963388":"Timo",
     "546034":"CAKE by VPBank","546035":"Ubank by VPBank","971005":"Viettel Money","971011":"VNPT Money"
   };
-  const LS_KEY = "ngay50k:v1";
+  const LS_KEY = "ngay50k:v2", OLD_KEY = "ngay50k:v1";   /* v199: schema 2 nằm ở khoá mới; khoá cũ giữ nguyên làm bản dự phòng (xem loadLocal) */
   const WD = ["CN","T2","T3","T4","T5","T6","T7"];
 
   /* ---------- state ---------- */
@@ -3983,12 +3984,46 @@ function startNgay50k(){
       thuvien: Array.isArray(s.thuvien) ? s.thuvien.filter(r => r && r.id && typeof r.k === "string") : []
     };  /* caps: giữ lại cho dữ liệu cũ, không còn dùng */
   }
+  /* v199 – schema 2: trên máy và trong file sao lưu, dữ liệu lưu theo cấu trúc mới (du-lieu.js, N50KData):
+     mọi biến động tiền chung một bảng tx. Trong bộ nhớ vẫn là dạng cũ; chỉ đổi lúc đọc lên và lúc ghi xuống. */
+  const encodeState = st => JSON.stringify(N50KData.toV2(st));
+  const decodeState = obj => normalize(N50KData.decode(obj));
+  /* Vì sao khoá mới: một trang bản cũ (v198, mở từ bộ nhớ đệm lúc mất mạng, hoặc một tab còn mở trên máy tính) đọc schema 2
+     sẽ thấy sổ trống, ghi thêm một khoản là đè mất hết. Bản cũ chỉ biết khoá "ngay50k:v1" nên nó chỉ thấy bản trước khi chuyển;
+     nó có ghi gì vào đó thì lần mở sau bản này gộp vào (mergeStates), không mất bên nào. Khoá cũ tự xoá sau 60 ngày. */
+  const V1AT_KEY = "ngay50k:v1At", OLD_DAYS = 60;
+  /* bản cũ mở ra tự ghi lại các kỳ định kỳ (mã mới) mà bản này đã ghi: sau khi gộp, mỗi khoản định kỳ chỉ giữ một khoản cho mỗi tháng */
+  function dedupeRecur(st){
+    const seen = new Set(), now = Date.now();
+    [st.days, st.cardTx].forEach(bag => Object.keys(bag).sort().forEach(k => {
+      bag[k] = bag[k].filter(it => {
+        if(!it.rc) return true;
+        const key = it.rc + "|" + k.slice(0, 7);
+        if(!seen.has(key)){ seen.add(key); return true; }
+        if(it.id) st.deleted[it.id] = now;
+        return false;
+      });
+      if(!bag[k].length) delete bag[k];
+    }));
+    return st;
+  }
   function loadLocal(){
-    try{ const raw = N50K.get(LS_KEY); if(raw) state = normalize(JSON.parse(raw)); }catch(e){}
+    try{
+      const raw = N50K.get(LS_KEY), old = N50K.get(OLD_KEY);
+      let st = raw ? decodeState(JSON.parse(raw)) : null, write = false;
+      if(old){
+        const o = JSON.parse(old);
+        if(!st){ st = decodeState(o); write = true; if(!lsGet(V1AT_KEY)) lsSet(V1AT_KEY, String(Date.now())); }
+        else if((Number(o.updated) || 0) > (Number(st.updated) || 0)){ st = dedupeRecur(mergeStates(st, decodeState(o))); write = true; }
+        else if(N50K.isOpen() && Date.now() - (Number(lsGet(V1AT_KEY)) || Date.now()) > OLD_DAYS * 86400000) N50K.del(OLD_KEY);
+      }
+      if(st) state = st;
+      if(write && N50K.isOpen()) N50K.set(LS_KEY, encodeState(state));
+    }catch(e){}
     sigs = collectSigs(state);
   }
   /* ---------- change tracking: lets two devices merge without losing edits or reviving deletions ---------- */
-  function sigOf(o, isLoan){ const c = Object.assign({}, o); delete c.m; if(isLoan) delete c.payments; return JSON.stringify(c); }
+  function sigOf(o, isLoan){ const c = Object.assign({}, o); delete c.m; if(isLoan){ delete c.payments; delete c.draws; } return JSON.stringify(c); }   /* v199: lần vay thêm cũng là bản ghi riêng như lần trả */
   function eachRecord(st, fn){
     for(const k in st.days) (st.days[k]||[]).forEach(it => fn(it.id, it, false));
     for(const k in st.income) (st.income[k]||[]).forEach(it => fn(it.id, it, false));
@@ -3996,7 +4031,7 @@ function startNgay50k(){
     (st.tags||[]).forEach(t => fn(t.id, t, false));
     (st.cards||[]).forEach(c => fn(c.id, c, false));
     for(const k in (st.cardTx||{})) (st.cardTx[k]||[]).forEach(it => fn(it.id, it, false));
-    st.loans.forEach(l => { fn(l.id, l, true); (l.payments||[]).forEach(p => fn(p.id, p, false)); });
+    st.loans.forEach(l => { fn(l.id, l, true); (l.payments||[]).forEach(p => fn(p.id, p, false)); (l.draws||[]).forEach(p => fn(p.id, p, false)); });
     (st.recur||[]).forEach(r => fn(r.id, r, false));
     (st.bals||[]).forEach(b => fn(b.id, b, false));
     (st.cardPay||[]).forEach(p => fn(p.id, p, false));
@@ -4031,7 +4066,7 @@ function startNgay50k(){
     /* không xoá dữ liệu cũ: so sánh năm nay với năm ngoái là thứ đáng giá nhất của một sổ chi tiêu */
     track();
     state.updated = Date.now();
-    N50K.set(LS_KEY, JSON.stringify(state));
+    N50K.set(LS_KEY, encodeState(state));
     clearTimeout(persist.gc); persist.gc = setTimeout(() => { try{ phGc(); }catch(e){} }, 2000);   /* v169: dọn ảnh hoá đơn của khoản đã xoá */
   }
   /* ---------- số dư ví ----------
@@ -4893,7 +4928,7 @@ function startNgay50k(){
   /* tự ghi các kỳ đã tới hạn, tối đa lùi 3 tháng, không ghi trùng */
   function runRecur(){
     const now = new Date(), tk = todayKey();
-    let made = 0;
+    let made = 0, dirty = false;
     recurList().forEach(r => {
       if(!r.amt || !r.day) return;
       monthsBack(3).forEach(m => {
@@ -4903,8 +4938,11 @@ function startNgay50k(){
         if(key > tk) return;
         if(r.from && key < r.from) return;
         const card = r.card && cardOf(r.card) ? r.card : "";
-        const bucket = card ? state.cardTx : state.days;
-        if((bucket[key] || []).some(x => x.rc === r.id)) return;
+        /* v199: nhớ các kỳ đã ghi (r.made = ["2026-10", …]). Trước đây chỉ xem trong ngày đó có khoản mang rc chưa,
+           nên xoá hẳn khoản định kỳ (hoặc đổi ngày, đổi sang thẻ) thì lần mở sau nó được ghi lại. */
+        const ym = key.slice(0, 7), madeL = Array.isArray(r.made) ? r.made : (r.made = []);
+        if(madeL.includes(ym)) return;
+        if(recurHas(r.id, ym)){ madeL.push(ym); trimMade(r); dirty = true; return; }
         const d = new Date(key + "T09:00:00");
         const t = isNaN(d) ? Date.now() : d.getTime();
         if(card){
@@ -4918,12 +4956,18 @@ function startNgay50k(){
             fx:1, rc:r.id, t
           });
         }
+        madeL.push(ym); trimMade(r);
         made++;
       });
     });
-    if(made){ persist(); }
+    if(made || dirty){ persist(); }
     return made;
   }
+  function recurHas(rid, ym){
+    for(const bag of [state.days, state.cardTx]) for(const k in bag) if(k.slice(0, 7) === ym && (bag[k] || []).some(x => x.rc === rid)) return true;
+    return false;
+  }
+  function trimMade(r){ r.made.sort(); if(r.made.length > 6) r.made.splice(0, r.made.length - 6); }
   function renderRecur(){
     const box = $("recurList"); if(!box) return;
     box.innerHTML = "";
@@ -10640,7 +10684,7 @@ function startNgay50k(){
 
   function offerImport(obj, label){
     if(!obj || obj.app !== "ngay50k" || !obj.data || typeof obj.data !== "object"){ showSyncErr("Đây không phải bản sao lưu của Tiêu Gọn."); return; }
-    const incoming = normalize(obj.data);
+    const incoming = decodeState(obj.data);   /* v199: file dạng cũ hay schema 2 đều nhập được */
     pending = { incoming, merged: mergeStates(state, incoming), settings: hasSetBackup(obj.settings) ? obj.settings : null };
     const when = obj.exportedAt ? fmtStamp(obj.exportedAt) : "";
     $("importInfo").textContent = (label || "File") + (when ? " xuất lúc " + when : "") + ", gồm " + summarize(incoming) + (pending.settings ? ", kèm cài đặt" + (pending.settings.ai ? " và khoá API AI" : "") + (pending.settings.ls && pending.settings.ls["ngay50k:relayUrl"] ? ", Tự ghi từ thông báo" : "") : "") + ".";
@@ -11679,18 +11723,29 @@ function startNgay50k(){
     const t = String(v == null ? "" : v);
     return /[",;\n]/.test(t) ? '"' + t.replace(/"/g, '""') + '"' : t;
   }
+  /* v199: dựng từ lớp đọc thống nhất (N50KData.allTx) nên có đủ mọi loại khoản: chi, chi thẻ, thu, chuyển ví,
+     trả thẻ, vay / cho vay / vay thêm / trả nợ; thêm cột giờ, ví hoặc thẻ, người */
   function buildCSV(){
-    const rows = [["Ngày","Loại","Số tiền","Nhóm","Nội dung","Thẻ","Định kỳ"]];
-    const push = (day, loai, amt, nhom, nd, the, dk) => rows.push([day, loai, amt, nhom, nd, the, dk]);
-    for(const k in state.days) (state.days[k]||[]).forEach(it =>
-      push(k, "Chi", it.amt, tagOf(it.cat).label, it.note || "", "", isFx(it) ? "x" : ""));
-    for(const k in state.income) (state.income[k]||[]).forEach(it =>
-      push(k, "Thu", it.amt, ((INC.find(x => x.id === it.cat) || INC[4]).label), it.note || "", "", ""));
-    for(const k in state.cardTx) (state.cardTx[k]||[]).forEach(it => {
-      const c = cardOf(it.cardId);
-      push(k, "Chi thẻ", it.amt, it.cat ? tagOf(it.cat).label : "", it.where || "", c ? c.name : "", "");
+    const rows = [["Ngày","Giờ","Loại","Số tiền","Ví / Thẻ","Nhóm","Nội dung","Người","Định kỳ"]];
+    const accName = id => { if(id == null || id === "") return ""; const c = cardOf(id); return c ? c.name : walletName(id); };
+    const loanOf = id => state.loans.find(l => l.id === id) || {};
+    const LOAI = { out:"Chi", card:"Chi thẻ", in:"Thu", xfer:"Chuyển ví", cardpay:"Trả thẻ" };
+    const LOAN = { loan:["Vay","Cho vay"], draw:["Vay thêm","Cho vay thêm"], repay:["Trả nợ","Được trả"] };
+    const hhmm = t => { if(!t) return ""; const d = new Date(t); return untimed(t) ? "" : pad(d.getHours()) + ":" + pad(d.getMinutes()); };
+    N50KData.allTx(state).forEach(r => {
+      const l = r.loan ? loanOf(r.loan) : null, lend = l && l.type === "lend";
+      const loai = LOAN[r.type] ? LOAN[r.type][lend ? 1 : 0] : (LOAI[r.type] || r.type);
+      let vi = accName(r.acc);
+      if(r.type === "xfer" || r.type === "cardpay") vi = accName(r.acc) + " → " + accName(r.to);
+      if(l) vi = "";
+      let nhom = "";
+      if(typeof r.tag === "string" && r.tag){
+        nhom = r.tag.indexOf("in:") === 0 ? ((INC.find(x => x.id === r.tag.slice(3)) || INC[INC.length - 1]).label) : tagOf(r.tag).label;
+      }
+      const nguoi = l ? (l.who || "") : (r.who || "");
+      rows.push([r.d || "", hhmm(r.t), loai, +r.amt || 0, vi, nhom, r.note || (l && r.type === "loan" ? l.note || "" : ""), nguoi, isFx(r) ? "x" : ""]);
     });
-    const body = rows.slice(0, 1).concat(rows.slice(1).sort((a, b) => a[0] < b[0] ? 1 : a[0] > b[0] ? -1 : 0));
+    const body = rows.slice(0, 1).concat(rows.slice(1).sort((a, b) => a[0] < b[0] ? 1 : a[0] > b[0] ? -1 : a[1] < b[1] ? 1 : a[1] > b[1] ? -1 : 0));
     /* dấu chấm phẩy để Excel tiếng Việt tách cột đúng, BOM để không lỗi dấu */
     return "\ufeff" + body.map(r => r.map(csvCell).join(";")).join("\r\n");
   }
@@ -11762,7 +11817,7 @@ function startNgay50k(){
         $("bkPwOn").checked = true; $("bkPwBox").hidden = false; openSyncPw(); return null;
       }
     }
-    const plain = JSON.stringify({ app:"ngay50k", format:1, exportedAt:new Date().toISOString(), data:state, settings:backupSettings() });
+    const plain = JSON.stringify({ app:"ngay50k", format:2, exportedAt:new Date().toISOString(), data:N50KData.toV2(state), settings:backupSettings() });   /* v199: data theo schema 2 */
     if(!$("bkPwOn").checked) return plain;
     const pw = $("bkPw").value;
     if(pw.length < 8){ showSyncErr("Mật khẩu file cần ít nhất 8 ký tự."); openSyncPw(); return null; }
@@ -11829,6 +11884,7 @@ function startNgay50k(){
       if(!alive(base)) return;
       const l = JSON.parse(JSON.stringify(base));
       l.payments = byId(la && la.payments, lb && lb.payments);
+      l.draws = byId(la && la.draws, lb && lb.draws).sort((x, y) => (x.t || 0) - (y.t || 0));   /* v199: trước đây lấy nguyên draws của một bên → hai máy cùng vay thêm thì mất một lần */
       loans.push(l);
     });
     loans.sort((x, y) => (x.t || 0) - (y.t || 0));
@@ -11915,12 +11971,12 @@ function startNgay50k(){
   $("impPwCancel").onclick = () => { encPending = null; $("impPwCard").hidden = true; $("impPw").value = ""; };
   let undoSettings = null;
   function applyImport(next, label, full){
-    N50K.set(UNDO_KEY, JSON.stringify(state));
+    N50K.set(UNDO_KEY, encodeState(state));
     undoSettings = null;
     if(pending && pending.settings){ undoSettings = backupSettings(); restoreSettings(pending.settings, full); }
     const d = diffCount(state, next);
     state = next; sigs = collectSigs(state); state.updated = Date.now();
-    N50K.set(LS_KEY, JSON.stringify(state));
+    N50K.set(LS_KEY, encodeState(state));
     pending = null; $("importCard").hidden = true;
     viewDay = null; renderAll();
     showSyncOk("✓ " + label + ": " + diffText(d) + ".<button class=\"undo-btn\" id=\"undoImport\">Hoàn tác</button>");
@@ -11929,8 +11985,8 @@ function startNgay50k(){
   function undoImport(){
     const raw = N50K.get(UNDO_KEY); if(!raw) return;
     try{
-      state = normalize(JSON.parse(raw)); sigs = collectSigs(state);
-      N50K.set(LS_KEY, JSON.stringify(state));
+      state = decodeState(JSON.parse(raw)); sigs = collectSigs(state);
+      N50K.set(LS_KEY, encodeState(state));
       N50K.del(UNDO_KEY);
       if(undoSettings){ if(!undoSettings.ai) N50K.del("ngay50k:ai"); if(!undoSettings.chat) N50K.del("ngay50k:chat"); restoreSettings(undoSettings, true); undoSettings = null; }
       renderAll(); showSyncOk("✓ Đã hoàn tác, dữ liệu trở lại như trước khi nhập.");
@@ -12010,14 +12066,14 @@ function startNgay50k(){
     try{
       Object.keys(localStorage).filter(k => k.indexOf("ngay50k:") === 0).forEach(k => localStorage.removeItem(k));
     }catch(e){}
-    N50K.del(LS_KEY); N50K.del(UNDO_KEY); N50K.del("ngay50k:chat"); N50K.del("ngay50k:ai"); N50K.del("ngay50k:tbRaw"); N50K.del("ngay50k:photos"); N50KLock.forget(); chat = { msgs:[] }; renderChat();
+    N50K.del(LS_KEY); N50K.del(UNDO_KEY); N50K.del("ngay50k:chat"); N50K.del("ngay50k:ai"); N50K.del("ngay50k:tbRaw"); N50K.del("ngay50k:photos"); N50K.del(OLD_KEY); N50KLock.forget(); chat = { msgs:[] }; renderChat();
     state = normalize({}); sigs = collectSigs(state); pending = null;
     viewDay = null; $("importCard").hidden = true; $("wipeCard").hidden = true;
     $("syncMsg").hidden = true; $("syncErr").hidden = true;
     renderAll(); flash("wipeMsg", "✓ Đã xoá toàn bộ dữ liệu trên máy này.");
   };
   /* app mở ở hai cửa sổ cùng lúc: cửa sổ kia lưu thì cửa sổ này cập nhật theo */
-  N50K.onRemote = k => { if(k === LS_KEY){ loadLocal(); renderAll(); } };
+  N50K.onRemote = k => { if(k === LS_KEY || k === OLD_KEY){ loadLocal(); renderAll(); } };   /* v199: tab bản cũ ghi khoá cũ → gộp vào */
   N50K.onError = msg => showSyncErr(msg);
   N50K.onMode = () => { renderStorage(); if(settingsOpen) measureCache(); };
   $("idbRetry").onclick = async () => {
@@ -12150,7 +12206,7 @@ function startNgay50k(){
     for(const k in state.cardTx) state.cardTx[k].forEach(it => { if(isDemo({ id:it.cardId })) it.cardId = null; });
     persist();
     for(const k in state.deleted) if(k.indexOf(DEMO) === 0) delete state.deleted[k];
-    N50K.set(LS_KEY, JSON.stringify(state));
+    N50K.set(LS_KEY, encodeState(state));
     lsSet(DEMO_KEY, "0");
   }
   function renderDemoBar(){ $("demoBar").hidden = lsGet(DEMO_KEY) !== "1"; document.body.classList.toggle("has-demo", lsGet(DEMO_KEY) === "1"); }

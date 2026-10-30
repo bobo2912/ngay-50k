@@ -1,6 +1,6 @@
 /* Tiêu Gọn – bộ nhớ đệm để app mở được khi không có mạng.
    Mỗi lần sửa app, hãy tăng số phiên bản dưới đây (v1 -> v2 ...) để máy nhận bản mới. */
-const V = "198";                                   /* tăng cùng lúc với ?v= trong index.html (xem README) */
+const V = "199";                                   /* tăng cùng lúc với ?v= trong index.html (xem README) */
 const VERSION = "ngay50k-v" + V;
 
 /* Trang chính và các file script luôn đi cùng một bản: script có đuôi ?v=<số bản>, và chỉ lấy từ đúng bộ nhớ đệm
@@ -16,6 +16,7 @@ const ASSETS = [
   "./lock.js?v=" + V,
   "./thu-vien-cau.js?v=" + V,
   "./quy-tac.js?v=" + V,
+  "./du-lieu.js?v=" + V,
   "./icons/icon-192.png",
   "./icons/icon-512.png",
   "./icons/apple-touch-icon.png",

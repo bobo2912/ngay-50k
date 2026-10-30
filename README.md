@@ -56,7 +56,7 @@ Chữ giải thích trên giao diện được giữ ở mức tối thiểu; ph
 
 ## Dữ liệu nằm ở đâu
 
-Dữ liệu chính nằm trong **IndexedDB** của trình duyệt: cơ sở dữ liệu `ngay50k` (phiên bản 2), bảng `kv`, khoá `ngay50k:v1` (bản để hoàn tác lần nhập file nằm ở khoá `ngay50k:beforeImport`). Giá trị là chuỗi JSON, giống hệt nội dung file sao lưu. Vài cài đặt nhỏ (giao diện, kiểu quét QR, lần sao lưu gần nhất) vẫn để trong `localStorage`. Không có API, không có cookie, không có thống kê truy cập.
+Dữ liệu chính nằm trong **IndexedDB** của trình duyệt: cơ sở dữ liệu `ngay50k` (phiên bản 2), bảng `kv`, khoá `ngay50k:v1` (bản để hoàn tác lần nhập file nằm ở khoá `ngay50k:beforeImport`). Giá trị là chuỗi JSON theo **schema 2** (từ v199, xem đầu file `du-lieu.js`): mọi biến động tiền nằm chung bảng `tx`, ví và thẻ ở `accounts`, khoản vay ở `loans` + `tx`. Phần `data` của file sao lưu có cùng cấu trúc. Trong bộ nhớ app vẫn dùng dạng cũ (`days`, `income`, `cardTx`…); `N50KData.fromV2` / `toV2` đổi lúc đọc lên và lúc ghi xuống. Từ v199 dữ liệu chính nằm ở khoá `ngay50k:v2`. Khoá cũ `ngay50k:v1` (dạng cũ, chụp lúc chuyển) được giữ 60 ngày rồi tự xoá. Trang bản cũ chỉ đọc và ghi khoá cũ; có gì mới hơn ở đó thì `loadLocal` gộp vào (`mergeStates` + `dedupeRecur`). Vài cài đặt nhỏ (giao diện, kiểu quét QR, lần sao lưu gần nhất) vẫn để trong `localStorage`. Không có API, không có cookie, không có thống kê truy cập.
 
 Khi mở, app đọc hết dữ liệu vào bộ nhớ một lần (`N50K.ready`), rồi mới chạy phần còn lại. Mỗi lần lưu được ghi xuống IndexedDB ngay; các lần ghi dồn dập được gộp lại. Từ bản v46 trở về trước dữ liệu nằm trong `localStorage`; lần mở đầu tiên ở v47 tự chép sang, đọc lại để kiểm tra rồi xoá bản cũ. IndexedDB chưa mở xong sau 4 giây thì app chạy luôn bằng `localStorage` nhưng vẫn chờ tiếp; mở được lúc nào thì chuyển sang lúc đó (`adopt`), lấy bản có `updated` mới hơn. Mở lỗi thì app tự thử lại mỗi lần quay lại app, và trang Dung lượng ghi lý do (`N50K.why()`) kèm nút thử lại (`N50K.retry()`).
 
@@ -84,6 +84,8 @@ lock.js                 khoá app bằng mã PIN, mã hoá dữ liệu, Face ID 
 native.js               nối với bản iOS đóng gói (Face ID gốc, Phím tắt, widget, thông báo, chia sẻ); trên web không làm gì
 ios-app/                bản iOS (Capacitor + Swift: plugin, tác vụ Phím tắt, widget), xem ios-app/README.md
 parse-vi.js             bộ hiểu câu tiếng Việt cho màn Trò chuyện (chạy trên máy)
+du-lieu.js              cấu trúc dữ liệu schema 2: đổi qua lại dạng lưu / dạng trong bộ nhớ, lớp đọc thống nhất allTx
+tests-du-lieu.js        bài thử khứ hồi schema 2: node tests-du-lieu.js
 quy-tac.js              Thư viện nội dung: khớp quy tắc làm gọn thông báo ngân hàng, giải thích cú pháp, gợi ý (không chứa quy tắc của ai)
 tests-quy-tac.js        bài thử Thư viện nội dung (dữ liệu giả): node tests-quy-tac.js
 worker/                 trạm trung chuyển thông báo trên Cloudflare (Durable Object, không lưu trữ), xem worker/README.md
@@ -112,7 +114,7 @@ App không tải gì từ bên ngoài khi chạy. Riêng chức năng đọc ch�
 1. Sửa code.
 2. Tăng số phiên bản ở **ba chỗ**, cùng một số:
    - `sw.js` → `const V = "NN";`
-   - `index.html` → các thẻ `<script src="…?v=NN">` (parse-vi, thu-vien-cau, quy-tac, native, lock), và dòng `Phiên bản vNN` trong phần Cài đặt (cùng `VER` trong đoạn lưới an toàn đầu trang).
+   - `index.html` → các thẻ `<script src="…?v=NN">` (parse-vi, thu-vien-cau, quy-tac, du-lieu, native, lock), và dòng `Phiên bản vNN` trong phần Cài đặt (cùng `VER` trong đoạn lưới an toàn đầu trang).
    - Lệnh gợi ý: `sed -i 's/const V = "OLD"/const V = "NN"/' sw.js && sed -i 's/?v=OLD/?v=NN/g; s/Phiên bản vOLD/Phiên bản vNN/; s/VER = "vOLD"/VER = "vNN"/' index.html`
 3. Ghi lại thay đổi vào `IN-THIS-VERSION.md`.
 4. Đẩy lên GitHub.

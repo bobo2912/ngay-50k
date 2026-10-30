@@ -16,7 +16,7 @@ const www = join(app, "www");
 const nm = join(app, "node_modules");
 
 const WEB_FILES = ["index.html", "manifest.webmanifest", "privacy.html", "sw.js",
-  "lock.js", "native.js", "parse-vi.js", "thu-vien-cau.js", "quy-tac.js"];
+  "lock.js", "native.js", "parse-vi.js", "thu-vien-cau.js", "quy-tac.js", "du-lieu.js"];
 const WEB_DIRS = ["fonts", "icons"];
 
 rmSync(www, { recursive: true, force: true });

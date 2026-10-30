@@ -1,6 +1,21 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v198, ngày 29/10/2026
+**Phiên bản hiện tại:** v199, ngày 30/10/2026
+
+---
+
+## Có gì mới trong v199 (so với v198)
+
+- **Dữ liệu lưu theo cấu trúc mới (schema 2)**, trên máy và trong file sao lưu (`du-lieu.js`, `N50KData`):
+  - Mọi biến động tiền nằm chung **một bảng `tx`**, cùng một bộ trường: `type` (out, card, in, xfer, cardpay, loan, draw, repay), `amt`, `d`, `t`, `acc` (ví hoặc thẻ), `to`, `tag`, `note`, `loan`…
+  - Ví và thẻ tín dụng gộp vào `accounts`. Khoản vay chỉ giữ phần đầu, còn tiền gốc, vay thêm và trả nợ là các dòng `tx` có `loan`. Tag thu có tiền tố `in:` (trước đây `cho` vừa là Đi chợ vừa là Được cho).
+  - Trong bộ nhớ app vẫn dùng dạng cũ. Chỉ đổi lúc đọc lên và lúc ghi xuống; đổi qua đổi lại không mất trường nào (bài thử `node tests-du-lieu.js`).
+  - **Lần đầu mở v199** tự chuyển. Dữ liệu mới nằm ở khoá `ngay50k:v2`; khoá cũ `ngay50k:v1` giữ nguyên 60 ngày làm bản dự phòng rồi tự xoá.
+  - **Vì sao khoá mới:** trang bản cũ (mở từ bộ nhớ đệm lúc mất mạng, hoặc tab còn mở trên máy tính) chỉ đọc khoá cũ, nên không bao giờ thấy sổ trống và ghi đè. Nếu nó ghi thêm gì vào khoá cũ, lần mở sau bản mới gộp vào như gộp hai máy, đồng thời bỏ khoản định kỳ bị ghi trùng kỳ.
+  - File sao lưu xuất ra giờ là `format:2`. File cũ (`format:1`) vẫn nhập được. Lưu ý: bản v198 trở về trước **không đọc được** file mới.
+- **Xuất CSV** dựng từ lớp đọc thống nhất (`N50KData.allTx`), nên có đủ mọi loại khoản (thêm chuyển ví, trả thẻ, vay / cho vay / vay thêm / trả nợ), cùng cột Giờ, Ví / Thẻ, Người.
+- **Lỗi:** gộp hai máy chỉ giữ lần **vay thêm** của một máy; giờ gộp theo từng lần như lần trả. Xoá một lần vay thêm cũng được ghi nhận để máy kia xoá theo.
+- **Lỗi:** xoá hẳn một khoản do **Khoản định kỳ** tạo (hoặc đổi ngày, đổi sang thẻ) thì lần mở sau nó bị ghi lại. Giờ mỗi khoản định kỳ nhớ các kỳ đã ghi (`made`).
 
 ---
 
