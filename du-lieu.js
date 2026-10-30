@@ -26,7 +26,7 @@
      loans:    [ { id, side:"borrow"|"lend", who, due, note, prepaid, t, m } ],   // chỉ phần đầu, tiền nằm ở tx
      balances: [ { id, acc, amt, t, book?, card?, m } ],                          // các lần đối chiếu số dư
      recur:    [ { id, name, amt, day, tag, acc, from, made, m } ],
-     tags, tagOff, contacts, learn, miss, thuvien, alias, aliasM, payKind, deleted
+     tags, tagOff, contacts, learn, miss, thuvien, alias, aliasM, payKind, askMem, deleted
    }
 */
 (function(root){
@@ -149,7 +149,7 @@
       accounts, tx, loans, balances, recur,
       tags: st.tags || [], tagOff: st.tagOff || {}, contacts: st.contacts || [],
       learn: st.learn || [], miss: st.miss || [], thuvien: st.thuvien || [],
-      alias: st.alias || {}, aliasM: st.aliasM || {}, payKind: st.payKind || {},
+      alias: st.alias || {}, aliasM: st.aliasM || {}, payKind: st.payKind || {}, askMem: st.askMem || {},
       deleted: st.deleted || {}
     };
     /* trường cũ không còn dùng: chỉ giữ khi còn dữ liệu */
@@ -166,7 +166,7 @@
       days:{}, income:{}, cardTx:{}, xfer:[], cardPay:[], loans:[], wallets:[], cards:[],
       tags: v.tags || [], tagOff: v.tagOff || {}, contacts: v.contacts || [],
       learn: v.learn || [], miss: v.miss || [], thuvien: v.thuvien || [],
-      alias: v.alias || {}, aliasM: v.aliasM || {}, payKind: v.payKind || {},
+      alias: v.alias || {}, aliasM: v.aliasM || {}, payKind: v.payKind || {}, askMem: v.askMem || {},
       deleted: v.deleted || {}, payees: v.payees || {}, caps: v.caps || {}
     };
     (Array.isArray(v.accounts) ? v.accounts : []).forEach(a => {

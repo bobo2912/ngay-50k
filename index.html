@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v199";
+  var K = "ngay50k:errlog", VER = "v200";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -1365,6 +1365,10 @@ body.kb #tab-chat .chat-sugg{display:none}
 .pcard.skip{opacity:.45}
 .pask{display:flex; flex-direction:column; gap:6px}
 .pask p{margin:2px 2px 0; font-size:.88rem; color:var(--muted)}
+.pask .pask-tip{display:block; margin:0 2px; font-size:.78rem; color:var(--muted)}
+.paskd{display:flex; flex-direction:column; gap:2px; margin:0 2px}
+.paskd p{margin:0; font-size:.84rem; color:var(--muted)}
+.paskd button{font:inherit; font-size:.84rem; color:var(--note); background:none; border:0; padding:0 0 0 4px; cursor:pointer; text-decoration:underline}
 .pask button{display:grid; grid-template-columns:28px 1fr; column-gap:8px; align-items:center; text-align:left; font:inherit; color:var(--ink); background:var(--field, #fff); border:1.5px solid var(--line); border-radius:12px; padding:9px 11px; cursor:pointer}
 .pask button span{grid-row:1 / 3; font-size:1.2rem; text-align:center}
 .pask button b{font-weight:700; font-size:.95rem}
@@ -3048,7 +3052,7 @@ li.txg > details.txd > ul{margin:0 !important}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v199</p>
+      <p class="sync" id="appVersion">Phiên bản v200</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3588,12 +3592,12 @@ li.txg > details.txd > ul{margin:0 !important}
 <input type="file" id="phFile" accept="image/*" hidden>
 <div class="ph-view" id="phView" role="dialog" aria-modal="true" aria-label="Ảnh hoá đơn" hidden><img id="phImg" alt="Ảnh hoá đơn"><div class="ph-bar"><button type="button" id="phDel">Bỏ ảnh này</button><button type="button" id="phClose">Đóng</button></div></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=199"></script>
-<script src="thu-vien-cau.js?v=199"></script>
-<script src="quy-tac.js?v=199"></script>
-<script src="du-lieu.js?v=199"></script>
-<script src="native.js?v=199"></script>
-<script src="lock.js?v=199"></script>
+<script src="parse-vi.js?v=200"></script>
+<script src="thu-vien-cau.js?v=200"></script>
+<script src="quy-tac.js?v=200"></script>
+<script src="du-lieu.js?v=200"></script>
+<script src="native.js?v=200"></script>
+<script src="lock.js?v=200"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -3978,6 +3982,7 @@ function startNgay50k(){
       miss: Array.isArray(s.miss) ? s.miss.filter(r => r && r.id && r.key) : [],
       /* v125: viết tắt bạn đã chọn ("hl" → "Highlands"); aliasM: lúc đặt, để gộp hai máy lấy bản mới hơn */
       alias: obj(s.alias), aliasM: obj(s.aliasM),
+      askMem: obj(s.askMem),     /* v200: lựa chọn đã trả lời ở thẻ hỏi lại, theo nhánh + người/loại ("chuyen_di:lan": "vay"), lần sau tự theo */
       payKind: obj(s.payKind),   /* v195: "Tèo trả …" của người này là tiền vào ("in") hay tiền ra ("out"), nhớ từ lần chọn trước */
       /* v158 – Thư viện nội dung (thay sheet ThuVien): quy tắc làm gọn nội dung thông báo ngân hàng, { id, k, r, tag?, off? }.
          Nằm trong dữ liệu chính: mã hoá khi bật PIN, đi theo file sao lưu, không bao giờ nằm trong mã nguồn */
@@ -5944,7 +5949,7 @@ function startNgay50k(){
     const use = {}, last = {}, from = keyOf(new Date(Date.now() - 60 * 86400000));
     for(const k in state.cardTx){ if(k < from) continue; (state.cardTx[k] || []).forEach(it => { const c = it.cardId; if(!c) return; use[c] = (use[c] || 0) + 1; last[c] = Math.max(last[c] || 0, it.t || 0); }); }
     const defaultCard = Object.keys(use).filter(id => (state.cards || []).some(c => c.id === id)).sort((a, b) => use[b] - use[a] || last[b] - last[a])[0] || (((state.cards || [])[0]) || {}).id || null;
-    return { now:new Date(), know:chatKnow(), alias:state.alias || {}, payKind:state.payKind || {}, defaultCard, tags:(state.tags || []).filter(t => t && t.id && t.label).map(t => ({ id:t.id, label:t.label })), cards:(state.cards || []).map(c => ({ id:c.id, name:c.name || "" })), loans,
+    return { now:new Date(), know:chatKnow(), alias:state.alias || {}, payKind:state.payKind || {}, askMem:state.askMem || {}, defaultCard, tags:(state.tags || []).filter(t => t && t.id && t.label).map(t => ({ id:t.id, label:t.label })), cards:(state.cards || []).map(c => ({ id:c.id, name:c.name || "" })), loans,
       wallets:(state.wallets || []).filter(w => !w.off).map(w => ({ id:w.id, name:w.name || "" })),
       history: text => { const k = String(text).trim().toLowerCase(); return recent[k] || ""; } };
   }
@@ -6846,6 +6851,7 @@ function startNgay50k(){
   function validate(it){
     if(!(it.amt > 0)) return "Thiếu số tiền";
     if(it.ask === "tra") return "Chọn tiền vào hay tiền ra ở trên";
+    if(it.ask) return "Chọn một cách hiểu ở trên";                     /* v200: thẻ đang hỏi lại */
     if((it.kind === "repay" || it.kind === "collect") && !it.loanId) return it.kind === "collect" ? "Chọn khoản cho vay được trả" : "Chọn khoản vay để trả";
     if((it.kind === "lend" || it.kind === "borrow") && !it.loanId && !String(it.who || "").trim()) return "Ghi tên người";
     if(it.kind === "card" && !(state.cards || []).length) return "Chưa có thẻ nào, thêm thẻ ở tab Ví → Thêm ví → Thẻ tín dụng";
@@ -6975,6 +6981,15 @@ function startNgay50k(){
         + '<button type="button" data-ask="in"><span>💰</span><b>' + who + ' trả tiền cho mình</b><small>Tiền vào · ghi khoản thu</small></button>'
         + '<button type="button" data-ask="out"><span>💸</span><b>Trả tiền cho ' + what + '</b><small>Tiền ra · ghi khoản chi</small></button></div>';
     }
+    /* v200: câu có nhiều cách hiểu (thư viện câu, phần G) → hỏi lại bằng nút; dòng ✓ / ↺ ghi lựa chọn đã chọn, kèm Chọn lại */
+    if(it.ask && it.ask !== "tra"){
+      const v = window.N50KLib && window.N50KLib.hoiLaiVe ? window.N50KLib.hoiLaiVe(it, askCtx()) : null;
+      if(v) html += '<div class="pask" role="group" aria-label="' + esc(v.ten) + '"><p>' + esc(v.hoi) + '</p>' + v.chon.map(o => '<button type="button" data-ask2="' + esc(o.id) + '"><span>' + esc(o.icon) + '</span><b>' + esc(o.nhan) + '</b>' + (o.phu ? '<small>' + esc(o.phu) + '</small>' : '') + '</button>').join("") + '<small class="pask-tip">Hoặc nhắn trả lời, vd “' + esc(((v.chon[1] || v.chon[0]).nhan.split(/ \/ |, /)[0]).replace(/^./, ch => ch.toLowerCase())) + '”</small></div>';
+    }
+    if((it.askLog || []).length && window.N50KLib && window.N50KLib.hoiLaiNhan){
+      const lg = it.askLog, cx = askCtx();
+      html += '<div class="paskd">' + lg.map((g, i) => '<p>' + (g.auto ? "↺ Theo lần trước: " : "✓ ") + esc(window.N50KLib.hoiLaiNhan(g, cx)) + (i === lg.length - 1 ? ' <button type="button" data-reask>Chọn lại</button>' : "") + "</p>").join("") + "</div>";
+    }
     if(it.kind === "out" || it.kind === "card" || it.kind === "in") html += '<div class="prow"><input class="pn" placeholder="Nội dung" aria-label="Nội dung" value="' + esc(it.note) + '"></div>';
     if(it.kind === "lend" || it.kind === "borrow"){
       const l = loansFor(it.kind);
@@ -6997,8 +7012,10 @@ function startNgay50k(){
     const q = s => el.querySelector(s), warn = q(".pwarn"), okB = q(".ok");
     const check = () => { const w = validate(it); warn.textContent = w; warn.hidden = !w; okB.disabled = !!w; };
     el.querySelectorAll("[data-ask]").forEach(b => b.onclick = () => askPick(it, b.dataset.ask));
+    el.querySelectorAll("[data-ask2]").forEach(b => b.onclick = () => askChoose(m, idx, b.dataset.ask2));
+    if(q("[data-reask]")) q("[data-reask]").onclick = () => askRedo(m, idx);
     q(".pk").onchange = e => {
-      it.kind = e.target.value; it.loanId = null; delete it.ask;
+      it.kind = e.target.value; it.loanId = null; delete it.ask; delete it.askD; delete it.askK;
       if(it.kind === "in" && !INC.find(x => x.id === it.cat)) it.cat = "khac";
       if(it.kind === "xfer" && !it.from && !it.to){ it.from = MAIN_W; it.to = ((state.wallets || [])[0] || {}).id || MAIN_W; }
       if((it.kind === "out" || it.kind === "card") && !allTags().some(t => t.id === it.cat)) it.cat = window.N50KParse.guessTag(it.note || "", chatCtx());
@@ -7031,10 +7048,66 @@ function startNgay50k(){
     if(key){ state.payKind = state.payKind || {}; state.payKind[key] = k; persist(); }
     chatSave(); renderChat(true);
   }
+  /* v200: HỎI LẠI KHI RẼ NHÁNH (thư viện câu, phần G). Câu có nhiều cách hiểu ("chuyển Lan 500k", "ăn lẩu 1tr chia 4",
+     "mua xe máy 40", "rút 2tr", "tiền nhà 4tr"…) → thẻ hỏi lại bằng nút, chưa chọn thì chưa Ghi được.
+     Lựa chọn theo người / loại khoản được nhớ (state.askMem), lần sau tự theo và ghi "↺ Theo lần trước" kèm Chọn lại. */
+  function askCtx(){ const c = chatCtx(); c.guessTag = t => window.N50KParse.guessTag(t, c); return c; }
+  function askMark(items, text){
+    if(!items || !items.length || !window.N50KLib || !window.N50KLib.hoiLai) return items;
+    const t = String(text || "");
+    /* thông báo ngân hàng dán vào, nhiều dòng, câu dài: không hỏi lại */
+    if(!t || t.length > 160 || /\n|GD:|SD:|S[ốo] d[ưu]|\bVND\b|\bTK\s*\d/i.test(t)) return items;
+    let out;
+    try{ out = window.N50KLib.hoiLai(JSON.parse(JSON.stringify(items)), t, askCtx(), state.askMem || {}); }catch(e){ return items; }
+    /* cho vay / đi vay với người đã có khoản vay đang mở → ghi vào khoản đó (vay thêm), không mở khoản mới trùng tên.
+       Cần cho câu đã học ("chuyển Lan …" học lần trước khi Lan chưa có khoản vay) */
+    out.forEach(it => {
+      if(!["lend","borrow"].includes(it.kind) || it.loanId || !String(it.who || "").trim()) return;
+      const k = window.N50KParse.norm(it.who).trim(), l = state.loans.find(x => x.type === it.kind && leftOf(x) > 0 && window.N50KParse.norm(x.who || "").trim() === k);
+      if(l){ it.loanId = l.id; it.who = l.who; }
+    });
+    return out;
+  }
+  function askChoose(m, idx, c, byText){
+    const it = m.items[idx]; if(!it || !it.ask || it.ask === "tra") return;
+    const r = window.N50KLib.hoiLaiChon(it, c, askCtx(), m.text || "", state.askMem || {});
+    if(!r) return;
+    if(r.nho){ state.askMem = state.askMem || {}; state.askMem[r.nho] = c; persist(); }
+    if(r.them && r.them.length){
+      m.items.splice(idx + 1, 0, ...r.them); m.status.splice(idx + 1, 0, ...r.them.map(() => "pending")); m.refs.splice(idx + 1, 0, ...r.them.map(() => null));
+      if(m.orig) m.orig.splice(idx + 1, 0, ...r.them.map(() => ({})));
+    }
+    if(r.bo){ m.status[idx] = "skipped"; if(pbOpen[m.id] === idx) delete pbOpen[m.id]; }
+    if(byText){
+      /* trả lời bằng chữ: đưa thẻ xuống dưới câu vừa nhắn, như khi sửa bằng lời */
+      const at = chat.msgs.indexOf(m); if(at >= 0) chat.msgs.splice(at, 1);
+      m.intro = "✓ " + r.nhan + "." + (r.bo ? "" : it.ask ? " Còn một chỗ nữa:" : " Bạn xem lại rồi bấm Ghi nhé:"); m.introHtml = false; m.t = Date.now();
+      chat.msgs.push(m);
+    }
+    if(r.bo && r.say) chat.msgs.push({ id:uid(), role:"bot", html:esc(r.say), t:Date.now(), src:"local" });
+    chatSave(); renderChat(true); if(byText) chatScrollEnd(true);
+  }
+  function askRedo(m, idx){
+    const it = m.items[idx], lg = it && (it.askLog || []), g = lg && lg[lg.length - 1]; if(!g || !g.orig) return;
+    /* bỏ các khoản do lựa chọn đó sinh ra (vd "Nhóm ăn lẩu" nợ 750k), nếu chưa ghi */
+    for(let j = m.items.length - 1; j > idx; j--){ if(m.items[j].askOf === g.tok && m.status[j] !== "saved"){ m.items.splice(j, 1); m.status.splice(j, 1); m.refs.splice(j, 1); if(m.orig) m.orig.splice(j, 1); } }
+    const keep = lg.slice(0, -1);
+    Object.keys(it).forEach(k => delete it[k]);
+    Object.assign(it, JSON.parse(JSON.stringify(g.orig)));
+    if(keep.length) it.askLog = keep;
+    if(g.auto){ it.ask = g.id; it.askD = g.d; if(g.k) it.askK = g.k; it.asked = (it.asked || []).filter(x => x !== g.id); }
+    if(g.k && state.askMem && state.askMem[g.k]){ delete state.askMem[g.k]; persist(); }
+    if(m.status[idx] === "skipped") m.status[idx] = "pending";
+    chatSave(); renderChat(true);
+  }
   /* v133: nhiều khoản (nhất là dán nhiều thông báo ngân hàng) → một khung, mỗi giao dịch một dòng có số thứ tự,
      số tiền chi đỏ / thu xanh, giờ, nhóm; chạm dòng để mở thẻ sửa đầy đủ. Thẻ số dư tách riêng ở cuối. */
   var pbOpen = {};
   function pbTitle(it){
+    if(it.ask && it.ask !== "tra") return "❓ " + pbTitle0(it);
+    return pbTitle0(it);
+  }
+  function pbTitle0(it){
     if(["lend","borrow","repay","collect"].includes(it.kind)){ const l = it.loanId ? getLoan(it.loanId) : null; return KIND_LABEL[it.kind] + ((l ? l.who : it.who) ? ": " + (l ? l.who : it.who) : ""); }
     if(it.kind === "xfer") return walletName(it.from) + " → " + walletName(it.to);
     if(it.kind === "cardpay") return "Trả thẻ" + (cardName(it.cardId) ? " " + cardName(it.cardId) : "");
@@ -7113,7 +7186,8 @@ function startNgay50k(){
       const intro = document.createElement("div"); intro.className = "msg bot";
       /* v129: thẻ số dư từ thông báo ngân hàng là lệnh riêng, không nằm trong "Ghi tất cả" */
       const sep = i => !!(m.items[i] && m.items[i].balAt), pend = m.status.filter((s, i) => s === "pending" && !sep(i)).length;
-      if(m.introHtml) intro.innerHTML = m.intro; else intro.innerHTML = (m.intro ? esc(m.intro) + "\n" : "") + (m.items.length > 1 ? "Mình hiểu là có <b>" + m.items.length + " khoản</b>, chạm vào từng dòng nếu cần sửa:" : (m.intro ? "Bạn xem lại rồi bấm Ghi nhé:" : m.items[0] && m.items[0].ask === "tra" && m.status[0] === "pending" ? "Tiền vào hay tiền ra? Bạn chọn giúp mình nhé:" : "Mình hiểu vậy, đúng không?"));
+      /* v200: lời dẫn đã kết thúc bằng ":" ("✓ … Bạn xem lại rồi bấm Ghi nhé:") thì không lặp thêm câu đó */
+      if(m.introHtml) intro.innerHTML = m.intro; else intro.innerHTML = (m.intro ? esc(m.intro) + "\n" : "") + (m.items.length > 1 ? "Mình hiểu là có <b>" + m.items.length + " khoản</b>, chạm vào từng dòng nếu cần sửa:" : (m.intro ? (/:\s*$/.test(m.intro) ? "" : "Bạn xem lại rồi bấm Ghi nhé:") : m.items[0] && m.items[0].ask === "tra" && m.status[0] === "pending" ? "Tiền vào hay tiền ra? Bạn chọn giúp mình nhé:" : m.items[0] && m.items[0].ask && m.status[0] === "pending" ? "Câu này hiểu được mấy cách, bạn chọn giúp mình nhé:" : "Mình hiểu vậy, đúng không?"));
       if(m.ai) markAI(intro); else if(m.src === "local" || m.src === "learn") markLocal(intro, m.src === "learn");
       box.appendChild(intro);
       if(m.items.length > 1) box.appendChild(batchEl(m, sep));
@@ -7765,7 +7839,7 @@ function startNgay50k(){
     const j = st.idxs[br.idx] != null ? st.idxs[br.idx] : st.idxs[st.idxs.length - 1], it = m.items[j], f = br.f || {};
     if(f.amt){ it.amt = f.amt; if(f.split === 0){ delete it.split; delete it.total; } }
     if(f.kind){
-      it.kind = f.kind;
+      it.kind = f.kind; delete it.ask; delete it.askD; delete it.askK;
       if(f.kind === "card"){ it.cardId = f.cardId || it.cardId || ((state.cards || [])[0] || {}).id || null; delete it.cardGuess; delete it.w; }
       if(f.kind === "out"){ it.cardId = null; if(f.src) it.src = f.src; if("w" in f) it.w = f.w || null; }
       if((f.kind === "out" || f.kind === "card") && !allTags().some(t => t.id === it.cat)) it.cat = window.N50KParse.guessTag(it.note || "", chatCtx());
@@ -7803,6 +7877,7 @@ function startNgay50k(){
     if(res.query && res.query.q === "unknown") res.query.text = text;
     if(res.query){ const mid = uid(), ah = abbrHint(res.abbr, mid); out.push(Object.assign({ id:mid, role:"bot", html:(ah ? ah + "\n" : "") + answer(res.query), q:res.query, t:Date.now() }, ah ? { abbrText:text } : {})); }
     else if(res.items.length){
+      res = Object.assign({}, res, { items:askMark(res.items, text) });          /* v200: hỏi lại khi câu có nhiều cách hiểu */
       const mid = uid(), ah = abbrHint(res.abbr, mid), hint = itemHints(res.items);
       const intro = ah ? ah + "\n" + (hint || "Bạn xem lại rồi bấm Ghi nhé:") : hint;
       out.push(Object.assign({ id:mid, role:"bot", items:res.items, status:res.items.map(() => "pending"), refs:res.items.map(() => null), t:Date.now() }, intro ? { intro, introHtml:true } : {}, res.abbr && res.abbr.length ? { abbrText:text } : {}));
@@ -7889,6 +7964,7 @@ function startNgay50k(){
   function aiMsgs(r, text){
     const msgs = [];
     if(text && r.query && !r.items.length) learnAdd(text, null, r.query, "ai");
+    if(r.items.length && text) r.items = askMark(r.items, text);              /* v200: khoản AI hiểu cũng qua bước hỏi lại */
     if(r.items.length) msgs.push({ id:uid(), role:"bot", items:r.items, intro:r.reply || "", status:r.items.map(() => "pending"), refs:r.items.map(() => null), t:Date.now(), ai:true, text:text || "", orig:JSON.parse(JSON.stringify(r.items)) });
     if(r.query) msgs.push({ id:uid(), role:"bot", html:(r.reply && !r.items.length ? esc(r.reply) + (r.query.q === "report" ? "" : "\n") : "") + answer(r.query), q:r.query, t:Date.now(), ai:true });
     if(!r.items.length && !r.query) msgs.push({ id:uid(), role:"bot", html:esc(r.reply || "Mình chưa rõ ý bạn, kể lại giúp mình nhé?"), t:Date.now(), ai:true });
@@ -7953,6 +8029,20 @@ function startNgay50k(){
     /* v122: câu nối vào thẻ đang chờ / câu hỏi số tiền → xử lý trên máy, không gọi AI */
     try{
       const st = dlgState();
+      /* v200: thẻ đang hỏi lại → câu nhắn trả lời thẳng câu hỏi ("cho vay", "mình bao", "40 triệu", "2") */
+      if(st && st.m && window.N50KLib && window.N50KLib.hoiLaiNoi){
+        const j = st.idxs.find(k => st.m.items[k].ask && st.m.items[k].ask !== "tra");
+        if(j != null){
+          const c = window.N50KLib.hoiLaiNoi(text, st.m.items[j], askCtx());
+          if(c){ chat.waitAmt = null; askChoose(st.m, j, c, true); return; }
+          if(/^(ok|oke|okay|ghi|ghi đi|ghi di|lưu|luu|đúng|dung|đúng rồi|dung roi|chốt|chot|ừ|u|uh|có|co)\b/i.test(text)){
+            /* đưa thẻ xuống dưới câu vừa nhắn, hỏi lại ngay trên thẻ (để câu trả lời sau vẫn nối được vào thẻ) */
+            const m = st.m, at = chat.msgs.indexOf(m); if(at >= 0) chat.msgs.splice(at, 1);
+            m.intro = "Còn một chỗ chưa rõ, bạn chọn giúp mình (hoặc nhắn trả lời) rồi mới Ghi được nhé:"; m.introHtml = false; m.t = Date.now();
+            chat.msgs.push(m); chatSave(); renderChat(); chatScrollEnd(true); return;
+          }
+        }
+      }
       if(st && window.N50KLib){
         const br = window.N50KLib.nhanh(text, st, window.N50KParse, Object.assign(chatCtx(), { guessTag:t => window.N50KParse.guessTag(t, chatCtx()) }));
         if(br && br.act === "new") text = br.text;
@@ -11899,6 +11989,7 @@ function startNgay50k(){
       alias: (() => { const o = Object.assign({}, a.alias || {}); for(const k in (b.alias || {})) if(!(k in o) || ((b.aliasM || {})[k] || 0) > ((a.aliasM || {})[k] || 0)) o[k] = b.alias[k]; return o; })(),
       aliasM: Object.assign({}, a.aliasM || {}, b.aliasM || {}),
       payKind: Object.assign({}, a.payKind || {}, b.payKind || {}),
+      askMem: Object.assign({}, a.askMem || {}, b.askMem || {}),
       thuvien: byId(a.thuvien, b.thuvien).sort((x, y) => (x.o || 0) - (y.o || 0)),
       learn: byId(a.learn, b.learn), miss: byId(a.miss, b.miss).filter(x => !byId(a.learn, b.learn).some(r => r.key === x.key)),
       payees: Object.assign({}, b.payees, a.payees), tagOff: mergeTagOff(a.tagOff, b.tagOff),

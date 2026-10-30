@@ -74,7 +74,7 @@ const v1 = {
   tags: [ { id:"u_x", label:"Cà phê", icon:"☕" } ], tagOff: { thucung:{ v:1, m:2 } },
   contacts: [ { id:"c1", name:"Anh A", acct:"0123456789", bank:"MB Bank", memo:"", cat:"nha", uses:3 } ],
   learn: [ { id:"le1", key:"an pho #", items:[] } ], miss: [], thuvien: [ { id:"t1", k:"GS25", r:"GS25" } ],
-  alias: { hl:"Highlands" }, aliasM: { hl:9 }, payKind: { "teo":"in" },
+  alias: { hl:"Highlands" }, aliasM: { hl:9 }, payKind: { "teo":"in" }, askMem: { "chuyen_di:lan":"vay" },
   deleted: { zz:123 }, payees: {}, caps: {}
 };
 
