@@ -395,6 +395,12 @@
       vi_du:["tiền nhà hàng tháng có tự ghi được không", "khoản định kỳ là gì", "thêm khoản định kỳ thế nào"],
       tra_loi:["Khoản chi định kỳ (tiền nhà, mạng, học phí…) <b>không trừ vào hạn mức mỗi ngày</b>. Có 3 cách:\n• Khoản tháng nào cũng như nhau: đặt ở <b>Cài đặt → Hạn mức và định kỳ</b>, chọn số tiền, ngày trong tháng, ví hoặc thẻ; tới ngày app tự ghi.\n• Khi ghi tay: bật công tắc <b>Khoản chi định kỳ</b> trong form, hoặc nhắn kèm chữ “định kỳ” (vd “tiền điện 820k định kỳ”).\n• Khoản đã ghi: chạm vào khoản đó trong Sổ, bật <b>Khoản chi định kỳ</b>."],
       goi_y:["tháng này chi định kỳ những gì", "khoản nào có vẻ là định kỳ"] },
+    { id:"hd_hoilai", ten:"Vì sao app hỏi lại", uu_tien:"truoc",
+      /* v199: thẻ hỏi lại (phần G) */
+      khop:[" (sao|tai sao|vi sao) .*(hoi lai|hoi hoai|hoi nhieu|cu hoi|hay hoi) ", " (tat|bo|dung|khong) .*hoi lai ", " (chon lai|doi lua chon|quen lua chon|xoa lua chon) ", " theo lan truoc .*(la gi|nghia la) "],
+      vi_du:["sao app cứ hỏi lại", "tắt hỏi lại được không", "chọn lại thế nào"],
+      tra_loi:["Có những câu hiểu được nhiều cách mà đoán sai là ghi sai sổ, nên mình hỏi lại một lần:\n• <b>chuyển Lan 500k</b>: biếu Lan, cho Lan vay, hay trả nợ Lan?\n• <b>Lan chuyển 1tr</b>: Lan cho tiền, cho mình vay, hay trả nợ?\n• <b>ăn lẩu 1tr chia 4</b>: ghi phần mình, mình trả trước cho cả nhóm, hay mình bao?\n• <b>trả hộ / mua hộ</b>: người đó có trả lại không?\n• <b>mua xe máy 40</b>: 40 nghìn hay 40 triệu? · <b>rút 2tr</b>: rút tiền mặt hay rút ra tiêu?\n• <b>tiền nhà, điện, học phí…</b>: tháng nào cũng có (định kỳ) không?\nChọn một lần là mình <b>nhớ theo từng người / từng loại khoản</b>, lần sau tự theo và ghi \"↺ Theo lần trước\" trên thẻ. Bấm <b>Chọn lại</b> ở dòng đó để đổi và quên lựa chọn cũ. Muốn khỏi hỏi thì nói rõ ngay trong câu, vd \"cho Lan vay 500k\", \"chia 4 mình trả trước\", \"40 triệu\"."],
+      goi_y:[] },
     { id:"hd_ghi", ten:"Cách ghi chi tiêu", uu_tien:"truoc",
       khop:[HOW + ".*(ghi|nhap|them|ke) .*(khoan|chi|tieu|thu|giao dich)", "(ghi|nhap|them) .*(khoan|chi tieu|giao dich) .*" + HOW],
       vi_du:["ghi chi tiêu thế nào", "cách nhập khoản chi", "lam sao them giao dich"],
@@ -805,6 +811,334 @@
     return null;
   }
 
+  /* ======================= G. HỎI LẠI KHI RẼ NHÁNH (v199) =======================
+     Trước v199 thư viện chỉ chạy một chiều: câu → thẻ xác nhận, máy đoán sai thì bạn phải tự thấy và tự sửa.
+     Phần này gom các câu có NHIỀU CÁCH HIỂU mà đoán sai là ghi sai sổ (chi thành thu, chi thành cho vay,
+     40 nghìn thành 40 triệu…). Gặp những câu đó, thẻ xác nhận HỎI LẠI bằng vài nút bấm, chưa chọn thì chưa Ghi được.
+
+     Mỗi nhánh:
+       id, ten, y_nghia
+       khi(it, c, ctx)   → dữ liệu nhánh d (vd { who }) nếu khoản rơi vào nhánh này, ngược lại null
+                           c = { text, n (đã bỏ dấu), O (từ gốc), N (từ bỏ dấu) }
+       hoi(it, d)        → câu hỏi trên thẻ
+       chon(it, d, ctx)  → các lựa chọn [{ id, icon, nhan, phu }]
+       tu(it, c, d)      → câu đã nói rõ thì chọn luôn, không hỏi (vd "chia 4, mình trả trước")
+       ap(it, id, d, ctx)→ sửa khoản theo lựa chọn; trả về { them:[khoản thêm], bo:true (không ghi), say }
+       nho(it, d)        → khoá nhớ (thường là tên người): chọn một lần, lần sau tự theo, thẻ ghi
+                           "↺ Theo lần trước: …" kèm nút Chọn lại
+       noi               → { lựa chọn: [cụm từ] }: trả lời bằng chữ ("cho vay", "mình bao") thay vì bấm nút
+       mau               → [câu, nhánh mong đợi | null, lựa chọn?, kết quả mong đợi sau khi chọn?]
+     Một khoản hỏi từng nhánh một; chọn xong còn nhánh khác thì hỏi tiếp (vd số tiền → có phải định kỳ).
+     Nhánh "tra" (Tèo trả …, v195) vẫn do parse-vi.js đánh dấu, xem askPick trong index.html.
+     Thử: node tests-hoi-lai.js */
+  const KIN = new Set(["me","bo","ba","cha","ong","co","chu","bac","di","cau","mo","anh","chi","em","vo","chong","con","ban","sep","thim","duong","ngoai","noi","chau","mom","dad","bm"]);
+  const SEND_V = new Set(["chuyen","ck","gui","bank"]);
+  const LEAD = new Set(["minh","toi","em","tao","da","vua","moi","con"]);
+  const STOPW = new Set(["tien","de","an","mua","nhe","nha","luc","hom","sang","trua","chieu","toi","qua","nay","roi","r","di","ve","lam","tra","dong","nop","no","vay","muon","cho","hoc","va","voi","bang","qua","the","tk"]);
+  const UNIT = /^(k|ka|nghin|ngan|ng|ngh|tr|trieu|cu|lit|xi|d|dong|vnd|ty|ti|m|t|nghìn|ngàn|đ)$/;
+  const isCapW = w => !!w && /\p{Lu}/u.test(w.charAt(0));
+  const fmtD = v => String(Math.round(v || 0)).replace(/\B(?=(\d{3})+(?!\d))/g, ".") + "đ";
+  const cap1 = s => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+  function cauOf(text){
+    const O = String(text || "").trim().split(/\s+/).map(w => w.replace(/^[("“]+|[.,!?;:"”)]+$/g, "")).filter(Boolean);
+    return { text:String(text || ""), n:nrm(text), O, N:O.map(w => strip(w).toLowerCase()) };
+  }
+  /* vị trí động từ chuyển tiền (chuyển, ck, gửi, bank); "chuyển khoản" tính là một */
+  function sendAt(N){ for(let i = 0; i < N.length && i < 5; i++) if(SEND_V.has(N[i])) return i; return -1; }
+  /* lấy tên người từ vị trí i: bỏ "khoản/tiền/cho/lại" ở đầu, dừng ở số tiền hoặc từ chỉ việc; tối đa 3 từ */
+  function tenTu(c, i){
+    while(i < c.N.length && ["khoan","tien","cho","lai","sang"].includes(c.N[i])) i++;
+    const out = [];
+    for(; i < c.N.length && out.length < 3; i++){
+      const w = c.N[i];
+      if(/\d/.test(w) || UNIT.test(w) || (STOPW.has(w) && !(KIN.has(w) && !out.length))) break;
+      out.push(c.O[i]);
+    }
+    return out.join(" ");
+  }
+  function laNguoi(name, ctx){
+    if(!name) return false;
+    const ws = name.split(/\s+/), w0 = strip(ws[0]).toLowerCase();
+    if(ws.length > 3) return false;
+    if(!(KIN.has(w0) || ws.every(isCapW))) return false;
+    if(KIN.has(w0) && ws.length === 1 && ["anh","chi","em","ban","con"].includes(w0)) return false;   /* "anh", "chị" đứng một mình là đại từ */
+    const nn = nrm(name).trim();
+    if(ctx && (ctx.wallets || []).some(w => nrm(w.name).trim() === nn)) return false;
+    if(ctx && (ctx.cards || []).some(x => nrm(x.name).trim() === nn)) return false;
+    if(ctx && ctx.guessTag && !KIN.has(w0) && ctx.guessTag(name) !== "khac") return false;
+    return true;
+  }
+  const keyOf = s => nrm(s).trim();
+  function loanOf(ctx, who, type){
+    const k = keyOf(who); if(!k) return null;
+    const last = k.split(" ").pop();
+    return (ctx && ctx.loans || []).find(l => l.type === type && !l.settled && (keyOf(l.who) === k || keyOf(l.who).split(" ").pop() === last)) || null;
+  }
+
+  const HOILAI = [
+    { id:"so_tien", ten:"Số tiền thiếu đơn vị",
+      y_nghia:"Món đắt tiền mà số không có đơn vị (\"mua xe máy 40\") → 40 nghìn hay 40 triệu?",
+      khi(it, c){
+        if(!["out","card"].includes(it.kind) || !(it.amt > 0) || it.amt >= 1e6) return null;
+        /* món phải nằm trong nội dung của chính khoản này (câu nhiều khoản), và không phải tiền sửa / thuê / nạp */
+        const nn = nrm(it.note);
+        if(!/ (laptop|macbook|may tinh|pc|iphone|ipad|samsung|dien thoai|xe may|xe dap dien|xe dien|oto|o to|xe hoi|tu lanh|may giat|dieu hoa|tivi|ti vi|sofa|giuong|tam nem|vang mieng|nhan vang|mua vang|nhan cuoi|hoc phi|tien nha|tien tro|dat coc|tien coc|ve may bay|tour|camera|may anh|ps5|apple watch|dong ho|may loc|robot hut bui) /.test(nn)) return null;
+        if(/ (sua|thay|nap|thue|bao duong|ve sinh|op|sac|cuoc|goi) /.test(nn)) return null;
+        for(let i = 0; i < c.N.length; i++){
+          const w = c.N[i]; if(!/^\d+([.,]\d{1,2})?$/.test(w)) continue;          /* "550.000" là số đủ, không tính */
+          if(c.N[i + 1] && UNIT.test(c.N[i + 1])) continue;
+          if(Math.round(parseFloat(w.replace(",", ".")) * 1000) === it.amt) return { nho:it.amt, lon:it.amt * 1000 };
+        }
+        return null;
+      },
+      hoi:(it, d) => "Số tiền là bao nhiêu?",
+      chon:(it, d) => [{ id:"lon", icon:"💰", nhan:fmtD(d.lon), phu:"Hàng triệu" }, { id:"nho", icon:"🪙", nhan:fmtD(d.nho), phu:"Hàng nghìn" }],
+      ap(it, id, d){ it.amt = id === "lon" ? d.lon : d.nho; return {}; },
+      noi:{ lon:["trieu","tr","cu","lon"], nho:["nghin","ngan","k","nho"] },
+      mau:[ ["mua xe máy 40", "so_tien", "lon", { amt:40000000 }], ["mua laptop 25", "so_tien", "nho", { amt:25000 }],
+            ["học phí 15", "so_tien"], ["sửa điện thoại 550", null], ["nem chua rán 30", null], ["đồng hồ 1tr2", null], ["tủ lạnh 9tr5", null], ["mua laptop 25tr", null], ["bún chả 40", null], ["mua iphone 30 củ", null] ] },
+
+    { id:"chia", ten:"Chia tiền nhiều người",
+      y_nghia:"\"ăn lẩu 1tr chia 4\" → ghi phần mình, hay mình trả trước rồi mọi người trả lại (cho vay), hay mình bao cả?",
+      khi:(it) => it.calc === "split" && it.split > 1 && it.total > it.amt && ["out","card"].includes(it.kind) ? { n:it.split, total:it.total, phan:it.amt } : null,
+      hoi:(it, d) => (it.note || "Khoản này") + " " + fmtD(d.total) + " chia " + d.n + ": ai trả tiền?",
+      chon:(it, d) => [
+        { id:"phan", icon:"🙋", nhan:"Mỗi người tự trả, ghi phần mình " + fmtD(d.phan), phu:"Khoản chi " + fmtD(d.phan) },
+        { id:"truoc", icon:"🧾", nhan:"Mình trả trước cả " + fmtD(d.total) + ", mọi người trả lại sau", phu:"Chi " + fmtD(d.phan) + " + ghi " + (d.n - 1) + " người nợ " + fmtD(d.total - d.phan) },
+        { id:"bao", icon:"🎉", nhan:"Mình bao cả " + fmtD(d.total), phu:"Khoản chi " + fmtD(d.total) } ],
+      tu(it, c){
+        if(/ (tra truoc|ung truoc|tra ho|bu truoc|thanh toan truoc|quet truoc) /.test(c.n)) return "truoc";
+        if(/ (bao|khao|bao het|minh tra het|minh tra ca|tra het) /.test(c.n)) return "bao";
+        if(/ (phan minh|tu tra|ai nay tra|moi nguoi tra) /.test(c.n)) return "phan";
+        return null;
+      },
+      ap(it, id, d){
+        if(id === "bao"){ it.amt = d.total; delete it.calc; delete it.split; delete it.total; return {}; }
+        if(id === "truoc"){
+          const what = String(it.note || "").replace(/\s*(mình|minh|tôi|toi|em)?\s*(trả|tra|ứng|ung)\s*(trước|truoc)\s*/i, " ").trim() || "chia tiền";
+          it.note = cap1(what);
+          return { them:[{ kind:"lend", amt:d.total - d.phan, date:it.date, t:it.t, src:it.src, cardId:null, loanId:null, w:it.w || null,
+                           who:"Nhóm " + what.toLowerCase(), note:(d.n - 1) + " người còn nợ · " + what.toLowerCase() }] };
+        }
+        return {};
+      },
+      noi:{ phan:["phan minh","tu tra","ai nay tra","moi nguoi tu tra","chi phan minh"], truoc:["tra truoc","ung truoc","tra lai sau","no minh","doi sau"], bao:["bao","khao","minh bao","tra het","bao het","minh tra ca"] },
+      mau:[ ["ăn lẩu 1tr chia 4", "chia", "truoc", { amt:250000, extra:{ kind:"lend", amt:750000 } }], ["ăn lẩu 1tr chia 4", "chia", "bao", { amt:1000000 }],
+            ["ăn lẩu 1tr chia 4 mình trả trước", null], ["karaoke 600k chia 3 mình bao", null], ["trà sữa 35k", null] ] },
+
+    { id:"chuyen_den", ten:"Người khác chuyển tiền",
+      y_nghia:"\"Lan chuyển 1tr\", \"mẹ chuyển 2tr\" → Lan cho/trả tiền mình (thu), Lan cho mình vay, Lan trả nợ, hay mình chuyển cho Lan?",
+      khi(it, c, ctx){
+        if(it.ask || it.loanId) return null;
+        const vi = sendAt(c.N);
+        if(it.kind === "in" && it.payer && vi > 0 && !["luong","thuong","cho","ban"].includes(it.cat)) return { who:it.payer };
+        if(it.kind === "out" && !it.cardId && vi > 0 && vi <= 3 && it.cat === "khac"){
+          const who = c.O.slice(0, vi).join(" ");
+          if(laNguoi(who, ctx) && !c.N.slice(vi + 1).some(w => ["cho"].includes(w))) return { who, nguoc:1 };
+        }
+        return null;
+      },
+      hoi:(it, d) => "“" + d.who + " chuyển” ở đây là:",
+      chon(it, d, ctx){
+        const o = [{ id:"thu", icon:"💰", nhan:d.who + " cho / trả tiền mình", phu:"Tiền vào · khoản thu" }];
+        if(loanOf(ctx, d.who, "lend")) o.push({ id:"tra_no", icon:"🤝", nhan:d.who + " trả nợ mình", phu:"Trừ vào khoản " + d.who + " đang nợ" });
+        o.push({ id:"vay", icon:"🏦", nhan:d.who + " cho mình vay", phu:"Khoản vay, sau này phải trả · không tính thu" });
+        o.push({ id:"chi", icon:"💸", nhan:"Mình chuyển cho " + d.who, phu:"Tiền ra · khoản chi" });
+        return o;
+      },
+      ap(it, id, d, ctx){
+        const kin = KIN.has(strip(d.who.split(" ")[0]).toLowerCase());
+        if(id === "thu"){ it.kind = "in"; it.cat = kin ? "cho" : "khac"; it.note = d.who + " chuyển"; it.who = ""; it.loanId = null; }
+        if(id === "chi"){ it.kind = "out"; it.cat = "khac"; it.note = "Chuyển " + d.who; it.who = ""; it.loanId = null; }
+        if(id === "tra_no"){ const l = loanOf(ctx, d.who, "lend"); it.kind = "collect"; it.who = l ? l.who : d.who; it.loanId = l ? l.id : null; }
+        if(id === "vay"){ const l = loanOf(ctx, d.who, "borrow"); it.kind = "borrow"; it.who = l ? l.who : d.who; it.loanId = l ? l.id : null; }
+        delete it.payer;
+        return {};
+      },
+      nho:(it, d) => keyOf(d.who),
+      noi:{ thu:["cho","bieu","tang","li xi","lixi","tra tien","thu","tien vao","cho minh"], vay:["vay","cho vay","cho minh vay","muon","cho muon","phai tra"], tra_no:["tra no","no minh","tra no minh"], chi:["minh chuyen","chuyen cho","tien ra","chi","minh gui"] },
+      mau:[ ["Lan chuyển 1tr", "chuyen_den", "vay", { kind:"borrow", who:"Lan" }], ["mẹ chuyển 2tr", "chuyen_den", "thu", { kind:"in", cat:"cho" }],
+            ["Tèo gửi mình 500k", "chuyen_den", "chi", { kind:"out" }], ["Hào chuyển 300k", "chuyen_den", "tra_no", { kind:"collect", loan:"l3" }],
+            ["mẹ cho 2 triệu", null], ["nhận lương 15tr", null], ["Tèo gửi xe 10k", null] ] },
+
+    { id:"chuyen_di", ten:"Chuyển tiền cho người khác",
+      y_nghia:"\"chuyển Lan 500k\" → trả tiền/biếu Lan (chi), cho Lan vay, trả nợ Lan, hay sang ví khác của mình?",
+      khi(it, c, ctx){
+        if(it.kind !== "out" || it.cardId || it.cat !== "khac" || it.ask) return null;
+        let i = 0; while(i < c.N.length && LEAD.has(c.N[i])) i++;
+        if(!SEND_V.has(c.N[i])) return null;
+        let j = i + 1; if(c.N[i] === "chuyen" && c.N[j] === "khoan") j++;
+        const who = tenTu(c, j);
+        return laNguoi(who, ctx) ? { who } : null;
+      },
+      hoi:(it, d) => "Chuyển cho " + d.who + " là:",
+      chon(it, d, ctx){
+        const o = [{ id:"chi", icon:"💸", nhan:"Trả tiền / biếu " + d.who, phu:"Tiền ra · khoản chi" },
+                   { id:"vay", icon:"🤝", nhan:"Cho " + d.who + " vay / ứng hộ", phu:d.who + " sẽ trả lại · không tính chi" }];
+        if(loanOf(ctx, d.who, "borrow")) o.push({ id:"tra_no", icon:"✅", nhan:"Trả nợ " + d.who, phu:"Trừ vào khoản mình đang nợ" });
+        if((ctx && ctx.wallets || []).length) o.push({ id:"vi", icon:"🔁", nhan:"Sang ví " + ctx.wallets[0].name + " của mình", phu:"Chuyển giữa ví · không tính chi" });
+        return o;
+      },
+      ap(it, id, d, ctx){
+        if(id === "vay"){ const l = loanOf(ctx, d.who, "lend"); it.kind = "lend"; it.who = l ? l.who : d.who; it.loanId = l ? l.id : null; }
+        if(id === "tra_no"){ const l = loanOf(ctx, d.who, "borrow"); it.kind = "repay"; it.who = l ? l.who : d.who; it.loanId = l ? l.id : null; }
+        if(id === "vi"){ it.kind = "xfer"; it.from = it.w || "main"; it.to = ctx.wallets[0].id; it.note = ""; }
+        if(id === "chi" && !/^chuyển/i.test(it.note || "")) it.note = "Chuyển " + d.who;
+        return {};
+      },
+      nho:(it, d) => keyOf(d.who),
+      noi:{ chi:["bieu","tang","mung","tra tien","chi","bao","khong can tra","cho luon","tien ra"], vay:["vay","cho vay","ung","ung ho cho","tra lai sau","se tra","muon","cho muon"], tra_no:["tra no","no","tra no cho"], vi:["vi","sang vi","vi minh","tai khoan minh","cua minh"] },
+      mau:[ ["chuyển Lan 500k", "chuyen_di", "vay", { kind:"lend", who:"Lan" }], ["chuyển khoản cho Tèo 300k", "chuyen_di", "chi", { kind:"out" }],
+            ["ck anh Tuấn 2tr", "chuyen_di", "tra_no", { kind:"repay", loan:"l2" }], ["chuyển mẹ 3tr", "chuyen_di", "chi", { kind:"out" }],
+            ["ck cho Lan 200k tiền ăn", null], ["chuyển tiền điện 500k", "dinh_ky"], ["nạp momo 500k", null], ["gửi xe 5k", null] ] },
+
+    { id:"tra_ho", ten:"Trả hộ, mua hộ, ứng trước",
+      y_nghia:"\"trả hộ Lan 200k\", \"mua hộ mẹ 500k\" → người đó sẽ trả lại (cho vay) hay mình chịu luôn (chi)?",
+      khi(it, c, ctx){
+        if(!["out","card"].includes(it.kind) || it.calc || it.ask) return null;
+        /* "đồng hồ" và "dong ho" (không dấu) là đồng hồ, chỉ "đóng hộ" có dấu mới là đóng tiền hộ; "ủng hộ" là quyên góp */
+        const m = c.n.match(/ (tra|mua|dong|nop|thanh toan|dat|ung|bu|quet|chuyen) (ho|giup|truoc) /);
+        if(!m || / ung ho /.test(c.n)) return null;
+        if(m[1] === "dong" && m[2] === "ho" && !/đóng\s+hộ/i.test(c.text)) return null;
+        const at = c.N.findIndex((w, i) => w === m[2] && c.N[i - 1] === m[1].split(" ").pop());
+        let who = at >= 0 ? tenTu(c, at + 1) : "";
+        if(!laNguoi(who, ctx)){ const ic = c.N.indexOf("cho"); who = ic >= 0 ? tenTu(c, ic + 1) : ""; if(!laNguoi(who, ctx)) who = ""; }
+        return { who };
+      },
+      hoi:(it, d) => d.who ? "Tiền này " + d.who + " có trả lại bạn không?" : "Khoản trả hộ này có ai trả lại bạn không?",
+      chon:(it, d) => [{ id:"vay", icon:"🤝", nhan:(d.who || "Người đó") + " sẽ trả lại", phu:"Ghi là cho vay · không tính chi" },
+                       { id:"chi", icon:"💸", nhan:"Không, mình chịu luôn", phu:"Khoản chi của mình" }],
+      tu(it, c){
+        if(/ (tra lai|se tra|ghi no|doi lai|lay lai|tra minh sau) /.test(c.n)) return "vay";
+        if(/ (bao|moi|khoi tra|khong can tra|tang|bieu) /.test(c.n)) return "chi";
+        return null;
+      },
+      ap(it, id, d, ctx){
+        if(id === "vay"){ const l = d.who ? loanOf(ctx, d.who, "lend") : null; it.kind = "lend"; it.who = l ? l.who : d.who; it.loanId = l ? l.id : null; it.cardId = null; }
+        return {};
+      },
+      nho:(it, d) => d.who ? keyOf(d.who) : null,
+      noi:{ vay:["tra lai","se tra","no tra","ghi no","cho vay","doi lai","lay lai","co tra","co"], chi:["chiu","bao","khoi tra","moi","tang","khong can tra","chi luon","khong","ko"] },
+      mau:[ ["trả hộ Lan 200k", "tra_ho", "vay", { kind:"lend", who:"Lan" }], ["mua hộ mẹ 500k", "tra_ho", "chi", { kind:"out" }],
+            ["đặt hộ vé xem phim 400k", "tra_ho"], ["mua hộ Lan 300k nó trả lại sau", null], ["ủng hộ quỹ lớp 200k", null], ["trả tiền nhà 4tr", "dinh_ky"] ] },
+
+    { id:"rut_tien", ten:"Rút tiền",
+      y_nghia:"\"rút 2tr\" → rút tiền mặt (không phải chi, tiền mặt vẫn trong ví Tài khoản), rút từ ví khác về, hay rút ra tiêu luôn?",
+      khi:(it, c) => it.kind === "out" && !it.cardId && it.cat === "khac" && / (rut|rut tien|rut tien mat) /.test(c.n) && !/ rut (gon|kinh nghiem|bai hoc) /.test(c.n) ? {} : null,
+      hoi:() => "Rút tiền ở đây là:",
+      chon(it, d, ctx){
+        const o = [{ id:"mat", icon:"💵", nhan:"Rút tiền mặt để đó", phu:"Tiền mặt vẫn tính trong ví Tài khoản · không ghi" }];
+        if((ctx && ctx.wallets || []).length) o.push({ id:"vi", icon:"🔁", nhan:"Rút từ " + ctx.wallets[0].name + " về Tài khoản", phu:"Chuyển giữa ví · không tính chi" });
+        o.push({ id:"chi", icon:"💸", nhan:"Rút ra tiêu luôn", phu:"Ghi khoản chi, sửa nội dung nếu cần" });
+        return o;
+      },
+      tu:(it, c) => / rut .*(tieu|mua|tra|dong|an|nop|dua|cho|bieu|mung) /.test(c.n) ? "chi" : null,
+      ap(it, id, d, ctx){
+        if(id === "mat") return { bo:true, say:"Rút tiền mặt không phải khoản chi nên mình không ghi. Tiền mặt vẫn tính trong ví Tài khoản; lúc tiêu thì kể mình nghe là được." };
+        if(id === "vi"){ it.kind = "xfer"; it.from = ctx.wallets[0].id; it.to = "main"; it.note = ""; }
+        if(id === "chi" && /^rút$/i.test(it.note || "")) it.note = "Rút tiền mặt";
+        return {};
+      },
+      noi:{ mat:["tien mat","de do","cat di","khong tieu","giu"], vi:["tu vi","ve tai khoan"], chi:["tieu luon","tieu","chi","tieu het"] },
+      mau:[ ["rút 2tr", "rut_tien", "mat", { bo:true }], ["rút tiền 500k", "rut_tien", "vi", { kind:"xfer" }], ["rút 500k tiêu", null] ] },
+
+    { id:"chon_the", ten:"Quẹt thẻ nào",
+      y_nghia:"\"quẹt thẻ 500k\" khi có từ hai thẻ và máy không đoán được thẻ nào.",
+      khi:(it, c, ctx) => it.kind === "card" && !it.cardId && (ctx && ctx.cards || []).length > 1 ? {} : null,
+      hoi:() => "Quẹt thẻ nào?",
+      chon:(it, d, ctx) => (ctx.cards || []).map(x => ({ id:x.id, icon:"💳", nhan:x.name, phu:"" })),
+      ap(it, id){ it.cardId = id; return {}; },
+      noi:null,
+      mau:[ ["quẹt thẻ 500k", "chon_the", "c2", { card:"c2" }], ["quẹt thẻ VIB 500k", null] ] },
+
+    { id:"dinh_ky", ten:"Khoản tháng nào cũng có",
+      y_nghia:"Tiền nhà, điện, nước, mạng, học phí… → có phải khoản định kỳ (không trừ hạn mức mỗi ngày)? Hỏi một lần cho mỗi loại.",
+      khi(it, c){
+        if(!["out","card"].includes(it.kind) || it.fx != null || it.amt < 50000) return null;
+        if(/ (dinh ky|co dinh|hang thang|moi thang|lan nay|dot xuat|phat sinh) /.test(c.n)) return null;
+        const m = nrm(it.note).match(/ (tien (nha|tro|dien|nuoc|mang|hoc|ga|rac|gui xe thang)|hoa don (dien|nuoc)|hoc phi|bao hiem|tra gop|cuoc (internet|mang|dien thoai)|internet|wifi|phi (chung cu|quan ly)|gui xe thang|netflix|spotify|icloud|youtube premium|google one|chatgpt|claude) /);
+        return m ? { loai:m[1] } : null;
+      },
+      hoi:(it) => cap1(it.note || "Khoản này") + " tháng nào cũng có?",
+      chon:() => [{ id:"co", icon:"🔁", nhan:"Có, khoản định kỳ", phu:"Vẫn tính chi tháng, không trừ hạn mức mỗi ngày" },
+                  { id:"khong", icon:"📌", nhan:"Không, chỉ lần này", phu:"Trừ hạn mức như khoản thường" }],
+      ap(it, id){ if(id === "co") it.fx = 1; return {}; },
+      nho:(it, d) => d.loai,
+      noi:{ co:["co","dinh ky","hang thang","thang nao cung","co dinh","deu","dung roi"], khong:["khong","ko","lan nay","1 lan","mot lan","dot xuat","phat sinh"] },
+      mau:[ ["tiền nhà 4tr", "dinh_ky", "co", { fx:1 }], ["tiền điện 650k", "dinh_ky", "khong", {}], ["tiền điện 820k định kỳ", null], ["nồi cơm điện 900k", null], ["cafe 25k", null] ] }
+  ];
+  const HL = new Map(HOILAI.map(b => [b.id, b]));
+  const snap = it => { const o = JSON.parse(JSON.stringify(it)); delete o.askLog; return o; };
+  const optsOf = (b, it, d, ctx) => { try{ return b.chon(it, d, ctx || {}) || []; }catch(e){ return []; } };
+
+  /* đánh dấu một khoản; trả về các khoản thêm (do lựa chọn tự động sinh ra) */
+  function danhDau(it, c, ctx, mem){
+    const them = [];
+    for(let guard = 0; guard < HOILAI.length && it && !it.ask; guard++){
+      const done = it.asked || []; let hit = null, d = null;
+      for(const b of HOILAI){ if(done.includes(b.id)) continue; try{ d = b.khi(it, c, ctx || {}); }catch(e){ d = null; } if(d){ hit = b; break; } }
+      if(!hit) break;
+      const key = hit.nho ? hit.nho(it, d) : null, mk = key ? hit.id + ":" + key : "";
+      const auto = (hit.tu && hit.tu(it, c, d)) || null, fromMem = !auto && mk && mem && mem[mk] ? mem[mk] : null;
+      const pick = auto || fromMem;
+      if(pick && optsOf(hit, it, d, ctx).some(o => o.id === pick)){
+        const before = snap(it), r = hit.ap(it, pick, d, ctx || {}) || {};
+        it.asked = done.concat(hit.id);
+        if(fromMem){ const tok = "a" + Math.random().toString(36).slice(2, 8); (it.askLog = it.askLog || []).push({ id:hit.id, c:pick, d, k:mk, auto:1, tok, orig:before }); (r.them || []).forEach(x => { x.askOf = tok; }); }
+        if(r.them) them.push(...r.them);
+        if(r.bo) it.askBo = r.say || 1;
+        continue;
+      }
+      it.ask = hit.id; it.askD = d; if(mk) it.askK = mk;
+    }
+    return them;
+  }
+  /* hoiLai(items, text, ctx, mem) → mảng khoản đã đánh dấu (ask, askD) và thêm khoản sinh ra từ lựa chọn tự động.
+     mem: các lựa chọn đã nhớ { "chuyen_di:lan": "vay", … } (state.askMem trong app) */
+  function hoiLai(items, text, ctx, mem){
+    if(!Array.isArray(items) || !items.length) return items || [];
+    const c = cauOf(text), out = [];
+    items.forEach(it => { out.push(it); if(it && it.ask !== "tra") out.push(...danhDau(it, c, ctx, mem || (ctx && ctx.askMem) || {})); });
+    return out;
+  }
+  /* hoiLaiVe(it, ctx) → { hoi, chon:[…] } cho thẻ đang hỏi, hoặc null */
+  function hoiLaiVe(it, ctx){
+    const b = it && HL.get(it.ask); if(!b) return null;
+    return { id:b.id, ten:b.ten, hoi:b.hoi(it, it.askD || {}), chon:optsOf(b, it, it.askD || {}, ctx) };
+  }
+  /* hoiLaiChon(it, id, ctx, text, mem) → { them, bo, say, nho:khoá cần lưu, nhan } ; sửa it, rồi xét nhánh kế tiếp */
+  function hoiLaiChon(it, id, ctx, text, mem){
+    const b = it && HL.get(it.ask); if(!b) return null;
+    const d = it.askD || {}, opt = optsOf(b, it, d, ctx).find(o => o.id === id); if(!opt) return null;
+    const before = snap(it), mk = it.askK || "";
+    delete before.ask; delete before.askD; delete before.askK;
+    delete it.ask; delete it.askD; delete it.askK;
+    const r = b.ap(it, id, d, ctx || {}) || {};
+    it.asked = (it.asked || []).concat(b.id);
+    const tok = "a" + Math.random().toString(36).slice(2, 8);
+    (it.askLog = it.askLog || []).push({ id:b.id, c:id, d, k:mk, tok, orig:Object.assign(before, { ask:b.id, askD:d }, mk ? { askK:mk } : {}) });
+    const them = (r.them || []).map(x => Object.assign(x, { askOf:tok }));
+    if(!r.bo) them.push(...danhDau(it, cauOf(text || ""), ctx, mem || {}));
+    return { them, bo:!!r.bo, say:r.say || "", nho:mk, nhan:opt.nhan };
+  }
+  /* hoiLaiNhan(log, it, ctx) → chữ của lựa chọn đã chọn (để hiện "✓ …" / "↺ Theo lần trước: …") */
+  function hoiLaiNhan(log, ctx){
+    const b = log && HL.get(log.id); if(!b) return "";
+    const o = optsOf(b, log.orig || {}, log.d || {}, ctx).find(x => x.id === log.c); return o ? o.nhan : "";
+  }
+  /* hoiLaiNoi(text, it, ctx) → id lựa chọn nếu câu nhắn trả lời đúng câu đang hỏi ("cho vay", "mình bao"), hoặc null */
+  function hoiLaiNoi(text, it, ctx){
+    const b = it && HL.get(it.ask); if(!b) return null;
+    const n = nrm(text), opts = optsOf(b, it, it.askD || {}, ctx);
+    if(n.trim().split(" ").length > 8) return null;
+    let best = null, bl = 0;
+    const tryP = (id, p) => { const pp = " " + nrm(p).trim() + " "; if(pp.length > 2 && n.includes(pp) && pp.length > bl){ best = id; bl = pp.length; } };
+    opts.forEach(o => { tryP(o.id, o.nhan); (b.noi && b.noi[o.id] || []).forEach(p => tryP(o.id, p)); });
+    /* "1", "2", "cách 2" */
+    const num = n.match(/^ (cach |so |chon )?([1-4]) $/); if(num && opts[+num[2] - 1]) return opts[+num[2] - 1].id;
+    return best;
+  }
+
   /* bối cảnh dùng cho bài thử và câu mẫu */
   const MAU_CTX = {
     now: "2026-10-07T14:30:00",                                      /* thứ Tư */
@@ -813,7 +1147,7 @@
     wallets: [{ id:"w1", name:"Momo" }]
   };
 
-  const api = { GHI, HOI, NOI, TROCHUYEN, MAU_CTX, match, talk, fewShot, nrm, khuon, hocTao, hocDung, hocTim, hocChoAI, nhanh };
+  const api = { GHI, HOI, NOI, TROCHUYEN, MAU_CTX, match, talk, fewShot, nrm, khuon, hocTao, hocDung, hocTim, hocChoAI, nhanh, HOILAI, hoiLai, hoiLaiVe, hoiLaiChon, hoiLaiNhan, hoiLaiNoi };
   if(typeof module !== "undefined" && module.exports) module.exports = api;
   else root.N50KLib = api;
 })(typeof window !== "undefined" ? window : this);

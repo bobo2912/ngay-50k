@@ -1,6 +1,32 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v198, ngày 29/10/2026
+**Phiên bản hiện tại:** v199, ngày 30/10/2026
+
+---
+
+## Có gì mới trong v199 (so với v198) – Chat hỏi lại khi câu có nhiều cách hiểu
+
+Trước đây Chat chạy một chiều: câu → thẻ xác nhận, máy đoán sai thì bạn phải tự thấy và sửa (trừ "Tèo trả …" từ v195). Giờ những câu mà đoán sai là ghi sai sổ thì **thẻ hỏi lại bằng nút bấm**, chưa chọn thì nút Ghi tắt:
+
+| Bạn nhắn | Thẻ hỏi | Các lựa chọn |
+|---|---|---|
+| chuyển Lan 500k · ck cho Tèo 300k | Chuyển cho Lan là: | Trả tiền / biếu Lan · Cho Lan vay / ứng hộ · Trả nợ Lan (nếu đang nợ) · Sang ví khác của mình (nếu có ví) |
+| Lan chuyển 1tr · mẹ chuyển 2tr | “Lan chuyển” ở đây là: | Lan cho / trả tiền mình · Lan trả nợ mình (nếu Lan đang nợ) · Lan cho mình vay · Mình chuyển cho Lan |
+| ăn lẩu 1tr chia 4 | Ai trả tiền? | Ghi phần mình 250k · Mình trả trước cả 1tr (chi 250k + 3 người nợ 750k, tự thêm khoản cho vay) · Mình bao cả 1tr |
+| trả hộ Lan 200k · mua hộ mẹ 500k | Lan có trả lại bạn không? | Lan sẽ trả lại (cho vay) · Mình chịu luôn (chi) |
+| mua xe máy 40 · mua laptop 25 | Số tiền là bao nhiêu? | 40.000.000đ · 40.000đ |
+| rút 2tr | Rút tiền ở đây là: | Rút tiền mặt để đó (không ghi, tiền mặt vẫn trong ví Tài khoản) · Rút từ ví khác về · Rút ra tiêu luôn |
+| tiền nhà 4tr · tiền điện · học phí · internet… | … tháng nào cũng có? | Có, khoản định kỳ (không trừ hạn mức ngày) · Không, chỉ lần này |
+| quẹt thẻ 500k (nhiều thẻ, không đoán được) | Quẹt thẻ nào? | từng thẻ |
+
+- **Trả lời bằng chữ cũng được:** "cho nó vay", "mình bao", "phần mình thôi", "40 triệu", "có", "2" (lựa chọn thứ 2). Nhắn "ok ghi đi" khi còn câu hỏi thì thẻ nhắc lại câu hỏi.
+- **Hỏi nối tiếp:** "học phí 15" → hỏi 15 nghìn hay 15 triệu → chọn xong hỏi tiếp có phải định kỳ không. Mỗi bước đã chọn hiện "✓ …" trên thẻ, bước cuối có **Chọn lại**.
+- **Nhớ lựa chọn** theo người (chuyển cho / nhận từ / trả hộ ai) và theo loại khoản định kỳ (tiền nhà, tiền điện…): lần sau tự theo, thẻ ghi **"↺ Theo lần trước: …"**; bấm Chọn lại là hỏi lại và quên lựa chọn cũ. Lưu ở `state.askMem`, đi theo file sao lưu, gộp hai máy.
+- **Câu đã nói rõ thì không hỏi:** "cho Lan vay 500k", "chia 4 mình trả trước", "mua hộ Lan nó trả lại sau", "rút 500k tiêu", "tiền điện 820k định kỳ", "40tr".
+- Khoản do AI hiểu cũng qua bước hỏi lại; thông báo ngân hàng dán vào thì không hỏi.
+- Cho vay / đi vay với người đã có khoản vay đang mở thì ghi vào khoản đó (trước đây câu đã học như "chuyển Lan …" có thể mở thêm khoản trùng tên).
+- Lỗi nhỏ: thẻ sửa bằng lời bị lặp dòng "Bạn xem lại rồi bấm Ghi nhé:".
+- **Tri thức của Máy:** thư viện câu có phần mới **G. Hỏi lại khi rẽ nhánh** (`thu-vien-cau.js`, 8 nhánh, mỗi nhánh có câu hỏi, lựa chọn, cụm từ trả lời bằng chữ, câu mẫu) và mục hướng dẫn "sao app cứ hỏi lại". Bài thử mới `tests-hoi-lai.js` (125 bài).
 
 ---
 
