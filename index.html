@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v201";
+  var K = "ngay50k:errlog", VER = "v202";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -451,9 +451,14 @@ header .date{color:var(--ink); font-size:1rem; font-weight:700}
 /* v201: vuốt sang trái để xoá (swipeDel). Nút Xoá đỏ rộng ra theo ngón tay, nội dung dòng trượt sang trái */
 .item.sw{position:relative; overflow:hidden; touch-action:pan-y; -webkit-user-select:none; user-select:none; -webkit-touch-callout:none}
 .item.sw > :not(.swd){transform:translateX(var(--sx, 0px)); transition:transform .22s ease}
-.item.sw .swd{position:absolute; top:3px; bottom:3px; right:0; width:calc(-1 * var(--sx, 0px)); max-width:100%; overflow:hidden; border:0; padding:0; border-radius:12px;
-  background:var(--over); color:#fff; font:inherit; font-size:.9rem; font-weight:700; white-space:nowrap; transition:width .22s ease; cursor:pointer}
-.item.sw.sw-drag > :not(.swd), .item.sw.sw-drag .swd{transition:none}
+/* v202: nút gọn: chấm tròn 34px biểu tượng thùng rác, hiện dần (to dần, rõ dần) theo độ vuốt (--sp 0…1) */
+.item.sw .swd{position:absolute; top:0; bottom:0; right:0; width:calc(-1 * var(--sx, 0px)); max-width:100%; overflow:hidden; border:0; padding:0; background:none;
+  display:flex; align-items:center; justify-content:center; transition:width .22s ease; cursor:pointer; -webkit-tap-highlight-color:transparent}
+.item.sw .swd i{flex:none; width:34px; height:34px; border-radius:50%; display:grid; place-items:center; background:var(--over); color:#fff;
+  opacity:var(--sp, 0); transform:scale(calc(.55 + .45 * var(--sp, 0))); transition:opacity .22s ease, transform .22s ease; box-shadow:0 2px 8px rgba(195,52,44,.25)}
+.item.sw .swd svg{width:17px; height:17px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round}
+.item.sw .swd:active i{transform:scale(.9)}
+.item.sw.sw-drag > :not(.swd), .item.sw.sw-drag .swd, .item.sw.sw-drag .swd i{transition:none}
 .item.sw.sw-on, .item.sw.sw-drag{background:transparent !important}
 .swcf{position:fixed; inset:0; z-index:120; display:flex; align-items:flex-end; justify-content:center; background:rgba(0,0,0,.35); padding:12px 12px calc(12px + env(safe-area-inset-bottom))}
 .swcf[hidden]{display:none}
@@ -3068,7 +3073,7 @@ li.txg > details.txd > ul{margin:0 !important}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v201</p>
+      <p class="sync" id="appVersion">Phiên bản v202</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3608,12 +3613,12 @@ li.txg > details.txd > ul{margin:0 !important}
 <input type="file" id="phFile" accept="image/*" hidden>
 <div class="ph-view" id="phView" role="dialog" aria-modal="true" aria-label="Ảnh hoá đơn" hidden><img id="phImg" alt="Ảnh hoá đơn"><div class="ph-bar"><button type="button" id="phDel">Bỏ ảnh này</button><button type="button" id="phClose">Đóng</button></div></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=201"></script>
-<script src="thu-vien-cau.js?v=201"></script>
-<script src="quy-tac.js?v=201"></script>
-<script src="du-lieu.js?v=201"></script>
-<script src="native.js?v=201"></script>
-<script src="lock.js?v=201"></script>
+<script src="parse-vi.js?v=202"></script>
+<script src="thu-vien-cau.js?v=202"></script>
+<script src="quy-tac.js?v=202"></script>
+<script src="du-lieu.js?v=202"></script>
+<script src="native.js?v=202"></script>
+<script src="lock.js?v=202"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -4494,13 +4499,14 @@ function startNgay50k(){
      info: { name, amt (chuỗi đã có dấu), warn?, del() } — del() chỉ sửa state, việc lưu và vẽ lại làm ở đây. */
   var swOpen = null;
   function swipeDel(li, info){
-    const W = 84;
+    const W = 58;
     li.classList.add("sw");
-    const bt = document.createElement("button"); bt.type = "button"; bt.className = "swd"; bt.textContent = "Xoá";
-    bt.tabIndex = -1; bt.setAttribute("aria-hidden", "true");
+    const bt = document.createElement("button"); bt.type = "button"; bt.className = "swd";
+    bt.innerHTML = '<i><svg viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M10 11v6M14 11v6"/><path d="M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12"/><path d="M9 7V4h6v3"/></svg></i>';
+    bt.tabIndex = -1; bt.setAttribute("aria-hidden", "true"); bt.title = "Xoá";
     li.appendChild(bt);
     let x0 = 0, y0 = 0, dx = 0, mode = 0, pid = null, open = false, moved = false;
-    const set = v => { dx = v; li.style.setProperty("--sx", v + "px"); li.classList.toggle("sw-on", v < 0); };
+    const set = v => { dx = v; li.style.setProperty("--sx", v + "px"); li.style.setProperty("--sp", Math.min(1, -v / W).toFixed(3)); li.classList.toggle("sw-on", v < 0); };
     const shut = () => { set(0); open = false; if(swOpen === li) swOpen = null; };
     li._swShut = shut;
     li.addEventListener("pointerdown", e => {

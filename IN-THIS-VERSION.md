@@ -1,6 +1,12 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v201, ngày 30/10/2026
+**Phiên bản hiện tại:** v202, ngày 30/10/2026
+
+---
+
+## Có gì mới trong v202 (so với v201)
+
+- Nút **Xoá** khi vuốt gọn hơn: chấm tròn đỏ nhỏ (34px) có biểu tượng thùng rác, nằm giữa chiều cao dòng thay cho khối chữ "Xoá" to bằng cả dòng. Chấm hiện dần, to dần theo độ vuốt; dòng chỉ trượt 58px thay vì 84px. Bấm chấm hoặc vuốt quá nửa dòng vẫn hỏi xác nhận như cũ.
 
 ---
 
