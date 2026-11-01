@@ -33,7 +33,8 @@
      assets:   [ { id, kind:"save"|"cd"|"gold"|"fund"|"stock"|"crypto"|"other", name, rate?, term?, start?, due?, onDue?,
                    qty?, unit?, closed?, t, m } ],                                // v203: chỉ phần đầu, tiền nằm ở tx (asset)
      assetVal: [ { id, asset, v, date, t, m } ],                                  // v203: các lần cập nhật giá trị khoản đầu tư
-     tags, tagOff, contacts, learn, miss, thuvien, alias, aliasM, payKind, askMem, deleted
+     tags, tagOff, contacts, learn, miss, thuvien, alias, aliasM, payKind, askMem, deleted,
+     payKindM, askMemM                                                           // v214: lúc đặt / bỏ từng khoá của payKind, askMem (gộp hai máy)
    }
 */
 (function(root){
@@ -172,6 +173,7 @@
     /* trường cũ không còn dùng: chỉ giữ khi còn dữ liệu */
     if(isObj(st.payees) && Object.keys(st.payees).length) out.payees = st.payees;
     if(isObj(st.caps) && Object.keys(st.caps).length) out.caps = st.caps;
+    ["payKindM", "askMemM"].forEach(k => { if(isObj(st[k]) && Object.keys(st[k]).length) out[k] = st[k]; });   /* v214 */
     return opts && opts.noClone ? out : clone(out);
   }
 
@@ -187,6 +189,7 @@
       alias: v.alias || {}, aliasM: v.aliasM || {}, payKind: v.payKind || {}, askMem: v.askMem || {},
       deleted: v.deleted || {}, payees: v.payees || {}, caps: v.caps || {}
     };
+    ["payKindM", "askMemM"].forEach(k => { if(isObj(v[k])) st[k] = v[k]; });   /* v214 */
     (Array.isArray(v.accounts) ? v.accounts : []).forEach(a => {
       if(!isObj(a) || a.group === "main") return;
       const list = a.group === "card" ? st.cards : st.wallets;

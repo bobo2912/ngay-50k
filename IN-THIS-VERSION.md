@@ -1,6 +1,14 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v213, ngày 01/11/2026
+**Phiên bản hiện tại:** v214, ngày 01/11/2026
+
+---
+
+## Có gì mới trong v214 (so với v213) – gộp an toàn hơn
+
+- Gộp hai máy / gộp file sao lưu: máy này **xoá một khoản tiết kiệm / đầu tư** trong khi máy kia ghi thêm giao dịch cho nó. Trước đây giao dịch đó nằm lại không có khoản, vẫn trừ ví. Giờ: giao dịch ghi **sau** lúc xoá → giữ lại khoản (máy kia vẫn đang dùng); không thì bỏ hết dòng mồ côi.
+- Lựa chọn Chat nhớ khi hỏi lại (`askMem`, v200) và "X trả" là tiền vào hay ra (`payKind`, v195) giờ có mốc thời gian (`askMemM`, `payKindM`): gộp lấy lựa chọn đặt sau cùng, lựa chọn đã bấm **Chọn lại** ở máy kia không sống lại. Trước đây file nhập vào luôn đè lên. Dữ liệu cũ chưa có mốc gộp như trước.
+- Bài thử `node tests-gop.js`: 14 bài.
 
 ---
 

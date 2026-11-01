@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v213";
+  var K = "ngay50k:errlog", VER = "v214";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -3206,7 +3206,7 @@ li.txg > details.txd > ul{margin:0 !important}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v213</p>
+      <p class="sync" id="appVersion">Phiên bản v214</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3756,14 +3756,14 @@ li.txg > details.txd > ul{margin:0 !important}
 <input type="file" id="phFile" accept="image/*" hidden>
 <div class="ph-view" id="phView" role="dialog" aria-modal="true" aria-label="Ảnh hoá đơn" hidden><img id="phImg" alt="Ảnh hoá đơn"><div class="ph-bar"><button type="button" id="phDel">Bỏ ảnh này</button><button type="button" id="phClose">Đóng</button></div></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=213"></script>
-<script src="thu-vien-cau.js?v=213"></script>
-<script src="quy-tac.js?v=213"></script>
-<script src="du-lieu.js?v=213"></script>
-<script src="doc-so-tk.js?v=213"></script>
-<script src="tich-luy.js?v=213"></script>
-<script src="native.js?v=213"></script>
-<script src="lock.js?v=213"></script>
+<script src="parse-vi.js?v=214"></script>
+<script src="thu-vien-cau.js?v=214"></script>
+<script src="quy-tac.js?v=214"></script>
+<script src="du-lieu.js?v=214"></script>
+<script src="doc-so-tk.js?v=214"></script>
+<script src="tich-luy.js?v=214"></script>
+<script src="native.js?v=214"></script>
+<script src="lock.js?v=214"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -4154,7 +4154,7 @@ function startNgay50k(){
       miss: Array.isArray(s.miss) ? s.miss.filter(r => r && r.id && r.key) : [],
       /* v125: viết tắt bạn đã chọn ("hl" → "Highlands"); aliasM: lúc đặt, để gộp hai máy lấy bản mới hơn */
       alias: obj(s.alias), aliasM: obj(s.aliasM),
-      askMem: obj(s.askMem),     /* v200: lựa chọn đã trả lời ở thẻ hỏi lại, theo nhánh + người/loại ("chuyen_di:lan": "vay"), lần sau tự theo */
+      askMem: obj(s.askMem), askMemM: obj(s.askMemM), payKindM: obj(s.payKindM),   /* v214: lúc đặt / bỏ từng lựa chọn, để gộp hai máy lấy bản mới hơn */     /* v200: lựa chọn đã trả lời ở thẻ hỏi lại, theo nhánh + người/loại ("chuyen_di:lan": "vay"), lần sau tự theo */
       payKind: obj(s.payKind),   /* v195: "Tèo trả …" của người này là tiền vào ("in") hay tiền ra ("out"), nhớ từ lần chọn trước */
       /* v158 – Thư viện nội dung (thay sheet ThuVien): quy tắc làm gọn nội dung thông báo ngân hàng, { id, k, r, tag?, off? }.
          Nằm trong dữ liệu chính: mã hoá khi bật PIN, đi theo file sao lưu, không bao giờ nằm trong mã nguồn */
@@ -7968,7 +7968,7 @@ function startNgay50k(){
     else { it.kind = "in"; it.cat = "khac"; }
     delete it.ask;
     const key = it.payer ? window.N50KParse.norm(it.payer).trim() : "";
-    if(key){ state.payKind = state.payKind || {}; state.payKind[key] = k; persist(); }
+    if(key){ state.payKind = state.payKind || {}; state.payKind[key] = k; (state.payKindM = state.payKindM || {})[key] = Date.now(); persist(); }
     chatSave(); renderChat(true);
   }
   /* v200: HỎI LẠI KHI RẼ NHÁNH (thư viện câu, phần G). Câu có nhiều cách hiểu ("chuyển Lan 500k", "ăn lẩu 1tr chia 4",
@@ -7995,7 +7995,7 @@ function startNgay50k(){
     const it = m.items[idx]; if(!it || !it.ask || it.ask === "tra") return;
     const r = window.N50KLib.hoiLaiChon(it, c, askCtx(), m.text || "", state.askMem || {});
     if(!r) return;
-    if(r.nho){ state.askMem = state.askMem || {}; state.askMem[r.nho] = c; persist(); }
+    if(r.nho){ state.askMem = state.askMem || {}; state.askMem[r.nho] = c; (state.askMemM = state.askMemM || {})[r.nho] = Date.now(); persist(); }
     if(r.them && r.them.length){
       m.items.splice(idx + 1, 0, ...r.them); m.status.splice(idx + 1, 0, ...r.them.map(() => "pending")); m.refs.splice(idx + 1, 0, ...r.them.map(() => null));
       if(m.orig) m.orig.splice(idx + 1, 0, ...r.them.map(() => ({})));
@@ -8019,7 +8019,7 @@ function startNgay50k(){
     Object.assign(it, JSON.parse(JSON.stringify(g.orig)));
     if(keep.length) it.askLog = keep;
     if(g.auto){ it.ask = g.id; it.askD = g.d; if(g.k) it.askK = g.k; it.asked = (it.asked || []).filter(x => x !== g.id); }
-    if(g.k && state.askMem && state.askMem[g.k]){ delete state.askMem[g.k]; persist(); }
+    if(g.k && state.askMem && state.askMem[g.k]){ delete state.askMem[g.k]; (state.askMemM = state.askMemM || {})[g.k] = Date.now(); persist(); }   /* v214: nhớ lúc bỏ để gộp hai máy không sống lại */
     if(m.status[idx] === "skipped") m.status[idx] = "pending";
     chatSave(); renderChat(true);
   }
@@ -13041,16 +13041,44 @@ function startNgay50k(){
       cards: byId(a.cards, b.cards), cardTx: bags.cardTx,
       recur: byId(a.recur, b.recur), bals: byId(a.bals, b.bals), cardPay: byId(a.cardPay, b.cardPay),
       wallets: byId(a.wallets, b.wallets), xfer: byId(a.xfer, b.xfer),
-      assets: byId(a.assets, b.assets), assetTx: byId(a.assetTx, b.assetTx), assetVal: byId(a.assetVal, b.assetVal),
+      ...fixOrphanAssets({ assets:byId(a.assets, b.assets), assetTx:byId(a.assetTx, b.assetTx), assetVal:byId(a.assetVal, b.assetVal) }, (a.assets || []).concat(b.assets || []), del),
       alias: (() => { const o = Object.assign({}, a.alias || {}); for(const k in (b.alias || {})) if(!(k in o) || ((b.aliasM || {})[k] || 0) > ((a.aliasM || {})[k] || 0)) o[k] = b.alias[k]; return o; })(),
       aliasM: Object.assign({}, a.aliasM || {}, b.aliasM || {}),
-      payKind: Object.assign({}, a.payKind || {}, b.payKind || {}),
-      askMem: Object.assign({}, a.askMem || {}, b.askMem || {}),
+      payKind: mergeMapM(a.payKind, a.payKindM, b.payKind, b.payKindM), payKindM: maxMap(a.payKindM, b.payKindM),
+      askMem: mergeMapM(a.askMem, a.askMemM, b.askMem, b.askMemM), askMemM: maxMap(a.askMemM, b.askMemM),
       thuvien: byId(a.thuvien, b.thuvien).sort((x, y) => (x.o || 0) - (y.o || 0)),
       learn: byId(a.learn, b.learn), miss: byId(a.miss, b.miss).filter(x => !byId(a.learn, b.learn).some(r => r.key === x.key)),
       payees: Object.assign({}, b.payees, a.payees), tagOff: mergeTagOff(a.tagOff, b.tagOff),
       deleted: del, updated: Date.now()
     });
+  }
+  /* v214: gộp một bảng nhớ { khoá: giá trị } kèm bảng thời điểm { khoá: lúc đặt / bỏ }: mỗi khoá lấy bên đặt / bỏ sau cùng
+     (bên đó không còn khoá thì khoá đã bị bỏ). Cùng thời điểm (dữ liệu cũ chưa có mốc) thì như trước: bên nhập vào thắng. */
+  function mergeMapM(a, aM, b, bM){
+    a = a || {}; b = b || {}; aM = aM || {}; bM = bM || {};
+    const out = {};
+    new Set([...Object.keys(a), ...Object.keys(b)]).forEach(k => {
+      const src = (aM[k] || 0) > (bM[k] || 0) ? a : b;
+      if(k in src) out[k] = src[k];
+      else if(!((aM[k] || 0) || (bM[k] || 0)) && k in a) out[k] = a[k];
+    });
+    return out;
+  }
+  function maxMap(a, b){ const o = Object.assign({}, a || {}); for(const k in (b || {})) o[k] = Math.max(o[k] || 0, Number(b[k]) || 0); return o; }
+  /* v214: giao dịch / giá của khoản tích luỹ đã bị xoá ở máy kia. Có giao dịch ghi SAU lúc xoá → giữ lại khoản (người dùng vẫn đang dùng);
+     không thì bỏ các dòng mồ côi (trước đây chúng vẫn trừ ví trong khi khoản đã biến mất) */
+  function fixOrphanAssets(out, all, del){
+    const have = new Set(out.assets.map(x => x.id));
+    const orphans = id => !have.has(id);
+    const later = new Map();
+    out.assetTx.concat(out.assetVal).forEach(x => { if(orphans(x.asset)) later.set(x.asset, Math.max(later.get(x.asset) || 0, x.m || x.t || 0)); });
+    later.forEach((t, id) => {
+      const head = all.filter(x => x && x.id === id).sort((p, q) => (q.m || 0) - (p.m || 0))[0];
+      if(head && t > (del[id] || 0)){ out.assets.push(JSON.parse(JSON.stringify(Object.assign({}, head, { m:t })))); have.add(id); delete del[id]; }
+    });
+    out.assetTx = out.assetTx.filter(x => have.has(x.asset));
+    out.assetVal = out.assetVal.filter(x => have.has(x.asset));
+    return out;
   }
   function mergeTagOff(a, b){
     const out = Object.assign({}, a);
