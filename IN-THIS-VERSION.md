@@ -1,6 +1,13 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v203, ngày 01/11/2026
+**Phiên bản hiện tại:** v204, ngày 01/11/2026
+
+---
+
+## Có gì mới trong v204 (so với v203)
+
+- Thêm loại **Chứng chỉ tiền gửi (CDs)**: nhập và tính như tiền gửi (lãi suất, kỳ hạn, đáo hạn, lãi dự kiến, gửi tiếp / rút về ví), nằm chung khối Tiết kiệm, dòng phụ ghi "CDs ·".
+- Thêm khoản mới xong, đóng bảng thì trang cuộn tới đúng dòng vừa thêm và dòng đó nháy sáng khoảng 2 giây, không còn nhảy xuống cuối trang.
 
 ---
 

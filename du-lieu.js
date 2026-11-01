@@ -28,7 +28,7 @@
      loans:    [ { id, side:"borrow"|"lend", who, due, note, prepaid, t, m } ],   // chỉ phần đầu, tiền nằm ở tx
      balances: [ { id, acc, amt, t, book?, card?, m } ],                          // các lần đối chiếu số dư
      recur:    [ { id, name, amt, day, tag, acc, from, made, m } ],
-     assets:   [ { id, kind:"save"|"gold"|"fund"|"stock"|"crypto"|"other", name, rate?, term?, start?, due?, onDue?,
+     assets:   [ { id, kind:"save"|"cd"|"gold"|"fund"|"stock"|"crypto"|"other", name, rate?, term?, start?, due?, onDue?,
                    qty?, unit?, closed?, t, m } ],                                // v203: chỉ phần đầu, tiền nằm ở tx (asset)
      assetVal: [ { id, asset, v, date, t, m } ],                                  // v203: các lần cập nhật giá trị khoản đầu tư
      tags, tagOff, contacts, learn, miss, thuvien, alias, aliasM, payKind, askMem, deleted

@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v203";
+  var K = "ngay50k:errlog", VER = "v204";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -1147,6 +1147,9 @@ body.searching header{display:none}
 .as-closed{margin:0 2px 12px; font-size:.86rem; color:var(--muted)}
 .as-closed summary{cursor:pointer; padding:4px 0}
 .as-closed .as-row{opacity:.75}
+.as-row{transition:background-color .4s; border-radius:10px; padding-left:8px !important; padding-right:8px !important; margin:0 -8px; width:calc(100% + 16px) !important}
+.as-row.as-flash{background:color-mix(in srgb, var(--note) 16%, transparent); animation:asFlash 2.4s ease-out}
+@keyframes asFlash{0%,40%{background:color-mix(in srgb, var(--note) 22%, transparent)}100%{background:transparent}}
 .as-loans-h{margin:18px 2px 8px; font-size:1rem}
 /* bảng xem / thêm */
 .as-back{margin-right:4px}
@@ -3175,7 +3178,7 @@ li.txg > details.txd > ul{margin:0 !important}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v203</p>
+      <p class="sync" id="appVersion">Phiên bản v204</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3725,12 +3728,12 @@ li.txg > details.txd > ul{margin:0 !important}
 <input type="file" id="phFile" accept="image/*" hidden>
 <div class="ph-view" id="phView" role="dialog" aria-modal="true" aria-label="Ảnh hoá đơn" hidden><img id="phImg" alt="Ảnh hoá đơn"><div class="ph-bar"><button type="button" id="phDel">Bỏ ảnh này</button><button type="button" id="phClose">Đóng</button></div></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=203"></script>
-<script src="thu-vien-cau.js?v=203"></script>
-<script src="quy-tac.js?v=203"></script>
-<script src="du-lieu.js?v=203"></script>
-<script src="native.js?v=203"></script>
-<script src="lock.js?v=203"></script>
+<script src="parse-vi.js?v=204"></script>
+<script src="thu-vien-cau.js?v=204"></script>
+<script src="quy-tac.js?v=204"></script>
+<script src="du-lieu.js?v=204"></script>
+<script src="native.js?v=204"></script>
+<script src="lock.js?v=204"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -5950,6 +5953,7 @@ function startNgay50k(){
      Tiền vào / ra không qua ví (có từ trước khi dùng app, lãi nhập gốc) có w rỗng: chỉ đổi vốn, không đụng số dư ví nào. */
   const AS_KINDS = {
     save:   { label:"Tiết kiệm", icon:"🏦", ph:"vd: Sổ VCB 6 tháng" },
+    cd:     { label:"Chứng chỉ tiền gửi", chip:"CDs", icon:"🧾", ph:"vd: CD VPBank 12 tháng" },   /* v204: tính như tiền gửi, nằm chung khối Tiết kiệm */
     gold:   { label:"Vàng", icon:"🪙", inv:true, unit:"chỉ", ph:"vd: Vàng SJC" },
     fund:   { label:"Chứng chỉ quỹ", icon:"📈", inv:true, unit:"CCQ", ph:"vd: Quỹ DCDS" },
     stock:  { label:"Cổ phiếu", icon:"📊", inv:true, unit:"cp", ph:"vd: FPT" },
@@ -5957,6 +5961,9 @@ function startNgay50k(){
     other:  { label:"Khác", icon:"💰", inv:true, unit:"", ph:"vd: Góp vốn quán cà phê" }
   };
   const AS_TERMS = [0, 1, 3, 6, 12, 24, 36];
+  /* v204: các loại tính như tiền gửi (lãi suất, kỳ hạn, đáo hạn): sổ tiết kiệm và chứng chỉ tiền gửi (CDs) */
+  const DEP_KINDS = new Set(["save", "cd"]);
+  const isDep = a => !!a && DEP_KINDS.has(a.kind);
   const asKind = a => AS_KINDS[a && a.kind] || AS_KINDS.other;
   function asIcon(a){ return asKind(a).icon; }
   function assetById(id){ return (state.assets || []).find(a => a.id === id) || null; }
@@ -5978,24 +5985,24 @@ function startNgay50k(){
   function asPrincipal(a){ let p = 0; asMoves(a).forEach(x => { p += (x.dir === "out" ? -1 : 1) * (Number(x.amt) || 0); }); return p; }
   /* lãi đơn của kỳ đang gửi, tính tới ngày k (không quá ngày đáo hạn) */
   function asInterest(a, k){
-    if(a.kind !== "save" || !(Number(a.rate) > 0) || !a.start) return 0;
+    if(!isDep(a) || !(Number(a.rate) > 0) || !a.start) return 0;
     const end = a.due && k > a.due ? a.due : k;
     return Math.round(Math.max(0, asPrincipal(a)) * Number(a.rate) / 100 * Math.max(0, daysBetween(a.start, end)) / 365);
   }
   function asLastVal(a){ let v = null; (state.assetVal || []).forEach(x => { if(x.asset === a.id && (!v || (x.t || 0) > (v.t || 0))) v = x; }); return v; }
   function asValue(a){
-    if(a.kind === "save") return asPrincipal(a) + asInterest(a, todayKey());
+    if(isDep(a)) return asPrincipal(a) + asInterest(a, todayKey());
     const lv = asLastVal(a); if(!lv) return asPrincipal(a);
     let v = Number(lv.v) || 0;
     asMoves(a).forEach(x => { if((x.t || 0) > (lv.t || 0)) v += (x.dir === "out" ? -1 : 1) * (Number(x.amt) || 0); });
     return v;
   }
-  const asDueLeft = a => a.kind === "save" && a.due ? daysBetween(todayKey(), a.due) : null;
+  const asDueLeft = a => isDep(a) && a.due ? daysBetween(todayKey(), a.due) : null;
   /* tổng cho tab Tài sản (cũng dùng cho Chat hỏi "tài sản bao nhiêu" về sau) */
   function assetTotals(){
     const open = (state.assets || []).filter(asOpenA);
-    const save = open.filter(a => a.kind === "save").reduce((s, a) => s + asValue(a), 0);
-    const inv = open.filter(a => a.kind !== "save").reduce((s, a) => s + asValue(a), 0);
+    const save = open.filter(a => isDep(a)).reduce((s, a) => s + asValue(a), 0);
+    const inv = open.filter(a => !isDep(a)).reduce((s, a) => s + asValue(a), 0);
     let owe = 0, owed = 0; state.loans.forEach(l => { const r = leftOf(l); if(l.type === "borrow") owe += r; else owed += r; });
     const W = walletsTotal();
     return { save, inv, cash:W.cash, card:W.debt, owe, owed, missing:W.missing, net:W.cash + save + inv + owed - W.debt - owe };
@@ -6009,9 +6016,9 @@ function startNgay50k(){
     mid.appendChild(el("b", null, a.name || asKind(a).label));
     const val = asValue(a), base = asPrincipal(a);
     let sub = "", gTxt = "", gCls = "up";
-    if(a.kind === "save"){
+    if(isDep(a)){
       const left = asDueLeft(a);
-      sub = (Number(a.rate) > 0 ? rateTxt(a.rate) : "chưa có lãi suất") + (a.due ? " · " + (left <= 0 ? "đã đáo hạn " : "đáo hạn ") + dShort(a.due) : " · không kỳ hạn");
+      sub = (a.kind === "cd" ? "CDs · " : "") + (Number(a.rate) > 0 ? rateTxt(a.rate) : "chưa có lãi suất") + (a.due ? " · " + (left <= 0 ? "đã đáo hạn " : "đáo hạn ") + dShort(a.due) : " · không kỳ hạn");
       right.appendChild(el("b", "num", fmt(base)));
       const g = a.due ? asInterest(a, a.due) : asInterest(a, todayKey());
       if(g > 0) gTxt = (a.due ? "lãi dự kiến " : "lãi tới nay ") + sGain(g);
@@ -6026,7 +6033,8 @@ function startNgay50k(){
     mid.appendChild(el("small", null, sub));
     if(gTxt) right.appendChild(el("small", gCls, gTxt));
     b.append(ic, mid, right);
-    b.setAttribute("aria-label", (a.name || asKind(a).label) + ", " + fmt(a.kind === "save" ? base : val) + ", " + sub + (gTxt ? ", " + gTxt : ""));
+    b.setAttribute("aria-label", (a.name || asKind(a).label) + ", " + fmt(isDep(a) ? base : val) + ", " + sub + (gTxt ? ", " + gTxt : ""));
+    b.dataset.id = a.id;
     b.onclick = () => openAsset(a.id);
     return b;
   }
@@ -6051,7 +6059,7 @@ function startNgay50k(){
     if(T.card + T.owe){ const it = el("span", "as-lg debt"); it.append(el("i", "as-dot as-debt"), el("span", null, "Nợ thẻ & vay"), el("b", "num", "−" + fmtShort(T.card + T.owe))); lg.appendChild(it); }
     lg.hidden = !lg.children.length;
     /* sổ sắp (hoặc đã) đáo hạn gần nhất */
-    const dueA = (state.assets || []).filter(a => asOpenA(a) && a.kind === "save" && a.due).sort((x, y) => x.due.localeCompare(y.due))[0];
+    const dueA = (state.assets || []).filter(a => asOpenA(a) && isDep(a) && a.due).sort((x, y) => x.due.localeCompare(y.due))[0];
     const dc = $("asDue"); dc.hidden = !dueA;
     if(dueA){
       const left = asDueLeft(dueA), back = asPrincipal(dueA) + asInterest(dueA, dueA.due);
@@ -6068,8 +6076,8 @@ function startNgay50k(){
       xs.forEach(a => box.appendChild(asRow(a)));
     };
     const open = (state.assets || []).filter(asOpenA);
-    fill("asSaveList", open.filter(a => a.kind === "save").sort((x, y) => (x.due || "9999").localeCompare(y.due || "9999")), "Chưa có sổ tiết kiệm nào. Hoặc nhắn trong Chat: “gửi tiết kiệm 50tr 6 tháng 5,2%”.");
-    fill("asInvList", open.filter(a => a.kind !== "save").sort((x, y) => asValue(y) - asValue(x)), "Chưa có khoản đầu tư nào (vàng, chứng chỉ quỹ, cổ phiếu…).");
+    fill("asSaveList", open.filter(a => isDep(a)).sort((x, y) => (x.due || "9999").localeCompare(y.due || "9999")), "Chưa có sổ tiết kiệm hay chứng chỉ tiền gửi nào. Hoặc nhắn trong Chat: “gửi tiết kiệm 50tr 6 tháng 5,2%”.");
+    fill("asInvList", open.filter(a => !isDep(a)).sort((x, y) => asValue(y) - asValue(x)), "Chưa có khoản đầu tư nào (vàng, chứng chỉ quỹ, cổ phiếu…).");
     const closed = (state.assets || []).filter(a => !asOpenA(a)).sort((x, y) => (y.closed || 0) - (x.closed || 0));
     $("asClosedBox").hidden = !closed.length;
     $("asClosedSum").textContent = "Đã tất toán (" + closed.length + ")";
@@ -6134,7 +6142,18 @@ function startNgay50k(){
     if(!a) setTimeout(() => { const n = $("asName"); if(n) n.focus({ preventScroll:true }); }, 260);
   }
   function asGo(mode, extra){ Object.assign(asUI, { mode, from:"view" }, extra || {}); asRender(); }
-  function asClose(){ hideSheet("asSheet", "asBack"); }
+  /* v204: khoản vừa thêm: đóng bảng thì cuộn tới đúng dòng đó và nháy sáng, không để trang nhảy xuống cuối */
+  var asNewId = null;
+  function asClose(){
+    hideSheet("asSheet", "asBack");
+    const id = asNewId; asNewId = null;
+    if(!id) return;
+    setTimeout(() => {
+      const row = document.querySelector('#assetsBox .as-row[data-id="' + id + '"]'); if(!row) return;
+      row.scrollIntoView({ block:"center", behavior:"smooth" });
+      row.classList.add("as-flash"); setTimeout(() => row.classList.remove("as-flash"), 2400);
+    }, 280);
+  }
 
   function asRender(){
     const body = $("asBody"), foot = $("asFoot"), a = asUI.id ? assetById(asUI.id) : null;
@@ -6149,7 +6168,7 @@ function startNgay50k(){
 
   /* xem một khoản */
   function asViewUI(a, body, foot){
-    const save = a.kind === "save", base = asPrincipal(a), val = asValue(a);
+    const save = isDep(a), base = asPrincipal(a), val = asValue(a);
     $("asTitle").textContent = a.name || asKind(a).label;
     const head = el("div", "as-vhead");
     const outW = asMoves(a).filter(x => x.dir === "out" && x.w).reduce((t, x) => t + (Number(x.amt) || 0), 0);
@@ -6244,10 +6263,10 @@ function startNgay50k(){
 
   /* thêm / sửa */
   function asFormUI(a, body, foot){
-    const kind = asUI.kind, K = AS_KINDS[kind] || AS_KINDS.other, save = kind === "save";
-    $("asTitle").textContent = a ? "Sửa " + (a.name || K.label) : save ? "Thêm sổ tiết kiệm" : "Thêm khoản đầu tư";
+    const kind = asUI.kind, K = AS_KINDS[kind] || AS_KINDS.other, save = DEP_KINDS.has(kind);
+    $("asTitle").textContent = a ? "Sửa " + (a.name || K.label) : kind === "cd" ? "Thêm chứng chỉ tiền gửi" : save ? "Thêm sổ tiết kiệm" : "Thêm khoản đầu tư";
     if(!a){
-      body.appendChild(asField("Loại", asChips(Object.keys(AS_KINDS).map(k => [k, AS_KINDS[k].icon + " " + AS_KINDS[k].label]), kind, k => {
+      body.appendChild(asField("Loại", asChips(Object.keys(AS_KINDS).map(k => [k, AS_KINDS[k].icon + " " + (AS_KINDS[k].chip || AS_KINDS[k].label)]), kind, k => {
         const keep = { name:($("asName") || {}).value, amt:($("asAmt") || {}).value };
         asUI.kind = k; asRender();
         if(keep.name) $("asName").value = keep.name; if(keep.amt) $("asAmt").value = keep.amt; asCheck();
@@ -6306,7 +6325,7 @@ function startNgay50k(){
   }
   function asSaveForm(a){
     const name = $("asName").value.trim(); if(!name) return;
-    const kind = a ? a.kind : asUI.kind, save = kind === "save";
+    const kind = a ? a.kind : asUI.kind, save = DEP_KINDS.has(kind);
     const rec = a || { id:uid(), kind, t:Date.now() };
     rec.name = name;
     if(save){
@@ -6325,14 +6344,14 @@ function startNgay50k(){
       (state.assetTx = state.assetTx || []).push(mv);
       const now = $("asNow") ? balVal("asNow") : null;
       if(now != null && now !== amt) (state.assetVal = state.assetVal || []).push({ id:uid(), asset:rec.id, v:now, date:todayKey(), t:Math.max(Date.now(), mv.t) + 1 });
-      asUI.id = rec.id;
+      asUI.id = rec.id; asNewId = rec.id;
     }
     asSaved(); asUI.from = null; asGo("view", { from:null });
   }
 
   /* bỏ vào / rút ra */
   function asMoveUI(a, body, foot){
-    const save = a.kind === "save", dirIn = asUI.dir === "in";
+    const save = isDep(a), dirIn = asUI.dir === "in";
     $("asTitle").textContent = (dirIn ? (save ? "Gửi thêm" : "Mua thêm") : (save ? "Rút / tất toán" : "Bán / rút")) + " · " + (a.name || asKind(a).label);
     const full = save ? asPrincipal(a) + asInterest(a, todayKey()) : asValue(a);
     body.appendChild(asField("Số tiền", asMoney("asAmt", !dirIn && asUI.closeAll ? full : "", () => asMoveCheck(a))));
@@ -6353,7 +6372,7 @@ function startNgay50k(){
   }
   function asMoveCheck(a){
     const v = balVal("asAmt"), sv = $("asSave"); if(sv) sv.disabled = !(v > 0);
-    if(asUI.dir === "out" && !asUI.closeAll && v > asValue(a) && a.kind === "save") asWarn("Số rút lớn hơn số đang có trong sổ.");
+    if(asUI.dir === "out" && !asUI.closeAll && v > asValue(a) && isDep(a)) asWarn("Số rút lớn hơn số đang có trong sổ.");
     else asWarn("");
   }
   function asSaveMove(a){
@@ -6363,7 +6382,7 @@ function startNgay50k(){
     state.assetTx = state.assetTx || [];
     if(asUI.dir === "out" && asUI.closeAll && v !== base){
       /* rút hết: phần chênh so với vốn ghi thành lãi / lỗ (không qua ví) để vốn về 0 */
-      state.assetTx.push({ id:uid(), asset:a.id, dir:v > base ? "in" : "out", amt:Math.abs(v - base), date, t:t - 1, note:v > base ? (a.kind === "save" ? "Lãi" : "Lời") : "Lỗ" });
+      state.assetTx.push({ id:uid(), asset:a.id, dir:v > base ? "in" : "out", amt:Math.abs(v - base), date, t:t - 1, note:v > base ? (isDep(a) ? "Lãi" : "Lời") : "Lỗ" });
     }
     const mv = { id:uid(), asset:a.id, dir:asUI.dir, amt:v, date, t };
     if(asUI.w) mv.w = asUI.w; if(note) mv.note = note;
