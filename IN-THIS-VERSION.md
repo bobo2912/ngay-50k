@@ -1,6 +1,13 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v205, ngày 01/11/2026
+**Phiên bản hiện tại:** v206, ngày 01/11/2026
+
+---
+
+## Có gì mới trong v206 (so với v205)
+
+- Tab Tài sản: hàng **Đi vay / Cho vay / Tất toán** cùng dòng tổng và nút **Lọc** dính ngay dưới thanh đầu trang khi cuộn xuống danh sách khoản vay (nền kính mờ như thanh đầu trang). Đổi nhóm lúc đang dính thì danh sách mới bắt đầu ngay dưới hàng nút, không phải cuộn lại.
+- Danh sách khoản vay luôn đủ cao để hàng nút vẫn dính khi chuyển sang nhóm ít khoản.
 
 ---
 
