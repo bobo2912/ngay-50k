@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v206";
+  var K = "ngay50k:errlog", VER = "v207";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -2559,7 +2559,6 @@ li.txg > details.txd > ul{margin:0 !important}
       </div>
       <div class="as-bar" id="asBar" role="img" hidden></div>
       <div class="as-legend" id="asLegend"></div>
-      <button type="button" class="as-due" id="asDue" hidden></button>
       <section class="as-sec">
         <div class="as-sec-h"><h2>Tiết kiệm</h2><button type="button" class="wh-btn" id="asAddSave">+ Thêm</button></div>
         <div id="asSaveList"></div>
@@ -3189,7 +3188,7 @@ li.txg > details.txd > ul{margin:0 !important}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v206</p>
+      <p class="sync" id="appVersion">Phiên bản v207</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3739,12 +3738,12 @@ li.txg > details.txd > ul{margin:0 !important}
 <input type="file" id="phFile" accept="image/*" hidden>
 <div class="ph-view" id="phView" role="dialog" aria-modal="true" aria-label="Ảnh hoá đơn" hidden><img id="phImg" alt="Ảnh hoá đơn"><div class="ph-bar"><button type="button" id="phDel">Bỏ ảnh này</button><button type="button" id="phClose">Đóng</button></div></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=206"></script>
-<script src="thu-vien-cau.js?v=206"></script>
-<script src="quy-tac.js?v=206"></script>
-<script src="du-lieu.js?v=206"></script>
-<script src="native.js?v=206"></script>
-<script src="lock.js?v=206"></script>
+<script src="parse-vi.js?v=207"></script>
+<script src="thu-vien-cau.js?v=207"></script>
+<script src="quy-tac.js?v=207"></script>
+<script src="du-lieu.js?v=207"></script>
+<script src="native.js?v=207"></script>
+<script src="lock.js?v=207"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -6031,7 +6030,7 @@ function startNgay50k(){
     let sub = "", gTxt = "", gCls = "up";
     if(isDep(a)){
       const left = asDueLeft(a);
-      sub = (a.kind === "cd" ? "CDs · " : "") + (Number(a.rate) > 0 ? rateTxt(a.rate) : "chưa có lãi suất") + (a.due ? " · " + (left <= 0 ? "đã đáo hạn " : "đáo hạn ") + dShort(a.due) : " · không kỳ hạn");
+      sub = (Number(a.rate) > 0 ? rateTxt(a.rate) : "chưa có lãi suất") + (a.due ? " · " + (left <= 0 ? "đã đáo hạn " : "đáo hạn ") + dShort(a.due) : " · không kỳ hạn");
       right.appendChild(el("b", "num", fmt(base)));
       const g = a.due ? asInterest(a, a.due) : asInterest(a, todayKey());
       if(g > 0) gTxt = (a.due ? "lãi dự kiến " : "lãi tới nay ") + sGain(g);
@@ -6071,18 +6070,7 @@ function startNgay50k(){
     bar.setAttribute("aria-label", "Cơ cấu tài sản: " + segs.map(([, l, v]) => l + " " + Math.round(v / tot * 100) + "%").join(", "));
     if(T.card + T.owe){ const it = el("span", "as-lg debt"); it.append(el("i", "as-dot as-debt"), el("span", null, "Nợ thẻ & vay"), el("b", "num", "−" + fmtShort(T.card + T.owe))); lg.appendChild(it); }
     lg.hidden = !lg.children.length;
-    /* sổ sắp (hoặc đã) đáo hạn gần nhất */
-    const dueA = (state.assets || []).filter(a => asOpenA(a) && isDep(a) && a.due).sort((x, y) => x.due.localeCompare(y.due))[0];
-    const dc = $("asDue"); dc.hidden = !dueA;
-    if(dueA){
-      const left = asDueLeft(dueA), back = asPrincipal(dueA) + asInterest(dueA, dueA.due);
-      dc.innerHTML = "<small></small><b></b><span></span>";
-      dc.children[0].textContent = left <= 0 ? "Đã đáo hạn" : left === 1 ? "Đáo hạn ngày mai" : "Sắp đáo hạn · còn " + left + " ngày";
-      dc.children[1].textContent = (dueA.name || "Sổ tiết kiệm") + " · " + dShort(dueA.due);
-      dc.children[2].textContent = left <= 0 ? "Chạm để rút về ví hoặc gửi tiếp kỳ mới" : "Nhận về khoảng " + fmt(back);
-      dc.classList.toggle("late", left <= 0);
-      dc.onclick = () => openAsset(dueA.id);
-    }
+    /* v207: bỏ thẻ Sắp đáo hạn (thừa); sổ đã đáo hạn vẫn được tô màu trong danh sách Tiết kiệm */
     const fill = (boxId, xs, empty) => {
       const box = $(boxId); box.innerHTML = "";
       if(!xs.length){ box.appendChild(el("p", "empty as-empty", empty)); return; }

@@ -1,6 +1,13 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v206, ngày 01/11/2026
+**Phiên bản hiện tại:** v207, ngày 01/11/2026
+
+---
+
+## Có gì mới trong v207 (so với v206)
+
+- Bỏ thẻ **Sắp đáo hạn** ở tab Tài sản. Ngày đáo hạn vẫn ghi ở từng dòng; sổ đã đáo hạn được tô màu chữ.
+- Dòng CDs trong khối Tiết kiệm không còn chữ "CDs ·" phía trước lãi suất, giống hệt dòng sổ tiết kiệm (phân biệt bằng biểu tượng).
 
 ---
 
