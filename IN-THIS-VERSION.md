@@ -1,6 +1,22 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v210, ngày 01/11/2026
+**Phiên bản hiện tại:** v211, ngày 01/11/2026
+
+---
+
+## Có gì mới trong v211 (so với v210) – Chat ghi tiết kiệm, vàng, đầu tư
+
+- Chat hiểu câu về tiết kiệm & đầu tư (bộ hiểu riêng `tich-luy.js`, chạy trước bộ hiểu câu chính), hiện thẻ **Bỏ vào tích luỹ** / **Rút / bán** / **Cập nhật giá** để xem lại rồi Ghi:
+  - "gửi tiết kiệm 50tr vcb 6 tháng 5,2%" → sổ mới *Sổ Vietcombank 6 tháng*, lãi suất, kỳ hạn, ngày đáo hạn; "gửi thêm 10tr vào sổ vcb" → gửi thêm vào sổ đã có. "mở cd 200tr vpbank 12 tháng" → chứng chỉ tiền gửi.
+  - "mua 1 chỉ vàng 8tr2" → mua thêm vào khoản vàng đang có (cộng số chỉ), chưa có thì tạo khoản Vàng. Trước đây câu này bị tách thành 2 khoản chi 1.000đ và 8,2tr.
+  - "vàng giờ 8tr5" → cập nhật giá: app tự hiểu đó là giá 1 chỉ hay tổng (so với giá trị lần trước), có ghi rõ phép tính trên thẻ.
+  - "rút sổ vcb", "tất toán sổ techcombank" → rút hết, điền sẵn gốc + lãi tới nay, tất toán sổ; "rút 10tr từ sổ vcb" → rút một phần. "bán 1 chỉ vàng 8tr7", "bán hết vàng 17tr4".
+  - Quỹ, cổ phiếu, tiền số: "mua ccq DCDS 5tr", "quỹ DCDS giờ 12tr", "mua 100 cp FPT 12tr", "mua btc 2tr".
+  - "tài sản bao nhiêu", "vàng lời lỗ thế nào" → tài sản ròng, tiết kiệm, đầu tư (lời / lỗ), tiền trong ví, nợ.
+- Tiền bỏ vào là **chuyển tiền**: trừ ví (hoặc chọn "Không trừ ví" cho tiền có từ trước), **không tính chi tiêu, không trừ hạn mức ngày**. Trước đây "gửi tiết kiệm 50tr" bị ghi thành khoản chi 50tr.
+- Hoàn tác trên thẻ đã ghi gỡ đúng phần đã thêm (xoá khoản mới tạo, trả lại số chỉ, mở lại sổ đã tất toán).
+- Bài thử `node tests-tich-luy.js` (47 câu, gồm 20 câu không được nhầm là câu tích luỹ: "chuyển 5tr vào tk", "tất toán thẻ vib", "mua vé số", "vâng"…). Đã quét 5.625 câu mẫu sẵn có: không câu nào bị bộ hiểu mới bắt nhầm.
+- Trang mở với `?test=1` có lối vào `window.__T` cho bài thử trình duyệt.
 
 ---
 
