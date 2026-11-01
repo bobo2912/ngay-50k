@@ -1,6 +1,18 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v202, ngày 30/10/2026
+**Phiên bản hiện tại:** v203, ngày 01/11/2026
+
+---
+
+## Có gì mới trong v203 (so với v202) – tab Tài sản: tiết kiệm & đầu tư
+
+- Ô **Khoản vay** trên thanh tab đổi thành **Tài sản**. Đầu tab: **Tài sản ròng** (tiền trong ví + tiết kiệm + đầu tư + cho vay − nợ thẻ − khoản vay), thanh cơ cấu và chú thích, thẻ **Sắp đáo hạn** của sổ gần nhất. Bên dưới là hai khối **Tiết kiệm** và **Đầu tư**, rồi **Nợ & cho vay** (toàn bộ phần Khoản vay cũ, giữ nguyên).
+- **Sổ tiết kiệm:** lãi suất, kỳ hạn (hoặc không kỳ hạn), ngày gửi → app tính ngày đáo hạn, lãi tới hôm nay, lãi khi đáo hạn, số nhận về (lãi đơn theo ngày, ước tính). Gửi thêm, rút / tất toán, khi đáo hạn thì **Rút về ví** hoặc **Gửi tiếp kỳ mới** (lãi nhập gốc).
+- **Đầu tư** (vàng, chứng chỉ quỹ, cổ phiếu, tiền số, khác): vốn, số lượng tuỳ chọn, **Cập nhật giá trị** (nhập giá 1 chỉ / 1 CCQ hoặc tổng) → lời lỗ và %. Mua thêm, bán / rút, bán hết thì đóng khoản và ghi phần lời / lỗ.
+- Tiền bỏ vào lấy từ một ví (trừ số dư ví), rút ra về một ví (cộng số dư); **không tính là chi tiêu**, không trừ hạn mức ngày. Khoản có từ trước khi dùng app chọn **Có từ trước, không trừ ví**.
+- Sổ và lịch sử Ví có thêm khung **Tiết kiệm & đầu tư** cuối ngày, cạnh **Định kỳ** và **Không tính chi** (kiểu Huy hiệu: dấu mũi tên xuống màu xanh, chữ nhỏ "tích luỹ"). Chạm để mở khoản, vuốt để xoá.
+- Dữ liệu mới: `state.assets` (phần đầu), `state.assetTx` (tiền vào / ra, `dir`, `w`), `state.assetVal` (các lần cập nhật giá trị). Schema 2 lưu tiền vào / ra trong `tx` loại `asset`; mã hoá khi bật PIN, đi theo file sao lưu, gộp được giữa hai máy. Dữ liệu mẫu có thêm một sổ tiết kiệm và một khoản vàng.
+- Chưa có: ghi bằng Chat ("gửi tiết kiệm 50tr 6 tháng 5,2%", "vàng giờ 8tr5") và nhận ra thông báo chuyển tiền tới sổ / quỹ — làm ở bản sau.
 
 ---
 

@@ -23,9 +23,14 @@
               in       thu vào ví             xfer    chuyển giữa hai ví
               cardpay  trả nợ thẻ             loan    số tiền gốc lúc tạo khoản vay / cho vay
               draw     vay thêm / cho vay thêm         repay   trả nợ / được trả (theo side của khoản vay)
+              asset    tiền vào / ra một khoản tiết kiệm, đầu tư (v203): asset = mã khoản, dir "in" | "out",
+                       acc = ví bị trừ (in) / được cộng (out); không có acc = không qua ví (có từ trước, lãi nhập gốc)
      loans:    [ { id, side:"borrow"|"lend", who, due, note, prepaid, t, m } ],   // chỉ phần đầu, tiền nằm ở tx
      balances: [ { id, acc, amt, t, book?, card?, m } ],                          // các lần đối chiếu số dư
      recur:    [ { id, name, amt, day, tag, acc, from, made, m } ],
+     assets:   [ { id, kind:"save"|"gold"|"fund"|"stock"|"crypto"|"other", name, rate?, term?, start?, due?, onDue?,
+                   qty?, unit?, closed?, t, m } ],                                // v203: chỉ phần đầu, tiền nằm ở tx (asset)
+     assetVal: [ { id, asset, v, date, t, m } ],                                  // v203: các lần cập nhật giá trị khoản đầu tư
      tags, tagOff, contacts, learn, miss, thuvien, alias, aliasM, payKind, askMem, deleted
    }
 */
@@ -62,7 +67,8 @@
     in:      { bag:"income", ren:{ w:"acc", cat:"tag" }, accDef:true, tagPre:"in:" },
     card:    { bag:"cardTx", ren:{ cardId:"acc", where:"note", cat:"tag" } },
     xfer:    { list:"xfer",    ren:{ date:"d", from:"acc" } },
-    cardpay: { list:"cardPay", ren:{ date:"d", from:"acc", cardId:"to" }, accDef:true }
+    cardpay: { list:"cardPay", ren:{ date:"d", from:"acc", cardId:"to" }, accDef:true },
+    asset:   { list:"assetTx", ren:{ date:"d", w:"acc" } }
   };
   const LOAN_SUB = { draw:{ list:"draws", ren:{ date:"d" } }, repay:{ list:"payments", ren:{ date:"d" } } };
 
@@ -82,8 +88,8 @@
         tx.push(r);
       }));
     });
-    /* danh sách có ngày riêng: xfer / cardPay */
-    ["xfer", "cardpay"].forEach(type => {
+    /* danh sách có ngày riêng: xfer / cardPay / assetTx (v203) */
+    ["xfer", "cardpay", "asset"].forEach(type => {
       const K = KIND[type];
       (Array.isArray(st[K.list]) ? st[K.list] : []).forEach(it => {
         if(!isObj(it)) return;
@@ -150,6 +156,7 @@
       tags: st.tags || [], tagOff: st.tagOff || {}, contacts: st.contacts || [],
       learn: st.learn || [], miss: st.miss || [], thuvien: st.thuvien || [],
       alias: st.alias || {}, aliasM: st.aliasM || {}, payKind: st.payKind || {}, askMem: st.askMem || {},
+      assets: Array.isArray(st.assets) ? st.assets : [], assetVal: Array.isArray(st.assetVal) ? st.assetVal : [],
       deleted: st.deleted || {}
     };
     /* trường cũ không còn dùng: chỉ giữ khi còn dữ liệu */
@@ -163,7 +170,8 @@
     v = v || {};
     const st = {
       budget: v.budget, budgetM: v.budgetM || 0, updated: v.updated || 0,
-      days:{}, income:{}, cardTx:{}, xfer:[], cardPay:[], loans:[], wallets:[], cards:[],
+      days:{}, income:{}, cardTx:{}, xfer:[], cardPay:[], loans:[], wallets:[], cards:[], assetTx:[],
+      assets: Array.isArray(v.assets) ? clone(v.assets) : [], assetVal: Array.isArray(v.assetVal) ? clone(v.assetVal) : [],
       tags: v.tags || [], tagOff: v.tagOff || {}, contacts: v.contacts || [],
       learn: v.learn || [], miss: v.miss || [], thuvien: v.thuvien || [],
       alias: v.alias || {}, aliasM: v.aliasM || {}, payKind: v.payKind || {}, askMem: v.askMem || {},

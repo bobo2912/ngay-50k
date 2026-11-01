@@ -75,12 +75,19 @@ const v1 = {
   contacts: [ { id:"c1", name:"Anh A", acct:"0123456789", bank:"MB Bank", memo:"", cat:"nha", uses:3 } ],
   learn: [ { id:"le1", key:"an pho #", items:[] } ], miss: [], thuvien: [ { id:"t1", k:"GS25", r:"GS25" } ],
   alias: { hl:"Highlands" }, aliasM: { hl:9 }, payKind: { "teo":"in" }, askMem: { "chuyen_di:lan":"vay" },
-  deleted: { zz:123 }, payees: {}, caps: {}
+  deleted: { zz:123 }, payees: {}, caps: {},
+  /* v203: tiết kiệm & đầu tư */
+  assets: [ { id:"A1", kind:"save", name:"Sổ VCB", rate:5.2, term:6, start:"2026-09-15", due:"2027-03-15", onDue:"wallet", t:T("2026-09-15T09:00:00"), m:4 },
+            { id:"A2", kind:"gold", name:"Vàng SJC", qty:3, unit:"chỉ", t:T("2026-10-01T09:00:00") } ],
+  assetVal: [ { id:"V1", asset:"A2", v:25500000, date:"2026-10-28", t:T("2026-10-28T09:00:00") } ],
+  assetTx: [ { id:"M1", asset:"A1", dir:"in", amt:100000000, w:"main", date:"2026-09-15", t:T("2026-09-15T09:00:00") },
+             { id:"M2", asset:"A2", dir:"in", amt:24600000, date:"2026-10-01", t:T("2026-10-01T09:00:00"), note:"có từ trước" },
+             { id:"M3", asset:"A2", dir:"out", amt:1000000, w:"wMomo", date:"2026-10-29", t:T("2026-10-29T09:00:00") } ]
 };
 
 const v2 = D.toV2(v1);
 ok("có schema 2", v2.schema === 2 && D.isV2(v2));
-ok("mọi biến động nằm ở tx", v2.tx.length === 5 + 2 + 3 + 1 + 3 + 3 + 1, "được " + v2.tx.length);
+ok("mọi biến động nằm ở tx", v2.tx.length === 5 + 2 + 3 + 1 + 3 + 3 + 1 + 3, "được " + v2.tx.length);
 ok("tx sắp theo ngày", v2.tx.every((r, i) => !i || String(v2.tx[i - 1].d) <= String(r.d)));
 ok("chi tiền mặt về ví main", v2.tx.find(r => r.id === "o1").acc === "main");
 ok("chi từ ví khác giữ mã ví", v2.tx.find(r => r.id === "o2").acc === "wMomo");
@@ -99,6 +106,9 @@ ok("tài khoản: main + 2 ví + 1 thẻ", v2.accounts.map(a => a.group).join() 
 ok("thẻ có kind credit", v2.accounts.find(a => a.id === "k1").kind === "credit");
 ok("đối chiếu số dư có acc", v2.balances.find(b => b.id === "b1").acc === "main" && v2.balances.find(b => b.id === "b2").acc === "wMomo");
 ok("định kỳ: tag + acc", (r => r.tag === "nha" && r.acc === "main")(v2.recur.find(r => r.id === "r1")) && v2.recur.find(r => r.id === "r2").acc === "k1");
+ok("tiết kiệm: gửi từ ví thành tx asset có acc", (r => r.type === "asset" && r.asset === "A1" && r.dir === "in" && r.acc === "main" && r.d === "2026-09-15")(v2.tx.find(r => r.id === "M1")));
+ok("tiết kiệm: có từ trước không có acc", !("acc" in v2.tx.find(r => r.id === "M2")));
+ok("phần đầu khoản tích luỹ và giá trị nằm riêng", v2.assets.length === 2 && v2.assetVal.length === 1);
 ok("bỏ trường cũ rỗng", !("payees" in v2) && !("caps" in v2));
 
 /* khứ hồi: cũ → mới → cũ không mất gì */
