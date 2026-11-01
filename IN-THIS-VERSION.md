@@ -1,6 +1,13 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v204, ngày 01/11/2026
+**Phiên bản hiện tại:** v205, ngày 01/11/2026
+
+---
+
+## Có gì mới trong v205 (so với v204)
+
+- Tab Tài sản: bấm **Đi vay / Cho vay / Tất toán** giữ nguyên chỗ đang xem, không còn nhảy lên đầu trang (Tài sản ròng). Hàng nút đã trôi khỏi màn hình thì chỉ cuộn vừa đủ để thấy lại.
+- Quay lại từ chi tiết khoản vay, hoặc sau khi lưu / xoá khoản vay: về đúng phần **Nợ & cho vay**.
 
 ---
 
