@@ -1,6 +1,14 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v215, ngày 01/11/2026
+**Phiên bản hiện tại:** v216, ngày 01/11/2026
+
+---
+
+## Có gì mới trong v216 (so với v215) – so với trung bình 3 tháng, báo cáo năm
+
+- Chat **so với trung bình 3 tháng**: "tháng này so với trung bình 3 tháng", "ăn uống tháng này so với tb 3 tháng", "tuần này so với trung bình 3 tuần". Tháng chưa hết thì so cùng số ngày đầu tháng của 3 tháng trước. Từng nhóm có dấu tăng / giảm so với trung bình, kèm nhóm tăng và giảm nhiều nhất. Thiếu dữ liệu tháng nào thì ghi rõ có mấy / 3 tháng.
+- Chat **báo cáo năm**: "báo cáo năm nay", "tổng kết năm", "báo cáo năm 2025". Gồm chi, thu, để dành (% thu nhập), trung bình mỗi tháng, so với cùng kỳ năm trước; từng tháng (chạm vào xem 3 nhóm tốn nhất của tháng đó); 5 nhóm tốn nhiều nhất kèm thay đổi so với năm trước; tháng chi nhiều / ít nhất, khoản lớn nhất, tiền đã bỏ vào tiết kiệm & đầu tư.
+- Bộ hiểu câu hiểu "năm 2025" là cả năm 2025 (trước đây 2025 bị coi là số tiền). Bài thử thêm ở `tests-parse-vi.js` và `tests-trinh-duyet.js` (23 bài).
 
 ---
 

@@ -122,6 +122,13 @@ const ok = (name, cond, extra) => { n++; console.log((cond ? "✓ " : "✗ ") + 
     });
     ok("gộp với bản cũ sau khi đổi ngày: chỉ một khoản", dup === 1, "thấy " + dup);
 
+    /* 7. báo cáo (v216): so với trung bình 3 tháng, báo cáo năm (đang ở tab Chat) */
+    await say("tháng này so với trung bình 3 tháng");
+    ok("Chat so tháng này với trung bình 3 tháng", /so với trung bình 3 tháng trước/i.test(await lastBot()), await lastBot());
+    await say("báo cáo năm nay");
+    ok("Chat báo cáo năm: chi, thu, từng tháng", /Năm \d{4}[^]*chi[^]*thu/.test(await lastBot()) && /Từng tháng/.test(await lastBot()), await lastBot());
+
+    await pg.locator(".msg.bot").last().screenshot({ path:process.env.SHOT || "/dev/null" }).catch(() => {});
     ok("không có lỗi JavaScript", !errs.length, errs.slice(0, 5).join("\n   "));
   }catch(e){
     ok("chạy hết các bước", false, e && e.stack ? e.stack.split("\n").slice(0, 3).join("\n   ") : String(e));

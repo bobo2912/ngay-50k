@@ -63,3 +63,14 @@ t('Bố cho 1tr', r => it(r).kind==='in');
 t('Thẻ trả ăn 1 triệu', r => it(r).kind==='card' && it(r).cat==='an' && it(r).amt===1000000);
 t('trả tiền ăn 200k', r => it(r).kind==='out' && it(r).cat==='an');
 console.log('\nFAILED (thêm):', f);
+f = 0;
+/* v216: so với trung bình 3 tháng, báo cáo năm */
+t('tháng này so với trung bình 3 tháng', r => r.query && r.query.q==='report' && r.query.avg3 && r.query.period==='month');
+t('chi tiêu tháng này so với trung bình 3 tháng trước', r => r.query && r.query.q==='report' && r.query.avg3);
+t('tuần này so với tb 3 tuần', r => r.query && r.query.avg3 && r.query.period==='week');
+t('trung bình mỗi tháng tiêu bao nhiêu', r => r.query && r.query.q==='avg');
+t('báo cáo năm nay', r => r.query && r.query.q==='report' && r.query.yearly && r.query.period==='year');
+t('tổng kết năm', r => r.query && r.query.yearly);
+t('báo cáo năm 2025', r => r.query && r.query.yearly && r.query.from==='2025-01-01' && r.query.to==='2025-12-31');
+t('năm 2025 tiêu bao nhiêu', r => r.query && r.query.q==='spent' && r.query.from==='2025-01-01');
+console.log('\nFAILED (v216):', f);

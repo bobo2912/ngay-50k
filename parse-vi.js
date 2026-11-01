@@ -621,6 +621,7 @@
       let y = m[2] ? +m[2] : now.getFullYear(); if(!m[2] && +m[1] - 1 > now.getMonth()) y--;
       const a = new Date(y, +m[1] - 1, 1), b = new Date(y, +m[1], 0); return { period:"custom", from:k(a), to:k(b) };
     }
+    if((m = n.match(/ nam (20\d\d) /))){ const y = +m[1]; return { period:"custom", from:y + "-01-01", to:y + "-12-31" }; }   /* v216: "năm 2025" */
     if(/ nam nay /.test(n)) return { period:"year" };
     if(/ nam (ngoai|truoc|roi) /.test(n)){ const y = now.getFullYear() - 1; return { period:"custom", from:y + "-01-01", to:y + "-12-31" }; }
     if(/ thang (truoc|roi) /.test(n)) return { period:"lastmonth" };
@@ -812,7 +813,7 @@
     /* "tháng này đi grab mấy lần" */
     if(COUNT_W.test(n) && (K || tagOf0 || P.length || / (tieu|chi|mua|quet|giao dich|khoan) /.test(n))) return per(subj({ q:"count", period:"month" }));
     /* "trung bình mỗi ngày tiêu bao nhiêu", "mỗi tháng tiền điện bao nhiêu" */
-    if(AVG_W.test(n) && / (bao nhieu|bn|het|ton|tieu|chi|xai|khoang) /.test(n) && !/ (duoc tieu|han muc|nen tieu) /.test(n)){
+    if(AVG_W.test(n) && / (bao nhieu|bn|het|ton|tieu|chi|xai|khoang) /.test(n) && !/ (duoc tieu|han muc|nen tieu|so voi|so sanh) /.test(n)){
       const unit = / (thang|hang thang|thuong thang) /.test(n) ? "month" : / tuan /.test(n) ? "week" : "day";
       return subj({ q:"avg", unit });
     }
@@ -928,15 +929,18 @@
     const nq = n.replace(/ gi (do|day|ay|ca) /g, " ");                 /* "200k gì đó" là lời kể, không phải câu hỏi */
     /* v122: "sao tháng này tiêu nhiều vậy" → báo cáo so với kỳ trước (máy tự làm, AI cũng chỉ làm được vậy vì không xem số liệu) */
     const why = /^ (sao|tai sao|vi sao|lam sao ma) .*(tieu|chi|xai|het|ton).*(nhieu|qua|the|vay_|du vay)/.test(nq) || /^ (sao|tai sao|vi sao) .*(nhieu|tang) /.test(nq);
-    let wantsReport = why || REPORT.test(nq) || /^ (cho (toi|minh|em|tao) (biet|xem)|liet ke|thong ke|phan tich|bao cao|xem) /.test(nq);
+    /* v216: "tổng kết năm", "báo cáo năm 2025", "so với trung bình 3 tháng" */
+    const yearly = / (tong ket|bao cao|thong ke|nhin lai|review) (ca |cua )?(nam|nam nay|nam ngoai|nam truoc|nam 20\d\d) /.test(nq) || / (tong ket|nhin lai) (\S+ ){0,3}nam /.test(nq);
+    const avg3 = / (so voi|so sanh)( voi)? (muc |con so )?(trung binh|tb|binh quan) (cua |cac )?(3|ba) (thang|tuan|ky) /.test(nq);
+    let wantsReport = why || yearly || avg3 || REPORT.test(nq) || /^ (cho (toi|minh|em|tao) (biet|xem)|liet ke|thong ke|phan tich|bao cao|xem) /.test(nq);
     const isQ = /\?\s*$/.test(text) || / (bao nhieu|bn|may|nhieu khong|the nao|sao) /.test(n) || / (ngay|hom|khoan|nhom|thang|tuan) nao /.test(n) || / (khong|ko|chua) $/.test(n) && / (tieu|chi|xai|nhieu|it|tang|giam|vuot) /.test(n) || /^ (xem|cho xem|tong) /.test(n) || / (ai|nhung ai) (con |dang |van )?no | no (ai|nhung ai) /.test(n) || / no (khong|ko|chua|k) $/.test(n) || wantsReport;
     if(!isQ) return null;
     const { N } = tokenize(text);
     if(wantsReport && !/\?\s*$/.test(text)){
       /* có số tiền mà không đứng sau "trên/hơn/từ/top" thì là kể chi tiêu, không phải hỏi */
-      for(let i = 0; i < N.length; i++){ const a = amountAt(N, i); if(a && !["tren","hon","tu","top","duoi"].includes(N[i-1])) return null; if(a) i += a.n - 1; }
+      for(let i = 0; i < N.length; i++){ if(N[i-1] === "nam" && /^20\d\d$/.test(N[i])) continue; const a = amountAt(N, i); if(a && !["tren","hon","tu","top","duoi"].includes(N[i-1])) return null; if(a) i += a.n - 1; }
     }
-    if(!wantsReport){ for(let i = 0; i < N.length; i++){ const a = amountAt(N, i); if(a && !/ (bao nhieu|bn) /.test(n)) return null; } }
+    if(!wantsReport){ for(let i = 0; i < N.length; i++){ if(N[i-1] === "nam" && /^20\d\d$/.test(N[i])) continue; const a = amountAt(N, i); if(a && !/ (bao nhieu|bn) /.test(n)) return null; } }
     /* "tháng này so với tháng trước": kỳ chính là kỳ nói trước, kỳ so sánh tự lấy kỳ liền trước */
     const cmpAt = n.search(/ (so voi|so sanh|nhieu hon|it hon) /);
     const pr = periodOf(cmpAt > 0 && periodOf(n.slice(0, cmpAt + 1), now).period ? n.slice(0, cmpAt + 1) : n, now), period = pr.period;
@@ -983,6 +987,8 @@
       if(tm || / (lon nhat|nhieu tien nhat|khoan to) /.test(n)){ q.top = tm ? +(tm[1] || tm[2]) : 5; q.group = "none"; q.list = true; }
       for(let i = 0; i < N.length; i++){ if(["tren","hon","tu"].includes(N[i]) && N[i+1]){ const a = amountAt(N, i + 1); if(a && a.v >= 1000){ q.minAmt = a.v; break; } } }
       if(/ (so voi|so sanh|nhieu hon|it hon|tang hay giam|tang khong|giam khong) /.test(n) || why) q.compare = true;
+      if(avg3){ q.compare = true; q.avg3 = true; }                    /* v216: so với trung bình 3 kỳ trước */
+      if(yearly){ q.yearly = true; if(!period){ q.period = "year"; delete q.noPeriod; } }   /* v216: báo cáo năm */
       return q;
     }
     if(/ (con tieu duoc|tieu duoc nua|tieu them duoc|con duoc tieu|tieu duoc them|con bao nhieu de tieu|con bao nhieu (tien )?(de |duoc )tieu) /.test(n) && (!period || period === "today")) return { q:"left" };

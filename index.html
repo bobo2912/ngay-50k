@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v215";
+  var K = "ngay50k:errlog", VER = "v216";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -3206,7 +3206,7 @@ li.txg > details.txd > ul{margin:0 !important}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v215</p>
+      <p class="sync" id="appVersion">Phiên bản v216</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3756,14 +3756,14 @@ li.txg > details.txd > ul{margin:0 !important}
 <input type="file" id="phFile" accept="image/*" hidden>
 <div class="ph-view" id="phView" role="dialog" aria-modal="true" aria-label="Ảnh hoá đơn" hidden><img id="phImg" alt="Ảnh hoá đơn"><div class="ph-bar"><button type="button" id="phDel">Bỏ ảnh này</button><button type="button" id="phClose">Đóng</button></div></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=215"></script>
-<script src="thu-vien-cau.js?v=215"></script>
-<script src="quy-tac.js?v=215"></script>
-<script src="du-lieu.js?v=215"></script>
-<script src="doc-so-tk.js?v=215"></script>
-<script src="tich-luy.js?v=215"></script>
-<script src="native.js?v=215"></script>
-<script src="lock.js?v=215"></script>
+<script src="parse-vi.js?v=216"></script>
+<script src="thu-vien-cau.js?v=216"></script>
+<script src="quy-tac.js?v=216"></script>
+<script src="du-lieu.js?v=216"></script>
+<script src="doc-so-tk.js?v=216"></script>
+<script src="tich-luy.js?v=216"></script>
+<script src="native.js?v=216"></script>
+<script src="lock.js?v=216"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -6987,14 +6987,26 @@ function startNgay50k(){
     const lastDay = b > todayKey() ? todayKey() : b, nDays = Math.max(1, Math.round((new Date(lastDay + "T12:00:00") - new Date(a + "T12:00:00")) / 86400000) + 1);
     if(nDays > 1) sub.push("TB " + fmt(total / nDays) + "/ngày");
     if(q.fx === "no" && kind === "out"){ const fxT = rptTx(a, b, Object.assign({}, q, { fx:"only", top:0, minAmt:0 })).reduce((t, x) => t + x.amt, 0); sub.push(fxT ? "Định kỳ để riêng " + fmt(fxT) : "Không có khoản định kỳ"); }
-    let prevTot = null, prevBy = null, pa, pb;
-    if(q.compare || q.group === "tag"){
+    let prevTot = null, prevBy = null, pa, pb, cmpLbl = "";
+    if(q.avg3){
+      /* v216: so với trung bình 3 kỳ trước (tháng chưa hết thì so cùng số ngày đầu tháng của 3 tháng trước) */
+      const rs = []; let r = [a, b > todayKey() ? todayKey() : b];
+      for(let i = 0; i < 3; i++){ r = prevRange(r[0], r[1]); rs.push(r); }
+      prevTot = 0; prevBy = {};
+      let any = 0;
+      rs.forEach(([x, y]) => { const pl = rptTx(x, y, Object.assign({}, q, { top:0 })); if(pl.length) any++; pl.forEach(t => { prevTot += t.amt / 3; const g = rptGroupKey(t, q.group === "none" ? "tag" : q.group); prevBy[g] = (prevBy[g] || 0) + t.amt / 3; }); });
+      const unit = q.period === "week" || q.period === "lastweek" ? "tuần" : a.slice(8) === "01" ? "tháng" : "kỳ";
+      const partial = unit === "tháng" && rs[0][1].slice(8) !== String(new Date(+rs[0][1].slice(0, 4), +rs[0][1].slice(5, 7), 0).getDate());
+      cmpLbl = "trung bình 3 " + unit + " trước" + (partial ? " (cùng " + (+rs[0][1].slice(8)) + " ngày đầu " + unit + ")" : "") + (any < 3 ? " · có " + any + "/3 " + unit + " có dữ liệu" : "");
+      pa = rs[2][0]; pb = rs[0][1];
+    } else if(q.compare || q.group === "tag"){
       [pa, pb] = prevRange(a, b);
       const pl = rptTx(pa, pb, Object.assign({}, q, { top:0 }));
       prevTot = pl.reduce((s, x) => s + x.amt, 0);
       prevBy = {}; pl.forEach(x => { const g = rptGroupKey(x, q.group === "none" ? "tag" : q.group); prevBy[g] = (prevBy[g] || 0) + x.amt; });
+      cmpLbl = rangeLabel(pa, pb);
     }
-    if(prevTot != null && (q.compare || prevTot)) sub.push((prevTot ? pctTxt((total - prevTot) / prevTot * 100) + " so với " + rangeLabel(pa, pb) + " (" + fmt(prevTot) + ")" : rangeLabel(pa, pb) + " chưa có khoản nào"));
+    if(prevTot != null && (q.compare || prevTot)) sub.push((prevTot ? pctTxt((total - prevTot) / prevTot * 100) + " so với " + cmpLbl + " (" + fmt(Math.round(prevTot)) + ")" : q.avg3 ? "So với " + cmpLbl + ": chưa có khoản nào để so" : cmpLbl + " chưa có khoản nào"));
     if(sub.length) h += '<p class="rpt-s">' + sub.join(" · ") + '</p>';
 
     if(q.group === "none" || q.top){
@@ -7031,8 +7043,67 @@ function startNgay50k(){
     }
     if(prevBy && q.compare){
       const ch = [...map2arr(list, q)].map(([k, v]) => [k, v - (prevBy[k] || 0)]).sort((x, y) => y[1] - x[1])[0];
-      if(ch && ch[1] > 0) notes.push("Tăng nhiều nhất: " + esc(rptGroupLabel(ch[0], q.group === "none" ? "tag" : q.group, list.find(x => rptGroupKey(x, q.group === "none" ? "tag" : q.group) === ch[0]) || {}, kind).label) + " +" + fmt(ch[1]));
+      if(ch && ch[1] > 0) notes.push("Tăng nhiều nhất: " + esc(rptGroupLabel(ch[0], q.group === "none" ? "tag" : q.group, list.find(x => rptGroupKey(x, q.group === "none" ? "tag" : q.group) === ch[0]) || {}, kind).label) + " +" + fmt(Math.round(ch[1])));
+      if(q.avg3){
+        const g0 = q.group === "none" ? "tag" : q.group, cur = Object.fromEntries(map2arr(list, q));
+        const dn = Object.keys(prevBy).map(k => [k, (cur[k] || 0) - prevBy[k]]).sort((x, y) => x[1] - y[1])[0];
+        if(dn && dn[1] < 0){ const L = g0 === "tag" ? tagOf(dn[0]).label : dn[0]; notes.push("Giảm nhiều nhất: " + esc(L) + " −" + fmt(Math.round(-dn[1]))); }
+      }
     }
+    if(notes.length) h += '<ul class="rpt-n">' + notes.map(t => "<li>" + t + "</li>").join("") + "</ul>";
+    return h + "</div>";
+  }
+  /* ---------- v216: báo cáo năm ----------
+     "báo cáo năm nay", "tổng kết năm 2025": chi / thu / để dành cả năm (tới hôm nay), từng tháng, nhóm tốn nhiều nhất,
+     so với cùng kỳ năm trước, tiền đã bỏ vào tích luỹ. Không tính khoản định kỳ riêng: tổng là tổng thật. */
+  function yearReport(q){
+    const [a, b0] = qRange(q), b = b0 > todayKey() ? todayKey() : b0, y = a.slice(0, 4);
+    const outL = rptTx(a, b, { kind:"out", src:"all" }), inL = rptTx(a, b, { kind:"in" });
+    const sum = l => l.reduce((s, x) => s + x.amt, 0);
+    const tot = sum(outL), inc = sum(inL);
+    const lbl = "Năm " + y + (b0 > b ? " (tới " + dm(b) + ")" : "");
+    if(!outL.length && !inL.length) return '<div class="rpt"><p class="rpt-h">' + lbl + " chưa có khoản chi, thu nào.</p></div>";
+    const py = String(+y - 1), pa = py + a.slice(4), pb = py + b.slice(4);
+    const pTot = sum(rptTx(pa, pb, { kind:"out", src:"all" })), pInc = sum(rptTx(pa, pb, { kind:"in" }));
+    const nM = (+b.slice(5, 7)) - (+a.slice(5, 7)) + 1;
+    const fxT = sum(outL.filter(x => x.fx));
+    let h = '<div class="rpt">';
+    h += '<p class="rpt-h">' + lbl + ": chi <b>" + fmt(tot) + "</b> · thu <b>" + fmt(inc) + "</b></p>";
+    const sub = ["TB " + fmt(Math.round(tot / Math.max(1, nM))) + "/tháng"];
+    if(inc) sub.push((inc - tot >= 0 ? "Để dành " : "Tiêu lố ") + fmt(Math.abs(inc - tot)) + " (" + Math.round((inc - tot) / inc * 100) + "% thu nhập)");
+    if(pTot) sub.push(pctTxt((tot - pTot) / pTot * 100) + " chi so với cùng kỳ " + py + " (" + fmt(pTot) + ")");
+    else sub.push("Cùng kỳ " + py + " chưa có dữ liệu");
+    if(fxT) sub.push("Định kỳ " + fmt(fxT));
+    h += '<p class="rpt-s">' + sub.join(" · ") + "</p>";
+    /* từng tháng */
+    const months = {}; outL.forEach(x => { const k = x.k.slice(0, 7); months[k] = months[k] || { out:0, inc:0, n:0 }; months[k].out += x.amt; months[k].n++; });
+    inL.forEach(x => { const k = x.k.slice(0, 7); months[k] = months[k] || { out:0, inc:0, n:0 }; months[k].inc += x.amt; });
+    const mk = Object.keys(months).sort().reverse(), maxOut = Math.max(1, ...mk.map(k => months[k].out));
+    h += '<p class="rpt-t">Từng tháng</p><div class="rpt-g">' + mk.map(k => {
+      const m = months[k], w = Math.round(m.out / maxOut * 100);
+      const tb = {}; outL.forEach(x => { if(x.k.slice(0, 7) === k) tb[x.cat || "khac"] = (tb[x.cat || "khac"] || 0) + x.amt; });
+      const t3 = Object.entries(tb).sort((p, r) => r[1] - p[1]).slice(0, 3);
+      return '<details><summary><span class="i">' + icH("🗓️") + '</span><span class="n">Tháng ' + (+k.slice(5)) + '<small>' + m.n + " khoản" + (m.inc ? " · thu " + fmtShort(m.inc) : "") + '</small></span><b>' + fmt(m.out) + '</b><span class="bar"><i style="width:' + w + '%"></i></span></summary>'
+        + '<ul class="rpt-l">' + t3.map(([c, v]) => '<li><span class="i">' + icH(tagOf(c).icon) + '</span><span class="n">' + esc(tagOf(c).label) + '</span><b>' + fmt(v) + "</b></li>").join("") + "</ul></details>";
+    }).join("") + "</div>";
+    /* nhóm */
+    const by = {}; outL.forEach(x => { by[x.cat || "khac"] = (by[x.cat || "khac"] || 0) + x.amt; });
+    const pBy = {}; rptTx(pa, pb, { kind:"out", src:"all" }).forEach(x => { pBy[x.cat || "khac"] = (pBy[x.cat || "khac"] || 0) + x.amt; });
+    const top = Object.entries(by).sort((p, r) => r[1] - p[1]).slice(0, 5);
+    if(top.length) h += '<p class="rpt-t">Tốn nhiều nhất</p><ul class="rpt-n">' + top.map(([k, v]) => { const t = tagOf(k), p = pBy[k]; return "<li>" + icH(t.icon) + " " + esc(t.label) + " <b>" + fmt(v) + "</b> · " + Math.round(v / tot * 100) + "%" + (p ? " (" + pctTxt((v - p) / p * 100) + " so với " + py + ")" : "") + "</li>"; }).join("") + "</ul>";
+    /* nhận xét */
+    const notes = [];
+    if(mk.length > 1){
+      const full = b0 > b ? mk.filter(k => k !== b.slice(0, 7)) : mk;   /* tháng đang dở không tính là "ít nhất" */
+      const hi = mk.reduce((m, k) => months[k].out > months[m].out ? k : m, mk[0]), lo = full.length > 1 ? full.reduce((m, k) => months[k].out < months[m].out ? k : m, full[0]) : null;
+      notes.push("Tháng chi nhiều nhất: tháng " + (+hi.slice(5)) + " (" + fmt(months[hi].out) + ")" + (lo && lo !== hi ? ", ít nhất: tháng " + (+lo.slice(5)) + " (" + fmt(months[lo].out) + ")" : ""));
+    }
+    const big = outL.reduce((m, x) => x.amt > m.amt ? x : m, outL[0] || { amt:0 });
+    if(big.amt) notes.push("Khoản lớn nhất: " + esc(big.note) + " " + fmt(big.amt) + " (" + dm(big.k) + ")");
+    const asIn = (state.assetTx || []).filter(x => x.date >= a && x.date <= b && x.w && x.dir === "in").reduce((s, x) => s + (Number(x.amt) || 0), 0);
+    const asOut = (state.assetTx || []).filter(x => x.date >= a && x.date <= b && x.w && x.dir === "out").reduce((s, x) => s + (Number(x.amt) || 0), 0);
+    if(asIn || asOut) notes.push("Tiết kiệm & đầu tư: bỏ vào " + fmt(asIn) + (asOut ? ", rút ra " + fmt(asOut) : ""));
+    if(pInc && inc) notes.push("Thu nhập " + pctTxt((inc - pInc) / pInc * 100) + " so với cùng kỳ " + py);
     if(notes.length) h += '<ul class="rpt-n">' + notes.map(t => "<li>" + t + "</li>").join("") + "</ul>";
     return h + "</div>";
   }
@@ -7667,6 +7738,7 @@ function startNgay50k(){
     if(q.q === "upcoming") return upcomingAnswer(q);
     if(q.q === "forecast") return forecastAnswer();
     if(q.q === "save") return saveAnswer(q);
+    if(q.q === "report" && q.yearly && !q.tag && !q.kw && !q.wid && q.kind !== "in") return yearReport(q);
     if(q.q === "report") return report(q);
     if(q.q === "fixed") return fixedAnswer(q);
     if(q.q === "assets") return assetsAnswer();
