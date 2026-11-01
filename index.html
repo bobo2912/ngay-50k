@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v211";
+  var K = "ngay50k:errlog", VER = "v212";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -2627,6 +2627,7 @@ li.txg > details.txd > ul{margin:0 !important}
         <div class="field"><label for="lPaid"><span id="lPaidLabel">Số tiền đã trả</span></label><input id="lPaid" class="inp num" inputmode="numeric" placeholder="0đ"></div>
         <p class="subtle" id="lPaidHint" hidden style="margin-top:4px"></p>
         <div class="field"><label for="lDate"><span id="lDateLabel">Ngày vay</span></label><input id="lDate" class="inp" type="date"></div>
+        <div class="field" id="lWField" hidden><label><span id="lWLabel">Tiền vào ví</span></label><div class="chips wchips" id="lWChips" style="margin-top:0"></div></div>
         <div class="field"><label for="lDue"><span>Hạn trả (không bắt buộc)</span></label><input id="lDue" class="inp" type="date"></div>
         <div class="field"><label for="lNote"><span>Ghi chú</span></label><input id="lNote" class="inp" maxlength="120" placeholder="vd: lãi 1%/tháng, trả dần mỗi tháng"></div>
         <button class="primary" id="saveLoan" disabled>Lưu khoản vay</button>
@@ -3205,7 +3206,7 @@ li.txg > details.txd > ul{margin:0 !important}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v211</p>
+      <p class="sync" id="appVersion">Phiên bản v212</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3755,14 +3756,14 @@ li.txg > details.txd > ul{margin:0 !important}
 <input type="file" id="phFile" accept="image/*" hidden>
 <div class="ph-view" id="phView" role="dialog" aria-modal="true" aria-label="Ảnh hoá đơn" hidden><img id="phImg" alt="Ảnh hoá đơn"><div class="ph-bar"><button type="button" id="phDel">Bỏ ảnh này</button><button type="button" id="phClose">Đóng</button></div></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=211"></script>
-<script src="thu-vien-cau.js?v=211"></script>
-<script src="quy-tac.js?v=211"></script>
-<script src="du-lieu.js?v=211"></script>
-<script src="doc-so-tk.js?v=211"></script>
-<script src="tich-luy.js?v=211"></script>
-<script src="native.js?v=211"></script>
-<script src="lock.js?v=211"></script>
+<script src="parse-vi.js?v=212"></script>
+<script src="thu-vien-cau.js?v=212"></script>
+<script src="quy-tac.js?v=212"></script>
+<script src="du-lieu.js?v=212"></script>
+<script src="doc-so-tk.js?v=212"></script>
+<script src="tich-luy.js?v=212"></script>
+<script src="native.js?v=212"></script>
+<script src="lock.js?v=212"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -4268,6 +4269,8 @@ function startNgay50k(){
   const MAIN_W = "main";
   const WKINDS = { bank:{ label:"Ngân hàng", icon:"🏦" }, ewallet:{ label:"Ví điện tử", icon:"📱" }, credit:{ label:"Thẻ tín dụng", icon:"💳" }, other:{ label:"Khác", icon:"👛" } };
   const wOf = o => (o && o.w) || MAIN_W;
+  /* v212: khoản vay có ví riêng. Lần vay thêm / trả nợ có w thì theo w, không thì theo ví của khoản vay, không có nữa là ví Tài khoản */
+  const lW = (rec, l) => (rec && rec.w) || (l && l.w) || MAIN_W;
   function walletList(){ return [{ id:MAIN_W, name:"Tài khoản", kind:"main", icon:"🏦" }].concat((state.wallets || []).filter(w => !w.off)); }
   function walletById(id){ return walletList().find(w => w.id === (id || MAIN_W)) || (state.wallets || []).find(w => w.id === id) || null; }
   function walletName(id){ const w = walletById(id); return w ? w.name : "Ví đã xoá"; }
@@ -4291,11 +4294,11 @@ function startNgay50k(){
     (state.xfer || []).forEach(x => { if(af(recTime(x.date, x.t))){ if((x.from || MAIN_W) === wid) bal -= Number(x.amt)||0; if((x.to || MAIN_W) === wid) bal += Number(x.amt)||0; } });
     /* v203: bỏ vào tiết kiệm / đầu tư trừ ví, rút ra cộng ví (khoản không ghi ví thì không đụng ví nào) */
     (state.assetTx || []).forEach(x => { if(x.w === wid && af(recTime(x.date, x.t))) bal += (x.dir === "out" ? 1 : -1) * (Number(x.amt)||0); });
-    if(main) state.loans.forEach(l => {
+    state.loans.forEach(l => {
       const sg = l.type === "borrow" ? 1 : -1;   /* đi vay: tiền vào ví; cho vay: tiền ra */
-      if(af(recTime(l.date, l.t))){ bal += sg * (Number(l.amt)||0); if(l.prepaid) bal -= sg * (Number(l.prepaid)||0); }
-      (l.draws || []).forEach(d => { if(af(recTime(d.date, d.t))) bal += sg * (Number(d.amt)||0); });
-      (l.payments || []).forEach(pm => { if(af(recTime(pm.date, pm.t))) bal -= sg * (Number(pm.amt)||0); });
+      if(lW(null, l) === wid && af(recTime(l.date, l.t))){ bal += sg * (Number(l.amt)||0); if(l.prepaid) bal -= sg * (Number(l.prepaid)||0); }
+      (l.draws || []).forEach(d => { if(lW(d, l) === wid && af(recTime(d.date, d.t))) bal += sg * (Number(d.amt)||0); });
+      (l.payments || []).forEach(pm => { if(lW(pm, l) === wid && af(recTime(pm.date, pm.t))) bal -= sg * (Number(pm.amt)||0); });
     });
     return { bal, debt: Math.max(0, debt), anchor, wid };
   }
@@ -4822,9 +4825,9 @@ function startNgay50k(){
     state.loans.forEach(l => {
       const b = l.type === "borrow", who = l.who || "?", sg = b ? 1 : -1;
       /* v197: mang theo khoản vay và lần ghi (rec) để mở bảng sửa ngay tại chỗ */
-      if(l.date === k) out.push({ t:recTime(l.date, l.t), icon:"🤝", name: b ? "Vay của " + who : "Cho " + who + " vay", amt:sg * (Number(l.amt)||0), kind:"loan", o:l, sub:"base", lbl: b ? "Đi vay" : "Cho vay" });
-      (l.draws || []).forEach(d => { if(d.date === k) out.push({ t:recTime(d.date, d.t), icon:"🤝", name: b ? "Vay thêm của " + who : "Cho " + who + " vay thêm", amt:sg * (Number(d.amt)||0), kind:"loan", o:l, rec:d, sub:"draw", lbl: b ? "Vay thêm" : "Cho vay thêm" }); });
-      (l.payments || []).forEach(pm => { if(pm.date === k) out.push({ t:recTime(pm.date, pm.t), icon:"🤝", name: b ? "Trả nợ " + who : who + " trả nợ", amt:-sg * (Number(pm.amt)||0), kind:"loan", o:l, rec:pm, sub:"pay", lbl: b ? "Trả nợ" : "Được trả nợ" }); });
+      if(l.date === k) out.push({ t:recTime(l.date, l.t), icon:"🤝", name: b ? "Vay của " + who : "Cho " + who + " vay", amt:sg * (Number(l.amt)||0), kind:"loan", o:l, sub:"base", src:lW(null, l), lbl: b ? "Đi vay" : "Cho vay" });
+      (l.draws || []).forEach(d => { if(d.date === k) out.push({ t:recTime(d.date, d.t), icon:"🤝", name: b ? "Vay thêm của " + who : "Cho " + who + " vay thêm", amt:sg * (Number(d.amt)||0), kind:"loan", o:l, rec:d, sub:"draw", src:lW(d, l), lbl: b ? "Vay thêm" : "Cho vay thêm" }); });
+      (l.payments || []).forEach(pm => { if(pm.date === k) out.push({ t:recTime(pm.date, pm.t), icon:"🤝", name: b ? "Trả nợ " + who : who + " trả nợ", amt:-sg * (Number(pm.amt)||0), kind:"loan", o:l, rec:pm, sub:"pay", src:lW(pm, l), lbl: b ? "Trả nợ" : "Được trả nợ" }); });
     });
     return out;
   }
@@ -5604,6 +5607,7 @@ function startNgay50k(){
     $("lWhoLabel").textContent = t==="borrow" ? "Vay của ai" : "Cho ai vay";
     $("lDateLabel").textContent = t==="borrow" ? "Ngày vay" : "Ngày cho vay";
     $("lPaidLabel").textContent = t==="borrow" ? "Số tiền đã trả" : "Số tiền đã thu";
+    if($("lWLabel")) $("lWLabel").textContent = t==="borrow" ? "Tiền vay vào ví" : "Tiền cho vay lấy từ ví";
   }
   function showLoanView(v){ // "main" | "form" | "detail"
     $("loansMain").hidden = v !== "main"; $("loanForm").hidden = v !== "form"; $("loanDetail").hidden = v !== "detail";
@@ -5623,6 +5627,7 @@ function startNgay50k(){
     $("lDate").value = l ? (l.date || todayKey()) : todayKey();
     $("lDue").value = l ? (l.due || "") : ""; $("lNote").value = l ? (l.note || "") : "";
     setLoanType(l ? l.type : (loanView === "lend" ? "lend" : "borrow")); refreshLoanForm();
+    wPicker("lWField", "lWChips", l ? l.w : MAIN_W);   /* v212 */
     showLoanView("form");
   }
   function closeLoanForm(){ const back = editingLoanId ? "detail" : "main"; editingLoanId = null; renderLoans(); showLoanView(detailLoanId && back==="detail" ? "detail" : "main"); }
@@ -5640,12 +5645,14 @@ function startNgay50k(){
     const data = { type:loanType, who:$("lWho").value.trim(), amt:lAmt(),
       date:$("lDate").value || todayKey(), due:$("lDue").value || "", note:$("lNote").value.trim() };
     const paid = lPaid();
+    if(!$("lWField").hidden){ const lw = pickedW("lWChips"); data.w = lw || undefined; }
     if(editingLoanId){
       const l = getLoan(editingLoanId);
-      if(l){ Object.assign(l, data); l.prepaid = paid - payOnly(l); detailLoanId = l.id; }
+      if(l){ Object.assign(l, data); if(!l.w) delete l.w; l.prepaid = paid - payOnly(l); detailLoanId = l.id; }
       persist(true); editingLoanId = null; renderLoans(); showLoanView("detail"); flash("detailMsg", "✓ Đã lưu thay đổi");
     } else {
-      state.loans.push(Object.assign({ id:uid(), payments:[], prepaid:paid, t:Date.now() }, data));
+      const nl = Object.assign({ id:uid(), payments:[], prepaid:paid, t:Date.now() }, data); if(!nl.w) delete nl.w;
+      state.loans.push(nl);
       loanView = data.type;   /* về đúng tab con của khoản vừa thêm */
       [...$("loanSeg").children].forEach(b => b.setAttribute("aria-pressed", b.dataset.lv === loanView ? "true" : "false"));
       persist(true); renderAll(); showLoanView("main"); flash("loanMsg", "✓ Đã lưu khoản vay");
@@ -5735,14 +5742,18 @@ function startNgay50k(){
           <div class="field" style="margin-top:0"><label><span>Ngày</span></label><input class="inp pDate" type="date"></div>
         </div>
         <div class="field"><label><span>Ghi chú (không bắt buộc)</span></label><input class="inp pNote" maxlength="60"></div>
+        <div class="field" id="pWField" hidden><label><span>` + (l.type === "borrow" ? "Trả từ ví" : "Nhận vào ví") + `</span></label><div class="chips wchips" id="pWChips" style="margin-top:0"></div></div>
         <button class="primary pSave" style="margin-top:10px"></button>`;
       const pa = f.querySelector(".pAmt"), pd = f.querySelector(".pDate"), pn = f.querySelector(".pNote"), ps = f.querySelector(".pSave");
       pa.value = money(left); pd.value = todayKey();
+      setTimeout(() => wPicker("pWField", "pWChips", lW(null, l)), 0);
       const upd = () => { const x = parseInt(digits(pa.value),10)||0; pa.value = money(x); ps.disabled = !x; ps.textContent = x ? "Lưu " + fmt(Math.min(x,left)) + (x>=left ? " (tất toán)" : "") : "Nhập số tiền"; };
       pa.addEventListener("input", upd); upd();
       ps.onclick = () => {
         const x = Math.min(parseInt(digits(pa.value),10)||0, left); if(!x) return;
-        (l.payments = l.payments || []).push({ id:uid(), amt:x, date:pd.value || todayKey(), note:pn.value.trim(), t:Date.now() });
+        const prec = { id:uid(), amt:x, date:pd.value || todayKey(), note:pn.value.trim(), t:Date.now() };
+        if(!$("pWField").hidden){ const pw = pickedW("pWChips") || MAIN_W; if(pw !== lW(null, l)) prec.w = pw; }
+        (l.payments = l.payments || []).push(prec);
         payOpen = false; persist(true); renderAll();
         flash("detailMsg", leftOf(l) <= 0 ? "✓ Đã tất toán" : "✓ Đã ghi " + fmt(x) + ", còn " + fmt(leftOf(l)));
       };
@@ -5756,9 +5767,11 @@ function startNgay50k(){
           <div class="field" style="margin-top:0"><label><span>Ngày</span></label><input class="inp dDate" type="date"></div>
         </div>
         <div class="field"><label><span>Ghi chú (không bắt buộc)</span></label><input class="inp dNote" maxlength="60"></div>
+        <div class="field" id="dWField" hidden><label><span>` + (l.type === "borrow" ? "Tiền vào ví" : "Lấy từ ví") + `</span></label><div class="chips wchips" id="dWChips" style="margin-top:0"></div></div>
         <button class="primary dSave" style="margin-top:10px" disabled>Nhập số tiền</button>`;
       const da = f.querySelector(".dAmt"), dd = f.querySelector(".dDate"), dn = f.querySelector(".dNote"), ds = f.querySelector(".dSave");
       dd.value = todayKey();
+      setTimeout(() => wPicker("dWField", "dWChips", lW(null, l)), 0);
       const upd = () => {
         const x = parseInt(digits(da.value),10)||0;
         da.value = x ? money(x) : "";
@@ -5768,7 +5781,9 @@ function startNgay50k(){
       da.addEventListener("input", upd); upd();
       ds.onclick = () => {
         const x = parseInt(digits(da.value),10)||0; if(!x) return;
-        (l.draws = l.draws || []).push({ id:uid(), amt:x, date:dd.value || todayKey(), note:dn.value.trim(), t:Date.now() });
+        const drec = { id:uid(), amt:x, date:dd.value || todayKey(), note:dn.value.trim(), t:Date.now() };
+        if(!$("dWField").hidden){ const dw = pickedW("dWChips") || MAIN_W; if(dw !== lW(null, l)) drec.w = dw; }
+        (l.draws = l.draws || []).push(drec);
         drawOpen = false; persist(true); renderAll();
         flash("detailMsg", "✓ Đã ghi " + moreWord(l) + " " + fmt(x) + ", còn " + fmt(leftOf(l)));
       };
@@ -7742,11 +7757,13 @@ function startNgay50k(){
     else if(it.kind === "xfer"){ (state.xfer = state.xfer || []).push({ id, amt:it.amt, from:it.from || MAIN_W, to:it.to || MAIN_W, date:k, t, note:it.note || "" }); }
     else if(it.kind === "lend" || it.kind === "borrow"){
       const l = it.loanId ? getLoan(it.loanId) : null;
-      if(l){ (l.draws = l.draws || []).push({ id, amt:it.amt, date:k, note:"", t }); ref.loanId = l.id; ref.sub = "draw"; }
-      else { state.loans.push({ id, type:it.kind, who:String(it.who).trim(), amt:it.amt, date:k, due:"", note:"", payments:[], draws:[], prepaid:0, t }); ref.sub = "loan"; }
+      const lw = it.w && walletById(it.w) ? it.w : null;   /* v212: chưa chọn ví thì theo ví của khoản vay */
+      if(l){ const d = { id, amt:it.amt, date:k, note:"", t }; if(lw && lw !== lW(null, l)) d.w = lw; (l.draws = l.draws || []).push(d); ref.loanId = l.id; ref.sub = "draw"; }
+      else { state.loans.push(Object.assign({ id, type:it.kind, who:String(it.who).trim(), amt:it.amt, date:k, due:"", note:"", payments:[], draws:[], prepaid:0, t }, lw && lw !== MAIN_W ? { w:lw } : {})); ref.sub = "loan"; }
     }
     else if(it.kind === "repay" || it.kind === "collect"){
-      const l = getLoan(it.loanId); (l.payments = l.payments || []).push({ id, amt:it.amt, date:k, note:"", t }); ref.loanId = l.id; ref.sub = "pay";
+      const l = getLoan(it.loanId), pm = { id, amt:it.amt, date:k, note:"", t }, lw = it.w && walletById(it.w) ? it.w : null; if(lw && lw !== lW(null, l)) pm.w = lw;
+      (l.payments = l.payments || []).push(pm); ref.loanId = l.id; ref.sub = "pay";
     }
     else if(it.kind === "asin" || it.kind === "asout" || it.kind === "asval") Object.assign(ref, tlCommit(it, k, t, id));
     else if(it.kind === "cardpay"){ const rec = { id, amt:it.amt, date:k, t }; if(it.cardId) rec.cardId = it.cardId; if(wv.w) rec.from = wv.w; (state.cardPay = state.cardPay || []).push(rec); }
@@ -7783,7 +7800,7 @@ function startNgay50k(){
   }
   function afterText(it, ref){
     if(it.kind === "asin" || it.kind === "asout" || it.kind === "asval") return tlAfter(it, ref);
-    const r = balCalc(), bal = balLine(it.kind === "out" || it.kind === "in" || it.kind === "bal" || it.kind === "cardpay" ? it.w : MAIN_W);
+    const r = balCalc(), bal = balLine(it.kind === "out" || it.kind === "in" || it.kind === "bal" || it.kind === "cardpay" || ["lend","borrow","repay","collect"].includes(it.kind) ? it.w : MAIN_W);
     if(it.kind === "xfer") return "Đã chuyển " + fmt(it.amt) + " từ " + esc(walletName(it.from)) + " sang " + esc(walletName(it.to)) + "." + balLine(it.from) + balLine(it.to);
     if(it.kind === "out") return todayLeftText() + bal;
     if(it.kind === "card"){ const [a, b] = rangeOf("month"); const nm = cardName(it.cardId); return "Tháng này " + (nm ? "thẻ " + esc(nm) : "thẻ") + " đã chi " + fmt(spentIn(a, b, null).card) + "." + (r && r.debt ? " Nợ thẻ " + fmt(r.debt) + "." : ""); }
@@ -7821,7 +7838,7 @@ function startNgay50k(){
     if(it.kind === "cardpay"){ const nm = cardName(it.cardId); what = nm ? "thẻ " + nm : ""; }
     if(it.kind === "xfer") what = walletName(it.from) + " → " + walletName(it.to);
     if(it.kind === "asin" || it.kind === "asout" || it.kind === "asval"){ const a = it.asset ? assetById(it.asset) : null; what = a ? (a.name || asKind(a).label) : (it.name || ""); if(Number(it.qty) > 0) what += " · " + String(it.qty).replace(".", ",") + " " + (it.unit || ""); if(it.kind === "asout" && it.all) what += " · " + (a && isDep(a) ? "tất toán" : "hết"); }
-    if((it.kind === "out" || it.kind === "in" || it.kind === "bal") && it.w && it.w !== MAIN_W && multiW()) what = (what ? what + " · " : "") + walletName(it.w);
+    if((it.kind === "out" || it.kind === "in" || it.kind === "bal" || ["lend","borrow","repay","collect"].includes(it.kind)) && it.w && it.w !== MAIN_W && multiW()) what = (what ? what + " · " : "") + walletName(it.w);
     const icon = it.kind === "out" || it.kind === "card" ? tagOf(it.cat).icon : it.kind === "in" ? (INC.find(x => x.id === it.cat) || INC[INC.length-1]).icon : KIND_ICON[it.kind];
     if(it.fx && (it.kind === "out" || it.kind === "card")) what = (what ? what + " · " : "") + "định kỳ";
     return icon + " " + KIND_LABEL[it.kind] + (what ? ": " + what : "") + " · " + fmt(it.amt) + (it.kind !== "bal" && it.date !== todayKey() ? " · " + dateLabel(it.date) : "");
@@ -7890,7 +7907,7 @@ function startNgay50k(){
     /* v98: chọn ví (chỉ khi có từ hai ví) */
     const wOpts = walletList().map(w => [w.id, w.icon + " " + w.name]);
     if(it.kind === "asin" || it.kind === "asout") row3.push('<select class="paw" aria-label="' + (it.kind === "asin" ? "Lấy từ ví" : "Về ví") + '">' + optionList([["", it.kind === "asin" ? "Không trừ ví (có từ trước)" : "Không về ví nào"]].concat(wOpts), it.w || "") + "</select>");
-    if(multiW() && (it.kind === "out" || it.kind === "in" || it.kind === "bal" || it.kind === "cardpay")) row3.push('<select class="pwv" aria-label="Ví">' + optionList(wOpts, it.w || MAIN_W) + "</select>");
+    if(multiW() && (it.kind === "out" || it.kind === "in" || it.kind === "bal" || it.kind === "cardpay" || isLoan)) row3.push('<select class="pwv" aria-label="Ví">' + optionList(wOpts, it.w || (isLoan && it.loanId && getLoan(it.loanId) ? lW(null, getLoan(it.loanId)) : MAIN_W)) + "</select>");
     if(it.kind !== "bal") row3.push('<input class="pd" type="date" aria-label="Ngày" value="' + esc(it.date) + '">');
     if(it.kind === "xfer") html += '<div class="prow"><select class="pwf" aria-label="Từ ví">' + optionList(wOpts, it.from || MAIN_W) + '</select><span class="parrow" aria-hidden="true">→</span><select class="pwt" aria-label="Sang ví">' + optionList(wOpts, it.to || MAIN_W) + "</select></div>";
     if(row3.length) html += '<div class="prow">' + row3.join("") + "</div>";
@@ -7918,7 +7935,7 @@ function startNgay50k(){
     if(q(".ptb")) q(".ptb").onclick = () => openTagSheet(it.cat || "khac", id => { it.cat = id; chatSave(); renderChat(true); });
     else if(q(".pt")) q(".pt").onchange = e => { it.cat = e.target.value; chatSave(); };
     if(q(".pc")) q(".pc").onchange = e => { it.cardId = e.target.value || null; chatSave(); };
-    if(q(".pwv")) q(".pwv").onchange = e => { it.w = e.target.value === MAIN_W ? null : e.target.value; chatSave(); };
+    if(q(".pwv")) q(".pwv").onchange = e => { it.w = e.target.value === MAIN_W && !isLoan ? null : e.target.value; chatSave(); };
     if(q(".pwf")) q(".pwf").onchange = e => { it.from = e.target.value; chatSave(); check(); };
     if(q(".pas")) q(".pas").onchange = e => { it.asset = e.target.value || null; if(it.asset){ const a = assetById(it.asset); if(a && it.kind === "asout" && a.lastW && walletById(a.lastW)) it.w = a.lastW; } tlFix(it); chatSave(); renderChat(true); };
     if(q(".pak")) q(".pak").onchange = e => { it.ak = e.target.value; if(!String(it.name || "").trim() || /^(Sổ|Vàng|Quỹ|Cổ phiếu|Tiền số|Chứng chỉ|CD|Khác)/.test(it.name)) it.name = AS_KINDS[it.ak].label; chatSave(); renderChat(true); };
@@ -9648,12 +9665,12 @@ function startNgay50k(){
     /* khoản không tính thu chi: trả thẻ, chuyển giữa ví, vay */
     const keys = new Set();
     (state.cardPay || []).forEach(p => keys.add(p.date)); (state.xfer || []).forEach(x => keys.add(x.date));
-    if(main) state.loans.forEach(l => [l].concat(l.draws || [], l.payments || []).forEach(e => keys.add(e.date)));
+    state.loans.forEach(l => [l].concat(l.draws || [], l.payments || []).forEach(e => keys.add(e.date)));
     keys.forEach(k => dayMoves(k).forEach(mv => {
       let mine = false;
       if(mv.kind === "pay") mine = isCard ? (mv.o.cardId === cid || (only && !mv.o.cardId)) : (mv.o.from || MAIN_W) === wid;
       else if(mv.kind === "xfer") mine = !isCard && ((mv.o.from || MAIN_W) === wid || (mv.o.to || MAIN_W) === wid);
-      else if(mv.kind === "loan") mine = main;
+      else if(mv.kind === "loan") mine = !isCard && mv.src === wid;
       if(mine && isCard && mv.kind === "pay"){ mv.flip = true; mv.name = "Trả thẻ từ " + walletName(mv.o.from || MAIN_W); }
       if(mine) push(k, mv.t, mv.flip ? -mv.amt : mv.amt, mv.name + " " + (mv.lbl || ""), mv.flip ? Math.abs(mv.amt) : 0, 0, () => moveDayRow(mv), "mv");
     }));
@@ -9742,12 +9759,14 @@ function startNgay50k(){
       const f = (x.from || MAIN_W) === wid, tt = (x.to || MAIN_W) === wid; if(!f && !tt) return;
       add(recTime(x.date, x.t), (f ? -1 : 1) * (Number(x.amt)||0), "🔁", f ? "Chuyển sang " + walletName(x.to) : "Nhận từ " + walletName(x.from), "Chuyển giữa ví", null);
     });
-    if(main) state.loans.forEach(l => {
+    state.loans.forEach(l => {
       const b = l.type === "borrow", who = l.who || "?", go = () => { closeBalance(); showTab("loans"); };
-      add(recTime(l.date, l.t), (b ? 1 : -1) * (Number(l.amt)||0), "🤝", b ? "Vay của " + who : "Cho " + who + " vay", "Khoản vay", go);
-      if(l.prepaid) add(recTime(l.date, l.t), (b ? -1 : 1) * (Number(l.prepaid)||0), "🤝", b ? "Đã trả " + who : who + " đã trả", "Khoản vay", go);
-      (l.draws || []).forEach(d => add(recTime(d.date, d.t), (b ? 1 : -1) * (Number(d.amt)||0), "🤝", b ? "Vay thêm của " + who : "Cho " + who + " vay thêm", "Khoản vay", go));
-      (l.payments || []).forEach(pm => add(recTime(pm.date, pm.t), (b ? -1 : 1) * (Number(pm.amt)||0), "🤝", b ? "Trả nợ " + who : who + " trả nợ", "Khoản vay", go));
+      if(lW(null, l) === wid){
+        add(recTime(l.date, l.t), (b ? 1 : -1) * (Number(l.amt)||0), "🤝", b ? "Vay của " + who : "Cho " + who + " vay", "Khoản vay", go);
+        if(l.prepaid) add(recTime(l.date, l.t), (b ? -1 : 1) * (Number(l.prepaid)||0), "🤝", b ? "Đã trả " + who : who + " đã trả", "Khoản vay", go);
+      }
+      (l.draws || []).forEach(d => { if(lW(d, l) === wid) add(recTime(d.date, d.t), (b ? 1 : -1) * (Number(d.amt)||0), "🤝", b ? "Vay thêm của " + who : "Cho " + who + " vay thêm", "Khoản vay", go); });
+      (l.payments || []).forEach(pm => { if(lW(pm, l) === wid) add(recTime(pm.date, pm.t), (b ? -1 : 1) * (Number(pm.amt)||0), "🤝", b ? "Trả nợ " + who : who + " trả nợ", "Khoản vay", go); });
     });
     out.sort((a, b) => a.t - b.t);
     const N = Date.now(), past = out.filter(x => x.t <= N), soon = out.filter(x => x.t > N);

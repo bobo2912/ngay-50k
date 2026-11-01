@@ -139,5 +139,15 @@ ok("chỉ mục theo khoản vay", ix.byLoan.L1.length === 3);
 const sum = st => { let s = 0; for(const b of ["days", "income", "cardTx"]) for(const k in st[b]) st[b][k].forEach(x => s += x.amt); st.loans.forEach(l => { s += l.amt; l.payments.forEach(p => s += p.amt); l.draws.forEach(p => s += p.amt); }); st.xfer.forEach(x => s += x.amt); st.cardPay.forEach(x => s += x.amt); return s; };
 ok("tổng tiền khớp", sum(back) === sum(v1));
 
+/* v212: khoản vay có ví */
+{
+  const st = { days:{}, income:{}, cardTx:{}, loans:[{ id:"LW", type:"borrow", who:"A", amt:5, date:"2026-10-01", w:"wMomo", payments:[{ id:"pw1", amt:1, date:"2026-10-02" }, { id:"pw2", amt:1, date:"2026-10-03", w:"main" }], draws:[] }] };
+  const tx = D.allTx(st), f = id => tx.find(r => r.id === id);
+  ok("vay vào ví riêng: acc = ví của khoản vay", f("LW").acc === "wMomo" && f("pw1").acc === "wMomo");
+  ok("trả nợ từ ví khác: acc = ví của lần trả", f("pw2").acc === "main");
+  const back2 = D.fromV2(D.toV2(st));
+  ok("ví khoản vay qua khứ hồi", back2.loans[0].w === "wMomo" && back2.loans[0].payments[1].w === "main" && !("w" in back2.loans[0].payments[0]));
+}
+
 console.log((fail ? "✗ " + fail + " lỗi / " : "✓ ") + n + " bài thử");
 process.exit(fail ? 1 : 0);

@@ -1,6 +1,15 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v211, ngày 01/11/2026
+**Phiên bản hiện tại:** v212, ngày 01/11/2026
+
+---
+
+## Có gì mới trong v212 (so với v211) – khoản vay chọn được ví
+
+- Khoản vay / cho vay có **ví**: tiền vay vào ví nào, tiền cho vay lấy từ ví nào (ô chọn ví trong bảng Thêm khoản vay, chỉ hiện khi có từ hai ví). Trước đây mọi tiền vay, trả nợ đều tính vào ví Tài khoản nên vay qua Momo hay ngân hàng khác làm lệch số dư.
+- Ghi trả nợ / vay thêm (trong chi tiết khoản vay hoặc trong Chat) chọn được ví, mặc định là ví của khoản vay.
+- Số dư từng ví, lịch sử giao dịch của ví và màn Đối chiếu số dư tính khoản vay theo đúng ví.
+- Dữ liệu cũ không phải chuyển: khoản vay không có ví là ví Tài khoản như trước. Trường mới `w` trên khoản vay, lần vay thêm, lần trả (chỉ ghi khi khác ví của khoản vay); `N50KData.allTx` điền `acc` cho vay / vay thêm / trả nợ.
 
 ---
 

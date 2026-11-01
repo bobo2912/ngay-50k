@@ -25,7 +25,9 @@
               draw     vay thêm / cho vay thêm         repay   trả nợ / được trả (theo side của khoản vay)
               asset    tiền vào / ra một khoản tiết kiệm, đầu tư (v203): asset = mã khoản, dir "in" | "out",
                        acc = ví bị trừ (in) / được cộng (out); không có acc = không qua ví (có từ trước, lãi nhập gốc)
-     loans:    [ { id, side:"borrow"|"lend", who, due, note, prepaid, t, m } ],   // chỉ phần đầu, tiền nằm ở tx
+     loans:    [ { id, side:"borrow"|"lend", who, due, note, prepaid, w?, t, m } ],   // chỉ phần đầu, tiền nằm ở tx
+                                                                              // v212: w = ví nhận / trả tiền vay (không có = "main");
+                                                                              //   tx draw / repay có w riêng khi khác ví của khoản vay
      balances: [ { id, acc, amt, t, book?, card?, m } ],                          // các lần đối chiếu số dư
      recur:    [ { id, name, amt, day, tag, acc, from, made, m } ],
      assets:   [ { id, kind:"save"|"cd"|"gold"|"fund"|"stock"|"crypto"|"other", name, rate?, term?, start?, due?, onDue?,
@@ -246,7 +248,14 @@
      allTx(state): mọi biến động tiền của dạng trong bộ nhớ, cùng một bộ trường (xem đầu file).
      Khoản cất nguyên vẹn (raw) được trải ra để vẫn đọc được amt / t / note. */
   function allTx(st){
-    return toV2(st).tx.map(r => r.raw ? Object.assign({}, r.raw, { id:r.id, type:r.type, d:r.d, loan:r.loan, raw:undefined }) : r);
+    const v = toV2(st), lw = {};
+    v.loans.forEach(h => { if(h && h.id) lw[h.id] = (h.raw ? h.raw.w : h.w) || MAIN; });
+    return v.tx.map(r => {
+      const o = r.raw ? Object.assign({}, r.raw, { id:r.id, type:r.type, d:r.d, loan:r.loan, raw:undefined }) : r;
+      /* v212: vay / vay thêm / trả nợ: ví = w của lần ghi, không có thì ví của khoản vay */
+      if((o.type === "loan" || o.type === "draw" || o.type === "repay") && !("acc" in o)) o.acc = o.w || lw[o.loan] || MAIN;
+      return o;
+    });
   }
   /* chỉ mục theo ngày, tháng, tài khoản, khoản vay */
   function index(tx){
