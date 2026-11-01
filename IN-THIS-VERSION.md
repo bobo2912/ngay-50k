@@ -1,6 +1,13 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v209, ngày 01/11/2026
+**Phiên bản hiện tại:** v210, ngày 01/11/2026
+
+---
+
+## Có gì mới trong v210 (so với v209) – gộp không còn nhân đôi khoản đã đổi ngày
+
+- Sửa lỗi: khoản chi / thu đã **đổi ngày** (hoặc đổi từ chi thường sang chi thẻ) rồi **Gộp** với file sao lưu cũ hơn, với máy khác, hay với dữ liệu khoá cũ v1, trước đây hiện thành hai khoản (ở ngày cũ và ngày mới). Giờ gộp theo mã khoản trên cả ba túi chi / thu / thẻ, giữ bản sửa sau cùng, đặt đúng ngày.
+- Bài thử mới `node tests-gop.js` lấy thẳng hàm gộp từ index.html.
 
 ---
 

@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v209";
+  var K = "ngay50k:errlog", VER = "v210";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -3199,7 +3199,7 @@ li.txg > details.txd > ul{margin:0 !important}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v209</p>
+      <p class="sync" id="appVersion">Phiên bản v210</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3749,13 +3749,13 @@ li.txg > details.txd > ul{margin:0 !important}
 <input type="file" id="phFile" accept="image/*" hidden>
 <div class="ph-view" id="phView" role="dialog" aria-modal="true" aria-label="Ảnh hoá đơn" hidden><img id="phImg" alt="Ảnh hoá đơn"><div class="ph-bar"><button type="button" id="phDel">Bỏ ảnh này</button><button type="button" id="phClose">Đóng</button></div></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=209"></script>
-<script src="thu-vien-cau.js?v=209"></script>
-<script src="quy-tac.js?v=209"></script>
-<script src="du-lieu.js?v=209"></script>
-<script src="doc-so-tk.js?v=209"></script>
-<script src="native.js?v=209"></script>
-<script src="lock.js?v=209"></script>
+<script src="parse-vi.js?v=210"></script>
+<script src="thu-vien-cau.js?v=210"></script>
+<script src="quy-tac.js?v=210"></script>
+<script src="du-lieu.js?v=210"></script>
+<script src="doc-so-tk.js?v=210"></script>
+<script src="native.js?v=210"></script>
+<script src="lock.js?v=210"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -12824,14 +12824,22 @@ function startNgay50k(){
       (ys||[]).forEach(o => o && o.id && map.set(o.id, newer(map.get(o.id), o)));
       return [...map.values()].filter(alive).map(o => JSON.parse(JSON.stringify(o)));
     };
-    const byDay = (A, B) => {
-      const out = {};
-      new Set([...Object.keys(A), ...Object.keys(B)]).forEach(k => {
-        const list = byId(A[k], B[k]).sort((x, y) => (x.t || 0) - (y.t || 0));
-        if(list.length) out[k] = list;
-      });
+    /* v210: khoản chi / thu / chi thẻ gộp theo mã trên cả ba túi, không theo từng ngày. Trước đây khoản đã đổi ngày
+       (hoặc chuyển chi ↔ thẻ) nằm ở ngày cũ bên này và ngày mới bên kia → gộp xong thành hai khoản. Giờ giữ bản mới hơn,
+       đặt đúng vào ngày / túi của bản đó. */
+    const BAGS = ["days", "income", "cardTx"];
+    const bags = (() => {
+      const pick = new Map();
+      [a, b].forEach(st => BAGS.forEach(bag => { const B0 = st[bag] || {}; Object.keys(B0).forEach(k => (B0[k] || []).forEach(o => {
+        if(!o || !o.id) return;
+        const cur = pick.get(o.id), cand = { o, bag, k };
+        if(!cur || (o.m || 0) > (cur.o.m || 0)) pick.set(o.id, cand);
+      })); }));
+      const out = { days:{}, income:{}, cardTx:{} };
+      pick.forEach(({ o, bag, k }) => { if(alive(o)) (out[bag][k] = out[bag][k] || []).push(JSON.parse(JSON.stringify(o))); });
+      BAGS.forEach(bag => Object.keys(out[bag]).forEach(k => out[bag][k].sort((x, y) => (x.t || 0) - (y.t || 0))));
       return out;
-    };
+    })();
     const loanMap = new Map();
     a.loans.forEach(l => loanMap.set(l.id, { a:l }));
     b.loans.forEach(l => { const e = loanMap.get(l.id) || {}; e.b = l; loanMap.set(l.id, e); });
@@ -12848,9 +12856,9 @@ function startNgay50k(){
     const useB = (b.budgetM || 0) > (a.budgetM || 0);
     return normalize({
       budget: useB ? b.budget : a.budget, budgetM: Math.max(a.budgetM || 0, b.budgetM || 0),
-      days: byDay(a.days, b.days), income: byDay(a.income, b.income),
+      days: bags.days, income: bags.income,
       contacts: byId(a.contacts, b.contacts), loans, tags: byId(a.tags, b.tags),
-      cards: byId(a.cards, b.cards), cardTx: byDay(a.cardTx || {}, b.cardTx || {}),
+      cards: byId(a.cards, b.cards), cardTx: bags.cardTx,
       recur: byId(a.recur, b.recur), bals: byId(a.bals, b.bals), cardPay: byId(a.cardPay, b.cardPay),
       wallets: byId(a.wallets, b.wallets), xfer: byId(a.xfer, b.xfer),
       assets: byId(a.assets, b.assets), assetTx: byId(a.assetTx, b.assetTx), assetVal: byId(a.assetVal, b.assetVal),
