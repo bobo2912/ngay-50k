@@ -1,6 +1,12 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v208, ngày 01/11/2026
+**Phiên bản hiện tại:** v209, ngày 01/11/2026
+
+---
+
+## Có gì mới trong v209 (so với v208)
+
+- Tab **Ví**: khung Lịch sử giao dịch không còn kéo dài hết một màn hình, ít giao dịch thì khung ôm vừa nội dung, hết khoảng trắng thừa phía dưới.
 
 ---
 
