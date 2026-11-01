@@ -1,6 +1,14 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v214, ngày 01/11/2026
+**Phiên bản hiện tại:** v215, ngày 01/11/2026
+
+---
+
+## Có gì mới trong v215 (so với v214) – bài thử trình duyệt trong kho mã
+
+- Thêm `tests-trinh-duyet.js`: mở app bằng Chrome thật ở cỡ iPhone (375×740) và bấm qua các luồng chính: dữ liệu mẫu, bốn tab không tràn ngang, ghi chi bằng Chat → hoàn tác → còn sau khi tải lại, gửi tiết kiệm / mua vàng / cập nhật giá / tất toán sổ bằng Chat, vay vào ví khác, gộp với bản cũ sau khi đổi ngày, không lỗi JavaScript (21 bài). Cần `npm i --no-save playwright-core`.
+- GitHub Actions **Kiểm thử** (`.github/workflows/kiem-thu.yml`) chạy mọi `tests-*.js` và bài thử trình duyệt mỗi lần đẩy lên `main`; chỉ kiểm tra, không đụng GitHub Pages.
+- README: mục Kiểm thử viết lại theo cách chạy mới.
 
 ---
 

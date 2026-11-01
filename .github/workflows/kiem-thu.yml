@@ -1,0 +1,29 @@
+# Tiêu Gọn – chạy mọi bài thử mỗi lần đẩy code lên (v215). Chỉ kiểm tra, không build, không đụng GitHub Pages.
+#   • node tests-*.js: bộ hiểu câu, cấu trúc dữ liệu, gộp hai máy…
+#   • tests-trinh-duyet.js: mở app bằng Chrome ở cỡ iPhone, bấm qua các luồng chính
+name: Kiểm thử
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Bài thử Node
+        run: |
+          set -eo pipefail
+          for f in tests-*.js; do
+            [ "$f" = "tests-trinh-duyet.js" ] && continue
+            echo "── $f"; node "$f" | tail -3
+          done
+      - name: Bài thử trình duyệt
+        run: |
+          npm i --no-save playwright-core
+          CHROME=$(which google-chrome || which chromium) node tests-trinh-duyet.js

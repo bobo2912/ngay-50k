@@ -130,13 +130,14 @@ App không tải gì từ bên ngoài khi chạy. Riêng chức năng đọc ch�
 
 ## Kiểm thử
 
-Không có bộ test tự động trong kho. Cách kiểm nhanh bằng Playwright:
+Mỗi lần đẩy lên `main`, GitHub Actions (`.github/workflows/kiem-thu.yml`) chạy mọi bài thử dưới đây. Chạy tay:
 
 ```bash
-python3 -m http.server 8765 &
-# mở Chromium ở khung 390×844, nạp sẵn dữ liệu mẫu vào localStorage
-# rồi bấm qua từng tab và chụp màn hình so sánh
+for f in tests-*.js; do [ "$f" = tests-trinh-duyet.js ] || node "$f" | tail -1; done   # bài thử Node
+npm i --no-save playwright-core && node tests-trinh-duyet.js                            # trình duyệt thật (v215)
 ```
+
+`tests-trinh-duyet.js` tự mở một máy chủ nhỏ, chạy Chrome có sẵn trên máy (hoặc `CHROME=/đường/dẫn`) ở cỡ 375×740, mở `index.html?test=1` (có lối vào `window.__T`): dữ liệu mẫu, bốn tab không tràn ngang, ghi chi bằng Chat → hoàn tác → còn sau khi tải lại, tiết kiệm / vàng bằng Chat, vay vào ví khác, gộp bản cũ sau khi đổi ngày, báo cáo, không lỗi JavaScript. Thêm luồng mới thì thêm bước vào file này. `tests-gop.js` thử hàm gộp hai máy, `tests-tich-luy.js` thử câu tiết kiệm & đầu tư.
 
 Bộ hiểu câu có các bài thử chạy bằng Node: `node tests-parse-vi.js` và `node tests-parse-vi-2.js`, `node tests-quy-tac.js` (Thư viện nội dung) (hiểu câu, 104 câu gõ không dấu, viết tắt, nhiều khoản), `node tests-assess-vi.js` (câu nào máy tự xử lý, câu nào gửi AI, dùng `N50KParse.assess`) `node tests-wallet-vi.js` (nhiều ví: chi theo ví, chuyển giữa ví, hỏi số dư ví) và `node tests-dinh-ky.js` (hỏi về khoản chi định kỳ, câu kể kèm “định kỳ”).
 
