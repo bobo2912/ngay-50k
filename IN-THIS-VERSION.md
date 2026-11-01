@@ -1,6 +1,15 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v207, ngày 01/11/2026
+**Phiên bản hiện tại:** v208, ngày 01/11/2026
+
+---
+
+## Có gì mới trong v208 (so với v207) – gửi ảnh sổ tiết kiệm vào Chat
+
+- Gửi ảnh chụp màn hình sổ tiết kiệm / tiền gửi / chứng chỉ tiền gửi (từ app ngân hàng) vào Chat: bộ đọc chữ trên máy lấy ra tên, số tiền, lãi suất, kỳ hạn, ngày gửi, ngày đáo hạn, hình thức đến hạn (quay vòng → Gửi tiếp, tất toán → Rút về ví), lãi cuối kỳ ngân hàng báo, số tài khoản. Chat hiện thẻ để xem lại: **Tạo sổ**, **Sửa** (mở bảng thêm sổ đã điền sẵn, chọn được ví đã chuyển tiền), **Bỏ qua**.
+- Mặc định ghi là tiền **có từ trước, không trừ ví**. Ảnh của sổ đã có (cùng số tài khoản) thì nút thành **Cập nhật**: sửa lãi suất, kỳ hạn, ngày, và ghi phần chênh số tiền ("Cập nhật theo ảnh").
+- Sổ có số lãi cuối kỳ do ngân hàng báo thì màn chi tiết và danh sách dùng số đó cho "Nhận về" thay số app ước tính; gửi tiếp kỳ mới thì bỏ số cũ.
+- Bộ đọc nằm ở `doc-so-tk.js` (`N50KSoTK.parse`), không gắn với giao diện một ngân hàng nào; bài thử `node tests-so-tk.js`. Đã thử bằng bộ đọc chữ thật với ảnh màn "Tiền gửi số tích luỹ".
 
 ---
 

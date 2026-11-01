@@ -86,6 +86,8 @@ ios-app/                bản iOS (Capacitor + Swift: plugin, tác vụ Phím t�
 parse-vi.js             bộ hiểu câu tiếng Việt cho màn Trò chuyện (chạy trên máy)
 du-lieu.js              cấu trúc dữ liệu schema 2: đổi qua lại dạng lưu / dạng trong bộ nhớ, lớp đọc thống nhất allTx
 tests-du-lieu.js        bài thử khứ hồi schema 2: node tests-du-lieu.js
+doc-so-tk.js            đọc ảnh chụp màn hình sổ tiết kiệm / CDs (chữ từ bộ đọc chữ) → thông tin sổ (v208)
+tests-so-tk.js          bài thử đọc màn sổ tiết kiệm: node tests-so-tk.js
 quy-tac.js              Thư viện nội dung: khớp quy tắc làm gọn thông báo ngân hàng, giải thích cú pháp, gợi ý (không chứa quy tắc của ai)
 tests-quy-tac.js        bài thử Thư viện nội dung (dữ liệu giả): node tests-quy-tac.js
 worker/                 trạm trung chuyển thông báo trên Cloudflare (Durable Object, không lưu trữ), xem worker/README.md
@@ -114,7 +116,7 @@ App không tải gì từ bên ngoài khi chạy. Riêng chức năng đọc ch�
 1. Sửa code.
 2. Tăng số phiên bản ở **ba chỗ**, cùng một số:
    - `sw.js` → `const V = "NN";`
-   - `index.html` → các thẻ `<script src="…?v=NN">` (parse-vi, thu-vien-cau, quy-tac, du-lieu, native, lock), và dòng `Phiên bản vNN` trong phần Cài đặt (cùng `VER` trong đoạn lưới an toàn đầu trang).
+   - `index.html` → các thẻ `<script src="…?v=NN">` (parse-vi, thu-vien-cau, quy-tac, du-lieu, doc-so-tk, native, lock), và dòng `Phiên bản vNN` trong phần Cài đặt (cùng `VER` trong đoạn lưới an toàn đầu trang).
    - Lệnh gợi ý: `sed -i 's/const V = "OLD"/const V = "NN"/' sw.js && sed -i 's/?v=OLD/?v=NN/g; s/Phiên bản vOLD/Phiên bản vNN/; s/VER = "vOLD"/VER = "vNN"/' index.html`
 3. Ghi lại thay đổi vào `IN-THIS-VERSION.md`.
 4. Đẩy lên GitHub.

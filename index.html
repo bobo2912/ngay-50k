@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v207";
+  var K = "ngay50k:errlog", VER = "v208";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -1195,6 +1195,18 @@ body.searching header{display:none}
 .as-check{display:flex; align-items:center; gap:10px; min-height:44px; font-size:.9rem}
 .as-check input{width:20px; height:20px; accent-color:var(--note)}
 #asFoot{display:flex}
+/* v208: thẻ sổ tiết kiệm đọc từ ảnh trong Chat */
+.dep-card{background:var(--surface); border:1.5px solid var(--line); border-radius:16px; padding:10px 14px 12px; margin:6px 0 4px; max-width:92%}
+.dep-row{display:flex; justify-content:space-between; gap:12px; padding:5px 0; font-size:.86rem; border-top:1px solid var(--line)}
+.dep-row:first-child{border-top:0}
+.dep-row span{color:var(--muted); flex:none}
+.dep-row b{text-align:right; font-weight:600}
+.dep-note{font-size:.74rem; color:var(--muted); margin:6px 0 8px}
+.dep-acts{display:flex; gap:8px; flex-wrap:wrap}
+.dep-acts button{flex:1; min-height:42px; border-radius:12px; font:inherit; font-size:.88rem; font-weight:700; border:1px solid var(--line); background:var(--surface); color:var(--ink)}
+.dep-acts .dep-ok{background:var(--ink); color:var(--bg); border-color:var(--ink); flex:1.6}
+.dep-acts .dep-skip{color:var(--muted); font-weight:600}
+.prop > .dep-acts{max-width:92%; margin-top:6px}
 #asFoot button{flex:1 1 0; margin:0; min-width:0; width:auto}
 #asFoot .primary{flex:2 1 0}
 .searchbar{display:flex; align-items:center; gap:8px; margin:8px 0 4px; padding:0 12px;
@@ -3188,7 +3200,7 @@ li.txg > details.txd > ul{margin:0 !important}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v207</p>
+      <p class="sync" id="appVersion">Phiên bản v208</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3738,12 +3750,13 @@ li.txg > details.txd > ul{margin:0 !important}
 <input type="file" id="phFile" accept="image/*" hidden>
 <div class="ph-view" id="phView" role="dialog" aria-modal="true" aria-label="Ảnh hoá đơn" hidden><img id="phImg" alt="Ảnh hoá đơn"><div class="ph-bar"><button type="button" id="phDel">Bỏ ảnh này</button><button type="button" id="phClose">Đóng</button></div></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=207"></script>
-<script src="thu-vien-cau.js?v=207"></script>
-<script src="quy-tac.js?v=207"></script>
-<script src="du-lieu.js?v=207"></script>
-<script src="native.js?v=207"></script>
-<script src="lock.js?v=207"></script>
+<script src="parse-vi.js?v=208"></script>
+<script src="thu-vien-cau.js?v=208"></script>
+<script src="quy-tac.js?v=208"></script>
+<script src="du-lieu.js?v=208"></script>
+<script src="doc-so-tk.js?v=208"></script>
+<script src="native.js?v=208"></script>
+<script src="lock.js?v=208"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -6032,7 +6045,7 @@ function startNgay50k(){
       const left = asDueLeft(a);
       sub = (Number(a.rate) > 0 ? rateTxt(a.rate) : "chưa có lãi suất") + (a.due ? " · " + (left <= 0 ? "đã đáo hạn " : "đáo hạn ") + dShort(a.due) : " · không kỳ hạn");
       right.appendChild(el("b", "num", fmt(base)));
-      const g = a.due ? asInterest(a, a.due) : asInterest(a, todayKey());
+      const g = a.due ? (a.bankInt || asInterest(a, a.due)) : asInterest(a, todayKey());
       if(g > 0) gTxt = (a.due ? "lãi dự kiến " : "lãi tới nay ") + sGain(g);
       if(left != null && left <= 0) b.classList.add("due");
     } else {
@@ -6135,9 +6148,11 @@ function startNgay50k(){
     asRender();
     if($("asSheet").hidden) showSheet("asSheet", "asBack");
   }
-  function openAsForm(kind, id){
+  /* pre (v208): điền sẵn từ ảnh chụp màn hình sổ tiết kiệm; pre.done(rec) chạy sau khi tạo */
+  function openAsForm(kind, id, pre){
     const a = id ? assetById(id) : null;
-    asUI = Object.assign(asUI, { mode:"form", id:a ? a.id : null, kind:a ? a.kind : (kind || "save"), w:MAIN_W, term:a ? (Number(a.term) || 0) : 6, onDue:a ? (a.onDue || "wallet") : "wallet", from:a ? "view" : null });
+    pre = a ? null : (pre || null);
+    asUI = Object.assign(asUI, { mode:"form", id:a ? a.id : null, kind:a ? a.kind : (kind || "save"), w:pre ? "" : MAIN_W, term:a ? (Number(a.term) || 0) : pre ? (pre.term || 0) : 6, onDue:a ? (a.onDue || "wallet") : (pre && pre.onDue) || "wallet", from:a ? "view" : null, pre });
     asRender();
     if($("asSheet").hidden) showSheet("asSheet", "asBack");
     if(!a) setTimeout(() => { const n = $("asName"); if(n) n.focus({ preventScroll:true }); }, 260);
@@ -6201,7 +6216,8 @@ function startNgay50k(){
       const ls = el("div", "as-lines");
       const line = (k, v, cls) => { const r = el("div", "as-line" + (cls ? " " + cls : "")); r.append(el("span", null, k), el("b", "num", v)); ls.appendChild(r); };
       line("Lãi tính tới hôm nay", "≈ " + fmt(asInterest(a, todayKey())));
-      if(a.due){ const g = asInterest(a, a.due); line("Lãi khi đáo hạn", "+" + fmt(g), "up"); line("Nhận về", fmt(base + g), "tot"); }
+      /* v208: có số lãi cuối kỳ do ngân hàng báo (đọc từ ảnh) thì dùng số đó thay cho số app ước tính */
+      if(a.due){ const g = a.bankInt || asInterest(a, a.due); line(a.bankInt ? "Lãi cuối kỳ (theo ngân hàng)" : "Lãi khi đáo hạn", "+" + fmt(g), "up"); line("Nhận về", fmt(base + g), "tot"); }
       if(Number(a.rate) > 0) ls.appendChild(el("p", "subtle as-hint", "Lãi đơn theo ngày, ước tính. Rút trước hạn thường chỉ được lãi không kỳ hạn, số thật theo ngân hàng."));
       body.appendChild(ls);
     }
@@ -6273,16 +6289,18 @@ function startNgay50k(){
         if(keep.name) $("asName").value = keep.name; if(keep.amt) $("asAmt").value = keep.amt; asCheck();
       })));
     }
-    body.appendChild(asField("Tên", asInput("asName", a ? a.name : "", { maxlength:"40", placeholder:K.ph })));
+    const pre = !a ? asUI.pre : null;
+    body.appendChild(asField("Tên", asInput("asName", a ? a.name : pre ? pre.name : "", { maxlength:"40", placeholder:K.ph })));
     if(!a){
-      body.appendChild(asField(save ? "Số tiền gửi" : "Số tiền bỏ vào (vốn)", asMoney("asAmt", "", () => asCheck())));
+      body.appendChild(asField(save ? "Số tiền gửi" : "Số tiền bỏ vào (vốn)", asMoney("asAmt", pre ? pre.amt : "", () => asCheck())));
       body.appendChild(asField("Lấy từ", asWalletChips(asUI.w, "Có từ trước, không trừ ví", v => { asUI.w = v; asCheck(); }),
         "Chọn “Có từ trước” cho khoản bạn đã có trước khi dùng app, để số dư ví không bị trừ."));
     }
-    const dIn = asInput("asDate", a ? (a.start || todayKey()) : todayKey(), { type:"date", max:todayKey() });
+    const dIn = asInput("asDate", a ? (a.start || todayKey()) : pre && pre.start && pre.start <= todayKey() ? pre.start : todayKey(), { type:"date", max:todayKey() });
     if(save){
-      body.appendChild(asField("Lãi suất (%/năm)", asInput("asRate", a && a.rate ? String(a.rate).replace(".", ",") : "", { inputmode:"decimal", placeholder:"vd: 5,2" })));
-      body.appendChild(asField("Kỳ hạn", asChips(AS_TERMS.map(n => [n, n ? n + " tháng" : "Không kỳ hạn"]), asUI.term, n => { asUI.term = n; asCheck(); })));
+      body.appendChild(asField("Lãi suất (%/năm)", asInput("asRate", a && a.rate ? String(a.rate).replace(".", ",") : pre && pre.rate ? String(pre.rate).replace(".", ",") : "", { inputmode:"decimal", placeholder:"vd: 5,2" })));
+      const terms = AS_TERMS.includes(asUI.term) ? AS_TERMS : AS_TERMS.concat([asUI.term]).sort((x, y) => x - y);
+      body.appendChild(asField("Kỳ hạn", asChips(terms.map(n => [n, n ? n + " tháng" : "Không kỳ hạn"]), asUI.term, n => { asUI.term = n; asCheck(); })));
       body.appendChild(asField(a ? "Ngày bắt đầu kỳ này" : "Ngày gửi", dIn));
       const od = el("div", "seg"); od.setAttribute("role", "group"); od.setAttribute("aria-label", "Khi đáo hạn");
       [["wallet", "Rút về ví"], ["renew", "Gửi tiếp kỳ mới"]].forEach(([v, l]) => {
@@ -6341,11 +6359,14 @@ function startNgay50k(){
       const amt = balVal("asAmt"); if(!(amt > 0)) return;
       const date = asDateOk("asDate"), mv = { id:uid(), asset:rec.id, dir:"in", amt, date, t:asTimeOf(date) };
       if(asUI.w) mv.w = asUI.w;
+      const pre = asUI.pre;
+      if(pre){ if(pre.acct) rec.acct = pre.acct; if(pre.bankInt) rec.bankInt = pre.bankInt; if(!asUI.w) mv.note = "Có từ trước (đọc từ ảnh)"; }
       (state.assets = state.assets || []).push(rec);
       (state.assetTx = state.assetTx || []).push(mv);
       const now = $("asNow") ? balVal("asNow") : null;
       if(now != null && now !== amt) (state.assetVal = state.assetVal || []).push({ id:uid(), asset:rec.id, v:now, date:todayKey(), t:Math.max(Date.now(), mv.t) + 1 });
       asUI.id = rec.id; asNewId = rec.id;
+      if(pre && pre.done){ asUI.pre = null; try{ pre.done(rec); }catch(e){} }
     }
     asSaved(); asUI.from = null; asGo("view", { from:null });
   }
@@ -6422,8 +6443,65 @@ function startNgay50k(){
   function asRenew(a){
     const g = asInterest(a, a.due);
     if(g > 0) (state.assetTx = state.assetTx || []).push({ id:uid(), asset:a.id, dir:"in", amt:g, date:a.due, t:asTimeOf(a.due) > Date.now() ? Date.now() : asTimeOf(a.due), note:"Lãi nhập gốc" });
-    a.start = a.due; a.due = addMonths(a.start, Number(a.term) || 0);
+    a.start = a.due; a.due = addMonths(a.start, Number(a.term) || 0); delete a.bankInt;   /* số lãi ngân hàng báo chỉ đúng cho kỳ cũ */
     asSaved(); asRender();
+  }
+
+  /* ---------- v208: thẻ sổ tiết kiệm đọc từ ảnh trong Chat ---------- */
+  const depMatch = d => d && d.acct ? (state.assets || []).find(a => a.acct === d.acct && !a.closed) || null : null;
+  function depDone(m, rec, upd){
+    m.depSt = "done"; m.depId = rec.id; m.depName = rec.name; m.depUpd = !!upd;
+    chatSave(); if(currentTab === "chat") renderChat(true);
+  }
+  function depApply(m){
+    const d = m.dep, ex = depMatch(d);
+    if(ex){
+      if(d.rate) ex.rate = d.rate; if(d.term) ex.term = d.term; if(d.start) ex.start = d.start;
+      if(d.due) ex.due = d.due; else if(ex.start && ex.term) ex.due = addMonths(ex.start, ex.term);
+      if(d.onDue) ex.onDue = d.onDue; if(d.intEnd) ex.bankInt = d.intEnd;
+      const diff = d.amt - asPrincipal(ex);
+      if(diff) (state.assetTx = state.assetTx || []).push({ id:uid(), asset:ex.id, dir:diff > 0 ? "in" : "out", amt:Math.abs(diff), date:todayKey(), t:Date.now(), note:"Cập nhật theo ảnh" });
+      persist(true); renderAll(); depDone(m, ex, true); return;
+    }
+    const rec = { id:uid(), kind:d.kind === "cd" ? "cd" : "save", name:d.name || "Sổ tiết kiệm", t:Date.now() };
+    if(d.acct) rec.acct = d.acct; if(d.rate) rec.rate = d.rate; if(d.intEnd) rec.bankInt = d.intEnd;
+    rec.term = d.term || 0; rec.start = d.start || todayKey();
+    if(d.due || rec.term){ rec.due = d.due || addMonths(rec.start, rec.term); rec.onDue = d.onDue || "wallet"; }
+    (state.assets = state.assets || []).push(rec);
+    (state.assetTx = state.assetTx || []).push({ id:uid(), asset:rec.id, dir:"in", amt:d.amt, date:rec.start > todayKey() ? todayKey() : rec.start, t:asTimeOf(rec.start > todayKey() ? todayKey() : rec.start), note:"Có từ trước (đọc từ ảnh)" });
+    persist(true); renderAll(); depDone(m, rec, false);
+  }
+  function depEl(m){
+    const d = m.dep, box = el("div", "prop"), intro = el("div", "msg bot"), ex = depMatch(d);
+    const what = d.kind === "cd" ? "chứng chỉ tiền gửi" : "sổ tiết kiệm";
+    if(m.depSt === "done") intro.innerHTML = "✓ Đã " + (m.depUpd ? "cập nhật" : "tạo") + " <b>" + esc(m.depName || d.name) + "</b> trong tab Tài sản.";
+    else if(m.depSt === "skip") intro.innerHTML = "Đã bỏ qua " + what + " trong ảnh.";
+    else intro.innerHTML = "Ảnh này là một <b>" + what + "</b>. Mình đọc được như dưới (bằng bộ đọc chữ trên máy), bạn xem lại rồi bấm " + (ex ? "<b>Cập nhật</b>" : "<b>Tạo sổ</b>") + " nhé." +
+      (ex ? " <i>Đã có " + esc(ex.name) + " cùng số tài khoản, Cập nhật sẽ sửa sổ đó theo ảnh.</i>" : "");
+    markLocal(intro); box.appendChild(intro);
+    if(m.depSt === "pending"){
+      const card = el("div", "dep-card");
+      const row = (k, v) => { if(!v) return; const r = el("div", "dep-row"); r.append(el("span", null, k), el("b", null, v)); card.appendChild(r); };
+      row("Tên", d.name); row("Số tiền", fmt(d.amt)); row("Lãi suất", d.rate ? rateTxt(d.rate) : "chưa đọc được");
+      row("Kỳ hạn", d.term ? d.term + " tháng" : "Không kỳ hạn"); row("Ngày gửi", d.start ? dShort(d.start) : "");
+      row("Đáo hạn", d.due ? dShort(d.due) : d.start && d.term ? dShort(addMonths(d.start, d.term)) : "");
+      row("Khi đến hạn", d.onDue === "renew" ? "Gửi tiếp (quay vòng gốc và lãi)" : d.onDue === "wallet" ? "Rút về ví" : "");
+      row("Lãi cuối kỳ", d.intEnd ? fmt(d.intEnd) + " (theo ngân hàng)" : "");
+      row("Số tài khoản", d.acct ? "···" + d.acct.slice(-4) : "");
+      card.appendChild(el("p", "dep-note", "Ghi là tiền có từ trước, không trừ số dư ví. Muốn chọn ví đã chuyển tiền đi thì bấm Sửa."));
+      const acts = el("div", "dep-acts");
+      const b1 = el("button", "dep-ok", ex ? "Cập nhật" : "Tạo sổ"); b1.type = "button"; b1.onclick = () => depApply(m);
+      const b2 = el("button", "dep-edit", "Sửa"); b2.type = "button";
+      b2.onclick = () => openAsForm(d.kind === "cd" ? "cd" : "save", null, { name:d.name, amt:d.amt, rate:d.rate, term:d.term, start:d.start, due:d.due, onDue:d.onDue, acct:d.acct, bankInt:d.intEnd, done:rec => depDone(m, rec, false) });
+      if(ex) b2.hidden = true;
+      const b3 = el("button", "dep-skip", "Bỏ qua"); b3.type = "button"; b3.onclick = () => { m.depSt = "skip"; chatSave(); renderChat(true); };
+      acts.append(b1, b2, b3); card.appendChild(acts); box.appendChild(card);
+    } else if(m.depSt === "done" && assetById(m.depId)){
+      const acts = el("div", "dep-acts");
+      const b = el("button", "dep-edit", "Xem trong Tài sản"); b.type = "button"; b.onclick = () => { showTab("loans"); openAsset(m.depId); };
+      acts.appendChild(b); box.appendChild(acts);
+    }
+    return box;
   }
 
   $("asClose").onclick = asClose;
@@ -7958,6 +8036,7 @@ function startNgay50k(){
       if(m.text){ const c = document.createElement("div"); c.className = "cap"; c.textContent = m.text; d.appendChild(c); }
       return d;
     }
+    if(m.dep) return depEl(m);
     if(m.items){
       const box = document.createElement("div"); box.className = "prop";
       const intro = document.createElement("div"); intro.className = "msg bot";
@@ -8686,11 +8765,14 @@ function startNgay50k(){
     return n ? " <i>Có " + (n === items.length && n > 1 ? "cả " : "") + n + " khoản trùng số tiền với khoản đã ghi cùng ngày, xem kỹ trước khi bấm Ghi nhé.</i>" : "";
   }
   async function imgLocal(files, onMsg){
-    const raw = [];
+    const raw = [], deps = [];
     for(let k = 0; k < files.length; k++){
       const f = files[k], tag = files.length > 1 ? " (ảnh " + (k + 1) + "/" + files.length + ")" : "";
       if(onMsg) onMsg("Đang mở bộ đọc chữ trên máy" + tag + "…");
       const txt = await ocrImage(f, pr => onMsg && onMsg("Đang đọc ảnh" + tag + "… " + Math.round(pr * 100) + "%"), m => onMsg && onMsg(m.replace(/…$/, "") + tag + "…"));
+      /* v208: ảnh chụp màn hình sổ tiết kiệm / chứng chỉ tiền gửi → thẻ tạo sổ, không đọc như thông báo giao dịch */
+      let dp = null; try{ dp = window.N50KSoTK ? N50KSoTK.parse(txt) : null; }catch(e){}
+      if(dp){ deps.push(dp); continue; }
       parseNotif(txt).forEach(p => {
         const cs = state.cards || []; let c = null;
         if(p.first6 && p.last4) c = cs.find(x => x.first6 === p.first6 && x.last4 === p.last4);
@@ -8698,7 +8780,7 @@ function startNgay50k(){
         raw.push({ kind: c ? "card" : "out", amt:p.amt, note:p.where || "", date:p.day, time:pad(p.hm) + ":" + pad(p.mi), cardId: c ? c.id : null });
       });
     }
-    return aiClean({ items:raw, reply:"" });
+    const r = aiClean({ items:raw, reply:"" }); r.deps = deps; return r;
   }
   async function chatSendImgs(fileList){
     const files = [...fileList].filter(f => /^image\//.test(f.type) || /\.(heic|heif|jpe?g|png|webp)$/i.test(f.name)).slice(0, 4);
@@ -8726,9 +8808,12 @@ function startNgay50k(){
     if(!r){ msgs.push({ id:uid(), role:"bot", html: err && err.message === "offline"
         ? "Lần đầu đọc ảnh cần mạng để tải bộ đọc chữ (chỉ tải một lần). Bật mạng rồi gửi lại ảnh nhé."
         : "Chưa đọc được ảnh này. Thử chụp gần phần thông báo có số tiền, hoặc chép chữ trong ảnh bằng iPhone rồi dán vào ô chat.", t:Date.now() }); }
-    else if(r.items.length){
+    else if(r.items.length || (r.deps && r.deps.length)){
+      (r.deps || []).forEach(dp => msgs.push({ id:uid(), role:"bot", dep:dp, depSt:"pending", t:Date.now(), src:"local" }));
+      if(r.items.length){
       const intro = "Mình đọc được " + r.items.length + " giao dịch trong ảnh (bằng bộ đọc chữ trên máy), bạn xem lại rồi bấm Ghi nhé:" + dupNote(r.items);
       msgs.push({ id:uid(), role:"bot", items:r.items, intro, introHtml:true, status:r.items.map(() => "pending"), refs:r.items.map(() => null), t:Date.now(), src:"local" });
+      }
     } else msgs.push({ id:uid(), role:"bot", html:"Mình không thấy giao dịch trừ tiền nào trong ảnh. Thử chụp gần phần thông báo có số tiền nhé.", t:Date.now() });
     tagRetry(msgs, cap || "(ảnh)"); if(msgs.length) retryImgs[msgs[0].grp] = files;
     aiBusy = false; chatGrow();
