@@ -44,9 +44,16 @@
 
   /* chép một bản ghi sang dạng khác: fixed = trường thêm vào, ren = đổi tên trường.
      Bản ghi gốc đã có sẵn một trường mà dạng mới dùng (không phải do đổi tên mà ra) thì trả null → cất nguyên vẹn. */
+  /* v213: tập trường "đã dùng" tính một lần cho mỗi kiểu (trước đây tạo Set mới cho từng bản ghi) */
+  const USED = new Map();
+  function usedOf(fixed, ren){
+    const key = Object.keys(fixed).join(",") + "|" + Object.keys(ren).map(k => k + ">" + ren[k]).join(",");
+    let u = USED.get(key);
+    if(!u){ u = new Set(Object.keys(fixed)); for(const k in ren) u.add(ren[k]); USED.set(key, u); }
+    return u;
+  }
   function remap(src, fixed, ren){
-    const out = {}, used = new Set(Object.keys(fixed));
-    for(const k in ren) used.add(ren[k]);
+    const out = {}, used = usedOf(fixed, ren);
     for(const k in src){
       if(k in ren) continue;
       if(used.has(k)) return null;
@@ -75,7 +82,8 @@
   const LOAN_SUB = { draw:{ list:"draws", ren:{ date:"d" } }, repay:{ list:"payments", ren:{ date:"d" } } };
 
   /* ---------- dạng cũ → schema 2 ---------- */
-  function toV2(st){
+  /* opts.noClone: bản trả về dùng chung mảng con với st (vd mảng ảnh ph); chỉ dùng khi chuyển ngay thành chuỗi (lúc lưu) */
+  function toV2(st, opts){
     st = st || {};
     const tx = [];
     /* túi theo ngày: days / income / cardTx */
@@ -130,7 +138,7 @@
     });
     /* sắp theo ngày; trong một ngày giữ đúng thứ tự đã ghi (app hiện khoản theo thứ tự ghi, không theo giờ) */
     tx.forEach((r, i) => { r.__i = i; });
-    tx.sort((a, b) => String(a.d || "").localeCompare(String(b.d || "")) || a.__i - b.__i);
+    tx.sort((a, b) => { const x = a.d || "", y = b.d || ""; return x < y ? -1 : x > y ? 1 : a.__i - b.__i; });
     tx.forEach(r => { delete r.__i; });
 
     const accounts = [{ id:MAIN, group:"main", name:"Tài khoản" }];
@@ -164,7 +172,7 @@
     /* trường cũ không còn dùng: chỉ giữ khi còn dữ liệu */
     if(isObj(st.payees) && Object.keys(st.payees).length) out.payees = st.payees;
     if(isObj(st.caps) && Object.keys(st.caps).length) out.caps = st.caps;
-    return clone(out);
+    return opts && opts.noClone ? out : clone(out);
   }
 
   /* ---------- schema 2 → dạng cũ (dạng app dùng trong bộ nhớ) ---------- */

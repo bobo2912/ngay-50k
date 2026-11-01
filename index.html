@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v212";
+  var K = "ngay50k:errlog", VER = "v213";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -3206,7 +3206,7 @@ li.txg > details.txd > ul{margin:0 !important}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v212</p>
+      <p class="sync" id="appVersion">Phiên bản v213</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3756,14 +3756,14 @@ li.txg > details.txd > ul{margin:0 !important}
 <input type="file" id="phFile" accept="image/*" hidden>
 <div class="ph-view" id="phView" role="dialog" aria-modal="true" aria-label="Ảnh hoá đơn" hidden><img id="phImg" alt="Ảnh hoá đơn"><div class="ph-bar"><button type="button" id="phDel">Bỏ ảnh này</button><button type="button" id="phClose">Đóng</button></div></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=212"></script>
-<script src="thu-vien-cau.js?v=212"></script>
-<script src="quy-tac.js?v=212"></script>
-<script src="du-lieu.js?v=212"></script>
-<script src="doc-so-tk.js?v=212"></script>
-<script src="tich-luy.js?v=212"></script>
-<script src="native.js?v=212"></script>
-<script src="lock.js?v=212"></script>
+<script src="parse-vi.js?v=213"></script>
+<script src="thu-vien-cau.js?v=213"></script>
+<script src="quy-tac.js?v=213"></script>
+<script src="du-lieu.js?v=213"></script>
+<script src="doc-so-tk.js?v=213"></script>
+<script src="tich-luy.js?v=213"></script>
+<script src="native.js?v=213"></script>
+<script src="lock.js?v=213"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -4163,7 +4163,7 @@ function startNgay50k(){
   }
   /* v199 – schema 2: trên máy và trong file sao lưu, dữ liệu lưu theo cấu trúc mới (du-lieu.js, N50KData):
      mọi biến động tiền chung một bảng tx. Trong bộ nhớ vẫn là dạng cũ; chỉ đổi lúc đọc lên và lúc ghi xuống. */
-  const encodeState = st => JSON.stringify(N50KData.toV2(st));
+  const encodeState = st => JSON.stringify(N50KData.toV2(st, { noClone:true }));   /* v213: chuyển thẳng thành chuỗi, khỏi chép thêm một lần */
   const decodeState = obj => normalize(N50KData.decode(obj));
   /* Vì sao khoá mới: một trang bản cũ (v198, mở từ bộ nhớ đệm lúc mất mạng, hoặc một tab còn mở trên máy tính) đọc schema 2
      sẽ thấy sổ trống, ghi thêm một khoản là đè mất hết. Bản cũ chỉ biết khoá "ngay50k:v1" nên nó chỉ thấy bản trước khi chuyển;
@@ -4200,7 +4200,12 @@ function startNgay50k(){
     sigs = collectSigs(state);
   }
   /* ---------- change tracking: lets two devices merge without losing edits or reviving deletions ---------- */
-  function sigOf(o, isLoan){ const c = Object.assign({}, o); delete c.m; if(isLoan){ delete c.payments; delete c.draws; } return JSON.stringify(c); }   /* v199: lần vay thêm cũng là bản ghi riêng như lần trả */
+  /* v213: chữ ký gồm cả m (khỏi chép từng bản ghi để bỏ m, nhanh gấp đôi): bản ghi không đổi thì m cũng không đổi.
+     Bản ghi vừa đổi được gán m mới rồi ký lại (track). Khoản vay vẫn bỏ payments / draws (bản ghi riêng, v199) */
+  function sigOf(o, isLoan){
+    if(!isLoan) return JSON.stringify(o);
+    const c = Object.assign({}, o); delete c.payments; delete c.draws; return JSON.stringify(c);
+  }
   function eachRecord(st, fn){
     for(const k in st.days) (st.days[k]||[]).forEach(it => fn(it.id, it, false));
     for(const k in st.income) (st.income[k]||[]).forEach(it => fn(it.id, it, false));
@@ -4232,8 +4237,9 @@ function startNgay50k(){
     const now = Date.now(), next = {};
     eachRecord(state, (id, o, isLoan) => {
       if(!id) return;
-      const sg = sigOf(o, isLoan); next[id] = sg;
-      if(sigs[id] !== sg) o.m = now;
+      let sg = sigOf(o, isLoan);
+      if(sigs[id] !== sg){ o.m = now; sg = sigOf(o, isLoan); }
+      next[id] = sg;
     });
     next.__budget = String(state.budget);
     if(sigs.__budget !== undefined && sigs.__budget !== next.__budget) state.budgetM = now;
@@ -4242,7 +4248,14 @@ function startNgay50k(){
     for(const id in state.deleted) if(state.deleted[id] < old) delete state.deleted[id];
     sigs = next;
   }
+  /* v213: nhiều lần persist() liền nhau trong cùng một thao tác (Ghi tất cả, gộp, xoá nhiều) chỉ ký và mã hoá một lần,
+     ngay cuối thao tác đó (microtask: trước khi trình duyệt vẽ lại hay chuyển sang việc khác, nên không mất dữ liệu) */
   function persist(){
+    if(persist.q) return;
+    persist.q = true;
+    queueMicrotask(() => { persist.q = false; persistNow(); });
+  }
+  function persistNow(){
     /* không xoá dữ liệu cũ: so sánh năm nay với năm ngoái là thứ đáng giá nhất của một sổ chi tiêu */
     track();
     state.updated = Date.now();

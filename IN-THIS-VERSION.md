@@ -1,6 +1,16 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v212, ngày 01/11/2026
+**Phiên bản hiện tại:** v213, ngày 01/11/2026
+
+---
+
+## Có gì mới trong v213 (so với v212) – lưu nhanh hơn khi sổ lớn
+
+- Mỗi lần bấm Ghi nhanh hơn khoảng 2,5 lần với sổ nhiều năm. Đo trên máy tính với ~9.900 khoản (3 năm): từ ~110 ms xuống ~45 ms; trên iPhone ước từ 0,3–0,5 giây xuống dưới 0,2 giây.
+  - Lúc lưu, dữ liệu đổi sang schema 2 rồi thành chuỗi ngay, không chép thêm một bản (`toV2(st, { noClone:true })`); bảng trường dùng chung cho mỗi kiểu bản ghi; sắp ngày bằng so sánh chuỗi thường.
+  - Theo dõi thay đổi để gộp hai máy: chữ ký bản ghi gồm cả mốc sửa `m`, không phải chép từng bản ghi để bỏ `m`.
+  - Nhiều lần lưu trong cùng một thao tác (Ghi tất cả, xoá nhiều…) gom thành một lần, chạy ngay cuối thao tác đó.
+- Không đổi cấu trúc dữ liệu đã lưu.
 
 ---
 
