@@ -1,6 +1,12 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v216, ngày 01/11/2026
+**Phiên bản hiện tại:** v217, ngày 01/11/2026
+
+---
+
+## Có gì mới trong v217 (so với v216) – 216
+
+Chat: chọn 'có từ trước' hay trừ ví khi bỏ vào tích luỹ
 
 ---
 

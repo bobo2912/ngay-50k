@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v216";
+  var K = "ngay50k:errlog", VER = "v217";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -3206,7 +3206,7 @@ li.txg > details.txd > ul{margin:0 !important}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v216</p>
+      <p class="sync" id="appVersion">Phiên bản v217</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3756,14 +3756,14 @@ li.txg > details.txd > ul{margin:0 !important}
 <input type="file" id="phFile" accept="image/*" hidden>
 <div class="ph-view" id="phView" role="dialog" aria-modal="true" aria-label="Ảnh hoá đơn" hidden><img id="phImg" alt="Ảnh hoá đơn"><div class="ph-bar"><button type="button" id="phDel">Bỏ ảnh này</button><button type="button" id="phClose">Đóng</button></div></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=216"></script>
-<script src="thu-vien-cau.js?v=216"></script>
-<script src="quy-tac.js?v=216"></script>
-<script src="du-lieu.js?v=216"></script>
-<script src="doc-so-tk.js?v=216"></script>
-<script src="tich-luy.js?v=216"></script>
-<script src="native.js?v=216"></script>
-<script src="lock.js?v=216"></script>
+<script src="parse-vi.js?v=217"></script>
+<script src="thu-vien-cau.js?v=217"></script>
+<script src="quy-tac.js?v=217"></script>
+<script src="du-lieu.js?v=217"></script>
+<script src="doc-so-tk.js?v=217"></script>
+<script src="tich-luy.js?v=217"></script>
+<script src="native.js?v=217"></script>
+<script src="lock.js?v=217"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -7985,13 +7985,15 @@ function startNgay50k(){
       if(it.kind === "asval" && it.unitP){ const a = assetById(it.asset); html += '<p class="pinfo">Giá 1 ' + esc((a && a.unit) || "đơn vị") + " " + fmt(it.unitP) + " × " + esc(String(a ? a.qty : "").replace(".", ",")) + " = tổng " + fmt(it.amt) + "</p>"; }
       if(it.kind === "asout") html += '<label class="pall"><input type="checkbox" class="pallc"' + (it.all ? " checked" : "") + "> " + (it.asset && isDep(assetById(it.asset)) ? "Rút hết, tất toán sổ" : "Bán hết, đóng khoản này") + "</label>";
     }
+    /* v217: bỏ vào tích luỹ: chọn "có từ trước" hay trừ ví nào, dạng nút như ở tab Tài sản */
+    if(it.kind === "asin") html += '<div class="prow pwch"></div>';
     const row3 = [];
     if(it.kind === "out" || it.kind === "card"){ const tg = tagOf(it.cat || "khac"); row3.push('<button type="button" class="pt ptb" aria-label="Nhóm: ' + esc(tg.label) + '">' + icH(tg.icon) + ' <span>' + esc(tg.label) + '</span></button>'); }   /* v171: nút mở bảng chọn tag (icon nét mảnh) thay ô chọn */
     if(it.kind === "in") row3.push('<select class="pt" aria-label="Nguồn thu">' + optionList(INC.map(t => [t.id, t.icon + " " + t.label]), it.cat || "khac") + "</select>");
     if(it.kind === "card" || it.kind === "cardpay") row3.push('<select class="pc" aria-label="Thẻ">' + optionList([["", "— thẻ —"]].concat((state.cards || []).map(c => [c.id, c.name])), it.cardId || "") + "</select>");
     /* v98: chọn ví (chỉ khi có từ hai ví) */
     const wOpts = walletList().map(w => [w.id, w.icon + " " + w.name]);
-    if(it.kind === "asin" || it.kind === "asout") row3.push('<select class="paw" aria-label="' + (it.kind === "asin" ? "Lấy từ ví" : "Về ví") + '">' + optionList([["", it.kind === "asin" ? "Không trừ ví (có từ trước)" : "Không về ví nào"]].concat(wOpts), it.w || "") + "</select>");
+    if(it.kind === "asout") row3.push('<select class="paw" aria-label="Về ví">' + optionList([["", "Không về ví nào"]].concat(wOpts), it.w || "") + "</select>");
     if(multiW() && (it.kind === "out" || it.kind === "in" || it.kind === "bal" || it.kind === "cardpay" || isLoan)) row3.push('<select class="pwv" aria-label="Ví">' + optionList(wOpts, it.w || (isLoan && it.loanId && getLoan(it.loanId) ? lW(null, getLoan(it.loanId)) : MAIN_W)) + "</select>");
     if(it.kind !== "bal") row3.push('<input class="pd" type="date" aria-label="Ngày" value="' + esc(it.date) + '">');
     if(it.kind === "xfer") html += '<div class="prow"><select class="pwf" aria-label="Từ ví">' + optionList(wOpts, it.from || MAIN_W) + '</select><span class="parrow" aria-hidden="true">→</span><select class="pwt" aria-label="Sang ví">' + optionList(wOpts, it.to || MAIN_W) + "</select></div>";
@@ -8026,6 +8028,7 @@ function startNgay50k(){
     if(q(".pak")) q(".pak").onchange = e => { it.ak = e.target.value; if(!String(it.name || "").trim() || /^(Sổ|Vàng|Quỹ|Cổ phiếu|Tiền số|Chứng chỉ|CD|Khác)/.test(it.name)) it.name = AS_KINDS[it.ak].label; chatSave(); renderChat(true); };
     if(q(".pan")) q(".pan").oninput = e => { it.name = e.target.value; chatSave(); check(); };
     if(q(".paw")) q(".paw").onchange = e => { it.w = e.target.value || ""; chatSave(); };
+    if(q(".pwch")) q(".pwch").appendChild(asWalletChips(it.w == null ? MAIN_W : it.w, "Có từ trước, không trừ ví", v => { it.w = v; chatSave(); }));   /* v217 */
     if(q(".pallc")) q(".pallc").onchange = e => { it.all = e.target.checked; if(it.all){ it.raw = 0; tlFix(it); } chatSave(); renderChat(true); };
     if(q(".pwt")) q(".pwt").onchange = e => { it.to = e.target.value; chatSave(); check(); };
     if(q(".pd")) q(".pd").onchange = e => { if(/^\d{4}-\d{2}-\d{2}$/.test(e.target.value)){ it.date = e.target.value; const now = new Date(); it.t = it.date === todayKey() ? now.getTime() : new Date(it.date + "T" + pad(now.getHours()) + ":" + pad(now.getMinutes()) + ":00").getTime(); chatSave(); } };
