@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v220";
+  var K = "ngay50k:errlog", VER = "v221";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -2628,6 +2628,11 @@ li.txg > details.txd > ul{margin:0 !important}
         <p class="subtle" id="lPaidHint" hidden style="margin-top:4px"></p>
         <div class="field"><label for="lDate"><span id="lDateLabel">Ngày vay</span></label><input id="lDate" class="inp" type="date"></div>
         <div class="field" id="lWField" hidden><label><span id="lWLabel">Tiền vào ví</span></label><div class="chips wchips" id="lWChips" style="margin-top:0"></div></div>
+        <div id="lSchedBox" hidden>
+          <div class="row"><div class="field"><label for="lPerG"><span>Gốc mỗi kỳ</span></label><input id="lPerG" class="inp num" inputmode="numeric" placeholder="0đ"></div>
+          <div class="field"><label for="lDay"><span>Ngày trả hằng tháng</span></label><input id="lDay" class="inp num" inputmode="numeric" maxlength="2" placeholder="vd 28"></div></div>
+          <div class="field"><label for="lRate"><span>Lãi suất %/năm (không bắt buộc)</span></label><input id="lRate" class="inp num" inputmode="decimal" placeholder="vd 5,7"></div>
+        </div>
         <div class="field" id="lCardField" hidden><label><span>Trả góp qua thẻ tín dụng</span></label><div class="chips" id="lCardChips" style="margin-top:0"></div></div>
         <div id="lInstBox" hidden>
           <div class="row"><div class="field"><label for="lPer"><span>Mỗi kỳ</span></label><input id="lPer" class="inp num" inputmode="numeric" placeholder="0đ"></div>
@@ -3212,7 +3217,7 @@ li.txg > details.txd > ul{margin:0 !important}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v220</p>
+      <p class="sync" id="appVersion">Phiên bản v221</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3762,14 +3767,14 @@ li.txg > details.txd > ul{margin:0 !important}
 <input type="file" id="phFile" accept="image/*" hidden>
 <div class="ph-view" id="phView" role="dialog" aria-modal="true" aria-label="Ảnh hoá đơn" hidden><img id="phImg" alt="Ảnh hoá đơn"><div class="ph-bar"><button type="button" id="phDel">Bỏ ảnh này</button><button type="button" id="phClose">Đóng</button></div></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=220"></script>
-<script src="thu-vien-cau.js?v=220"></script>
-<script src="quy-tac.js?v=220"></script>
-<script src="du-lieu.js?v=220"></script>
-<script src="doc-so-tk.js?v=220"></script>
-<script src="tich-luy.js?v=220"></script>
-<script src="native.js?v=220"></script>
-<script src="lock.js?v=220"></script>
+<script src="parse-vi.js?v=221"></script>
+<script src="thu-vien-cau.js?v=221"></script>
+<script src="quy-tac.js?v=221"></script>
+<script src="du-lieu.js?v=221"></script>
+<script src="doc-so-tk.js?v=221"></script>
+<script src="tich-luy.js?v=221"></script>
+<script src="native.js?v=221"></script>
+<script src="lock.js?v=221"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -5640,7 +5645,31 @@ function startNgay50k(){
     instMemo = { key, v:out };
     return out;
   }
-  const instOf = p => (p && instAlloc().pay[p.id]) || 0;   /* phần trả góp trong một lần trả thẻ */
+  const instOf = p => (p && instAlloc().pay[p.id]) || 0;
+  /* v221: kỳ trả tới của một khoản đi vay có lịch (per; day / rate với khoản vay thường; card với trả góp thẻ).
+     Lãi ước tính = dư nợ × lãi suất × số ngày của kỳ / 360 (khớp số ngân hàng báo với các khoản LD). */
+  function nextDue(l){
+    if(!l || l.type !== "borrow" || !(Number(l.per) > 0)) return null;
+    const left = leftOf(l); if(left <= 0) return null;
+    const goc = Math.min(Number(l.per), left), periods = Math.ceil(left / Number(l.per));
+    const now = new Date(todayKey() + "T00:00:00"), ymOf = d => d.getFullYear() + "-" + pad(d.getMonth() + 1);
+    const at = (y, m, d) => { const dim = new Date(y, m + 1, 0).getDate(); return new Date(y, m, Math.min(d, dim)); };
+    if(l.card){
+      const paidThis = (instAlloc().hist[l.id] || []).some(h => String(h.date).slice(0, 7) === ymOf(now));
+      const f0 = l.from ? new Date(l.from + "T00:00:00") : null;   /* chưa tới ngày bắt đầu trừ → kỳ tới là tháng của ngày đó */
+      const m = f0 && f0 > now ? f0 : paidThis ? new Date(now.getFullYear(), now.getMonth() + 1, 1) : now;
+      return { card:true, goc, lai:0, tot:goc, month:pad(m.getMonth() + 1) + "/" + m.getFullYear(), periods, endM:(d => pad(d.getMonth() + 1) + "/" + d.getFullYear())(new Date(m.getFullYear(), m.getMonth() + periods - 1, 1)) };
+    }
+    const D = Number(l.day) || 0; if(!D) return { goc, lai:0, tot:goc, periods };
+    /* đã trả trong tháng này (có lần trả từ ngày 1) → kỳ tới là tháng sau */
+    const ym = ymOf(now), paidM = (l.payments || []).some(p => String(p.date).slice(0, 7) === ym);
+    let due = at(now.getFullYear(), now.getMonth(), D);
+    if(paidM || due < now) due = at(now.getFullYear(), now.getMonth() + 1, D);
+    const prev = at(due.getFullYear(), due.getMonth() - 1, D), days = Math.round((due - prev) / 86400000);
+    const lai = l.rate ? Math.round(left * Number(l.rate) / 100 * days / 360) : 0;
+    const end = new Date(due.getFullYear(), due.getMonth() + periods - 1, 1);
+    return { goc, lai, tot:goc + lai, date:keyOf(due), days, periods, endM:pad(end.getMonth() + 1) + "/" + end.getFullYear() };
+  }   /* phần trả góp trong một lần trả thẻ */
   const paidOf = l => payOnly(l) + (Number(l.prepaid)||0);
   const drawOnly = l => (l.draws||[]).reduce((a,d)=>a+(Number(d.amt)||0),0);
   const totalOf = l => (Number(l.amt)||0) + drawOnly(l);
@@ -5682,6 +5711,7 @@ function startNgay50k(){
     setLoanType(l ? l.type : (loanView === "lend" ? "lend" : "borrow")); refreshLoanForm();
     wPicker("lWField", "lWChips", l ? l.w : MAIN_W);   /* v212 */
     $("lPer").value = l && l.per ? money(+l.per) : ""; $("lFrom").value = l && l.from ? l.from : todayKey();
+    $("lPerG").value = l && l.per && !l.card ? money(+l.per) : ""; $("lDay").value = l && l.day ? String(l.day) : ""; $("lRate").value = l && l.rate ? String(l.rate).replace(".", ",") : "";
     lCardPick(l ? l.card : "");
     showLoanView("form");
   }
@@ -5705,6 +5735,7 @@ function startNgay50k(){
     (state.cards || []).forEach(c => mk(c.id, cardShort(c)));
     $("lCardField").hidden = loanType !== "borrow" || !(state.cards || []).length;
     $("lInstBox").hidden = $("lCardField").hidden || !lCard;
+    $("lSchedBox").hidden = loanType !== "borrow" || !!lCard;   /* v221: lịch trả của khoản vay thường */
   }
   const lPerVal = () => parseInt(digits($("lPer").value), 10) || 0;
   function saveLoan(){
@@ -5714,7 +5745,12 @@ function startNgay50k(){
     const paid = lPaid();
     if(!$("lWField").hidden){ const lw = pickedW("lWChips"); data.w = lw || undefined; }
     const inst = loanType === "borrow" && lCard && lPerVal() > 0 ? { card:lCard, per:lPerVal(), from:$("lFrom").value || todayKey() } : null;
-    const setInst = o => { if(inst) Object.assign(o, inst); else { delete o.card; delete o.per; delete o.from; } };
+    const perG = parseInt(digits($("lPerG").value), 10) || 0, day = Math.min(31, parseInt(digits($("lDay").value), 10) || 0), rate = parseFloat(String($("lRate").value).replace(",", ".")) || 0;
+    const setInst = o => {
+      ["card", "per", "from", "day", "rate"].forEach(k => delete o[k]);
+      if(inst) Object.assign(o, inst);
+      else if(loanType === "borrow"){ if(perG > 0) o.per = perG; if(day > 0) o.day = day; if(rate > 0 && rate < 100) o.rate = rate; }   /* v221 */
+    };
     if(editingLoanId){
       const l = getLoan(editingLoanId);
       if(l){ const po = payOnly(l); Object.assign(l, data); if(!l.w) delete l.w; setInst(l); l.prepaid = paid - po; detailLoanId = l.id; }
@@ -5789,6 +5825,17 @@ function startNgay50k(){
     add("Đã " + v, fmt(paid));
     add(l.type==="borrow" ? "Ngày vay" : "Ngày cho vay", fmtDate(l.date));
     if(l.due){ const dt = dueText(l); add("Hạn trả", fmtDate(l.due) + (done ? "" : " · " + dt.txt), dt.late && !done ? "num tag-borrow" : "num"); }
+    const nx = nextDue(l);
+    if(nx && nx.card) add("Kỳ tới", fmt(nx.tot) + " · trừ khi trả thẻ tháng " + nx.month, "num");
+    else if(nx){
+      add("Kỳ tới" + (nx.date ? " " + fmtDate(nx.date) : ""), fmt(nx.tot) + (nx.lai ? "" : " gốc"), "num");
+      if(nx.lai) add("Trong đó", "gốc " + fmt(nx.goc) + " + lãi ≈ " + fmt(nx.lai) + " (" + nx.days + " ngày, " + String(l.rate).replace(".", ",") + "%/năm)", "");
+      /* lãi thật kỳ trước: khoản chi nhóm Lãi vay có mã khoản vay trong ghi chú (ghi từ thông báo "Thu lai khe uoc LD…") */
+      const code = (String(l.who || "") + " " + String(l.note || "")).match(/LD\d{8,12}/i);
+      if(code){ let last = null; for(const k in state.days) (state.days[k] || []).forEach(x => { if(x.cat === "laivay" && String(x.note || "").toUpperCase().includes(code[0].toUpperCase()) && (!last || k > last.k)) last = { k, amt:+x.amt || 0 }; }); if(last) add("Lãi kỳ trước", fmt(last.amt) + " · " + fmtDate(last.k)); }
+    }
+    if(nx) add("Còn", nx.periods + " kỳ" + (nx.endM ? " · xong khoảng " + nx.endM : ""), "");
+    if(!l.card && l.per && !nx) add("Gốc mỗi kỳ", fmt(+l.per));
     if(l.card) add("Trả góp qua thẻ", (cardName(l.card) || "thẻ đã xoá") + (l.per ? " · " + fmt(+l.per) + "/kỳ" : "") + (l.from ? " · từ " + fmtDate(l.from) : ""), "");
     if(l.note) add("Ghi chú", l.note, "");
     card.appendChild(kv);
@@ -6053,7 +6100,8 @@ function startNgay50k(){
     const list = groups[loanView] || [];
     $("activeTitle").textContent = loanView === "done"
       ? "Đã tất toán (" + list.length + ")"
-      : (loanView === "borrow" ? "Còn phải trả " : "Còn phải thu ") + fmt(list.reduce((a, l) => a + leftOf(l), 0));
+      : (loanView === "borrow" ? "Còn phải trả " : "Còn phải thu ") + fmt(list.reduce((a, l) => a + leftOf(l), 0))
+        + (loanView === "borrow" ? (t => t ? " · kỳ tới ≈ " + fmt(t) : "")(list.reduce((a, l) => { const n = nextDue(l); return a + (n ? n.tot : 0); }, 0)) : "");   /* v221 */
     const box = $("loanList"); box.innerHTML = "";
     if(!list.length){
       box.innerHTML = '<p class="empty">' + (n ? "Không có khoản nào khớp bộ lọc."
@@ -6790,6 +6838,8 @@ function startNgay50k(){
   [...$("loanType").children].forEach(b => b.onclick = () => { setLoanType(b.dataset.type); refreshLoanForm(); });
   $("lWho").addEventListener("input", refreshLoanForm);
   $("lPaid").addEventListener("input", e => { e.target.value = money(lPaid()); refreshLoanForm(); });
+  $("lPerG").addEventListener("input", e => { const v = parseInt(digits(e.target.value), 10) || 0; e.target.value = v ? v.toLocaleString("vi-VN") : ""; });
+  $("lDay").addEventListener("input", e => { e.target.value = digits(e.target.value).slice(0, 2); });
   $("lPer").addEventListener("input", e => { const v = lPerVal(); e.target.value = v ? v.toLocaleString("vi-VN") : ""; });
   $("lAmt").addEventListener("input", e => { const v = lAmt(); e.target.value = v ? v.toLocaleString("vi-VN") : ""; refreshLoanForm(); });
   $("saveLoan").onclick = saveLoan;

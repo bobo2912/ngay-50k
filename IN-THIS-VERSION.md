@@ -1,6 +1,15 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v220, ngày 13/11/2026
+**Phiên bản hiện tại:** v221, ngày 13/11/2026
+
+---
+
+## Có gì mới trong v221 (so với v220) – kỳ tới phải trả bao nhiêu
+
+- Khoản đi vay có lịch trả: form có **Gốc mỗi kỳ**, **Ngày trả hằng tháng**, **Lãi suất %/năm** (trường `per`, `day`, `rate`).
+- Chi tiết khoản vay hiện **Kỳ tới** (ngày, tổng tiền), **Trong đó** gốc + lãi ước tính (dư nợ × lãi suất × số ngày của kỳ / 360), **Lãi kỳ trước** (lãi thật đã ghi từ thông báo "Thu lai khe uoc LD…"), **Còn N kỳ · xong khoảng MM/YYYY**. Đã trả gốc trong tháng thì kỳ tới là tháng sau.
+- Khoản trả góp thẻ: "Kỳ tới 403.167đ · trừ khi trả thẻ tháng 12/2026" (chưa tới ngày bắt đầu trừ thì lấy tháng đó).
+- Danh sách khoản đi vay: "Còn phải trả … · kỳ tới ≈ …".
 
 ---
 
