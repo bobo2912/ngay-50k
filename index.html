@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v222";
+  var K = "ngay50k:errlog", VER = "v223";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -374,6 +374,7 @@ ul{list-style:none; margin:0; padding:0}
 .day-sum strong{color:var(--ink)}
 .list-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:8px}
 .list-head h2{margin:0}
+#activeTitle .kt-sub{display:block; margin-top:2px; font-size:.8rem; font-weight:500; color:var(--muted); letter-spacing:0}
 .filter-btn{display:flex; align-items:center; gap:6px; border:1.5px solid var(--line); background:var(--surface); border-radius:999px; padding:6px 12px; font-weight:600; font-size:.85rem}
 .filter-btn.on{border-color:var(--ink); background:var(--ink); color:var(--bg)}
 .filter-btn svg{width:15px; height:15px}
@@ -3217,7 +3218,7 @@ li.txg > details.txd > ul{margin:0 !important}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v222</p>
+      <p class="sync" id="appVersion">Phiên bản v223</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3767,14 +3768,14 @@ li.txg > details.txd > ul{margin:0 !important}
 <input type="file" id="phFile" accept="image/*" hidden>
 <div class="ph-view" id="phView" role="dialog" aria-modal="true" aria-label="Ảnh hoá đơn" hidden><img id="phImg" alt="Ảnh hoá đơn"><div class="ph-bar"><button type="button" id="phDel">Bỏ ảnh này</button><button type="button" id="phClose">Đóng</button></div></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=222"></script>
-<script src="thu-vien-cau.js?v=222"></script>
-<script src="quy-tac.js?v=222"></script>
-<script src="du-lieu.js?v=222"></script>
-<script src="doc-so-tk.js?v=222"></script>
-<script src="tich-luy.js?v=222"></script>
-<script src="native.js?v=222"></script>
-<script src="lock.js?v=222"></script>
+<script src="parse-vi.js?v=223"></script>
+<script src="thu-vien-cau.js?v=223"></script>
+<script src="quy-tac.js?v=223"></script>
+<script src="du-lieu.js?v=223"></script>
+<script src="doc-so-tk.js?v=223"></script>
+<script src="tich-luy.js?v=223"></script>
+<script src="native.js?v=223"></script>
+<script src="lock.js?v=223"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -6102,8 +6103,10 @@ function startNgay50k(){
     const list = groups[loanView] || [];
     $("activeTitle").textContent = loanView === "done"
       ? "Đã tất toán (" + list.length + ")"
-      : (loanView === "borrow" ? "Còn phải trả " : "Còn phải thu ") + fmt(list.reduce((a, l) => a + leftOf(l), 0))
-        + (loanView === "borrow" ? (t => t ? " · kỳ tới ≈ " + fmt(t) : "")(list.reduce((a, l) => { const n = nextDue(l); return a + (n ? n.tot : 0); }, 0)) : "");   /* v221 */
+      : (loanView === "borrow" ? "Còn phải trả " : "Còn phải thu ") + fmt(list.reduce((a, l) => a + leftOf(l), 0));
+    /* v221: tổng kỳ tới; v223: dòng nhỏ riêng bên dưới, không làm tiêu đề nhảy dòng */
+    const kt = loanView === "borrow" ? list.reduce((a, l) => { const n = nextDue(l); return a + (n ? n.tot : 0); }, 0) : 0;
+    if(kt){ const sm = document.createElement("small"); sm.className = "kt-sub"; sm.textContent = "Kỳ tới ≈ " + fmt(kt); $("activeTitle").appendChild(sm); }
     const box = $("loanList"); box.innerHTML = "";
     if(!list.length){
       box.innerHTML = '<p class="empty">' + (n ? "Không có khoản nào khớp bộ lọc."

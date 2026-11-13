@@ -1,6 +1,12 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v222, ngày 13/11/2026
+**Phiên bản hiện tại:** v223, ngày 13/11/2026
+
+---
+
+## Có gì mới trong v223 (so với v222) – tiêu đề danh sách khoản vay gọn hơn
+
+- "Kỳ tới ≈ …" thành dòng chữ nhỏ dưới "Còn phải trả …", tiêu đề không còn nhảy dòng.
 
 ---
 
