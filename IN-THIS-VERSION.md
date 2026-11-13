@@ -1,6 +1,14 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v218, ngày 13/11/2026
+**Phiên bản hiện tại:** v219, ngày 13/11/2026
+
+---
+
+## Có gì mới trong v219 (so với v218) – trả góp theo giao dịch thật
+
+- Khoản trả góp thẻ **không tự chạy** nữa: chỉ giảm khi có lần **Trả thẻ** thật. Lần trả thẻ đầu tiên mỗi tháng cho một thẻ (từ ngày `from` của khoản trả góp) trả một kỳ (`per`) của mọi khoản trả góp còn nợ trên thẻ đó; phần còn lại mới làm giảm nợ thẻ. Dòng trả thẻ ghi "(gồm trả góp …)". Tính lại từ dữ liệu mỗi lần, sửa / xoá lần trả thẻ là tự đúng.
+- Thông báo thẻ MB "SD THE […1234] … +2,436,461 VND … Giao dich cong tien vao the" là **Trả thẻ** cho thẻ đó, không phải khoản thu. Đi cùng thông báo tài khoản "-2,436,461 … Thanh toan sao ke the tin dung" thì chỉ ghi một lần, lấy thẻ từ thông báo thẻ (tới sau cũng điền được thẻ).
+- Đã thử với nội dung thật: "THANH TOAN GOC LD…" → Trả nợ, "Thu lai khe uoc LD…" → Lãi vay định kỳ.
 
 ---
 
