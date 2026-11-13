@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v217";
+  var K = "ngay50k:errlog", VER = "v218";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -3206,7 +3206,7 @@ li.txg > details.txd > ul{margin:0 !important}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v217</p>
+      <p class="sync" id="appVersion">Phiên bản v218</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3756,14 +3756,14 @@ li.txg > details.txd > ul{margin:0 !important}
 <input type="file" id="phFile" accept="image/*" hidden>
 <div class="ph-view" id="phView" role="dialog" aria-modal="true" aria-label="Ảnh hoá đơn" hidden><img id="phImg" alt="Ảnh hoá đơn"><div class="ph-bar"><button type="button" id="phDel">Bỏ ảnh này</button><button type="button" id="phClose">Đóng</button></div></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=217"></script>
-<script src="thu-vien-cau.js?v=217"></script>
-<script src="quy-tac.js?v=217"></script>
-<script src="du-lieu.js?v=217"></script>
-<script src="doc-so-tk.js?v=217"></script>
-<script src="tich-luy.js?v=217"></script>
-<script src="native.js?v=217"></script>
-<script src="lock.js?v=217"></script>
+<script src="parse-vi.js?v=218"></script>
+<script src="thu-vien-cau.js?v=218"></script>
+<script src="quy-tac.js?v=218"></script>
+<script src="du-lieu.js?v=218"></script>
+<script src="doc-so-tk.js?v=218"></script>
+<script src="tich-luy.js?v=218"></script>
+<script src="native.js?v=218"></script>
+<script src="lock.js?v=218"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -4002,7 +4002,7 @@ function startNgay50k(){
     {id:"suckhoe",label:"Sức khoẻ",icon:"💊"},{id:"lamdep",label:"Làm đẹp",icon:"💇"},{id:"hoctap",label:"Học tập",icon:"📚"},
     {id:"giaitri",label:"Giải trí",icon:"🎬"},{id:"dulich",label:"Du lịch",icon:"✈️"},{id:"concai",label:"Con cái",icon:"🧸"},
     {id:"thucung",label:"Thú cưng",icon:"🐶"},{id:"hieuhy",label:"Hiếu hỷ, quà",icon:"🎁"},{id:"tuthien",label:"Từ thiện",icon:"🙏"},
-    {id:"suachua",label:"Sửa chữa",icon:"🔧"},{id:"khac",label:"Khác",icon:"🧾"}
+    {id:"suachua",label:"Sửa chữa",icon:"🔧"},{id:"laivay",label:"Lãi vay, phí",icon:"🏦"},{id:"khac",label:"Khác",icon:"🧾"}
   ];
   const TAG_ICONS = ["🍜","🍚","🍔","🍕","🥖","🍰","☕","🍺","🧋","🥤","🛒","🛍️","👕","👟","💄","💇","🏠","🛋️","💡","🚿","📱","💻","🎮","🎬","🎵","📚","✏️","🎓","🏥","💊","🦷","🏋️","⚽","🚗","🛵","⛽","🚌","✈️","🏨","🎁","🧧","💐","👶","🧸","🐶","🐱","🌱","🔧","🧹","💳","💸","🏦","📦","🙏","❤️","⭐"];
   const FALLBACK_TAG = {id:"khac",label:"Khác",icon:"🧾"};
@@ -4309,7 +4309,7 @@ function startNgay50k(){
     (state.assetTx || []).forEach(x => { if(x.w === wid && af(recTime(x.date, x.t))) bal += (x.dir === "out" ? 1 : -1) * (Number(x.amt)||0); });
     state.loans.forEach(l => {
       const sg = l.type === "borrow" ? 1 : -1;   /* đi vay: tiền vào ví; cho vay: tiền ra */
-      if(lW(null, l) === wid && af(recTime(l.date, l.t))){ bal += sg * (Number(l.amt)||0); if(l.prepaid) bal -= sg * (Number(l.prepaid)||0); }
+      if(!l.card && lW(null, l) === wid && af(recTime(l.date, l.t))){ bal += sg * (Number(l.amt)||0); if(l.prepaid) bal -= sg * (Number(l.prepaid)||0); }
       (l.draws || []).forEach(d => { if(lW(d, l) === wid && af(recTime(d.date, d.t))) bal += sg * (Number(d.amt)||0); });
       (l.payments || []).forEach(pm => { if(lW(pm, l) === wid && af(recTime(pm.date, pm.t))) bal -= sg * (Number(pm.amt)||0); });
     });
@@ -4838,7 +4838,7 @@ function startNgay50k(){
     state.loans.forEach(l => {
       const b = l.type === "borrow", who = l.who || "?", sg = b ? 1 : -1;
       /* v197: mang theo khoản vay và lần ghi (rec) để mở bảng sửa ngay tại chỗ */
-      if(l.date === k) out.push({ t:recTime(l.date, l.t), icon:"🤝", name: b ? "Vay của " + who : "Cho " + who + " vay", amt:sg * (Number(l.amt)||0), kind:"loan", o:l, sub:"base", src:lW(null, l), lbl: b ? "Đi vay" : "Cho vay" });
+      if(l.date === k && !l.card) out.push({ t:recTime(l.date, l.t), icon:"🤝", name: b ? "Vay của " + who : "Cho " + who + " vay", amt:sg * (Number(l.amt)||0), kind:"loan", o:l, sub:"base", src:lW(null, l), lbl: b ? "Đi vay" : "Cho vay" });
       (l.draws || []).forEach(d => { if(d.date === k) out.push({ t:recTime(d.date, d.t), icon:"🤝", name: b ? "Vay thêm của " + who : "Cho " + who + " vay thêm", amt:sg * (Number(d.amt)||0), kind:"loan", o:l, rec:d, sub:"draw", src:lW(d, l), lbl: b ? "Vay thêm" : "Cho vay thêm" }); });
       (l.payments || []).forEach(pm => { if(pm.date === k) out.push({ t:recTime(pm.date, pm.t), icon:"🤝", name: b ? "Trả nợ " + who : who + " trả nợ", amt:-sg * (Number(pm.amt)||0), kind:"loan", o:l, rec:pm, sub:"pay", src:lW(pm, l), lbl: b ? "Trả nợ" : "Được trả nợ" }); });
     });
@@ -5266,22 +5266,27 @@ function startNgay50k(){
         const key = m.getFullYear() + "-" + pad(m.getMonth()+1) + "-" + pad(dd);
         if(key > tk) return;
         if(r.from && key < r.from) return;
+        if(r.to && key > r.to) return;                       /* v218: khoản định kỳ có tháng kết thúc (trả góp) */
         const card = r.card && cardOf(r.card) ? r.card : "";
         /* v199: nhớ các kỳ đã ghi (r.made = ["2026-10", …]). Trước đây chỉ xem trong ngày đó có khoản mang rc chưa,
            nên xoá hẳn khoản định kỳ (hoặc đổi ngày, đổi sang thẻ) thì lần mở sau nó được ghi lại. */
         const ym = key.slice(0, 7), madeL = Array.isArray(r.made) ? r.made : (r.made = []);
         if(madeL.includes(ym)) return;
         if(recurHas(r.id, ym)){ madeL.push(ym); trimMade(r); dirty = true; return; }
+        /* v218: kỳ trả góp của một khoản trả góp thẻ: không vượt số còn lại (kỳ cuối lấy đúng phần lẻ), trả hết thì thôi */
+        let amt = Number(r.amt) || 0;
+        const ln = r.loan ? state.loans.find(x => x.id === r.loan) : null;
+        if(r.loan && ln){ const left = leftOf(ln); if(left <= 0) return; amt = Math.min(amt, left); }
         const d = new Date(key + "T09:00:00");
         const t = isNaN(d) ? Date.now() : d.getTime();
         if(card){
-          (state.cardTx[key] = state.cardTx[key] || []).push({
-            id:uid(), amt:Number(r.amt)||0, where:r.name || "Khoản định kỳ", cardId:card,
+          (state.cardTx[key] = state.cardTx[key] || []).push(Object.assign({
+            id:uid(), amt, where:r.name || "Khoản định kỳ", cardId:card,
             cat:r.cat || "nha", rc:r.id, t
-          });
+          }, ln ? { loan:ln.id } : {}));
         } else {
           (state.days[key] = state.days[key] || []).push({
-            id:uid(), amt:Number(r.amt)||0, note:r.name || "Khoản định kỳ", cat:r.cat || "nha",
+            id:uid(), amt, note:r.name || "Khoản định kỳ", cat:r.cat || "nha",
             fx:1, rc:r.id, t
           });
         }
@@ -5311,7 +5316,7 @@ function startNgay50k(){
       b.querySelector("b").textContent = r.name || "Khoản định kỳ";
       const cd = r.card ? cardOf(r.card) : null;
       b.querySelector("small").textContent = fmt(r.amt) + " · ngày " + r.day + " hằng tháng · " +
-        (cd ? cd.name : "chi thường");
+        (cd ? cd.name : "chi thường") + (r.to ? " · đến " + r.to.slice(5, 7) + "/" + r.to.slice(0, 4) : "");
       b.onclick = () => openRecur(r.id);
       box.appendChild(b);
     });
@@ -5601,7 +5606,13 @@ function startNgay50k(){
 
   /* ---------- loans ---------- */
   let loanType = "borrow", loanView = "borrow", editingLoanId = null, detailLoanId = null, payOpen = false, drawOpen = false, editRecId = null;
-  const payOnly = l => (l.payments||[]).reduce((a,p)=>a+(Number(p.amt)||0),0);
+  const payOnly = l => (l.payments||[]).reduce((a,p)=>a+(Number(p.amt)||0),0) + cardPaidOf(l);
+  /* v218: khoản trả góp thẻ (l.card): mỗi kỳ được Khoản định kỳ chuyển sang nợ thẻ (cardTx mang loan) → coi là đã trả của khoản trả góp */
+  function cardPaidOf(l){
+    if(!l || !l.card) return 0;
+    let s = 0; for(const k in (state.cardTx || {})) (state.cardTx[k] || []).forEach(x => { if(x.loan === l.id) s += Number(x.amt) || 0; });
+    return s;
+  }
   const paidOf = l => payOnly(l) + (Number(l.prepaid)||0);
   const drawOnly = l => (l.draws||[]).reduce((a,d)=>a+(Number(d.amt)||0),0);
   const totalOf = l => (Number(l.amt)||0) + drawOnly(l);
@@ -7127,7 +7138,7 @@ function startNgay50k(){
     (state.xfer || []).forEach(x => { if(later(x.date, x.t)) push(x.date, { kind:"xfer", icon:"🔁", name:walletName(x.from || MAIN_W) + " → " + walletName(x.to || MAIN_W), amt:+x.amt || 0, sign:0 }); });
     state.loans.forEach(l => {
       const lend = l.type === "lend", who = l.who || "?";
-      if(later(l.date, l.t)) push(l.date, { kind:lend ? "lend" : "borrow", icon:"🤝", name:lend ? "Cho " + who + " vay" : "Vay " + who, amt:+l.amt || 0, sign:lend ? -1 : 1 });
+      if(!l.card && later(l.date, l.t)) push(l.date, { kind:lend ? "lend" : "borrow", icon:"🤝", name:lend ? "Cho " + who + " vay" : "Vay " + who, amt:+l.amt || 0, sign:lend ? -1 : 1 });
       (l.draws || []).forEach(d => { if(later(d.date, d.t)) push(d.date, { kind:lend ? "lend" : "borrow", icon:"🤝", name:lend ? "Cho " + who + " vay thêm" : "Vay thêm " + who, amt:+d.amt || 0, sign:lend ? -1 : 1 }); });
       (l.payments || []).forEach(p => { if(later(p.date, p.t)) push(p.date, { kind:lend ? "in" : "due", icon:"🤝", name:lend ? who + " trả bạn" : "Trả nợ " + who, amt:+p.amt || 0, sign:lend ? 1 : -1 }); });
       const left = leftOf(l);
@@ -7341,7 +7352,7 @@ function startNgay50k(){
     for(const k in state.income) (state.income[k] || []).forEach(it => out.push({ k, t:it.t || 0, kind:"in", amt:+it.amt || 0, name:it.note || (INC.find(x => x.id === it.cat) || INC[INC.length - 1]).label, cat:"in:" + (it.cat || "khac"), w:wOf(it) }));
     state.loans.forEach(l => {
       const lend = l.type === "lend", who = l.who || "";
-      out.push({ k:l.date || todayKey(), t:l.t || 0, kind:lend ? "lend" : "borrow", amt:+l.amt || 0, name:lend ? "Cho " + who + " vay" : "Vay " + who, who, cat:"loan" });
+      if(!l.card) out.push({ k:l.date || todayKey(), t:l.t || 0, kind:lend ? "lend" : "borrow", amt:+l.amt || 0, name:lend ? "Cho " + who + " vay" : "Vay " + who, who, cat:"loan" });
       (l.draws || []).forEach(d => out.push({ k:d.date, t:d.t || 0, kind:lend ? "lend" : "borrow", amt:+d.amt || 0, name:lend ? "Cho " + who + " vay thêm" : "Vay thêm " + who, who, cat:"loan" }));
       (l.payments || []).forEach(p => out.push({ k:p.date, t:p.t || 0, kind:lend ? "collect" : "repay", amt:+p.amt || 0, name:lend ? who + " trả bạn" : "Trả nợ " + who, who, cat:"loan" }));
     });
@@ -7847,11 +7858,11 @@ function startNgay50k(){
       else { state.loans.push(Object.assign({ id, type:it.kind, who:String(it.who).trim(), amt:it.amt, date:k, due:"", note:"", payments:[], draws:[], prepaid:0, t }, lw && lw !== MAIN_W ? { w:lw } : {})); ref.sub = "loan"; }
     }
     else if(it.kind === "repay" || it.kind === "collect"){
-      const l = getLoan(it.loanId), pm = { id, amt:it.amt, date:k, note:"", t }, lw = it.w && walletById(it.w) ? it.w : null; if(lw && lw !== lW(null, l)) pm.w = lw;
+      const l = getLoan(it.loanId), pm = Object.assign({ id, amt:it.amt, date:k, note:it.nk ? (it.note || "") : "", t }, nkv), lw = it.w && walletById(it.w) ? it.w : null; if(lw && lw !== lW(null, l)) pm.w = lw;
       (l.payments = l.payments || []).push(pm); ref.loanId = l.id; ref.sub = "pay";
     }
     else if(it.kind === "asin" || it.kind === "asout" || it.kind === "asval") Object.assign(ref, tlCommit(it, k, t, id));
-    else if(it.kind === "cardpay"){ const rec = { id, amt:it.amt, date:k, t }; if(it.cardId) rec.cardId = it.cardId; if(wv.w) rec.from = wv.w; (state.cardPay = state.cardPay || []).push(rec); }
+    else if(it.kind === "cardpay"){ const rec = Object.assign({ id, amt:it.amt, date:k, t }, nkv); if(it.cardId) rec.cardId = it.cardId; if(wv.w) rec.from = wv.w; (state.cardPay = state.cardPay || []).push(rec); }
     else if(it.kind === "bal"){
       const wid = wv.w || MAIN_W, at = it.balAt || Date.now(), rec = Object.assign({ id, amt:it.amt, t:at }, wv);   /* v129: số dư từ thông báo ngân hàng đặt mốc ngay sau giao dịch */
       /* v155: so với số dư của sổ TẠI lúc ngân hàng báo số dư (trước đây so với số dư hiện tại → báo "Khớp sổ" sai khi có khoản ghi sau giờ đó) */
@@ -9849,7 +9860,7 @@ function startNgay50k(){
     });
     state.loans.forEach(l => {
       const b = l.type === "borrow", who = l.who || "?", go = () => { closeBalance(); showTab("loans"); };
-      if(lW(null, l) === wid){
+      if(!l.card && lW(null, l) === wid){   /* v218: trả góp thẻ không qua ví */
         add(recTime(l.date, l.t), (b ? 1 : -1) * (Number(l.amt)||0), "🤝", b ? "Vay của " + who : "Cho " + who + " vay", "Khoản vay", go);
         if(l.prepaid) add(recTime(l.date, l.t), (b ? -1 : 1) * (Number(l.prepaid)||0), "🤝", b ? "Đã trả " + who : who + " đã trả", "Khoản vay", go);
       }
@@ -11894,15 +11905,34 @@ function startNgay50k(){
     $("openSettings").focus({ preventScroll:true });
   }
 
+  /* v218: thẻ trong file nhập trùng thẻ đang có (cùng 4 số cuối, 6 số đầu không khác nhau) mà khác mã → dùng thẻ đang có,
+     chuyển các khoản quẹt thẻ, trả thẻ, khoản định kỳ, khoản trả góp của file sang mã thẻ đó (không tạo thẻ đôi) */
+  function alignCards(a, b){
+    const map = {};
+    (b.cards || []).forEach(c => {
+      if(!c || !c.last4 || (a.cards || []).some(x => x.id === c.id)) return;
+      const m = (a.cards || []).find(x => x.last4 === c.last4 && (!x.first6 || !c.first6 || x.first6 === c.first6));
+      if(m) map[c.id] = m.id;
+    });
+    if(!Object.keys(map).length) return b;
+    b.cards = b.cards.filter(c => !map[c.id]);
+    for(const k in (b.cardTx || {})) (b.cardTx[k] || []).forEach(x => { if(map[x.cardId]) x.cardId = map[x.cardId]; });
+    (b.cardPay || []).forEach(p => { if(map[p.cardId]) p.cardId = map[p.cardId]; });
+    (b.recur || []).forEach(r => { if(map[r.card]) r.card = map[r.card]; });
+    (b.loans || []).forEach(l => { if(map[l.card]) l.card = map[l.card]; });
+    return b;
+  }
   function offerImport(obj, label){
     if(!obj || obj.app !== "ngay50k" || !obj.data || typeof obj.data !== "object"){ showSyncErr("Đây không phải bản sao lưu của Tiêu Gọn."); return; }
-    const incoming = decodeState(obj.data);   /* v199: file dạng cũ hay schema 2 đều nhập được */
+    const incoming = alignCards(state, decodeState(obj.data));   /* v199: file dạng cũ hay schema 2 đều nhập được */
     pending = { incoming, merged: mergeStates(state, incoming), settings: hasSetBackup(obj.settings) ? obj.settings : null };
     const when = obj.exportedAt ? fmtStamp(obj.exportedAt) : "";
     $("importInfo").textContent = (label || "File") + (when ? " xuất lúc " + when : "") + ", gồm " + summarize(incoming) + (pending.settings ? ", kèm cài đặt" + (pending.settings.ai ? " và khoá API AI" : "") + (pending.settings.ls && pending.settings.ls["ngay50k:relayUrl"] ? ", Tự ghi từ thông báo" : "") : "") + ".";
     $("importPreview").textContent = "Gộp sẽ " + diffText(diffCount(state, pending.merged)) + ". Khoản mới ghi trên máy này vẫn được giữ.";
     delete $("replaceBtn").dataset.armed;
     $("replaceBtn").textContent = "Thay toàn bộ";
+    $("replaceBtn").hidden = !!obj.partial;   /* v218: file chỉ có một phần dữ liệu (vd danh sách khoản vay) thì chỉ được gộp */
+    if(obj.partial) $("importPreview").textContent += " File này chỉ có một phần dữ liệu nên chỉ gộp vào sổ, không thay.";
     $("importCard").hidden = false;
     $("importCard").scrollIntoView({ behavior:"smooth", block:"nearest" });
   }
@@ -11917,10 +11947,44 @@ function startNgay50k(){
     try{ if(navigator.clipboard && navigator.clipboard.readText) return navigator.clipboard.readText(); }catch(e){}
     return Promise.reject(new Error("noclip"));
   }
+  /* v218: giao dịch trả nợ trong thông báo ngân hàng.
+     - "thu nợ gốc LD2427027355" → Trả nợ đúng khoản vay có mã LD đó (không phải khoản chi)
+     - "thu nợ lãi LD…"          → khoản chi nhóm Lãi vay, đánh dấu định kỳ (không trừ hạn mức ngày)
+     - "thanh toán thẻ tín dụng …1234" → Trả thẻ (không phải quẹt thẻ, không phải khoản thu)
+     - tiền vào có mã LD mà chưa có khoản vay đó (giải ngân) → khoản Đi vay mới tên là mã LD
+     Trả về null nếu không phải giao dịch nợ. */
+  const DEBT_FOLD = s => String(s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/g, "d").replace(/Đ/g, "D").toLowerCase().replace(/\s+/g, " ");
+  const CARDPAY_RE = /(thanh toan|\btt|tra|tat toan)\s+(du no\s+|no\s+|sao ke\s+)?(the\s*(tin\s*dung|td|tdung|credit)|tin dung)|tra no the|thanh toan du no the|credit card payment/;
+  function ldLoan(code){
+    const c = String(code || "").toLowerCase();
+    return c ? state.loans.find(l => l.type === "borrow" && DEBT_FOLD((l.who || "") + " " + (l.note || "")).replace(/\s/g, "").includes(c)) || null : null;
+  }
+  function notifDebt(p, base){
+    const n = DEBT_FOLD((p.raw || "") + " " + (p.where || "")), m = n.match(/\bld\s?(\d{8,12})\b/), code = m ? "ld" + m[1] : "", CODE = code.toUpperCase();
+    const cs = state.cards || [];
+    if(CARDPAY_RE.test(n) || (p.inc && /ghi co/.test(n) && /tin dung|credit/.test(n))){
+      let c = null;
+      const l4 = (p.last4 ? [p.last4] : []).concat(n.match(/(\d{4})(?!\d)/g) || []);
+      for(const d of l4){ c = cs.find(x => x.last4 === d); if(c) break; }
+      if(!p.inc || c) return Object.assign(base, { kind:"cardpay", cardId:c ? c.id : null, note:"" });
+    }
+    if(!code) return null;
+    const l = ldLoan(code);
+    if(p.inc) return l ? null : Object.assign(base, { kind:"borrow", who:CODE, note:"" });
+    const goc = /\b(no\s+)?goc\b/.test(n), lai = /\b(no\s+)?lai\b|interest/.test(n);
+    if(lai && !goc) return Object.assign(base, { kind:"out", cat:"laivay", fx:1, note:"Lãi vay " + CODE });
+    return Object.assign(base, { kind:"repay", loanId:l ? l.id : null, who:l ? l.who : CODE, note:(goc && lai ? "Gốc + lãi " : "Gốc ") + CODE });
+  }
   function notifItems(txt){
     const raw = [], cs = state.cards || [];
     parseNotif(txt, { credit:true }).forEach(p => {
-      const time = pad(p.hm) + ":" + pad(p.mi), base = { amt:p.amt, note:p.where === "Chi bằng thẻ" ? "" : (p.where || ""), date:p.day, time, sd:p.sd || 0 };
+      const time = pad(p.hm) + ":" + pad(p.mi), base = { amt:p.amt, note:p.where === "Chi bằng thẻ" ? "" : (p.where || ""), date:p.day, time, sd:p.sd || 0, inc0:!!p.inc };
+      const debt = notifDebt(p, base);
+      if(debt){
+        /* cùng một lần trả thẻ có thể có hai thông báo (tài khoản bị trừ, thẻ được ghi có): chỉ giữ một */
+        if(debt.kind === "cardpay" && raw.some(x => x.kind === "cardpay" && x.amt === debt.amt && x.date === debt.date)) return;
+        raw.push(debt); return;
+      }
       if(p.inc){                                     /* v129: "+" là tiền vào → khoản thu */
         const n = window.N50KParse.norm(base.note);
         raw.push(Object.assign(base, { kind:"in", cat:/\bluong\b|salary/.test(n) ? "luong" : /\bthuong\b|bonus/.test(n) ? "thuong" : "khac" }));
@@ -11936,8 +12000,10 @@ function startNgay50k(){
     r.items.forEach((it, i) => {
       const src = raw[i] || {};
       if(src.sd > 0 && it.kind !== "card") it.sd = src.sd;
+      if(src.fx) it.fx = 1;                                  /* v218: lãi vay là khoản định kỳ */
+      if(src.loanId && !it.loanId && getLoan(src.loanId)) it.loanId = src.loanId;
       /* v131: dấu vân tay = tiền vào/ra + số tiền + ngày + giờ:phút (đã từng dán là không đưa lại, kể cả khi đã xoá trong Sổ) */
-      it.nkB = [it.kind === "in" ? "+" : "-", it.amt, it.date, src.time || ""].join("|");
+      it.nkB = [(src.inc0 != null ? src.inc0 : it.kind === "in") ? "+" : "-", it.amt, it.date, src.time || ""].join("|");
       /* v145: thêm số dư SD vào dấu vân tay: hai giao dịch thật cùng số tiền, cùng phút vẫn có SD khác nhau */
       it.nk = src.sd > 0 ? it.nkB + "|" + src.sd : it.nkB;
       it.nk0 = [it.kind, it.amt, it.date, src.time || "", src.sd || 0].join("|");     /* kiểu cũ (v127–v130) */
@@ -11962,6 +12028,10 @@ function startNgay50k(){
   /* đã có trong sổ chưa: cùng số tiền, cùng ngày, lệch không quá 2 phút.
      v145: chỉ so với khoản ghi tay (khoản ghi từ thông báo mang dấu vân tay nk riêng), mỗi khoản ghi tay chỉ khớp một thông báo */
   function notifInBook(it, used){
+    /* v218: trả nợ / trả thẻ / giải ngân: đã ghi từ thông báo (nk), hoặc đã có lần trả cùng số tiền cùng ngày */
+    if(it.kind === "cardpay") return (state.cardPay || []).some(x => (x.nk && (x.nk === it.nk || x.nk === it.nkB)) || (x.amt === it.amt && x.date === it.date));
+    if(it.kind === "repay"){ const l = it.loanId ? getLoan(it.loanId) : null; return !!l && (l.payments || []).some(x => (x.nk && (x.nk === it.nk || x.nk === it.nkB)) || (x.amt === it.amt && x.date === it.date)); }
+    if(it.kind === "borrow") return false;
     const bag = it.kind === "card" ? state.cardTx[it.date] : it.kind === "in" ? state.income[it.date] : state.days[it.date];
     if((bag || []).some(x => x.nk && (x.nk === it.nk || x.nk === it.nkB))) return true;   /* v150: đã ghi từ thông báo (vd sau khi khôi phục sao lưu) */
     const x = (bag || []).find(x => !x.nk && !(used && used.has(x.id)) && x.amt === it.amt && Math.abs(recTime(it.date, x.t) - it.t) <= 120000);

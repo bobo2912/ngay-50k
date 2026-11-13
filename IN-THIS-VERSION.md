@@ -1,6 +1,19 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v217, ngày 01/11/2026
+**Phiên bản hiện tại:** v218, ngày 13/11/2026
+
+---
+
+## Có gì mới trong v218 (so với v217) – trả nợ tự ghi, trả góp thẻ
+
+- Thông báo ngân hàng có mã khoản vay **LD…**:
+  - "thu nợ gốc LD2427027355" → ghi **Trả nợ** vào đúng khoản vay có mã đó (không phải khoản chi).
+  - "thu nợ lãi LD…" → khoản chi nhóm mới **Lãi vay, phí** 🏦, đánh dấu **định kỳ**, không trừ hạn mức ngày.
+  - tiền vào có mã LD chưa có trong sổ (giải ngân) → khoản **Đi vay** mới, tên là mã LD.
+- "thanh toán thẻ tín dụng …1234" → **Trả thẻ** đúng thẻ (trước đây thành quẹt thẻ hoặc khoản chi). Thông báo trừ tài khoản và ghi có thẻ của cùng một lần trả chỉ ghi một lần.
+- **Khoản trả góp thẻ** là khoản vay có thẻ (`card` trên khoản vay): mỗi tháng Khoản định kỳ chuyển một kỳ sang nợ thẻ (khoản quẹt thẻ định kỳ mang `loan`), số còn lại của khoản trả góp giảm theo; kỳ cuối lấy đúng phần lẻ, trả hết thì dừng. Tiền trả góp không đi qua ví.
+- Khoản định kỳ có **tháng kết thúc** (`to`), danh sách ghi "đến MM/YYYY".
+- Nhập file: thẻ trong file trùng 4 số cuối với thẻ đang có thì dùng thẻ đang có (không tạo thẻ đôi). File có `partial:true` (chỉ một phần dữ liệu) chỉ cho Gộp, ẩn nút Thay toàn bộ.
 
 ---
 
