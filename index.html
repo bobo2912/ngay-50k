@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v219";
+  var K = "ngay50k:errlog", VER = "v220";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -2628,6 +2628,12 @@ li.txg > details.txd > ul{margin:0 !important}
         <p class="subtle" id="lPaidHint" hidden style="margin-top:4px"></p>
         <div class="field"><label for="lDate"><span id="lDateLabel">Ngày vay</span></label><input id="lDate" class="inp" type="date"></div>
         <div class="field" id="lWField" hidden><label><span id="lWLabel">Tiền vào ví</span></label><div class="chips wchips" id="lWChips" style="margin-top:0"></div></div>
+        <div class="field" id="lCardField" hidden><label><span>Trả góp qua thẻ tín dụng</span></label><div class="chips" id="lCardChips" style="margin-top:0"></div></div>
+        <div id="lInstBox" hidden>
+          <div class="row"><div class="field"><label for="lPer"><span>Mỗi kỳ</span></label><input id="lPer" class="inp num" inputmode="numeric" placeholder="0đ"></div>
+          <div class="field"><label for="lFrom"><span>Trừ từ ngày</span></label><input id="lFrom" class="inp" type="date"></div></div>
+          <p class="subtle" style="margin-top:4px">Mỗi tháng, lần trả thẻ đầu tiên của thẻ này (từ ngày trên) trừ một kỳ. Tháng nào không trả thẻ thì không trừ.</p>
+        </div>
         <div class="field"><label for="lDue"><span>Hạn trả (không bắt buộc)</span></label><input id="lDue" class="inp" type="date"></div>
         <div class="field"><label for="lNote"><span>Ghi chú</span></label><input id="lNote" class="inp" maxlength="120" placeholder="vd: lãi 1%/tháng, trả dần mỗi tháng"></div>
         <button class="primary" id="saveLoan" disabled>Lưu khoản vay</button>
@@ -3206,7 +3212,7 @@ li.txg > details.txd > ul{margin:0 !important}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v219</p>
+      <p class="sync" id="appVersion">Phiên bản v220</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3756,14 +3762,14 @@ li.txg > details.txd > ul{margin:0 !important}
 <input type="file" id="phFile" accept="image/*" hidden>
 <div class="ph-view" id="phView" role="dialog" aria-modal="true" aria-label="Ảnh hoá đơn" hidden><img id="phImg" alt="Ảnh hoá đơn"><div class="ph-bar"><button type="button" id="phDel">Bỏ ảnh này</button><button type="button" id="phClose">Đóng</button></div></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=219"></script>
-<script src="thu-vien-cau.js?v=219"></script>
-<script src="quy-tac.js?v=219"></script>
-<script src="du-lieu.js?v=219"></script>
-<script src="doc-so-tk.js?v=219"></script>
-<script src="tich-luy.js?v=219"></script>
-<script src="native.js?v=219"></script>
-<script src="lock.js?v=219"></script>
+<script src="parse-vi.js?v=220"></script>
+<script src="thu-vien-cau.js?v=220"></script>
+<script src="quy-tac.js?v=220"></script>
+<script src="du-lieu.js?v=220"></script>
+<script src="doc-so-tk.js?v=220"></script>
+<script src="tich-luy.js?v=220"></script>
+<script src="native.js?v=220"></script>
+<script src="lock.js?v=220"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -5621,7 +5627,7 @@ function startNgay50k(){
     const pays = state.cardPay || [], tg = state.loans.filter(l => l.card && Number(l.per) > 0);
     const key = pays.length + "|" + tg.length + "|" + pays.map(p => p.id + ":" + p.amt + ":" + (p.cardId || "") + ":" + p.date).join(",") + "|" + tg.map(l => l.id + ":" + l.card + ":" + l.per + ":" + l.amt + ":" + l.prepaid + ":" + (l.from || "")).join(",");
     if(instMemo.key === key && instMemo.v) return instMemo.v;
-    const out = { pay:{}, loan:{} }, used = new Set(), left = {};
+    const out = { pay:{}, loan:{}, hist:{} }, used = new Set(), left = {};
     tg.forEach(l => left[l.id] = Math.max(0, (Number(l.amt) || 0) - (Number(l.prepaid) || 0) - (l.payments || []).reduce((a, p) => a + (Number(p.amt) || 0), 0)));
     pays.slice().sort((a, b) => (a.date || "").localeCompare(b.date || "") || (a.t || 0) - (b.t || 0)).forEach(p => {
       if(!p.cardId) return;
@@ -5629,7 +5635,7 @@ function startNgay50k(){
       if(!mine.length || used.has(p.cardId + "|" + ym)) return;
       used.add(p.cardId + "|" + ym);
       let budget = Number(p.amt) || 0;
-      mine.forEach(l => { const x = Math.min(Number(l.per), left[l.id], budget); if(x <= 0) return; budget -= x; left[l.id] -= x; out.loan[l.id] = (out.loan[l.id] || 0) + x; out.pay[p.id] = (out.pay[p.id] || 0) + x; });
+      mine.forEach(l => { const x = Math.min(Number(l.per), left[l.id], budget); if(x <= 0) return; budget -= x; left[l.id] -= x; out.loan[l.id] = (out.loan[l.id] || 0) + x; out.pay[p.id] = (out.pay[p.id] || 0) + x; (out.hist[l.id] = out.hist[l.id] || []).push({ id:p.id, amt:x, date:p.date, cardId:p.cardId }); });
     });
     instMemo = { key, v:out };
     return out;
@@ -5654,6 +5660,7 @@ function startNgay50k(){
     $("lDateLabel").textContent = t==="borrow" ? "Ngày vay" : "Ngày cho vay";
     $("lPaidLabel").textContent = t==="borrow" ? "Số tiền đã trả" : "Số tiền đã thu";
     if($("lWLabel")) $("lWLabel").textContent = t==="borrow" ? "Tiền vay vào ví" : "Tiền cho vay lấy từ ví";
+    if($("lCardChips")) lCardPick(lCard);
   }
   function showLoanView(v){ // "main" | "form" | "detail"
     $("loansMain").hidden = v !== "main"; $("loanForm").hidden = v !== "form"; $("loanDetail").hidden = v !== "detail";
@@ -5674,6 +5681,8 @@ function startNgay50k(){
     $("lDue").value = l ? (l.due || "") : ""; $("lNote").value = l ? (l.note || "") : "";
     setLoanType(l ? l.type : (loanView === "lend" ? "lend" : "borrow")); refreshLoanForm();
     wPicker("lWField", "lWChips", l ? l.w : MAIN_W);   /* v212 */
+    $("lPer").value = l && l.per ? money(+l.per) : ""; $("lFrom").value = l && l.from ? l.from : todayKey();
+    lCardPick(l ? l.card : "");
     showLoanView("form");
   }
   function closeLoanForm(){ const back = editingLoanId ? "detail" : "main"; editingLoanId = null; renderLoans(); showLoanView(detailLoanId && back==="detail" ? "detail" : "main"); }
@@ -5686,18 +5695,32 @@ function startNgay50k(){
     else if(!ok) btn.textContent = editingLoanId ? "Lưu thay đổi" : "Lưu khoản vay";
     else btn.textContent = (editingLoanId ? "Lưu thay đổi" : "Lưu khoản " + (loanType==="borrow" ? "vay " : "cho vay ") + fmt(a)) + " · còn " + fmt(a - p);
   }
+  /* v220: khoản trả góp chọn thẻ ngay trong app (không gắn cứng): thẻ, số tiền mỗi kỳ, trừ từ ngày */
+  var lCard = "";
+  function lCardPick(id){
+    lCard = id && (state.cards || []).some(c => c.id === id) ? id : "";
+    const box = $("lCardChips"); box.innerHTML = "";
+    const mk = (v, label) => { const b = document.createElement("button"); b.type = "button"; b.className = "chip"; b.textContent = label; b.setAttribute("aria-pressed", v === lCard ? "true" : "false"); b.onclick = () => lCardPick(v); box.appendChild(b); };
+    mk("", "Không");
+    (state.cards || []).forEach(c => mk(c.id, cardShort(c)));
+    $("lCardField").hidden = loanType !== "borrow" || !(state.cards || []).length;
+    $("lInstBox").hidden = $("lCardField").hidden || !lCard;
+  }
+  const lPerVal = () => parseInt(digits($("lPer").value), 10) || 0;
   function saveLoan(){
     if($("saveLoan").disabled) return;
     const data = { type:loanType, who:$("lWho").value.trim(), amt:lAmt(),
       date:$("lDate").value || todayKey(), due:$("lDue").value || "", note:$("lNote").value.trim() };
     const paid = lPaid();
     if(!$("lWField").hidden){ const lw = pickedW("lWChips"); data.w = lw || undefined; }
+    const inst = loanType === "borrow" && lCard && lPerVal() > 0 ? { card:lCard, per:lPerVal(), from:$("lFrom").value || todayKey() } : null;
+    const setInst = o => { if(inst) Object.assign(o, inst); else { delete o.card; delete o.per; delete o.from; } };
     if(editingLoanId){
       const l = getLoan(editingLoanId);
-      if(l){ Object.assign(l, data); if(!l.w) delete l.w; l.prepaid = paid - payOnly(l); detailLoanId = l.id; }
+      if(l){ const po = payOnly(l); Object.assign(l, data); if(!l.w) delete l.w; setInst(l); l.prepaid = paid - po; detailLoanId = l.id; }
       persist(true); editingLoanId = null; renderLoans(); showLoanView("detail"); flash("detailMsg", "✓ Đã lưu thay đổi");
     } else {
-      const nl = Object.assign({ id:uid(), payments:[], prepaid:paid, t:Date.now() }, data); if(!nl.w) delete nl.w;
+      const nl = Object.assign({ id:uid(), payments:[], prepaid:paid, t:Date.now() }, data); if(!nl.w) delete nl.w; setInst(nl);
       state.loans.push(nl);
       loanView = data.type;   /* về đúng tab con của khoản vừa thêm */
       [...$("loanSeg").children].forEach(b => b.setAttribute("aria-pressed", b.dataset.lv === loanView ? "true" : "false"));
@@ -5766,6 +5789,7 @@ function startNgay50k(){
     add("Đã " + v, fmt(paid));
     add(l.type==="borrow" ? "Ngày vay" : "Ngày cho vay", fmtDate(l.date));
     if(l.due){ const dt = dueText(l); add("Hạn trả", fmtDate(l.due) + (done ? "" : " · " + dt.txt), dt.late && !done ? "num tag-borrow" : "num"); }
+    if(l.card) add("Trả góp qua thẻ", (cardName(l.card) || "thẻ đã xoá") + (l.per ? " · " + fmt(+l.per) + "/kỳ" : "") + (l.from ? " · từ " + fmtDate(l.from) : ""), "");
     if(l.note) add("Ghi chú", l.note, "");
     card.appendChild(kv);
 
@@ -5845,6 +5869,7 @@ function startNgay50k(){
     if(l.prepaid) recs.push({ id:"__prepaid", amt:l.prepaid, kind:"pay", date:l.date, note: l.prepaid < 0 ? "Điều chỉnh" : "Đã " + v + " (nhập tay)" });
     (l.draws||[]).forEach(d => recs.push(Object.assign({ kind:"draw" }, d)));
     (l.payments||[]).forEach(p => recs.push(Object.assign({ kind:"pay" }, p)));
+    if(l.card) (instAlloc().hist[l.id] || []).forEach(h => recs.push({ id:"__ip" + h.id, kind:"pay", amt:h.amt, date:h.date, inst:true, note:"trừ khi trả thẻ " + (cardName(h.cardId) || "") }));   /* v220: tính từ các lần trả thẻ, không sửa ở đây */
     recs.sort((a,b)=> (b.date||"").localeCompare(a.date||"") || (a.id==="__origin" ? 1 : b.id==="__origin" ? -1 : 0));
 
     const hh = el("div","hist-head");
@@ -5900,6 +5925,7 @@ function startNgay50k(){
       rd.appendChild(amtLine);
       rd.appendChild(el("div",null, fmtDate(r.date) + (r.note && r.id !== "__origin" ? " · " + r.note : "")));
       row.appendChild(rd);
+      if(r.inst){ ul.appendChild(row); return; }   /* sửa / xoá ở lần trả thẻ tương ứng */
       const eb = el("button","rb-edit","Sửa"); eb.onclick = () => { editRecId = r.id; renderLoanDetail(); };
       row.appendChild(eb);
       if(r.id === "__origin"){ ul.appendChild(row); return; }
@@ -6764,6 +6790,7 @@ function startNgay50k(){
   [...$("loanType").children].forEach(b => b.onclick = () => { setLoanType(b.dataset.type); refreshLoanForm(); });
   $("lWho").addEventListener("input", refreshLoanForm);
   $("lPaid").addEventListener("input", e => { e.target.value = money(lPaid()); refreshLoanForm(); });
+  $("lPer").addEventListener("input", e => { const v = lPerVal(); e.target.value = v ? v.toLocaleString("vi-VN") : ""; });
   $("lAmt").addEventListener("input", e => { const v = lAmt(); e.target.value = v ? v.toLocaleString("vi-VN") : ""; refreshLoanForm(); });
   $("saveLoan").onclick = saveLoan;
 

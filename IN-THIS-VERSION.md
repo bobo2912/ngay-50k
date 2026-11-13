@@ -1,6 +1,13 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v219, ngày 13/11/2026
+**Phiên bản hiện tại:** v220, ngày 13/11/2026
+
+---
+
+## Có gì mới trong v220 (so với v219) – chọn thẻ cho khoản trả góp trong app
+
+- Form khoản vay (Mình đi vay) có **Trả góp qua thẻ tín dụng**: chọn thẻ, số tiền **mỗi kỳ**, **trừ từ ngày**. Không gắn cứng trong file nhập hay trong mã: đổi thẻ là các kỳ được tính lại theo lịch sử trả thẻ của thẻ mới (hữu ích khi màn trả góp của ngân hàng ghi số đuôi khác số thẻ, vd ****2156 nhưng thẻ là ****1234).
+- Chi tiết khoản trả góp: dòng "Trả góp qua thẻ" và lịch sử các kỳ "trừ khi trả thẻ …" (chỉ xem; sửa / xoá ở lần trả thẻ tương ứng).
 
 ---
 
