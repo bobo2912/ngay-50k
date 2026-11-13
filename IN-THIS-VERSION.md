@@ -1,6 +1,13 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v221, ngày 13/11/2026
+**Phiên bản hiện tại:** v222, ngày 13/11/2026
+
+---
+
+## Có gì mới trong v222 (so với v221) – trả thẻ nhiều lần trong tháng
+
+- Kỳ trả góp của một tháng được trừ dần qua các lần trả thẻ trong tháng đó, mỗi khoản tối đa một kỳ. Trước đây chỉ lần trả thẻ đầu tiên trong tháng được tính: trả 50k trước rồi trả cả sao kê thì kỳ trả góp chỉ được trừ 50k.
+- "Kỳ tới" của khoản trả góp chỉ chuyển sang tháng sau khi đã đủ kỳ tháng này.
 
 ---
 

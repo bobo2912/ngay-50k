@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v221";
+  var K = "ngay50k:errlog", VER = "v222";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -3217,7 +3217,7 @@ li.txg > details.txd > ul{margin:0 !important}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v221</p>
+      <p class="sync" id="appVersion">Phiên bản v222</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3767,14 +3767,14 @@ li.txg > details.txd > ul{margin:0 !important}
 <input type="file" id="phFile" accept="image/*" hidden>
 <div class="ph-view" id="phView" role="dialog" aria-modal="true" aria-label="Ảnh hoá đơn" hidden><img id="phImg" alt="Ảnh hoá đơn"><div class="ph-bar"><button type="button" id="phDel">Bỏ ảnh này</button><button type="button" id="phClose">Đóng</button></div></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=221"></script>
-<script src="thu-vien-cau.js?v=221"></script>
-<script src="quy-tac.js?v=221"></script>
-<script src="du-lieu.js?v=221"></script>
-<script src="doc-so-tk.js?v=221"></script>
-<script src="tich-luy.js?v=221"></script>
-<script src="native.js?v=221"></script>
-<script src="lock.js?v=221"></script>
+<script src="parse-vi.js?v=222"></script>
+<script src="thu-vien-cau.js?v=222"></script>
+<script src="quy-tac.js?v=222"></script>
+<script src="du-lieu.js?v=222"></script>
+<script src="doc-so-tk.js?v=222"></script>
+<script src="tich-luy.js?v=222"></script>
+<script src="native.js?v=222"></script>
+<script src="lock.js?v=222"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -5632,15 +5632,16 @@ function startNgay50k(){
     const pays = state.cardPay || [], tg = state.loans.filter(l => l.card && Number(l.per) > 0);
     const key = pays.length + "|" + tg.length + "|" + pays.map(p => p.id + ":" + p.amt + ":" + (p.cardId || "") + ":" + p.date).join(",") + "|" + tg.map(l => l.id + ":" + l.card + ":" + l.per + ":" + l.amt + ":" + l.prepaid + ":" + (l.from || "")).join(",");
     if(instMemo.key === key && instMemo.v) return instMemo.v;
-    const out = { pay:{}, loan:{}, hist:{} }, used = new Set(), left = {};
+    const out = { pay:{}, loan:{}, hist:{} }, need = {}, left = {};
     tg.forEach(l => left[l.id] = Math.max(0, (Number(l.amt) || 0) - (Number(l.prepaid) || 0) - (l.payments || []).reduce((a, p) => a + (Number(p.amt) || 0), 0)));
     pays.slice().sort((a, b) => (a.date || "").localeCompare(b.date || "") || (a.t || 0) - (b.t || 0)).forEach(p => {
       if(!p.cardId) return;
+      /* v222: kỳ trả góp của một tháng được trừ dần qua các lần trả thẻ trong tháng đó (trả 50k trước, trả cả sao kê sau vẫn đủ kỳ),
+         mỗi khoản trả góp tối đa một kỳ mỗi tháng */
       const ym = String(p.date || "").slice(0, 7), mine = tg.filter(l => l.card === p.cardId && (!l.from || p.date >= l.from) && left[l.id] > 0);
-      if(!mine.length || used.has(p.cardId + "|" + ym)) return;
-      used.add(p.cardId + "|" + ym);
+      if(!mine.length) return;
       let budget = Number(p.amt) || 0;
-      mine.forEach(l => { const x = Math.min(Number(l.per), left[l.id], budget); if(x <= 0) return; budget -= x; left[l.id] -= x; out.loan[l.id] = (out.loan[l.id] || 0) + x; out.pay[p.id] = (out.pay[p.id] || 0) + x; (out.hist[l.id] = out.hist[l.id] || []).push({ id:p.id, amt:x, date:p.date, cardId:p.cardId }); });
+      mine.forEach(l => { const nk = l.id + "|" + ym; if(!(nk in need)) need[nk] = Number(l.per); const x = Math.min(need[nk], left[l.id], budget); need[nk] -= Math.max(0, x); if(x <= 0) return; budget -= x; left[l.id] -= x; out.loan[l.id] = (out.loan[l.id] || 0) + x; out.pay[p.id] = (out.pay[p.id] || 0) + x; (out.hist[l.id] = out.hist[l.id] || []).push({ id:p.id, amt:x, date:p.date, cardId:p.cardId }); });
     });
     instMemo = { key, v:out };
     return out;
@@ -5655,7 +5656,8 @@ function startNgay50k(){
     const now = new Date(todayKey() + "T00:00:00"), ymOf = d => d.getFullYear() + "-" + pad(d.getMonth() + 1);
     const at = (y, m, d) => { const dim = new Date(y, m + 1, 0).getDate(); return new Date(y, m, Math.min(d, dim)); };
     if(l.card){
-      const paidThis = (instAlloc().hist[l.id] || []).some(h => String(h.date).slice(0, 7) === ymOf(now));
+      const gotM = (instAlloc().hist[l.id] || []).filter(h => String(h.date).slice(0, 7) === ymOf(now)).reduce((a, h) => a + h.amt, 0);
+      const paidThis = gotM > 0 && gotM >= Math.min(Number(l.per), left + gotM);   /* v222: đủ kỳ tháng này mới chuyển sang tháng sau */
       const f0 = l.from ? new Date(l.from + "T00:00:00") : null;   /* chưa tới ngày bắt đầu trừ → kỳ tới là tháng của ngày đó */
       const m = f0 && f0 > now ? f0 : paidThis ? new Date(now.getFullYear(), now.getMonth() + 1, 1) : now;
       return { card:true, goc, lai:0, tot:goc, month:pad(m.getMonth() + 1) + "/" + m.getFullYear(), periods, endM:(d => pad(d.getMonth() + 1) + "/" + d.getFullYear())(new Date(m.getFullYear(), m.getMonth() + periods - 1, 1)) };
