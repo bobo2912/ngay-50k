@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v224";
+  var K = "ngay50k:errlog", VER = "v225";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -3218,7 +3218,7 @@ li.txg > details.txd > ul{margin:0 !important}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v224</p>
+      <p class="sync" id="appVersion">Phiên bản v225</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3774,14 +3774,14 @@ li.txg > details.txd > ul{margin:0 !important}
 <input type="file" id="phFile" accept="image/*" hidden>
 <div class="ph-view" id="phView" role="dialog" aria-modal="true" aria-label="Ảnh hoá đơn" hidden><img id="phImg" alt="Ảnh hoá đơn"><div class="ph-bar"><button type="button" id="phDel">Bỏ ảnh này</button><button type="button" id="phClose">Đóng</button></div></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=224"></script>
-<script src="thu-vien-cau.js?v=224"></script>
-<script src="quy-tac.js?v=224"></script>
-<script src="du-lieu.js?v=224"></script>
-<script src="doc-so-tk.js?v=224"></script>
-<script src="tich-luy.js?v=224"></script>
-<script src="native.js?v=224"></script>
-<script src="lock.js?v=224"></script>
+<script src="parse-vi.js?v=225"></script>
+<script src="thu-vien-cau.js?v=225"></script>
+<script src="quy-tac.js?v=225"></script>
+<script src="du-lieu.js?v=225"></script>
+<script src="doc-so-tk.js?v=225"></script>
+<script src="tich-luy.js?v=225"></script>
+<script src="native.js?v=225"></script>
+<script src="lock.js?v=225"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -7973,7 +7973,7 @@ function startNgay50k(){
       (l.payments = l.payments || []).push(pm); ref.loanId = l.id; ref.sub = "pay";
     }
     else if(it.kind === "asin" || it.kind === "asout" || it.kind === "asval") Object.assign(ref, tlCommit(it, k, t, id));
-    else if(it.kind === "cardpay"){ const rec = Object.assign({ id, amt:it.amt, date:k, t }, nkv); if(it.cardId) rec.cardId = it.cardId; if(wv.w) rec.from = wv.w; (state.cardPay = state.cardPay || []).push(rec); }
+    else if(it.kind === "cardpay"){ const rec = Object.assign({ id, amt:it.amt, date:k, t }, nkv); if(it.cardId) rec.cardId = it.cardId; if(it.inst != null) rec.inst = Number(it.inst) || 0; if(wv.w) rec.from = wv.w; (state.cardPay = state.cardPay || []).push(rec); }
     else if(it.kind === "bal"){
       const wid = wv.w || MAIN_W, at = it.balAt || Date.now(), rec = Object.assign({ id, amt:it.amt, t:at }, wv);   /* v129: số dư từ thông báo ngân hàng đặt mốc ngay sau giao dịch */
       /* v155: so với số dư của sổ TẠI lúc ngân hàng báo số dư (trước đây so với số dư hiện tại → báo "Khớp sổ" sai khi có khoản ghi sau giờ đó) */
@@ -8120,6 +8120,15 @@ function startNgay50k(){
     if(it.kind !== "bal") row3.push('<input class="pd" type="date" aria-label="Ngày" value="' + esc(it.date) + '">');
     if(it.kind === "xfer") html += '<div class="prow"><select class="pwf" aria-label="Từ ví">' + optionList(wOpts, it.from || MAIN_W) + '</select><span class="parrow" aria-hidden="true">→</span><select class="pwt" aria-label="Sang ví">' + optionList(wOpts, it.to || MAIN_W) + "</select></div>";
     if(row3.length) html += '<div class="prow">' + row3.join("") + "</div>";
+    /* v225: trả thẻ trong Chat cũng chọn được phần trả góp (Tự động / Không gồm / Số khác) khi thẻ có khoản trả góp */
+    if(it.kind === "cardpay" && it.cardId){
+      const g = instGap(it.cardId, it.date || todayKey(), null);
+      if(g){
+        const mode = it.inst == null ? "a" : Number(it.inst) > 0 ? "x" : "0";
+        html += '<div class="prow"><select class="pinst" aria-label="Phần trả góp">' + optionList([["a", g.need > 0 ? "Trả góp: tự động (kỳ này còn " + fmt(g.need) + ")" : "Trả góp: tự động (kỳ này đã đủ)"], ["0", "Không gồm trả góp"], ["x", "Trả góp: số khác"]], mode) + "</select>"
+          + (mode === "x" ? '<input class="pinsta num" inputmode="numeric" aria-label="Số tiền vào trả góp" placeholder="Số vào trả góp" value="' + esc(money(+it.inst)) + '">' : "") + "</div>";
+      }
+    }
     html += '<p class="pwarn" hidden></p><div class="pbtns"><button type="button" class="no">Bỏ</button><button type="button" class="ok">Ghi</button></div>';
     el.innerHTML = html;
     const q = s => el.querySelector(s), warn = q(".pwarn"), okB = q(".ok");
@@ -8143,7 +8152,9 @@ function startNgay50k(){
     if(q(".pl")) q(".pl").onchange = e => { it.loanId = e.target.value || null; if(it.loanId){ const l = getLoan(it.loanId); if(l) it.who = l.who; } chatSave(); renderChat(true); };
     if(q(".ptb")) q(".ptb").onclick = () => openTagSheet(it.cat || "khac", id => { it.cat = id; chatSave(); renderChat(true); });
     else if(q(".pt")) q(".pt").onchange = e => { it.cat = e.target.value; chatSave(); };
-    if(q(".pc")) q(".pc").onchange = e => { it.cardId = e.target.value || null; chatSave(); };
+    if(q(".pc")) q(".pc").onchange = e => { it.cardId = e.target.value || null; chatSave(); if(it.kind === "cardpay") renderChat(true); };
+    if(q(".pinst")) q(".pinst").onchange = e => { const v = e.target.value; it.inst = v === "a" ? null : v === "0" ? 0 : Math.min(it.amt || 0, (instGap(it.cardId, it.date || todayKey(), null) || {}).need || it.amt || 0) || it.amt; chatSave(); renderChat(true); };
+    if(q(".pinsta")) q(".pinsta").oninput = e => { const v = parseInt(digits(e.target.value), 10) || 0; e.target.value = v ? v.toLocaleString("vi-VN") : ""; it.inst = v > 0 ? v : null; chatSave(); };
     if(q(".pwv")) q(".pwv").onchange = e => { it.w = e.target.value === MAIN_W && !isLoan ? null : e.target.value; chatSave(); };
     if(q(".pwf")) q(".pwf").onchange = e => { it.from = e.target.value; chatSave(); check(); };
     if(q(".pas")) q(".pas").onchange = e => { it.asset = e.target.value || null; if(it.asset){ const a = assetById(it.asset); if(a && it.kind === "asout" && a.lastW && walletById(a.lastW)) it.w = a.lastW; } tlFix(it); chatSave(); renderChat(true); };

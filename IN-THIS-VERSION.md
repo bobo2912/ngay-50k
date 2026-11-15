@@ -1,6 +1,12 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v224, ngày 15/11/2026
+**Phiên bản hiện tại:** v225, ngày 15/11/2026
+
+---
+
+## Có gì mới trong v225 (so với v224) – chọn phần trả góp ngay trên thẻ Chat
+
+- Thẻ "Trả thẻ" trong Chat (ghi từ thông báo ngân hàng hay gõ tay), khi thẻ có khoản trả góp, có thêm ô **Trả góp: tự động (kỳ này còn …) / Không gồm trả góp / Trả góp: số khác** (kèm ô nhập số). Bấm Ghi là lưu luôn lựa chọn.
 
 ---
 
