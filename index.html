@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v226";
+  var K = "ngay50k:errlog", VER = "v227";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -208,6 +208,7 @@ h2{font-size:.95rem; font-weight:600; margin:0 0 8px}
 .inp-x[hidden]{display:none}
 .inp-x svg{width:14px; height:14px; fill:none; stroke:currentColor; stroke-width:2.6; stroke-linecap:round}
 input.x-on, textarea.x-on{padding-right:40px !important}
+textarea.note-ta{resize:none; min-height:64px; line-height:1.4; font-family:inherit; overflow:hidden; field-sizing:content; display:block}   /* v227: ghi chú nhiều dòng, cao theo nội dung */
 .inp{box-sizing:border-box; width:100%; border:1.5px solid var(--line); background:var(--bg); border-radius:10px; padding:9px 11px; outline:none; font-size:16px}
 .inp:focus{border-color:var(--note)}
 .inp.missing{border-color:var(--over)}
@@ -2443,7 +2444,7 @@ li.txg > details.txd > ul{margin:0 !important}
         </div>
         <div class="field">
           <label for="incNote"><span>Ghi chú</span></label>
-          <input id="incNote" class="inp" maxlength="60" autocomplete="off" placeholder="vd: lương tháng 9">
+          <textarea id="incNote" class="inp note-ta" rows="2" maxlength="300" autocomplete="off" placeholder="vd: lương tháng 9"></textarea>
         </div>
         <div class="field">
           <label for="incDate"><span>Ngày nhận</span></label>
@@ -2638,10 +2639,10 @@ li.txg > details.txd > ul{margin:0 !important}
         <div id="lInstBox" hidden>
           <div class="row"><div class="field"><label for="lPer"><span>Mỗi kỳ</span></label><input id="lPer" class="inp num" inputmode="numeric" placeholder="0đ"></div>
           <div class="field"><label for="lFrom"><span>Trừ từ ngày</span></label><input id="lFrom" class="inp" type="date"></div></div>
-          <p class="subtle" style="margin-top:4px">Mỗi tháng, lần trả thẻ đầu tiên của thẻ này (từ ngày trên) trừ một kỳ. Tháng nào không trả thẻ thì không trừ.</p>
+          <p class="subtle" style="margin-top:4px">Mỗi tháng, các lần trả thẻ của thẻ này (từ ngày trên) trừ dần cho tới đủ một kỳ. Tháng nào không trả thẻ thì không trừ. Lần trả nào không gồm trả góp thì chọn ở lần trả thẻ đó.</p>
         </div>
         <div class="field"><label for="lDue"><span>Hạn trả (không bắt buộc)</span></label><input id="lDue" class="inp" type="date"></div>
-        <div class="field"><label for="lNote"><span>Ghi chú</span></label><input id="lNote" class="inp" maxlength="120" placeholder="vd: lãi 1%/tháng, trả dần mỗi tháng"></div>
+        <div class="field"><label for="lNote"><span>Ghi chú</span></label><textarea id="lNote" class="inp note-ta" rows="2" maxlength="500" placeholder="vd: lãi 1%/tháng, trả dần mỗi tháng"></textarea></div>
         <button class="primary" id="saveLoan" disabled>Lưu khoản vay</button>
       </div>
     </section>
@@ -3218,7 +3219,7 @@ li.txg > details.txd > ul{margin:0 !important}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v226</p>
+      <p class="sync" id="appVersion">Phiên bản v227</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3451,7 +3452,7 @@ li.txg > details.txd > ul{margin:0 !important}
     </div>
   </div>
   <div class="field"><label for="xDate"><span>Ngày</span></label><input id="xDate" class="inp" type="date"></div>
-  <div class="field"><label for="xNote"><span>Ghi chú <span class="opt">(không bắt buộc)</span></span></label><input id="xNote" class="inp" maxlength="40" autocomplete="off" placeholder="vd: nạp Momo"></div>
+  <div class="field"><label for="xNote"><span>Ghi chú <span class="opt">(không bắt buộc)</span></span></label><textarea id="xNote" class="inp note-ta" rows="2" maxlength="300" autocomplete="off" placeholder="vd: nạp Momo"></textarea></div>
   <p class="pwarn" id="xWarn" hidden></p>
   <div class="sheet-foot">
     <button class="ghost danger" id="xDel" type="button" hidden>Xoá</button>
@@ -3576,7 +3577,7 @@ li.txg > details.txd > ul{margin:0 !important}
         </div>
         <div class="field">
           <label for="desc"><span>Ghi chú của bạn</span></label>
-          <input id="desc" class="inp" maxlength="60" autocomplete="off" placeholder="vd: cơm trưa">
+          <textarea id="desc" class="inp note-ta" rows="2" maxlength="300" autocomplete="off" placeholder="vd: cơm trưa"></textarea>
           <div class="chips sugg" id="descChips" aria-label="Ghi chú gần đây"></div>
         </div>
         </div>
@@ -3660,7 +3661,7 @@ li.txg > details.txd > ul{margin:0 !important}
 
   <div class="field">
     <label for="eNote"><span>Ghi chú</span></label>
-    <input id="eNote" class="inp" maxlength="60" autocomplete="off" placeholder="vd: cơm trưa">
+    <textarea id="eNote" class="inp note-ta" rows="2" maxlength="300" autocomplete="off" placeholder="vd: cơm trưa"></textarea>
   </div>
   <div class="field" id="eAsField" hidden>
     <label><span>Ghi là</span></label>
@@ -3774,14 +3775,14 @@ li.txg > details.txd > ul{margin:0 !important}
 <input type="file" id="phFile" accept="image/*" hidden>
 <div class="ph-view" id="phView" role="dialog" aria-modal="true" aria-label="Ảnh hoá đơn" hidden><img id="phImg" alt="Ảnh hoá đơn"><div class="ph-bar"><button type="button" id="phDel">Bỏ ảnh này</button><button type="button" id="phClose">Đóng</button></div></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=226"></script>
-<script src="thu-vien-cau.js?v=226"></script>
-<script src="quy-tac.js?v=226"></script>
-<script src="du-lieu.js?v=226"></script>
-<script src="doc-so-tk.js?v=226"></script>
-<script src="tich-luy.js?v=226"></script>
-<script src="native.js?v=226"></script>
-<script src="lock.js?v=226"></script>
+<script src="parse-vi.js?v=227"></script>
+<script src="thu-vien-cau.js?v=227"></script>
+<script src="quy-tac.js?v=227"></script>
+<script src="du-lieu.js?v=227"></script>
+<script src="doc-so-tk.js?v=227"></script>
+<script src="tich-luy.js?v=227"></script>
+<script src="native.js?v=227"></script>
+<script src="lock.js?v=227"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -5742,7 +5743,7 @@ function startNgay50k(){
     const box = $("lCardChips"); box.innerHTML = "";
     const mk = (v, label) => { const b = document.createElement("button"); b.type = "button"; b.className = "chip"; b.textContent = label; b.setAttribute("aria-pressed", v === lCard ? "true" : "false"); b.onclick = () => lCardPick(v); box.appendChild(b); };
     mk("", "Không");
-    (state.cards || []).forEach(c => mk(c.id, cardShort(c)));
+    (state.cards || []).forEach(c => mk(c.id, c.last4 && String(c.name || "").includes(c.last4) ? c.name : cardShort(c)));
     $("lCardField").hidden = loanType !== "borrow" || !(state.cards || []).length;
     $("lInstBox").hidden = $("lCardField").hidden || !lCard;
     $("lSchedBox").hidden = loanType !== "borrow" || !!lCard;   /* v221: lịch trả của khoản vay thường */
@@ -5868,7 +5869,7 @@ function startNgay50k(){
           <div class="field" style="margin-top:0"><label><span>Số tiền</span></label><input class="inp num pAmt" inputmode="numeric"></div>
           <div class="field" style="margin-top:0"><label><span>Ngày</span></label><input class="inp pDate" type="date"></div>
         </div>
-        <div class="field"><label><span>Ghi chú (không bắt buộc)</span></label><input class="inp pNote" maxlength="60"></div>
+        <div class="field"><label><span>Ghi chú (không bắt buộc)</span></label><textarea class="inp note-ta pNote" rows="2" maxlength="300"></textarea></div>
         <div class="field" id="pWField" hidden><label><span>` + (l.type === "borrow" ? "Trả từ ví" : "Nhận vào ví") + `</span></label><div class="chips wchips" id="pWChips" style="margin-top:0"></div></div>
         <button class="primary pSave" style="margin-top:10px"></button>`;
       const pa = f.querySelector(".pAmt"), pd = f.querySelector(".pDate"), pn = f.querySelector(".pNote"), ps = f.querySelector(".pSave");
@@ -5893,7 +5894,7 @@ function startNgay50k(){
           <div class="field" style="margin-top:0"><label><span>Số tiền ` + moreWord(l) + `</span></label><input class="inp num dAmt" inputmode="numeric" placeholder="0đ"></div>
           <div class="field" style="margin-top:0"><label><span>Ngày</span></label><input class="inp dDate" type="date"></div>
         </div>
-        <div class="field"><label><span>Ghi chú (không bắt buộc)</span></label><input class="inp dNote" maxlength="60"></div>
+        <div class="field"><label><span>Ghi chú (không bắt buộc)</span></label><textarea class="inp note-ta dNote" rows="2" maxlength="300"></textarea></div>
         <div class="field" id="dWField" hidden><label><span>` + (l.type === "borrow" ? "Tiền vào ví" : "Lấy từ ví") + `</span></label><div class="chips wchips" id="dWChips" style="margin-top:0"></div></div>
         <button class="primary dSave" style="margin-top:10px" disabled>Nhập số tiền</button>`;
       const da = f.querySelector(".dAmt"), dd = f.querySelector(".dDate"), dn = f.querySelector(".dNote"), ds = f.querySelector(".dSave");
@@ -5949,7 +5950,7 @@ function startNgay50k(){
             <div class="field" style="margin-top:0"><label><span>Số tiền</span></label><input class="inp num eAmt" inputmode="numeric"></div>
             <div class="field" style="margin-top:0"><label><span>Ngày</span></label><input class="inp eDate" type="date"></div>
           </div>
-          <div class="field"><label><span>Ghi chú</span></label><input class="inp eNote" maxlength="60"></div>
+          <div class="field"><label><span>Ghi chú</span></label><textarea class="inp note-ta eNote" rows="2" maxlength="300"></textarea></div>
           <div class="acts"><button class="mini main eSave">Lưu</button><button class="mini eCancel">Huỷ</button></div>`;
         const ea = f.querySelector(".eAmt"), ed = f.querySelector(".eDate"), en = f.querySelector(".eNote");
         ea.value = money(Math.abs(r.amt)); ed.value = r.date || todayKey(); en.value = (r.id==="__prepaid" || r.id==="__origin") ? "" : (r.note||"");
@@ -6541,7 +6542,7 @@ function startNgay50k(){
       body.appendChild(el("p", "subtle as-hint", (save ? "Hiện có " + fmt(asPrincipal(a)) + " gốc, lãi tới hôm nay khoảng " + fmt(asInterest(a, todayKey())) : "Giá trị hiện tại " + fmt(full) + ", vốn " + fmt(asPrincipal(a))) + ". Rút hết thì phần chênh so với vốn được ghi là lãi (hoặc lỗ)."));
     }
     body.appendChild(asField("Ngày", asInput("asDate", todayKey(), { type:"date", max:todayKey() })));
-    body.appendChild(asField("Ghi chú (không bắt buộc)", asInput("asNote", "", { maxlength:"40" })));
+    body.appendChild(asField("Ghi chú (không bắt buộc)", (t => { t.id = "asNote"; t.className = "inp note-ta"; t.rows = 2; t.maxLength = 300; return t; })(document.createElement("textarea"))));
     foot.appendChild(asBtn("Huỷ", "ghost", () => asGo("view", { from:null })));
     const sv = asBtn("Lưu", "primary", () => asSaveMove(a)); sv.id = "asSave"; sv.style.margin = "0"; foot.appendChild(sv);
     asMoveCheck(a);
@@ -11828,6 +11829,15 @@ function startNgay50k(){
   $("openCardsBtn").onclick = () => { if(cardOf(cardFilterId)){ openCardEdit(cardFilterId); return; } renderCardBank(); showSheet("cardsSheet", "cardsBack"); };
 
   $("kpiLoan").onclick = () => showTab("loans");
+  /* v227: ô ghi chú (textarea.note-ta) tự cao theo nội dung: khi gõ, khi chạm vào, và khi màn / bảng chứa nó vừa hiện ra (giá trị gán bằng mã) */
+  (function(){
+    const fit = t => { if(!t.offsetParent) return; t.style.height = "auto"; t.style.height = Math.max(64, t.scrollHeight + 3) + "px"; };
+    const fitAll = () => document.querySelectorAll("textarea.note-ta").forEach(fit);
+    document.addEventListener("input", e => { if(e.target.matches && e.target.matches("textarea.note-ta")) fit(e.target); });
+    document.addEventListener("focusin", e => { if(e.target.matches && e.target.matches("textarea.note-ta")) fit(e.target); });
+    let q = 0; new MutationObserver(() => { if(q) return; q = requestAnimationFrame(() => { q = 0; fitAll(); }); })
+      .observe(document.body, { subtree:true, childList:true, attributes:true, attributeFilter:["hidden", "class"] });
+  })();
   /* v165: nút ✕ ở cuối ô nhập chữ: hiện khi đang gõ trong ô và ô có chữ, bấm là xoá sạch (bàn phím vẫn mở).
      Một nút dùng chung, gắn vào khung chứa ô đang gõ. Bỏ qua ô chat, ô ngày giờ, ô có data-nox. */
   (function(){

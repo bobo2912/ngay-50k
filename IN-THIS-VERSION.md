@@ -1,6 +1,13 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v226, ngày 15/11/2026
+**Phiên bản hiện tại:** v227, ngày 15/11/2026
+
+---
+
+## Có gì mới trong v227 (so với v226) – ô ghi chú nhiều dòng
+
+- Mọi ô ghi chú (khoản chi, khoản thu, quẹt thẻ, khoản vay, trả nợ, vay thêm, chuyển ví, tài sản, ghi nhanh) thành ô nhiều dòng, tự cao theo nội dung; cho ghi dài hơn (300 ký tự, khoản vay 500).
+- Sửa dòng hướng dẫn "Trừ từ ngày" của khoản trả góp cho đúng cách trừ dần từ v222; chip chọn thẻ không lặp 4 số cuối khi tên thẻ đã có.
 
 ---
 
