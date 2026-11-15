@@ -33,7 +33,7 @@ const ok = (name, cond, extra) => { n++; console.log((cond ? "✓ " : "✗ ") + 
   const errs = [];
   pg.on("pageerror", e => errs.push(e.message));
   const URL = "http://localhost:" + PORT + "/index.html?test=1";
-  const T = fn => pg.evaluate(fn);
+  const T = (fn, a) => pg.evaluate(fn, a);
   const tab = async name => { await pg.locator("nav button").filter({ hasText:name }).first().click(); await pg.waitForTimeout(400); };
   const say = async text => {
     await pg.locator("#chatIn").fill(text); await pg.locator("#chatIn").press("Enter"); await pg.waitForTimeout(700);
@@ -127,6 +127,21 @@ const ok = (name, cond, extra) => { n++; console.log((cond ? "✓ " : "✗ ") + 
     ok("Chat so tháng này với trung bình 3 tháng", /so với trung bình 3 tháng trước/i.test(await lastBot()), await lastBot());
     await say("báo cáo năm nay");
     ok("Chat báo cáo năm: chi, thu, từng tháng", /Năm \d{4}[^]*chi[^]*thu/.test(await lastBot()) && /Từng tháng/.test(await lastBot()), await lastBot());
+
+    /* 8. giao diện v228: Nợ & cho vay tự mở ô có khoản, dòng ngày một hàng, dải ví ở đầu tab Ví */
+    const tabJS = async name => { await T(n => [...document.querySelectorAll("nav button")].find(b => b.innerText.trim() === n).click(), name); await pg.waitForTimeout(500); };
+    await tabJS("Tài sản");
+    const lv = await T(() => { const p = document.querySelector('#loanSeg button[aria-pressed="true"]'); return { k:p && p.dataset.lv, n:document.querySelectorAll("#loanList > *:not(.empty)").length }; });
+    ok("Nợ & cho vay: ô đang mở có khoản", lv.n > 0, JSON.stringify(lv));
+    await tabJS("Ví");
+    const vi = await T(() => {
+      const h = [...document.querySelectorAll("#walFlow .day-head")].find(e => e.querySelector(".ds"));
+      const r1 = h.querySelector(".dd").getBoundingClientRect(), r2 = h.querySelector(".ds").getBoundingClientRect();
+      const strip = document.getElementById("wStrip"), head = document.querySelector("#wTabsBox .whead");
+      return { row:Math.abs(r1.top - r2.top) < 8 && r2.left > r1.right, stripTop:strip.getBoundingClientRect().top < head.getBoundingClientRect().top };
+    });
+    ok("Ví: dòng ngày một hàng, tổng tiền bên phải", vi.row);
+    ok("Ví: dải chọn ví nằm trên thẻ số dư", vi.stripTop);
 
     await pg.locator(".msg.bot").last().screenshot({ path:process.env.SHOT || "/dev/null" }).catch(() => {});
     ok("không có lỗi JavaScript", !errs.length, errs.slice(0, 5).join("\n   "));

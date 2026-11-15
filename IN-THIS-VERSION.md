@@ -1,6 +1,14 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v227, ngày 15/11/2026
+**Phiên bản hiện tại:** v228, ngày 15/11/2026
+
+---
+
+## Có gì mới trong v228 (so với v227) – gọn giao diện Ví, Sổ, Nợ & cho vay
+
+- **Dòng ngày một hàng** (Sổ và Ví): ngày bên trái, tổng thu / chi / định kỳ canh phải trên cùng dòng; danh sách ngắn đi, mỗi màn thấy thêm khoảng một ngày.
+- **Đầu tab Ví gọn lại**: dải chọn ví lên trên cùng; Dự báo cuối tháng nằm chung thẻ số dư (chạm vẫn mở cách tính); dòng "Tổng các ví … · còn …" xuống dòng, không còn bị cắt; chọn tháng nằm chung dòng tiêu đề "Lịch sử" (ẩn khi đang tìm, vì tìm là tìm mọi tháng).
+- **Nợ & cho vay**: vào tab Tài sản thì tự mở ô đang có khoản (ưu tiên Đi vay, không có thì Cho vay); ô chưa có khoản ghi "(0)" và mờ đi.
 
 ---
 
