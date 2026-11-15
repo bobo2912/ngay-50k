@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v225";
+  var K = "ngay50k:errlog", VER = "v226";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -3218,7 +3218,7 @@ li.txg > details.txd > ul{margin:0 !important}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v225</p>
+      <p class="sync" id="appVersion">Phiên bản v226</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3774,14 +3774,14 @@ li.txg > details.txd > ul{margin:0 !important}
 <input type="file" id="phFile" accept="image/*" hidden>
 <div class="ph-view" id="phView" role="dialog" aria-modal="true" aria-label="Ảnh hoá đơn" hidden><img id="phImg" alt="Ảnh hoá đơn"><div class="ph-bar"><button type="button" id="phDel">Bỏ ảnh này</button><button type="button" id="phClose">Đóng</button></div></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=225"></script>
-<script src="thu-vien-cau.js?v=225"></script>
-<script src="quy-tac.js?v=225"></script>
-<script src="du-lieu.js?v=225"></script>
-<script src="doc-so-tk.js?v=225"></script>
-<script src="tich-luy.js?v=225"></script>
-<script src="native.js?v=225"></script>
-<script src="lock.js?v=225"></script>
+<script src="parse-vi.js?v=226"></script>
+<script src="thu-vien-cau.js?v=226"></script>
+<script src="quy-tac.js?v=226"></script>
+<script src="du-lieu.js?v=226"></script>
+<script src="doc-so-tk.js?v=226"></script>
+<script src="tich-luy.js?v=226"></script>
+<script src="native.js?v=226"></script>
+<script src="lock.js?v=226"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -8125,7 +8125,7 @@ function startNgay50k(){
       const g = instGap(it.cardId, it.date || todayKey(), null);
       if(g){
         const mode = it.inst == null ? "a" : Number(it.inst) > 0 ? "x" : "0";
-        html += '<div class="prow"><select class="pinst" aria-label="Phần trả góp">' + optionList([["a", g.need > 0 ? "Trả góp: tự động (kỳ này còn " + fmt(g.need) + ")" : "Trả góp: tự động (kỳ này đã đủ)"], ["0", "Không gồm trả góp"], ["x", "Trả góp: số khác"]], mode) + "</select>"
+        html += '<div class="prow"><select class="pinst" aria-label="Phần trả góp">' + optionList([["a", g.from ? "Trả góp: tự động (trừ từ " + fmtDate(g.from) + ")" : g.need > 0 ? "Trả góp: tự động (kỳ này còn " + fmt(g.need) + ")" : "Trả góp: tự động (kỳ này đã đủ)"], ["0", "Không gồm trả góp"], ["x", "Trả góp: số khác"]], mode) + "</select>"
           + (mode === "x" ? '<input class="pinsta num" inputmode="numeric" aria-label="Số tiền vào trả góp" placeholder="Số vào trả góp" value="' + esc(money(+it.inst)) + '">' : "") + "</div>";
       }
     }
@@ -10312,8 +10312,11 @@ function startNgay50k(){
      Tự động = trừ dần kỳ trả góp tháng đó của thẻ cho tới khi đủ; Không = cả lần trả là trả nợ thẻ. */
   var payInst = null;   /* null = tự động, 0 = không, số = số khác */
   function instGap(cardId, date, exceptId){
-    const ym = String(date || "").slice(0, 7), tg = state.loans.filter(l => l.card === cardId && Number(l.per) > 0 && (!l.from || date >= l.from) && leftOf(l) > 0);
-    if(!tg.length) return null;
+    const ym = String(date || "").slice(0, 7), all = state.loans.filter(l => l.card === cardId && Number(l.per) > 0 && leftOf(l) > 0);
+    if(!all.length) return null;
+    const tg = all.filter(l => !l.from || date >= l.from);
+    /* v226: thẻ có trả góp nhưng chưa tới ngày bắt đầu trừ → vẫn hiện ô chọn, kèm ngày bắt đầu */
+    if(!tg.length) return { need:0, n:all.length, from:all.map(l => l.from).sort()[0] };
     const a = instAlloc(); let need = 0;
     tg.forEach(l => { const got = (a.hist[l.id] || []).filter(h => String(h.date).slice(0, 7) === ym && h.id !== exceptId).reduce((x, h) => x + h.amt, 0); need += Math.max(0, Math.min(Number(l.per), leftOf(l) + got) - got); });
     return { need, n:tg.length };
@@ -10331,7 +10334,8 @@ function startNgay50k(){
     });
     $("payInstAmt").hidden = !(Number(payInst) > 0);
     const v = balVal("payAmt") || 0;
-    $("payInstHint").textContent = payInst === 0 ? "Cả " + fmt(v) + " là trả nợ thẻ, khoản trả góp không giảm."
+    $("payInstHint").textContent = g.from ? "Thẻ có " + g.n + " khoản trả góp, bắt đầu trừ từ " + fmtDate(g.from) + ". Lần trả này là trả nợ thẻ (đổi ngày bắt đầu ở khoản trả góp, bấm Sửa)."
+      : payInst === 0 ? "Cả " + fmt(v) + " là trả nợ thẻ, khoản trả góp không giảm."
       : g.need <= 0 ? "Kỳ trả góp tháng này của thẻ đã đủ, lần trả này là trả nợ thẻ."
       : "Kỳ trả góp tháng này của thẻ còn " + fmt(g.need) + " (" + g.n + " khoản). Vào trả góp: " + fmt(Math.min(g.need, v, Number(payInst) > 0 ? payInst : Infinity)) + ".";
   }

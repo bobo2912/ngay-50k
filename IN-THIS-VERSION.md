@@ -1,6 +1,12 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v225, ngày 15/11/2026
+**Phiên bản hiện tại:** v226, ngày 15/11/2026
+
+---
+
+## Có gì mới trong v226 (so với v225)
+
+- Ô "Phần trả góp" (màn Trả thẻ và thẻ Chat) hiện cả khi khoản trả góp chưa tới ngày bắt đầu trừ, ghi rõ "bắt đầu trừ từ …" thay vì ẩn đi.
 
 ---
 
