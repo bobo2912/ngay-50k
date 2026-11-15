@@ -1,6 +1,12 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v223, ngày 13/11/2026
+**Phiên bản hiện tại:** v224, ngày 15/11/2026
+
+---
+
+## Có gì mới trong v224 (so với v223) – chọn lần trả thẻ có gồm trả góp không
+
+- Màn Trả thẻ (thêm mới hoặc chạm vào dòng trả thẻ đã ghi để sửa), khi thẻ có khoản trả góp: **Phần trả góp trong lần trả này** = Tự động (mặc định, trừ dần kỳ tháng đó cho tới khi đủ) / **Không gồm** (cả lần trả là trả nợ thẻ) / **Số khác** (chỉ chừng đó vào trả góp). Có dòng gợi ý kỳ tháng này còn thiếu bao nhiêu. Lưu ở trường `inst` của lần trả thẻ (0 = không gồm).
 
 ---
 
