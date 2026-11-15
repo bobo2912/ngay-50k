@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v228";
+  var K = "ngay50k:errlog", VER = "v229";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -2309,10 +2309,17 @@ li.txg > details.txd > ul{margin:0 !important}
 #tab-wal .wl-row h2{min-width:0; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
 #tab-wal .wl-row .walmonth[hidden]{display:none}
 #tab-wal .wl-row:has(.walmonth[hidden]) h2{white-space:normal}   /* đang tìm: tiêu đề "Tìm thấy …" được xuống dòng */
-@media (max-width:350px){ #tab-wal .wl-row .walmonth button{width:30px; height:30px} #tab-wal .wl-row .walmonth strong{font-size:.84rem; min-width:0} }
+@media (max-width:350px){ #tab-wal .wl-row h2{flex:none} #tab-wal .wl-row .walmonth{min-width:0; gap:2px} #tab-wal .wl-row .walmonth button{width:30px; height:30px; flex:none} #tab-wal .wl-row .walmonth strong{font-size:.84rem; min-width:0; overflow:hidden; text-overflow:ellipsis} }   /* v229: màn nhỏ giữ chữ "Lịch sử", co nhãn tháng */
 #tab-wal .wl-row .walmonth{margin:0; gap:4px; flex:none}
 #tab-wal .wl-row .walmonth button{width:34px; height:34px}
 #tab-wal .wl-row .walmonth strong{font-size:.9rem; white-space:nowrap; min-width:5.6em; text-align:center}
+/* v229: hàng tên ví + nút nhỏ ở góc phải thẻ số dư */
+.whead .wh-top{display:flex; align-items:center; justify-content:space-between; gap:8px; min-height:36px}
+.whead .wh-top .wh-name{flex:1; min-width:0}
+.whead .wh-top .wh-acts, .whead .wh-top .wh-acts.col{flex:none !important; align-self:center !important; gap:6px !important}
+.whead .wh-top .wh-btn{flex:none; height:36px !important; padding:0 14px !important; border-radius:999px !important; font-size:.78rem !important}
+.whead .wh-top .wh-btn.ic{width:36px !important; padding:0 !important; font-size:.95rem !important}
+.whead .wh-top .wh-btn.pri{background:var(--note) !important; color:#fff !important}
 /* v198: dòng ngày 2 tầng, thống kê căn trái dưới ngày */
 /* v228: gộp lại một dòng: ngày bên trái, thống kê canh phải (dài thì tự xuống dòng, vẫn canh phải) */
 .day-head.dh2, #walFlow .day-head.dh2{display:flex; flex-direction:row; align-items:baseline; justify-content:space-between; gap:2px 12px}
@@ -2382,7 +2389,8 @@ li.txg > details.txd > ul{margin:0 !important}
     <!-- v105 (hướng A): số dư chỉ hiện một lần, theo ví đang chọn -->
     <div class="whead">
       <div class="wh-l">
-        <span class="wh-name" id="whName">Tài khoản</span>
+        <!-- v229: nút Cập nhật / Chuyển / Sửa thành nút nhỏ cùng hàng tên ví, không còn hàng nút to riêng -->
+        <div class="wh-top"><span class="wh-name" id="whName">Tài khoản</span><span class="wh-acts" id="whActs"></span></div>
         <p class="wh-big num" id="whNum">–</p>
         <p class="wh-sub" id="whSub"></p>
         <p class="wh-sub" id="whTot" hidden></p>
@@ -2390,7 +2398,6 @@ li.txg > details.txd > ul{margin:0 !important}
         <button type="button" class="wfc" id="wFc" hidden aria-expanded="false" aria-controls="wFcD"><span class="wfc-l">Dự báo cuối tháng</span><b class="num" id="wFcNum"></b><small id="wFcSub"></small></button>
         <div class="wfc-d" id="wFcD" hidden></div>
       </div>
-      <span class="wh-acts" id="whActs"></span>
     </div>
     <p class="wtotal" hidden><span id="wTotLabel"></span><b class="num" id="wTotNum"></b><small id="wTotSub"></small></p>
   </div>
@@ -3239,7 +3246,7 @@ li.txg > details.txd > ul{margin:0 !important}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v228</p>
+      <p class="sync" id="appVersion">Phiên bản v229</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3795,14 +3802,14 @@ li.txg > details.txd > ul{margin:0 !important}
 <input type="file" id="phFile" accept="image/*" hidden>
 <div class="ph-view" id="phView" role="dialog" aria-modal="true" aria-label="Ảnh hoá đơn" hidden><img id="phImg" alt="Ảnh hoá đơn"><div class="ph-bar"><button type="button" id="phDel">Bỏ ảnh này</button><button type="button" id="phClose">Đóng</button></div></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=228"></script>
-<script src="thu-vien-cau.js?v=228"></script>
-<script src="quy-tac.js?v=228"></script>
-<script src="du-lieu.js?v=228"></script>
-<script src="doc-so-tk.js?v=228"></script>
-<script src="tich-luy.js?v=228"></script>
-<script src="native.js?v=228"></script>
-<script src="lock.js?v=228"></script>
+<script src="parse-vi.js?v=229"></script>
+<script src="thu-vien-cau.js?v=229"></script>
+<script src="quy-tac.js?v=229"></script>
+<script src="du-lieu.js?v=229"></script>
+<script src="doc-so-tk.js?v=229"></script>
+<script src="tich-luy.js?v=229"></script>
+<script src="native.js?v=229"></script>
+<script src="lock.js?v=229"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -7385,7 +7392,7 @@ function startNgay50k(){
   }
   function renderForecast(sel){
     const b = $("wFc"), d = $("wFcD");
-    const f = sel.indexOf("card:") === 0 ? null : forecastCalc();
+    const f = sel !== MAIN_W ? null : forecastCalc();   /* v229: dự báo tính cho Tài khoản, nằm trong thẻ số dư nên chỉ hiện ở ví Tài khoản */
     if(!f || (!f.avg && !f.outT && !f.inT)){ b.hidden = true; d.hidden = true; return; }
     const v = Math.round(f.val / 1000) * 1000;
     b.hidden = false;
@@ -9828,7 +9835,7 @@ function startNgay50k(){
     rollTo(num, r ? sMon(r.bal) : "Chưa có số dư", sel);
     if(r && r.bal < 0) num.classList.add("neg");
     sub.textContent = r ? "Đối chiếu " + stampText(r.anchor.t) : "Nhập số dư đang có, app sẽ tự tính tiếp";
-    btn(r ? "Cập nhật số dư" : "Nhập số dư", "", () => openBalance(wid));
+    btn(r ? "Cập nhật" : "Nhập số dư", r ? "Cập nhật số dư" : "", () => openBalance(wid), r ? "" : "pri");
     if(multiW()) btn("⇄", "Chuyển tiền", () => openXfer(wid), "ic");
     if(wid !== MAIN_W) btn("✎", "Sửa ví", () => openWSheet(wid), "ic");
     /* tổng chỉ hiện khi có từ hai ví hoặc đang nợ thẻ */

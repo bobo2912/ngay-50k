@@ -142,6 +142,8 @@ const ok = (name, cond, extra) => { n++; console.log((cond ? "✓ " : "✗ ") + 
     });
     ok("Ví: dòng ngày một hàng, tổng tiền bên phải", vi.row);
     ok("Ví: dải chọn ví nằm trên thẻ số dư", vi.stripTop);
+    const act = await T(() => { const a = document.getElementById("whActs"); return !!a.closest(".wh-l") && [...a.children].some(b => /Cập nhật|Nhập số dư/.test(b.innerText)); });
+    ok("Ví: nút Cập nhật nằm trong thẻ số dư", act);
 
     await pg.locator(".msg.bot").last().screenshot({ path:process.env.SHOT || "/dev/null" }).catch(() => {});
     ok("không có lỗi JavaScript", !errs.length, errs.slice(0, 5).join("\n   "));

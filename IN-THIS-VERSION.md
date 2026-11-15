@@ -1,6 +1,14 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v228, ngày 15/11/2026
+**Phiên bản hiện tại:** v229, ngày 15/11/2026
+
+---
+
+## Có gì mới trong v229 (so với v228) – nút nhỏ trên thẻ số dư
+
+- Bỏ hàng nút to "Cập nhật số dư" dưới thẻ số dư: các nút **Cập nhật**, **⇄** (chuyển tiền), **✎** (sửa ví) thành nút nhỏ cùng hàng tên ví, góc phải thẻ. Ví chưa có số dư thì nút **Nhập số dư** tô đậm. Thẻ tín dụng: Trả thẻ / Sửa thẻ cũng nằm ở đó.
+- Dự báo cuối tháng chỉ hiện ở ví Tài khoản (số dự báo tính cho Tài khoản; v228 đặt nó trong thẻ số dư nên ở ví khác dễ hiểu nhầm là của ví đó).
+- Màn nhỏ (≤ 350px): dòng "Lịch sử" + chọn tháng không còn bị cắt chữ.
 
 ---
 
