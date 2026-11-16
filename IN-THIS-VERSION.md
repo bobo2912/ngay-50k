@@ -1,6 +1,16 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v229, ngày 15/11/2026
+**Phiên bản hiện tại:** v230, ngày 16/11/2026
+
+---
+
+## Có gì mới trong v230 (so với v229) – tính lãi theo ngày cho khoản vay / cho vay
+
+- **Nhập lãi suất cho mọi khoản** (đi vay và cho vay, trừ trả góp thẻ): ô "Lãi suất %/năm" trong Thêm / Sửa khoản vay. Khoản chưa có lãi suất có nút "+ Nhập lãi suất để tính lãi" ở chi tiết.
+- **Lãi đến hôm nay, tính chính xác theo ngày**: lãi đơn, mỗi đoạn = dư nợ × lãi suất × số ngày / 365 (khoản đi vay có lịch trả ngân hàng: / 360). Mỗi lần cho vay thêm tính từ đúng ngày của nó; trả gốc thì dư nợ giảm từ ngày trả. Hiện thêm "Mỗi ngày thêm ≈ …".
+- **Cách tính lãi** (bấm mở): chưa trả gốc thì tách theo từng lần giải ngân, đã trả gốc thì theo từng đoạn dư nợ.
+- **Ghi lãi đã thu / đã trả**: cho vay → ghi thành khoản thu; đi vay → khoản chi nhóm Lãi vay (định kỳ, không trừ hạn mức). Không trừ vào gốc. App trừ số này để ra "Lãi còn phải thu / trả".
+- Danh sách Nợ & cho vay: dòng nhỏ "lãi chưa thu / chưa trả …" dưới khoản có lãi suất.
 
 ---
 

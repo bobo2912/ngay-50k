@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v229";
+  var K = "ngay50k:errlog", VER = "v230";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -338,6 +338,16 @@ ul{list-style:none; margin:0; padding:0}
 .mini.main{border-color:var(--ink); background:var(--ink); color:var(--bg)}
 .mini.danger{color:var(--over)}
 .pay-form{margin-top:10px; padding-top:10px; border-top:1px dashed var(--line)}
+/* v230: khối lãi theo ngày trong chi tiết khoản vay */
+.lai-box{margin-top:14px; padding-top:4px; border-top:1px solid var(--line)}
+.lai-how{margin-top:10px; font-size:.84rem}
+.lai-how summary{cursor:pointer; color:var(--note); font-weight:600; padding:6px 0; list-style-position:inside}
+.lai-list{list-style:none; margin:4px 0 0; padding:0}
+.lai-list li{display:flex; justify-content:space-between; gap:10px; padding:7px 0; border-bottom:1px solid var(--line); align-items:baseline}
+.lai-list li span{color:var(--muted); min-width:0} .lai-list li b{font-weight:600; white-space:nowrap}
+.lai-list li.lai-f{display:block; color:var(--muted); font-size:.78rem; border:0}
+.lai-btn{margin-top:10px; width:100%; min-height:40px}
+.lai-add{margin-top:12px; width:100%; min-height:40px}
 .pay-form .row{display:grid; grid-template-columns:1fr 1fr; gap:8px}
 .pay-hist{margin-top:10px; padding-top:6px; border-top:1px dashed var(--line); font-size:.82rem}
 .pay-hist li{display:flex; justify-content:space-between; align-items:center; padding:5px 0; color:var(--muted)}
@@ -2660,8 +2670,10 @@ li.txg > details.txd > ul{margin:0 !important}
         <div id="lSchedBox" hidden>
           <div class="row"><div class="field"><label for="lPerG"><span>Gốc mỗi kỳ</span></label><input id="lPerG" class="inp num" inputmode="numeric" placeholder="0đ"></div>
           <div class="field"><label for="lDay"><span>Ngày trả hằng tháng</span></label><input id="lDay" class="inp num" inputmode="numeric" maxlength="2" placeholder="vd 28"></div></div>
-          <div class="field"><label for="lRate"><span>Lãi suất %/năm (không bắt buộc)</span></label><input id="lRate" class="inp num" inputmode="decimal" placeholder="vd 5,7"></div>
         </div>
+        <!-- v230: lãi suất cho mọi khoản (đi vay, cho vay), trừ trả góp thẻ; app tính lãi theo ngày tới hôm nay -->
+        <div class="field" id="lRateField"><label for="lRate"><span>Lãi suất %/năm (không bắt buộc)</span></label><input id="lRate" class="inp num" inputmode="decimal" placeholder="vd 7 hoặc 5,7"></div>
+        <p class="subtle" id="lRateHint" style="margin-top:4px">Lãi tính theo ngày trên số tiền còn nợ. Lãi theo tháng thì nhân 12, vd 1%/tháng = 12%/năm.</p>
         <div class="field" id="lCardField" hidden><label><span>Trả góp qua thẻ tín dụng</span></label><div class="chips" id="lCardChips" style="margin-top:0"></div></div>
         <div id="lInstBox" hidden>
           <div class="row"><div class="field"><label for="lPer"><span>Mỗi kỳ</span></label><input id="lPer" class="inp num" inputmode="numeric" placeholder="0đ"></div>
@@ -3246,7 +3258,7 @@ li.txg > details.txd > ul{margin:0 !important}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v229</p>
+      <p class="sync" id="appVersion">Phiên bản v230</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3802,14 +3814,14 @@ li.txg > details.txd > ul{margin:0 !important}
 <input type="file" id="phFile" accept="image/*" hidden>
 <div class="ph-view" id="phView" role="dialog" aria-modal="true" aria-label="Ảnh hoá đơn" hidden><img id="phImg" alt="Ảnh hoá đơn"><div class="ph-bar"><button type="button" id="phDel">Bỏ ảnh này</button><button type="button" id="phClose">Đóng</button></div></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=229"></script>
-<script src="thu-vien-cau.js?v=229"></script>
-<script src="quy-tac.js?v=229"></script>
-<script src="du-lieu.js?v=229"></script>
-<script src="doc-so-tk.js?v=229"></script>
-<script src="tich-luy.js?v=229"></script>
-<script src="native.js?v=229"></script>
-<script src="lock.js?v=229"></script>
+<script src="parse-vi.js?v=230"></script>
+<script src="thu-vien-cau.js?v=230"></script>
+<script src="quy-tac.js?v=230"></script>
+<script src="du-lieu.js?v=230"></script>
+<script src="doc-so-tk.js?v=230"></script>
+<script src="tich-luy.js?v=230"></script>
+<script src="native.js?v=230"></script>
+<script src="lock.js?v=230"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -4309,7 +4321,7 @@ function startNgay50k(){
     clearTimeout(persist.gc); persist.gc = setTimeout(() => { try{ phGc(); }catch(e){} }, 2000);   /* v169: dọn ảnh hoá đơn của khoản đã xoá */
   }
   /* v211: lối vào cho bài thử trình duyệt (tests-trinh-duyet.js), chỉ có khi mở trang với ?test=1 */
-  if(/[?&]test=1(&|$)/.test(location.search)) window.__T = { get state(){ return state; }, set state(v){ state = v; }, balCalc:(a, w) => balCalc(a, w), todayKey:() => todayKey(), persist:() => persist(), mergeStates:(a, b) => mergeStates(a, b) };
+  if(/[?&]test=1(&|$)/.test(location.search)) window.__T = { get state(){ return state; }, set state(v){ state = v; }, balCalc:(a, w) => balCalc(a, w), todayKey:() => todayKey(), persist:() => persist(), mergeStates:(a, b) => mergeStates(a, b), loanInterest:(l, to) => loanInterest(l, to) };
   /* ---------- số dư ví ----------
      Số dư = số bạn nhập ở lần đối chiếu gần nhất, rồi tính tiếp mọi khoản xảy ra SAU thời điểm đó:
      + khoản thu, − chi thường, − tiền trả thẻ, ± tiền vay/cho vay/trả nợ.
@@ -5651,7 +5663,7 @@ function startNgay50k(){
   }
 
   /* ---------- loans ---------- */
-  let loanType = "borrow", loanView = "borrow", editingLoanId = null, detailLoanId = null, payOpen = false, drawOpen = false, editRecId = null;
+  let loanType = "borrow", loanView = "borrow", editingLoanId = null, detailLoanId = null, payOpen = false, drawOpen = false, editRecId = null, laiOpen = false;
   const payOnly = l => (l.payments||[]).reduce((a,p)=>a+(Number(p.amt)||0),0) + cardPaidOf(l);
   /* v218: khoản trả góp thẻ (l.card): kỳ do Khoản định kỳ chuyển sang nợ thẻ (cardTx mang loan) coi là đã trả.
      v219: không tự chạy nữa, dựa vào giao dịch thật: lần TRẢ THẺ đầu tiên của mỗi tháng cho thẻ đó (từ ngày l.from)
@@ -5708,6 +5720,40 @@ function startNgay50k(){
     const end = new Date(due.getFullYear(), due.getMonth() + periods - 1, 1);
     return { goc, lai, tot:goc + lai, date:keyOf(due), days, periods, endM:pad(end.getMonth() + 1) + "/" + end.getFullYear() };
   }   /* phần trả góp trong một lần trả thẻ */
+  /* v230: lãi theo ngày của khoản có lãi suất (l.rate %/năm). Lãi đơn: mỗi đoạn giữa hai mốc tiền
+     (cho vay / vay ban đầu, vay thêm, các lần trả gốc) = dư nợ × lãi suất × số ngày / 365 (khoản đi vay có lịch trả ngân hàng: / 360 như nextDue).
+     Tính từ ngày giải ngân tới hôm nay (ngày giải ngân tính, hôm nay không tính). Lãi đã thu / đã trả là các khoản thu (cho vay)
+     hoặc khoản chi nhóm Lãi vay (đi vay) mang lid = mã khoản vay, ghi bằng nút "Ghi lãi đã thu / đã trả" ở chi tiết khoản vay. */
+  const laiBasis = l => l.type === "borrow" && Number(l.per) > 0 && Number(l.day) > 0 ? 360 : 365;
+  const dayNo = k => Math.round(new Date(k + "T12:00:00").getTime() / 86400000);
+  function laiGot(l){
+    let a = 0; const bag = l.type === "lend" ? state.income : state.days;
+    for(const k in bag) (bag[k] || []).forEach(x => { if(x && x.lid === l.id) a += Number(x.amt) || 0; });
+    return a;
+  }
+  function loanInterest(l, to){
+    const r = Number(l && l.rate);
+    if(!(r > 0) || !l.date || l.card) return null;
+    to = to || todayKey();
+    const B = laiBasis(l), ev = [];
+    ev.push({ k:l.date, v:+l.amt || 0, o:0 });
+    (l.draws || []).forEach(d => ev.push({ k:d.date || l.date, v:+d.amt || 0, o:1 }));
+    if(Number(l.prepaid)) ev.push({ k:l.date, v:-Number(l.prepaid), o:2 });
+    (l.payments || []).forEach(p => ev.push({ k:p.date || l.date, v:-(+p.amt || 0), o:2 }));
+    const es = ev.filter(e => e.k <= to).sort((a, b) => a.k < b.k ? -1 : a.k > b.k ? 1 : a.o - b.o);
+    let bal = 0, sum = 0; const segs = [];
+    es.forEach((e, i) => {
+      bal += e.v;
+      const end = i + 1 < es.length ? es[i + 1].k : to, days = dayNo(end) - dayNo(e.k);
+      if(days > 0 && bal > 0){ const v = bal * r / 100 * days / B; sum += v; segs.push({ from:e.k, to:end, bal, days, lai:v }); }
+    });
+    /* chưa trả gốc lần nào: tách lãi theo từng lần giải ngân cho dễ đối chiếu */
+    const pays = !Number(l.prepaid) && !(l.payments || []).length;
+    const parts = pays ? es.filter(e => e.v > 0).map(e => ({ k:e.k, amt:e.v, days:dayNo(to) - dayNo(e.k), lai:e.v * r / 100 * (dayNo(to) - dayNo(e.k)) / B })) : null;
+    const got = laiGot(l), total = Math.round(sum);
+    return { rate:r, B, total, got, owe:Math.max(0, total - got), perDay:Math.round(Math.max(0, bal) * r / 100 / B), segs, parts, to };
+  }
+  const rateTxtL = r => String(Math.round(Number(r) * 100) / 100).replace(".", ",") + "%/năm";
   const paidOf = l => payOnly(l) + (Number(l.prepaid)||0);
   const drawOnly = l => (l.draws||[]).reduce((a,d)=>a+(Number(d.amt)||0),0);
   const totalOf = l => (Number(l.amt)||0) + drawOnly(l);
@@ -5774,6 +5820,7 @@ function startNgay50k(){
     $("lCardField").hidden = loanType !== "borrow" || !(state.cards || []).length;
     $("lInstBox").hidden = $("lCardField").hidden || !lCard;
     $("lSchedBox").hidden = loanType !== "borrow" || !!lCard;   /* v221: lịch trả của khoản vay thường */
+    $("lRateField").hidden = $("lRateHint").hidden = loanType === "borrow" && !!lCard;   /* v230 */
   }
   const lPerVal = () => parseInt(digits($("lPer").value), 10) || 0;
   function saveLoan(){
@@ -5788,6 +5835,7 @@ function startNgay50k(){
       ["card", "per", "from", "day", "rate"].forEach(k => delete o[k]);
       if(inst) Object.assign(o, inst);
       else if(loanType === "borrow"){ if(perG > 0) o.per = perG; if(day > 0) o.day = day; if(rate > 0 && rate < 100) o.rate = rate; }   /* v221 */
+      else if(rate > 0 && rate < 100) o.rate = rate;   /* v230: cho vay cũng có lãi suất */
     };
     if(editingLoanId){
       const l = getLoan(editingLoanId);
@@ -5832,8 +5880,10 @@ function startNgay50k(){
     card.querySelector(".loan-amt small").textContent = "Đã " + verb(l) + " " + fmt(paid) + " / " + fmt(totalOf(l));
     card.querySelector(".progress i").style.width = Math.min(100, paid/Math.max(1,totalOf(l))*100) + "%";
     const dt = done ? {txt:"",late:false} : dueText(l), due = card.querySelector(".due");
-    due.textContent = dt.txt; due.className = "due" + (dt.late ? " late" : ""); due.style.marginTop = "0";
-    const open = () => { detailLoanId = l.id; payOpen = false; drawOpen = false; editRecId = null; renderLoans(); showLoanView("detail"); };
+    const li = !done && loanInterest(l);   /* v230 */
+    due.textContent = [dt.txt, li ? "lãi " + (l.type === "lend" ? "chưa thu " : "chưa trả ") + fmt(li.owe) : ""].filter(Boolean).join(" · ");
+    due.className = "due" + (dt.late ? " late" : ""); due.style.marginTop = "0";
+    const open = () => { detailLoanId = l.id; payOpen = false; drawOpen = false; laiOpen = false; editRecId = null; renderLoans(); showLoanView("detail"); };
     card.onclick = open; card.onkeydown = e => { if(e.key==="Enter"||e.key===" "){ e.preventDefault(); open(); } };
     return card;
   }
@@ -5877,11 +5927,64 @@ function startNgay50k(){
     if(l.card) add("Trả góp qua thẻ", (cardName(l.card) || "thẻ đã xoá") + (l.per ? " · " + fmt(+l.per) + "/kỳ" : "") + (l.from ? " · từ " + fmtDate(l.from) : ""), "");
     if(l.note) add("Ghi chú", l.note, "");
     card.appendChild(kv);
+    const LI = loanInterest(l), lv = l.type === "lend" ? "thu" : "trả";   /* v230: lãi theo ngày */
+    if(LI){
+      const ib = el("div", "lai-box");
+      const ik = el("div", "kv");
+      const ia = (k, val, cls) => { ik.appendChild(el("span", null, k)); ik.appendChild(el("b", cls || "num", val)); };
+      ia("Lãi suất", rateTxtL(LI.rate) + " · theo ngày", "");
+      ia("Lãi đến hôm nay", fmt(LI.total));
+      if(LI.got){ ia("Đã " + lv + " lãi", fmt(LI.got)); ia("Lãi còn phải " + lv, fmt(LI.owe), "num " + (l.type === "lend" ? "tag-lend" : "tag-borrow")); }
+      if(LI.perDay) ia("Mỗi ngày thêm", "≈ " + fmt(LI.perDay));
+      ib.appendChild(ik);
+      const dt = el("details", "lai-how"); dt.appendChild(el("summary", null, "Cách tính lãi"));
+      const ul = el("ul", "lai-list"), line = (a, b) => { const x = el("li"); x.appendChild(el("span", null, a)); x.appendChild(el("b", "num", b)); ul.appendChild(x); };
+      const rs = rateTxtL(LI.rate), to = fmtDate(LI.to);
+      if(LI.parts) LI.parts.forEach((p, i) => line(fmt(p.amt) + (i ? " " + moreWord(l) : " ban đầu") + " · " + fmtDate(p.k) + " → " + to + " · " + p.days + " ngày", fmt(Math.round(p.lai))));
+      else LI.segs.forEach(g => line("Còn nợ " + fmt(g.bal) + " · " + fmtDate(g.from) + " → " + fmtDate(g.to) + " · " + g.days + " ngày", fmt(Math.round(g.lai))));
+      ul.appendChild(el("li", "lai-f", "Mỗi dòng = số tiền × " + rs + " × số ngày / " + LI.B + ". Lãi đơn, không cộng lãi vào gốc."));
+      dt.appendChild(ul); ib.appendChild(dt);
+      const lb = el("button", "mini lai-btn", laiOpen ? "Đóng" : "Ghi lãi đã " + lv); lb.type = "button";
+      lb.onclick = () => { laiOpen = !laiOpen; payOpen = drawOpen = false; renderLoanDetail(); };
+      ib.appendChild(lb);
+      if(laiOpen){
+        const f = el("div", "pay-form");
+        f.innerHTML = `<div class="row">
+            <div class="field" style="margin-top:0"><label><span>Tiền lãi</span></label><input class="inp num iAmt" inputmode="numeric"></div>
+            <div class="field" style="margin-top:0"><label><span>Ngày</span></label><input class="inp iDate" type="date"></div>
+          </div>
+          <div class="field" id="iWField" hidden><label><span>` + (l.type === "borrow" ? "Trả từ ví" : "Nhận vào ví") + `</span></label><div class="chips wchips" id="iWChips" style="margin-top:0"></div></div>
+          <p class="subtle" style="margin-top:6px">` + (l.type === "lend" ? "Ghi thành khoản thu, không trừ vào số tiền gốc còn nợ." : "Ghi thành khoản chi nhóm Lãi vay (định kỳ, không trừ hạn mức ngày), không trừ vào gốc.") + `</p>
+          <button class="primary iSave" style="margin-top:10px"></button>`;
+        const ia2 = f.querySelector(".iAmt"), id2 = f.querySelector(".iDate"), is = f.querySelector(".iSave");
+        ia2.value = money(LI.owe); id2.value = todayKey();
+        setTimeout(() => wPicker("iWField", "iWChips", lW(null, l)), 0);
+        const upd = () => { const x = parseInt(digits(ia2.value), 10) || 0; ia2.value = money(x); is.disabled = !x; is.textContent = x ? "Lưu lãi đã " + lv + " " + fmt(x) : "Nhập tiền lãi"; };
+        ia2.addEventListener("input", upd); upd();
+        is.onclick = () => {
+          const x = parseInt(digits(ia2.value), 10) || 0; if(!x) return;
+          const k = /^\d{4}-\d{2}-\d{2}$/.test(id2.value) ? id2.value : todayKey();
+          const t = k === todayKey() ? Date.now() : new Date(k + "T12:00:00").getTime();
+          const rec = { id:uid(), amt:x, note:"Lãi " + (l.type === "lend" ? "cho vay " : "vay ") + l.who, t, lid:l.id, lai:1 };
+          if(!$("iWField").hidden){ const w = pickedW("iWChips"); if(w) rec.w = w; } else if(l.w && l.w !== MAIN_W) rec.w = l.w;
+          if(l.type === "lend"){ rec.cat = "khac"; (state.income[k] = state.income[k] || []).push(rec); }
+          else { rec.cat = "laivay"; rec.fx = 1; (state.days[k] = state.days[k] || []).push(rec); }
+          laiOpen = false; persist(true); renderAll();
+          flash("detailMsg", "✓ Đã ghi lãi đã " + lv + " " + fmt(x));
+        };
+        ib.appendChild(f);
+      }
+      card.appendChild(ib);
+    } else if(!l.card && !done){
+      const nb = el("button", "mini lai-add", "+ Nhập lãi suất để tính lãi"); nb.type = "button";
+      nb.onclick = () => { openLoanForm(l); setTimeout(() => { const r = $("lRate"); r.scrollIntoView({ block:"center" }); r.focus(); }, 60); };
+      card.appendChild(nb);
+    }
 
     const acts = el("div","loan-actions");
     const mk = (txt, cls, fn) => { const b = el("button","mini " + (cls||""), txt); b.onclick = fn; acts.appendChild(b); return b; };
-    if(!done) mk(payOpen ? "Đóng" : "Ghi đã " + v, "main", () => { payOpen = !payOpen; drawOpen = false; renderLoanDetail(); });
-    mk(drawOpen ? "Đóng" : "Ghi " + moreWord(l), "", () => { drawOpen = !drawOpen; payOpen = false; renderLoanDetail(); });
+    if(!done) mk(payOpen ? "Đóng" : "Ghi đã " + v, "main", () => { payOpen = !payOpen; drawOpen = false; laiOpen = false; renderLoanDetail(); });
+    mk(drawOpen ? "Đóng" : "Ghi " + moreWord(l), "", () => { drawOpen = !drawOpen; payOpen = false; laiOpen = false; renderLoanDetail(); });
     mk("Sửa", "", () => openLoanForm(l));
     mk("Xoá", "danger", (e) => {
       if(!armed(e.currentTarget)) return;

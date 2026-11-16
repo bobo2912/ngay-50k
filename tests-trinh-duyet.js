@@ -145,6 +145,13 @@ const ok = (name, cond, extra) => { n++; console.log((cond ? "✓ " : "✗ ") + 
     const act = await T(() => { const a = document.getElementById("whActs"); return !!a.closest(".wh-l") && [...a.children].some(b => /Cập nhật|Nhập số dư/.test(b.innerText)); });
     ok("Ví: nút Cập nhật nằm trong thẻ số dư", act);
 
+    /* v230: lãi theo ngày: 100tr từ 01/08 + 2 × 100tr ngày 07/10, 7%/năm, tới 16/11/2026 = 3.586.301đ */
+    await T(() => { __T.state.loans.push({ id:"laiT", type:"lend", who:"Thử lãi", amt:100000000, date:"2026-08-01", payments:[], prepaid:0, t:1, rate:7,
+      draws:[{ id:"laiD1", amt:100000000, date:"2026-10-07", t:1 }, { id:"laiD2", amt:100000000, date:"2026-10-07", t:2 }] }); __T.persist(); });
+    const li = await T(() => __T.loanInterest(__T.state.loans.find(x => x.id === "laiT"), "2026-11-16"));
+    ok("lãi theo ngày khớp tính tay", li && li.total === 3586301 && li.parts.length === 3 && li.perDay === 57534, JSON.stringify(li && { t:li.total, d:li.perDay }));
+    await T(() => { __T.state.loans = __T.state.loans.filter(x => x.id !== "laiT"); __T.persist(); });
+
     await pg.locator(".msg.bot").last().screenshot({ path:process.env.SHOT || "/dev/null" }).catch(() => {});
     ok("không có lỗi JavaScript", !errs.length, errs.slice(0, 5).join("\n   "));
   }catch(e){
