@@ -4350,13 +4350,13 @@ function startNgay50k(){
     return '<label class="fx-row ' + cls + 'Row"><span><b>' + (minus ? "Trừ vào số dư ví" : "Cộng vào số dư ví") + '</b><small class="' + cls + 'Hint"></small></span><input type="checkbox" class="sw ' + cls + '"></label>';
   }
   /* gắn công tắc: on = có tính vào ví; wf = ô chọn ví (ẩn khi tắt); getDate = ngày đang chọn */
-  function nwBind(f, cls, l, on, wf, getDate, getW){
+  function nwBind(f, cls, l, on, wf, getDate, getW, offHint){
     const cb = f.querySelector("." + cls), hint = f.querySelector("." + cls + "Hint");
     cb.checked = on;
     const upd = () => {
       const wid = getW ? getW() : lW(null, l), a = balAnchor(wid), k = getDate() || todayKey();
       if(wf) wf.style.display = cb.checked ? "" : "none";
-      if(!cb.checked) hint.textContent = "Tắt: chỉ ghi vào khoản vay, số dư ví không đổi. Dùng khi ghi bù giao dịch cũ.";
+      if(!cb.checked) hint.textContent = offHint || "Tắt: chỉ ghi vào khoản vay, số dư ví không đổi. Dùng khi ghi bù giao dịch cũ.";
       else if(a && recTime(k, k === todayKey() ? Date.now() : 0) <= (a.t || 0)) hint.textContent = "Ngày này trước lần cập nhật số dư " + walletName(wid) + " gần nhất, nên số dư cũng không đổi.";
       else hint.textContent = "Tắt nếu giao dịch đã nằm trong số dư (ghi bù giao dịch cũ).";
     };
@@ -6454,6 +6454,21 @@ function startNgay50k(){
     });
     return box;
   }
+  /* v231: tiết kiệm / đầu tư dùng chung công tắc "Trừ / Cộng vào số dư ví" như khoản vay; tắt = mv không có w (không đụng ví nào) */
+  function asNwBlock(body, minus, offHint){
+    let wsel = asUI.w || asUI.wLast || MAIN_W; if(!walletById(wsel)) wsel = MAIN_W;
+    const box = el("div");
+    box.innerHTML = '<label class="fx-row asNwRow"><span><b>' + (minus ? "Trừ vào số dư ví" : "Cộng vào số dư ví") + '</b><small class="asNwHint"></small></span><input type="checkbox" class="sw asNw"></label>';
+    body.appendChild(box.firstChild);
+    let wf = null;
+    if(multiW()){
+      wf = asField(minus ? "Lấy từ ví" : "Về ví", asChips(walletList().map(w => [w.id, w.icon + " " + w.name]), wsel, v => { wsel = asUI.w = asUI.wLast = v; nb.upd(); }, "wchips"));
+      body.appendChild(wf);
+    }
+    const nb = nwBind(body, "asNw", null, !!asUI.w, wf, () => (body.querySelector("#asDate") || {}).value, () => wsel, offHint);
+    body.querySelector(".asNw").addEventListener("change", e => { asUI.w = e.target.checked ? wsel : ""; });
+    return nb;
+  }
   function asWalletChips(sel, noneLabel, onPick){
     return asChips(walletList().map(w => [w.id, w.icon + " " + w.name]).concat([["", noneLabel]]), sel, onPick, "wchips");
   }
@@ -6572,7 +6587,8 @@ function startNgay50k(){
         if(r.v){ label = "Cập nhật giá trị"; amt = fmt(Number(r.v.v) || 0); }
         else {
           const x = r.x, out = x.dir === "out";
-          label = x.note ? x.note : out ? (x.w ? (save ? "Rút về " : "Bán, về ") + walletName(x.w) : "Rút ra (không về ví)") : (x.w ? (save ? "Gửi từ " : "Mua từ ") + walletName(x.w) : "Có từ trước (không trừ ví)");
+          const first = asMoves(a).reduce((m, y) => !m || recTime(y.date, y.t) < recTime(m.date, m.t) ? y : m, null) === x;   /* v231 */
+          label = x.note ? x.note : out ? (x.w ? (save ? "Rút về " : "Bán, về ") + walletName(x.w) : "Rút ra (không về ví)") : (x.w ? (save ? "Gửi từ " : "Mua từ ") + walletName(x.w) : first ? "Có từ trước (không trừ ví)" : (save ? "Gửi thêm" : "Mua thêm") + " (không trừ ví)");
           if(x.note) label += x.w ? " · " + walletName(x.w) : "";
           amt = (out ? "−" : "+") + fmt(Number(x.amt) || 0);
         }
@@ -6615,8 +6631,7 @@ function startNgay50k(){
     body.appendChild(asField("Tên", asInput("asName", a ? a.name : pre ? pre.name : "", { maxlength:"40", placeholder:K.ph })));
     if(!a){
       body.appendChild(asField(save ? "Số tiền gửi" : "Số tiền bỏ vào (vốn)", asMoney("asAmt", pre ? pre.amt : "", () => asCheck())));
-      body.appendChild(asField("Lấy từ", asWalletChips(asUI.w, "Có từ trước, không trừ ví", v => { asUI.w = v; asCheck(); }),
-        "Chọn “Có từ trước” cho khoản bạn đã có trước khi dùng app, để số dư ví không bị trừ."));
+      asUI.nwb = asNwBlock(body, true, "Tắt: số dư ví không đổi. Dùng cho khoản đã có từ trước, hoặc ghi bù giao dịch cũ.");
     }
     const dIn = asInput("asDate", a ? (a.start || todayKey()) : pre && pre.start && pre.start <= todayKey() ? pre.start : todayKey(), { type:"date", max:todayKey() });
     if(save){
@@ -6644,6 +6659,7 @@ function startNgay50k(){
       }
     }
     ["asName", "asRate", "asDate"].forEach(id => { const x = $(id); if(x) x.addEventListener("input", asCheck); });
+    if(!a && asUI.nwb && $("asDate")) $("asDate").addEventListener("change", asUI.nwb.upd);
     if(asUI.from) foot.appendChild(asBtn("Huỷ", "ghost", () => asGo("view", { from:null })));
     else foot.appendChild(asBtn("Huỷ", "ghost", asClose));
     const sv = asBtn(a ? "Lưu" : "Thêm", "primary", () => asSaveForm(a)); sv.id = "asSave"; sv.style.margin = "0";
@@ -6699,7 +6715,7 @@ function startNgay50k(){
     $("asTitle").textContent = (dirIn ? (save ? "Gửi thêm" : "Mua thêm") : (save ? "Rút / tất toán" : "Bán / rút")) + " · " + (a.name || asKind(a).label);
     const full = save ? asPrincipal(a) + asInterest(a, todayKey()) : asValue(a);
     body.appendChild(asField("Số tiền", asMoney("asAmt", !dirIn && asUI.closeAll ? full : "", () => asMoveCheck(a))));
-    body.appendChild(asField(dirIn ? "Lấy từ ví" : "Về ví", asWalletChips(asUI.w, dirIn ? "Không trừ ví (lãi nhập gốc…)" : "Không về ví nào", v => { asUI.w = v; })));
+    asUI.nwb = asNwBlock(body, dirIn, dirIn ? "Tắt: số dư ví không đổi (lãi nhập gốc, ghi bù giao dịch cũ…)." : "Tắt: tiền không về ví nào, số dư ví không đổi (ghi bù giao dịch cũ…).");
     if(!dirIn){
       const lb = el("label", "as-check"), cb = el("input"); cb.type = "checkbox"; cb.id = "asAll"; cb.checked = !!asUI.closeAll;
       lb.append(cb, el("span", null, save ? "Rút hết và tất toán sổ" : "Bán hết, đóng khoản này"));
@@ -6708,6 +6724,7 @@ function startNgay50k(){
       body.appendChild(el("p", "subtle as-hint", (save ? "Hiện có " + fmt(asPrincipal(a)) + " gốc, lãi tới hôm nay khoảng " + fmt(asInterest(a, todayKey())) : "Giá trị hiện tại " + fmt(full) + ", vốn " + fmt(asPrincipal(a))) + ". Rút hết thì phần chênh so với vốn được ghi là lãi (hoặc lỗ)."));
     }
     body.appendChild(asField("Ngày", asInput("asDate", todayKey(), { type:"date", max:todayKey() })));
+    body.querySelector("#asDate").addEventListener("change", asUI.nwb.upd);
     body.appendChild(asField("Ghi chú (không bắt buộc)", (t => { t.id = "asNote"; t.className = "inp note-ta"; t.rows = 2; t.maxLength = 300; return t; })(document.createElement("textarea"))));
     foot.appendChild(asBtn("Huỷ", "ghost", () => asGo("view", { from:null })));
     const sv = asBtn("Lưu", "primary", () => asSaveMove(a)); sv.id = "asSave"; sv.style.margin = "0"; foot.appendChild(sv);

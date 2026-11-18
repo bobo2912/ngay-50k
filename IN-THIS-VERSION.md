@@ -4,11 +4,12 @@
 
 ---
 
-## Có gì mới trong v231 (so với v230) – trả nợ / vay thêm có thể không tính vào ví
+## Có gì mới trong v231 (so với v230) – trả nợ / vay thêm / tiết kiệm / đầu tư có thể không tính vào ví
 
 - Form **Ghi đã trả / Ghi đã thu** và **Ghi vay thêm / cho vay thêm** có công tắc **Trừ vào số dư ví** (hoặc **Cộng vào số dư ví**), mặc định bật như cũ. Tắt khi ghi bù giao dịch cũ mà số dư ví đã tính rồi: khoản vay vẫn giảm / tăng, số dư ví không đổi (trường `nw:1` trên lần trả / vay thêm).
 - Gợi ý dưới công tắc báo khi ngày chọn trước lần cập nhật số dư gần nhất (lúc đó số dư cũng không đổi dù bật).
 - Sửa được công tắc này ở dòng Lịch sử trong chi tiết khoản vay và ở bảng sửa khi chạm dòng vay / trả nợ trong Sổ, Ví.
+- **Tiết kiệm & đầu tư** dùng cùng công tắc: Thêm sổ / khoản đầu tư và Gửi thêm / Mua thêm có **Trừ vào số dư ví**, Rút / Bán có **Cộng vào số dư ví** (thay cho chip "Có từ trước, không trừ ví" / "Không về ví nào"). Bật thì chọn ví bên dưới (khi có từ hai ví). Dữ liệu giữ như cũ: tắt = lần bỏ vào / rút ra không có `w`. Lịch sử ghi "Gửi thêm (không trừ ví)" cho lần sau lần đầu.
 - Dòng không tính vào ví ghi rõ "không tính vào ví" trong Lịch sử và Sổ, không hiện trong lịch sử ví, không vào dự kiến sắp tới.
 
 ---

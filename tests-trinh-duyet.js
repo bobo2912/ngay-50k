@@ -174,6 +174,20 @@ const ok = (name, cond, extra) => { n++; console.log((cond ? "✓ " : "✗ ") + 
     ok("sửa trong lịch sử: tắt trừ ví được", eOn !== undefined && await bal() === nb0, (await bal()) + " vs " + nb0);
     await T(() => { __T.state.loans = __T.state.loans.filter(x => x.id !== "nwT"); __T.persist(); });
 
+    /* v231: sổ tiết kiệm / đầu tư cũng có công tắc trừ vào ví */
+    const ab0 = await bal();
+    await T(() => document.getElementById("asAddSave").click()); await pg.waitForTimeout(500);
+    await pg.locator("#asName").fill("Sổ thử ví"); await pg.locator("#asAmt").fill("2000000");
+    ok("thêm sổ tiết kiệm: công tắc trừ ví bật sẵn", await pg.locator(".asNw").isChecked());
+    await pg.locator(".asNwRow").click(); await pg.locator("#asSave").click(); await pg.waitForTimeout(500);
+    const atx = await T(() => { const a = __T.state.assets.find(x => x.name === "Sổ thử ví"); return a && __T.state.assetTx.filter(x => x.asset === a.id); });
+    ok("thêm sổ, tắt trừ ví: số dư giữ nguyên, không ghi ví", atx && atx.length === 1 && !atx[0].w && await bal() === ab0, JSON.stringify(atx));
+    await pg.getByRole("button", { name:"Gửi thêm" }).click(); await pg.waitForTimeout(400);
+    ok("gửi thêm: công tắc bật sẵn", await pg.locator(".asNw").isChecked());
+    await pg.locator("#asAmt").fill("300000"); await pg.locator("#asSave").click(); await pg.waitForTimeout(500);
+    ok("gửi thêm để bật: trừ vào ví", await bal() === ab0 - 300000, (await bal()) + " vs " + ab0);
+    await T(() => { const a = __T.state.assets.find(x => x.name === "Sổ thử ví"); __T.state.assets = __T.state.assets.filter(x => x !== a); __T.state.assetTx = __T.state.assetTx.filter(x => x.asset !== a.id); __T.persist(); });
+
     await pg.locator(".msg.bot").last().screenshot({ path:process.env.SHOT || "/dev/null" }).catch(() => {});
     ok("không có lỗi JavaScript", !errs.length, errs.slice(0, 5).join("\n   "));
   }catch(e){
