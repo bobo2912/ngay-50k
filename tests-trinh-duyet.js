@@ -152,6 +152,28 @@ const ok = (name, cond, extra) => { n++; console.log((cond ? "✓ " : "✗ ") + 
     ok("lãi theo ngày khớp tính tay", li && li.total === 3586301 && li.parts.length === 3 && li.perDay === 57534, JSON.stringify(li && { t:li.total, d:li.perDay }));
     await T(() => { __T.state.loans = __T.state.loans.filter(x => x.id !== "laiT"); __T.persist(); });
 
+    /* v231: ghi trả nợ có công tắc "Trừ vào số dư ví": tắt thì số dư không đổi (nw:1), bật thì trừ như cũ */
+    await T(() => { __T.state.loans.push({ id:"nwT", type:"borrow", who:"Thử trừ ví", amt:5000000, date:"2026-01-05", payments:[], draws:[], prepaid:0, t:1 }); __T.persist(); });
+    await pg.reload(); await pg.waitForTimeout(1800);
+    await tab("Tài sản");
+    await pg.getByText("Thử trừ ví").first().click(); await pg.waitForTimeout(500);
+    const nb0 = await bal();
+    await pg.getByRole("button", { name:"Ghi đã trả" }).click(); await pg.waitForTimeout(300);
+    ok("form trả nợ có công tắc Trừ vào số dư ví", await pg.locator(".pNwRow").isVisible() && await pg.locator(".pNw").isChecked());
+    await pg.locator(".pAmt").fill("1000000"); await pg.locator(".pNwRow").click(); await pg.waitForTimeout(200);
+    ok("tắt công tắc: ẩn chọn ví, đổi gợi ý", !(await pg.locator(".pNw").isChecked()) && /không đổi/.test(await pg.locator(".pNwHint").innerText()));
+    await pg.locator(".pSave").click(); await pg.waitForTimeout(400);
+    const p1 = await T(() => __T.state.loans.find(x => x.id === "nwT").payments);
+    ok("trả nợ không trừ ví: số dư giữ nguyên, ghi nw:1", p1.length === 1 && p1[0].nw === 1 && await bal() === nb0, JSON.stringify({ p1, nb0, b:await bal() }));
+    await pg.getByRole("button", { name:"Ghi đã trả" }).click(); await pg.waitForTimeout(300);
+    await pg.locator(".pAmt").fill("500000"); await pg.locator(".pSave").click(); await pg.waitForTimeout(400);
+    ok("trả nợ để mặc định: trừ vào ví", await bal() === nb0 - 500000, (await bal()) + " vs " + nb0);
+    await pg.locator(".rec").filter({ hasText:"500.000" }).locator(".rb-edit").click(); await pg.waitForTimeout(300);
+    const eOn = await pg.locator(".eNw").count() && await pg.locator(".eNw").isChecked();
+    await pg.locator(".eNwRow").click(); await pg.locator(".eSave").click(); await pg.waitForTimeout(400);
+    ok("sửa trong lịch sử: tắt trừ ví được", eOn !== undefined && await bal() === nb0, (await bal()) + " vs " + nb0);
+    await T(() => { __T.state.loans = __T.state.loans.filter(x => x.id !== "nwT"); __T.persist(); });
+
     await pg.locator(".msg.bot").last().screenshot({ path:process.env.SHOT || "/dev/null" }).catch(() => {});
     ok("không có lỗi JavaScript", !errs.length, errs.slice(0, 5).join("\n   "));
   }catch(e){
