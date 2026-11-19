@@ -1,6 +1,20 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v231, ngày 18/11/2026
+**Phiên bản hiện tại:** v232, ngày 19/11/2026
+
+---
+
+## Có gì mới trong v232 (so với v231) – Chat hiểu khoản vay kỹ hơn, đọc được ảnh chụp màn hình khoản vay / thấu chi
+
+- **Câu chat có lãi suất / hạn trả**: "vay 20 triệu lãi 5,7%/năm", "vay MB 30tr lãi 1%/tháng hạn 1/3/2027", "vay 50tr trong 12 tháng" → thẻ Đi vay / Cho vay điền sẵn **Lãi %/năm** (lãi theo tháng tự nhân 12) và **Hạn trả**. "hạn 17/8" là hạn trả, không còn bị lấy làm ngày vay. Tên ngân hàng trong câu (MB, VCB, Techcombank, Home Credit…) điền vào ô "Vay của ai".
+- **Thẻ vay mới có thêm ô Lãi %/năm và Hạn trả**, kèm dòng ước tính "Lãi ≈ …/tháng (≈ …/ngày) · tới hạn … ngày ≈ …". Bấm Ghi là khoản vay có lãi suất luôn, không phải vào tab Tài sản sửa thêm.
+- **Chưa có tên thì có nút gợi ý**: người đã từng vay / cho vay, Ngân hàng, Gia đình; chạm là điền.
+- **Nhắn tiếp** "lãi 6%", "hạn 17/8/2027", "trong 12 tháng" khi thẻ vay còn chờ Ghi → điền vào thẻ đó.
+- **Ảnh chụp màn hình khoản vay / thấu chi** gửi vào Chat (`doc-khoan-vay.js`, chạy trên máy bằng bộ đọc chữ như ảnh sổ tiết kiệm): ra thẻ Đi vay với tên (vd "Thấu chi ·6795"), số tiền (dư nợ / số giải ngân; thấu chi chỉ có hạn mức thì lấy hạn mức và báo để sửa), ngày vay, hạn trả, lãi suất nếu có, ghi chú (số tài khoản, hạn mức, lãi dự kiến). Có dư nợ nhỏ hơn số giải ngân thì phần chênh ghi là đã trả. Chữ gõ kèm ảnh ("vay 20tr lãi 5,7%") được ưu tiên. Ảnh khoản đã có trong sổ (trùng số tài khoản) thì nhắc.
+- Chịu được màn hai cột bị bộ đọc chữ tách thành cột nhãn rồi cột giá trị, và lỗi dấu hay gặp ("thếu chỉ", "đóo hạn").
+- AI (khi Phân tích lại) cũng trả lãi suất, hạn trả cho khoản vay mới.
+- Khoản vay có thêm trường `acct` (số tài khoản vay, để nhận ra ảnh trùng). Không đổi cấu trúc dữ liệu khác.
+- Bài thử: `tests-khoan-vay.js` (18), thêm 11 bước trong `tests-trinh-duyet.js`.
 
 ---
 

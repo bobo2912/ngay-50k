@@ -189,6 +189,63 @@ const ok = (name, cond, extra) => { n++; console.log((cond ? "✓ " : "✗ ") + 
     await T(() => { const a = __T.state.assets.find(x => x.name === "Sổ thử ví"); __T.state.assets = __T.state.assets.filter(x => x !== a); __T.state.assetTx = __T.state.assetTx.filter(x => x.asset !== a.id); __T.persist(); });
 
     await pg.locator(".msg.bot").last().screenshot({ path:process.env.SHOT || "/dev/null" }).catch(() => {});
+    /* v232: khoản vay trong Chat có lãi suất / hạn trả; ảnh chụp màn hình thấu chi → thẻ Đi vay điền sẵn */
+    await pg.goto(URL); await pg.waitForTimeout(1500); await tab("Chat");
+    await say("Tôi vay 20 triệu lãi 5.7%/năm");
+    ok("vay có lãi: thẻ điền sẵn lãi 5,7", (await lastCard().locator(".prt").inputValue()) === "5,7");
+    ok("vay có lãi: có dòng ước tính lãi", /Lãi ≈/.test(await lastCard().locator(".pli").innerText()));
+    ok("vay chưa tên: có nút gợi ý tên", (await lastCard().locator(".pwho").count()) > 0);
+    await lastCard().locator(".pwho").filter({ hasText:"Ngân hàng" }).click(); await pg.waitForTimeout(300);
+    ok("chạm tên gợi ý: điền vào ô tên", (await lastCard().locator(".pw").inputValue()) === "Ngân hàng");
+    await say("hạn 17/8/2027");
+    ok("nhắn hạn trả sau: điền vào thẻ", (await lastCard().locator(".pdu").inputValue()) === "2027-08-17");
+    await ghi();
+    const vl = await T(() => Object.assign({ today:__T.todayKey() }, __T.state.loans.filter(l => l.who === "Ngân hàng").pop()));
+    ok("ghi vay: lưu lãi suất, hạn trả, ngày vay hôm nay", vl && vl.rate === 5.7 && vl.due === "2027-08-17" && vl.amt === 20000000 && vl.date === vl.today, JSON.stringify(vl));
+    await say("vay MB 30 triệu lãi 1%/tháng hạn 1/3/2027");
+    ok("vay MB lãi theo tháng: 12%/năm, tên MB, hạn đúng, ngày vay không bị lấy theo hạn",
+      (await lastCard().locator(".prt").inputValue()) === "12" && (await lastCard().locator(".pw").inputValue()) === "MB" && (await lastCard().locator(".pdu").inputValue()) === "2027-03-01" && (await lastCard().locator(".pd").inputValue()) === await T(() => __T.todayKey()));
+    await lastCard().locator(".no").click(); await pg.waitForTimeout(300);
+    /* ảnh: thay bộ đọc chữ bằng chữ đã đọc sẵn từ một ảnh thật (số liệu đã đổi) */
+    await T(txt => { window.__OCR = { raw:true }; window.Tesseract = { createWorker: async () => ({ recognize: async () => ({ data:{ text:txt } }), terminate: async () => {} }) }; }, `Tài khoản thếu chỉ
+
+7157800001234
+Thời điểm truy vấn
+Ngày đăng ký
+Ngày đóo hạn
+
+Hạn mức tăng thêm
+Số tiền lãi dự kiến
+
+Tài khoản thu nợ
+
+® Trong hạn
+
+22:16:21 19/11/2026
+17/08/2026
+17/08/2027
+
+18,125,016 VND
+165,656 VND
+
+9500100000001
+NGUYEN VAN A
+
+Đóng
+khoản vay`);
+    await pg.locator("#chatIn").fill("lãi 5,7%");
+    await pg.locator("#chatImg").setInputFiles({ name:"vay.png", mimeType:"image/png", buffer:Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==", "base64") });
+    await pg.waitForTimeout(2500);
+    const ic = lastCard();
+    ok("ảnh thấu chi: ra thẻ Đi vay", (await ic.locator(".pk").inputValue()) === "borrow", await lastBot());
+    ok("ảnh thấu chi: tên, số tiền, ngày vay, hạn trả, lãi từ chữ gõ kèm",
+      (await ic.locator(".pw").inputValue()) === "Thấu chi ·1234" && (await ic.locator(".pa").inputValue()).replace(/\D/g, "") === "18125016"
+      && (await ic.locator(".pd").inputValue()) === "2026-08-17" && (await ic.locator(".pdu").inputValue()) === "2027-08-17" && (await ic.locator(".prt").inputValue()) === "5,7");
+    ok("ảnh thấu chi: báo số tiền lấy theo hạn mức", /hạn mức/.test(await ic.innerText()));
+    await ic.locator(".pa").fill("20000000"); await ghi();
+    const il = await T(() => __T.state.loans.find(l => l.acct === "7157800001234"));
+    ok("ghi khoản từ ảnh: lưu số tài khoản, ghi chú, lãi", il && il.amt === 20000000 && il.rate === 5.7 && il.date === "2026-08-17" && il.due === "2027-08-17" && /Lãi dự kiến 165\.656đ/.test(il.note), JSON.stringify(il));
+
     ok("không có lỗi JavaScript", !errs.length, errs.slice(0, 5).join("\n   "));
   }catch(e){
     ok("chạy hết các bước", false, e && e.stack ? e.stack.split("\n").slice(0, 3).join("\n   ") : String(e));

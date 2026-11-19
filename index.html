@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v231";
+  var K = "ngay50k:errlog", VER = "v232";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -1509,13 +1509,21 @@ body.kb #tab-chat .chat-sugg{display:none}
 .pcard select, .pcard input{font:inherit; font-size:16px; border:1px solid var(--line); background:var(--field, #fff); color:var(--ink); border-radius:10px; padding:7px 9px; height:38px}
 .pcard .pk{flex:0 0 auto; font-weight:700}
 .pcard .pa{flex:1; font-weight:800; text-align:right; font-variant-numeric:tabular-nums}
-.pcard .pn{flex:1}
+.pcard .pn, .pcard .pw{flex:1}
 .pcard .pt, .pcard .pc, .pcard .pl{flex:1 1 130px}
 .pcard .ptb{display:flex; align-items:center; gap:6px; font:inherit; font-size:16px; border:1px solid var(--line); background:var(--field, #fff); color:var(--ink); border-radius:10px; padding:5px 9px; height:38px; text-align:left; overflow:hidden; white-space:nowrap}
 .pcard .pd{flex:1 1 130px}
 .pcard .pas, .pcard .pan{flex:1 1 160px}
 .pcard .pak{flex:0 1 auto}
 .pcard .paw{flex:1 1 130px}
+.pcard .pfl{flex:1 1 130px; display:flex; flex-direction:column; gap:2px; font-size:.74rem; color:var(--muted)}
+.pcard .pfl span{padding-left:4px}
+.pcard .pfl input{width:100%}
+.pcard .pwhos{gap:6px}
+.pcard .pwho{font:inherit; font-size:.85rem; border:1px solid var(--line); background:var(--field, #fff); color:var(--ink); border-radius:999px; padding:5px 12px; cursor:pointer}
+.pcard .pwho:active{transform:scale(.97)}
+.pcard .pln{flex:1; font:inherit; font-size:16px; border:1px solid var(--line); background:var(--field, #fff); color:var(--ink); border-radius:10px; padding:7px 9px; resize:none; min-height:38px}
+.pcard .pinfo b{color:var(--ink)}
 .pcard .pwarn{font-size:.8rem; color:var(--over); margin:0}
 .pcard .pinfo{font-size:.8rem; color:var(--muted); margin:0 2px}
 .pcard .pall{display:flex; align-items:center; gap:8px; font-size:.88rem; color:var(--muted); margin:2px 2px 0}
@@ -3258,7 +3266,7 @@ li.txg > details.txd > ul{margin:0 !important}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v231</p>
+      <p class="sync" id="appVersion">Phiên bản v232</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3815,14 +3823,15 @@ li.txg > details.txd > ul{margin:0 !important}
 <input type="file" id="phFile" accept="image/*" hidden>
 <div class="ph-view" id="phView" role="dialog" aria-modal="true" aria-label="Ảnh hoá đơn" hidden><img id="phImg" alt="Ảnh hoá đơn"><div class="ph-bar"><button type="button" id="phDel">Bỏ ảnh này</button><button type="button" id="phClose">Đóng</button></div></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=231"></script>
-<script src="thu-vien-cau.js?v=231"></script>
-<script src="quy-tac.js?v=231"></script>
-<script src="du-lieu.js?v=231"></script>
-<script src="doc-so-tk.js?v=231"></script>
-<script src="tich-luy.js?v=231"></script>
-<script src="native.js?v=231"></script>
-<script src="lock.js?v=231"></script>
+<script src="parse-vi.js?v=232"></script>
+<script src="thu-vien-cau.js?v=232"></script>
+<script src="quy-tac.js?v=232"></script>
+<script src="du-lieu.js?v=232"></script>
+<script src="doc-so-tk.js?v=232"></script>
+<script src="doc-khoan-vay.js?v=232"></script>
+<script src="tich-luy.js?v=232"></script>
+<script src="native.js?v=232"></script>
+<script src="lock.js?v=232"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -8124,6 +8133,8 @@ function startNgay50k(){
     if(it.ask) return "Chọn một cách hiểu ở trên";                     /* v200: thẻ đang hỏi lại */
     if((it.kind === "repay" || it.kind === "collect") && !it.loanId) return it.kind === "collect" ? "Chọn khoản cho vay được trả" : "Chọn khoản vay để trả";
     if((it.kind === "lend" || it.kind === "borrow") && !it.loanId && !String(it.who || "").trim()) return "Ghi tên người";
+    if((it.kind === "lend" || it.kind === "borrow") && !it.loanId && it.rateTxt != null && String(it.rateTxt).trim() && !(Number(it.rate) > 0 && Number(it.rate) < 100)) return "Lãi suất %/năm chưa đúng, vd 5,7";   /* v232 */
+    if((it.kind === "lend" || it.kind === "borrow") && !it.loanId && it.due && it.due <= (it.date || todayKey())) return "Hạn trả phải sau ngày vay";
     if(it.kind === "card" && !(state.cards || []).length) return "Chưa có thẻ nào, thêm thẻ ở tab Ví → Thêm ví → Thẻ tín dụng";
     if(it.kind === "asin" && !it.asset && !String(it.name || "").trim()) return "Ghi tên khoản";
     if((it.kind === "asin" && it.asset || it.kind === "asout" || it.kind === "asval") && !assetById(it.asset)) return it.kind === "asval" ? "Chọn khoản cần cập nhật giá" : it.kind === "asout" ? "Chọn khoản muốn rút / bán" : "Chọn khoản";
@@ -8150,7 +8161,13 @@ function startNgay50k(){
       const l = it.loanId ? getLoan(it.loanId) : null;
       const lw = it.w && walletById(it.w) ? it.w : null;   /* v212: chưa chọn ví thì theo ví của khoản vay */
       if(l){ const d = { id, amt:it.amt, date:k, note:"", t }; if(lw && lw !== lW(null, l)) d.w = lw; (l.draws = l.draws || []).push(d); ref.loanId = l.id; ref.sub = "draw"; }
-      else { state.loans.push(Object.assign({ id, type:it.kind, who:String(it.who).trim(), amt:it.amt, date:k, due:"", note:"", payments:[], draws:[], prepaid:0, t }, lw && lw !== MAIN_W ? { w:lw } : {})); ref.sub = "loan"; }
+      else {
+        /* v232: thẻ vay mới mang theo lãi suất, hạn trả, ghi chú, số đã trả, số tài khoản vay (từ câu chat hoặc ảnh chụp màn hình) */
+        const nl = Object.assign({ id, type:it.kind, who:String(it.who).trim(), amt:it.amt, date:k, due:/^\d{4}-\d{2}-\d{2}$/.test(it.due || "") && it.due > k ? it.due : "", note:String(it.lnote || "").trim().slice(0, 500), payments:[], draws:[], prepaid:Math.max(0, Math.min(it.amt, Math.round(Number(it.paid) || 0))), t }, lw && lw !== MAIN_W ? { w:lw } : {});
+        if(Number(it.rate) > 0 && Number(it.rate) < 100) nl.rate = Math.round(Number(it.rate) * 100) / 100;
+        if(it.acct) nl.acct = String(it.acct).slice(0, 24);
+        state.loans.push(nl); ref.sub = "loan";
+      }
     }
     else if(it.kind === "repay" || it.kind === "collect"){
       const l = getLoan(it.loanId), pm = Object.assign({ id, amt:it.amt, date:k, note:it.nk ? (it.note || "") : "", t }, nkv), lw = it.w && walletById(it.w) ? it.w : null; if(lw && lw !== lW(null, l)) pm.w = lw;
@@ -8273,7 +8290,18 @@ function startNgay50k(){
     if(it.kind === "lend" || it.kind === "borrow"){
       const l = loansFor(it.kind);
       html += '<div class="prow"><select class="pl" aria-label="Khoản vay">' + optionList([["", "＋ Khoản mới"]].concat(l.map(x => [x.id, x.who + " · còn " + fmt(leftOf(x))])), it.loanId || "") + "</select></div>";
-      if(!it.loanId) html += '<div class="prow"><input class="pw" placeholder="Tên người" aria-label="Tên người" value="' + esc(it.who) + '"></div>';
+      if(!it.loanId){
+        html += '<div class="prow"><input class="pw" placeholder="' + (it.kind === "lend" ? "Cho ai vay" : "Vay của ai (người, ngân hàng…)") + '" aria-label="Tên người" value="' + esc(it.who) + '"></div>';
+        /* v232: chưa có tên thì gợi ý sẵn vài tên để chạm chọn */
+        if(!String(it.who || "").trim()){ const sg = whoSuggest(it); if(sg.length) html += '<div class="prow pwhos">' + sg.map(s => '<button type="button" class="pwho" data-who="' + esc(s) + '">' + esc(s) + '</button>').join("") + "</div>"; }
+        /* v232: lãi suất + hạn trả ngay trên thẻ (trước phải vào tab Tài sản sửa thêm) */
+        const rv = it.rateTxt != null ? it.rateTxt : Number(it.rate) > 0 ? String(it.rate).replace(".", ",") : "";
+        html += '<div class="prow"><label class="pfl"><span>Lãi %/năm</span><input class="prt num" inputmode="decimal" placeholder="không lãi" aria-label="Lãi suất %/năm" value="' + esc(rv) + '"></label>'
+          + '<label class="pfl"><span>Hạn trả</span><input class="pdu" type="date" aria-label="Hạn trả" value="' + esc(it.due || "") + '"></label></div>';
+        const li = loanIntHint(it); if(li) html += '<p class="pinfo pli">' + li + "</p>";
+        if(it.lnote != null) html += '<div class="prow"><textarea class="pln note-ta" rows="2" maxlength="500" placeholder="Ghi chú" aria-label="Ghi chú khoản vay">' + esc(it.lnote) + "</textarea></div>";
+        if(it.amtFrom === "limit") html += '<p class="pinfo">Số tiền đang lấy theo <b>hạn mức</b> trong ảnh. Bạn mới dùng một phần thì sửa lại số đã dùng.</p>';
+      }
     }
     if(it.kind === "repay" || it.kind === "collect") html += '<div class="prow"><select class="pl" aria-label="Khoản vay">' + optionList(loanOpts(loansFor(it.kind)), it.loanId || "") + "</select></div>";
     const isAs = it.kind === "asin" || it.kind === "asout" || it.kind === "asval";
@@ -8329,10 +8357,14 @@ function startNgay50k(){
       if(it.kind === "lend" || it.kind === "borrow" || it.kind === "repay" || it.kind === "collect"){ const l = window.N50KParse && it.who ? loansFor(it.kind).find(x => window.N50KParse.norm(x.who).includes(window.N50KParse.norm(it.who))) : null; if(l) it.loanId = l.id; }
       chatSave(); renderChat(true);
     };
-    q(".pa").oninput = e => { const v = window.N50KParse.amountText(e.target.value); it.amt = v; chatSave(); check(); };
+    q(".pa").oninput = e => { const v = window.N50KParse.amountText(e.target.value); it.amt = v; if(it.amtFrom === "limit") it.amtFrom = "edited"; chatSave(); check(); const p = q(".pli"); if(p){ const h = loanIntHint(it); p.innerHTML = h; p.hidden = !h; } };
     q(".pa").onblur = e => { if(it.amt) e.target.value = it.amt.toLocaleString("vi-VN"); };
     if(q(".pn")) q(".pn").oninput = e => { it.note = e.target.value; chatSave(); };
     if(q(".pw")) q(".pw").oninput = e => { it.who = e.target.value; chatSave(); check(); };
+    el.querySelectorAll(".pwho").forEach(b => b.onclick = () => { it.who = b.dataset.who; chatSave(); renderChat(true); });   /* v232 */
+    if(q(".prt")) q(".prt").oninput = e => { it.rateTxt = e.target.value; const v = parseFloat(String(e.target.value).replace(",", ".")); it.rate = v > 0 ? Math.round(v * 100) / 100 : 0; chatSave(); check(); const p = q(".pli"), h = loanIntHint(it); if(p){ p.innerHTML = h; p.hidden = !h; } };
+    if(q(".pdu")) q(".pdu").onchange = e => { it.due = /^\d{4}-\d{2}-\d{2}$/.test(e.target.value) ? e.target.value : ""; chatSave(); check(); const p = q(".pli"), h = loanIntHint(it); if(p){ p.innerHTML = h; p.hidden = !h; } };
+    if(q(".pln")) q(".pln").oninput = e => { it.lnote = e.target.value; chatSave(); };
     if(q(".pl")) q(".pl").onchange = e => { it.loanId = e.target.value || null; if(it.loanId){ const l = getLoan(it.loanId); if(l) it.who = l.who; } chatSave(); renderChat(true); };
     if(q(".ptb")) q(".ptb").onclick = () => openTagSheet(it.cat || "khac", id => { it.cat = id; chatSave(); renderChat(true); });
     else if(q(".pt")) q(".pt").onchange = e => { it.cat = e.target.value; chatSave(); };
@@ -8751,7 +8783,9 @@ function startNgay50k(){
         note:{ type:"string" }, cat:{ type:"string" },
         date:{ type:"string", description:"yyyy-mm-dd" }, time:{ type:"string", description:"HH:MM hoặc rỗng" },
         cardId:{ type:"string" }, loanId:{ type:"string" }, who:{ type:"string" },
-        wallet:{ type:"string" }, from:{ type:"string" }, to:{ type:"string" }
+        wallet:{ type:"string" }, from:{ type:"string" }, to:{ type:"string" },
+        rate:{ type:"number", description:"lend/borrow khoản mới: lãi suất %/năm (lãi theo tháng thì nhân 12), không có thì 0" },
+        due:{ type:"string", description:"lend/borrow khoản mới: hạn trả yyyy-mm-dd, không có thì rỗng" }
       }, required:["kind","amt"] } },
       query:{ type:"object", properties:{
         q:{ type:"string", enum:["spent","left","balance","loans","card","topday","report"] },
@@ -8800,7 +8834,7 @@ function startNgay50k(){
       "- bal: người dùng nói số dư thật hiện có trong tài khoản/ví (\"tài khoản còn 5tr8\").",
       "- xfer: chuyển tiền giữa hai ví của chính người dùng (nạp Momo, rút từ Momo về tài khoản, chuyển sang ví khác). Không phải chi tiêu. from, to là id trong vi (\"main\" là ví mặc định).",
       "Ví (vi): với out, in, bal, cardpay, nếu người dùng nói trả bằng / nhận vào / số dư của một ví trong vi thì đặt wallet = id ví đó; không nói thì để rỗng (ví mặc định). Câu hỏi về một ví (\"Momo còn bao nhiêu\", \"tháng này chi gì bằng Momo\") thì đặt query.wallet.",
-      "Với lend/borrow/repay/collect: nếu tên người khớp một khoản trong khoan_vay đúng chiều (lend/collect ↔ minh_cho_vay; borrow/repay ↔ minh_di_vay) thì đặt loanId; nếu không có thì để loanId rỗng và ghi who (tên người, giữ cách xưng hô như \"chú Dũng\").",
+      "Với lend/borrow/repay/collect: nếu tên người khớp một khoản trong khoan_vay đúng chiều (lend/collect ↔ minh_cho_vay; borrow/repay ↔ minh_di_vay) thì đặt loanId; nếu không có thì để loanId rỗng và ghi who (tên người hoặc ngân hàng, giữ cách xưng hô như \"chú Dũng\"). Khoản vay mới có nói lãi suất thì đặt rate (%/năm; \"1%/tháng\" → 12), có hạn trả / thời hạn thì đặt due (yyyy-mm-dd); \"hạn 17/8\" là hạn trả, không phải ngày vay.",
       "",
       "Viết tắt người dùng đã chọn nằm ở viet_tat (vd hl → Highlands): gặp thì hiểu theo đó, ghi note bằng tên đầy đủ.",
       "Số tiền: k/nghìn/ngàn = ×1.000; tr/triệu/củ/m = ×1.000.000; \"1tr2\" = 1.200.000; \"1 triệu 250\" = 1.250.000; \"2 trăm\" (tiền) = 200.000; \"rưỡi\" = thêm nửa đơn vị; số trần nhỏ hơn 1000 khi nói về tiền là nghìn (\"phở 45\" = 45.000). Số lượng (2 ly, 3 cái, 2 người) KHÔNG phải tiền. Nếu nhiều món có giá riêng thì tách thành nhiều khoản; \"2 ly cà phê 25k mỗi ly\" = 50.000.",
@@ -8930,6 +8964,11 @@ function startNgay50k(){
         const type = (it.kind === "lend" || it.kind === "collect") ? "lend" : "borrow", l = state.loans.find(z => z.id === x.loanId && z.type === type);
         if(l){ it.loanId = l.id; it.who = l.who; }
         else if(it.who){ const P = window.N50KParse, n = P.norm(it.who); const m = state.loans.find(z => z.type === type && (P.norm(z.who).includes(n) || n.includes(P.norm(z.who)))); if(m){ it.loanId = m.id; it.who = m.who; } }
+        /* v232: lãi suất, hạn trả của khoản vay mới */
+        if(!it.loanId && (it.kind === "lend" || it.kind === "borrow")){
+          const rt = Number(x.rate); if(rt > 0 && rt < 100) it.rate = Math.round(rt * 100) / 100;
+          if(/^\d{4}-\d{2}-\d{2}$/.test(x.due || "") && x.due > it.date) it.due = x.due;
+        }
       }
       return it;
     }).filter(Boolean);
@@ -8994,7 +9033,42 @@ function startNgay50k(){
   /* ---------- gửi tin: có AI thì nhờ AI, không thì dùng bộ hiểu câu trên máy ---------- */
   function localParse(text){
     try{ const tl = tlParse(text); if(tl) return tl; }catch(e){}            /* v211: câu tiết kiệm / đầu tư hiểu trước (tich-luy.js) */
-    try{ return window.N50KParse.parse(text, chatCtx()); }catch(e){ return { items:[], query:null, unknown:[text] }; }
+    try{ const r = window.N50KParse.parse(text, chatCtx()); loanEnrich(r.items, text); return r; }catch(e){ return { items:[], query:null, unknown:[text] }; }
+  }
+  /* v232: câu kể khoản vay mới có lãi suất / hạn trả / thời hạn / tên ngân hàng ("vay MB 20tr lãi 5,7%/năm hạn 17/8/2027")
+     → điền sẵn vào thẻ. "hạn 17/8" là hạn trả, không phải ngày vay. */
+  function loanEnrich(items, text){
+    if(!window.N50KVay || !items) return items;
+    const nl = items.filter(it => (it.kind === "borrow" || it.kind === "lend") && !it.loanId);
+    if(nl.length !== 1) return items;
+    let inf; try{ inf = window.N50KVay.textInfo(text, todayKey()); }catch(e){ return items; }
+    const it = nl[0];
+    if(inf.rate && !(Number(it.rate) > 0)) it.rate = inf.rate;
+    if(inf.due){ if(it.date === inf.due){ it.date = todayKey(); it.t = Date.now(); } if(!it.due) it.due = inf.due; }
+    else if(inf.termM && !it.due) it.due = addMonths(it.date || todayKey(), inf.termM);
+    if(inf.bank && it.kind === "borrow"){
+      const w = String(it.who || "").trim();
+      if(!w || /^(ngân hàng|ngan hang|nh|bank)$/i.test(w)) it.who = inf.bank;
+    }
+    return items;
+  }
+  /* v232: dòng ước tính lãi dưới ô lãi suất (lãi đơn theo ngày, như cách app tính ở chi tiết khoản vay) */
+  function loanIntHint(it){
+    const r = Number(it.rate), a = Number(it.amt);
+    if(!(r > 0 && r < 100 && a > 0)) return "";
+    const day = a * r / 100 / 365, from = it.date || todayKey();
+    let h = "Lãi ≈ <b>" + fmt(Math.round(day * 30)) + "</b>/tháng (≈ " + fmt(Math.round(day)) + "/ngày)";
+    if(it.due && it.due > from){ const n = daysBetween(from, it.due); h += " · tới hạn " + n + " ngày ≈ <b>" + fmt(Math.round(day * n)) + "</b>"; }
+    return h;
+  }
+  /* v232: tên gợi ý cho ô "Vay của ai / Cho ai vay": tên đọc từ ảnh, người đã từng vay / cho vay, ngân hàng */
+  function whoSuggest(it){
+    const type = it.kind === "lend" ? "lend" : "borrow", seen = new Set(), out = [];
+    const add = s => { s = String(s || "").trim(); const k = s.toLowerCase(); if(s && !seen.has(k)){ seen.add(k); out.push(s); } };
+    if(it.whoSug) add(it.whoSug);
+    state.loans.filter(l => l.type === type && !l.card).sort((a, b) => (b.t || 0) - (a.t || 0)).forEach(l => add(l.who));
+    if(type === "borrow"){ add("Ngân hàng"); add("Gia đình"); }
+    return out.slice(0, 4);
   }
   /* ---------- v211: Chat ghi tiết kiệm & đầu tư ----------
      "gửi tiết kiệm 50tr vcb 6 tháng 5,2%", "mua 1 chỉ vàng 8tr2", "vàng giờ 8tr5", "rút sổ vcb", "bán hết vàng 17tr".
@@ -9231,7 +9305,8 @@ function startNgay50k(){
     items.forEach(it => {
       if(it.split && it.total) parts.push("Chia " + it.split + ": mình ghi phần của bạn <b>" + fmt(it.amt) + "</b>. Bạn trả cả bill " + fmt(it.total) + " thì bấm:" + say("mình trả hết"));
       if(it.cardGuess && (state.cards || []).length > 1){ const others = (state.cards || []).filter(c => c.id !== it.cardId).slice(0, 3); parts.push("Mình chọn thẻ <b>" + esc(cardName(it.cardId)) + "</b> (bạn hay quẹt nhất). Thẻ khác:" + others.map(c => say("thẻ " + c.name)).join("")); }
-      if(["lend","borrow"].includes(it.kind) && !it.loanId && !String(it.who || "").trim()) parts.push(it.kind === "lend" ? "Cho ai vay vậy? Nhắn tên là được." : "Vay của ai vậy? Nhắn tên là được.");
+      if(["lend","borrow"].includes(it.kind) && !it.loanId && !String(it.who || "").trim()) parts.push((it.kind === "lend" ? "Cho ai vay vậy?" : "Vay của ai vậy?") + (whoSuggest(it).length ? " Chạm một tên bên dưới hoặc nhắn tên." : " Nhắn tên là được."));
+      else if(["lend","borrow"].includes(it.kind) && !it.loanId && Number(it.rate) > 0 && !it.img) parts.push("Mình ghi lãi <b>" + String(it.rate).replace(".", ",") + "%/năm</b>" + (it.due ? ", hạn trả <b>" + fmtD(it.due) + "</b>" : "") + ", app sẽ tự tính lãi theo ngày.");
       if(it.date > todayKey()) parts.push("Khoản này ghi cho ngày <b>" + fmtD(it.date) + "</b> (sắp tới): tới ngày mới trừ vào số dư, hỏi “có khoản dự kiến nào không” là thấy.");
       if(it.calc && /qty|disc/.test(it.calc)) parts.push("Mình đã tính ra <b>" + fmt(it.amt) + "</b>" + (/qty/.test(it.calc) ? " (theo số lượng × đơn giá)" : "") + (/disc/.test(it.calc) ? " (đã trừ giảm giá)" : "") + ".");
     });
@@ -9334,13 +9409,16 @@ function startNgay50k(){
     return n ? " <i>Có " + (n === items.length && n > 1 ? "cả " : "") + n + " khoản trùng số tiền với khoản đã ghi cùng ngày, xem kỹ trước khi bấm Ghi nhé.</i>" : "";
   }
   async function imgLocal(files, onMsg){
-    const raw = [], deps = [];
+    const raw = [], deps = [], loans = [];
     for(let k = 0; k < files.length; k++){
       const f = files[k], tag = files.length > 1 ? " (ảnh " + (k + 1) + "/" + files.length + ")" : "";
       if(onMsg) onMsg("Đang mở bộ đọc chữ trên máy" + tag + "…");
       const txt = await ocrImage(f, pr => onMsg && onMsg("Đang đọc ảnh" + tag + "… " + Math.round(pr * 100) + "%"), m => onMsg && onMsg(m.replace(/…$/, "") + tag + "…"));
       /* v208: ảnh chụp màn hình sổ tiết kiệm / chứng chỉ tiền gửi → thẻ tạo sổ, không đọc như thông báo giao dịch */
       let dp = null; try{ dp = window.N50KSoTK ? N50KSoTK.parse(txt) : null; }catch(e){}
+      /* v232: ảnh chụp màn hình khoản vay / thấu chi → thẻ Đi vay điền sẵn (số tiền, ngày vay, hạn trả, lãi suất…) */
+      let lp = null; try{ lp = window.N50KVay ? N50KVay.parse(txt) : null; }catch(e){}
+      if(lp && (!dp || lp.amtFrom === "used" || lp.product === "Thấu chi")){ loans.push(lp); continue; }
       if(dp){ deps.push(dp); continue; }
       parseNotif(txt).forEach(p => {
         const cs = state.cards || []; let c = null;
@@ -9349,7 +9427,34 @@ function startNgay50k(){
         raw.push({ kind: c ? "card" : "out", amt:p.amt, note:p.where || "", date:p.day, time:pad(p.hm) + ":" + pad(p.mi), cardId: c ? c.id : null });
       });
     }
-    const r = aiClean({ items:raw, reply:"" }); r.deps = deps; return r;
+    const r = aiClean({ items:raw, reply:"" }); r.deps = deps; r.loans = loans; return r;
+  }
+  /* v232: khoản vay đọc từ ảnh → thẻ Đi vay. Chữ gõ kèm ảnh ("vay 20tr lãi 5,7%") được ưu tiên hơn số đọc từ ảnh. */
+  function loanFromImg(lp, cap){
+    const tk = todayKey(), date = lp.start && lp.start <= tk ? lp.start : tk;
+    const it = { kind:"borrow", amt:lp.amt || 0, note:"", cat:"", cardId:null, loanId:null, who:lp.who || "", whoSug:lp.who || "", src:"tk", img:1,
+      date, t: date === tk ? Date.now() : new Date(date + "T09:00:00").getTime(), due:lp.due && lp.due > date ? lp.due : "", rate:lp.rate || 0,
+      lnote:lp.note || "", acct:lp.acct || "", paid:lp.paid || 0, amtFrom:lp.amtFrom || "" };
+    if(cap){
+      let pr = null; try{ pr = window.N50KParse.parse(cap, chatCtx()); }catch(e){}
+      const ci = pr && (pr.items || []).find(x => x.amt > 0);
+      if(ci){ it.amt = ci.amt; it.amtFrom = "cap"; if(ci.kind === "lend") it.kind = "lend"; if(String(ci.who || "").trim() && !/^(ngân hàng|ngan hang)$/i.test(ci.who)) it.who = ci.who; }
+      let inf = null; try{ inf = window.N50KVay.textInfo(cap, tk); }catch(e){}
+      if(inf){ if(inf.rate) it.rate = inf.rate; if(inf.due) it.due = inf.due; else if(inf.termM && !it.due) it.due = addMonths(date, inf.termM); if(inf.bank && !/^\S+ · /.test(it.who)) it.who = inf.bank + " · " + it.who; }
+    }
+    const dup = it.acct ? state.loans.find(l => l.acct === it.acct) : null;
+    if(dup){ it.loanDup = dup.id; it.dupWho = dup.who; }
+    return it;
+  }
+  function loanImgIntro(it, lp){
+    const bits = [];
+    if(lp.start) bits.push("ngày vay " + fmtDate(lp.start));
+    if(lp.due) bits.push("đáo hạn " + fmtDate(lp.due));
+    if(lp.rate) bits.push("lãi " + String(lp.rate).replace(".", ",") + "%/năm");
+    let h = "Mình đọc được một <b>" + esc(lp.product.toLowerCase()) + "</b> trong ảnh (bằng bộ đọc chữ trên máy)" + (bits.length ? ": " + esc(bits.join(", ")) : "") + ".";
+    if(!it.rate) h += " Ảnh không có lãi suất, bạn điền thêm để app tự tính lãi nhé.";
+    if(it.loanDup) h += " <i>Khoản này có vẻ đã có trong sổ (" + esc(it.dupWho || "") + "), xem kỹ trước khi bấm Ghi.</i>";
+    return h + "\nBạn xem lại rồi bấm Ghi nhé:";
   }
   async function chatSendImgs(fileList){
     const files = [...fileList].filter(f => /^image\//.test(f.type) || /\.(heic|heif|jpe?g|png|webp)$/i.test(f.name)).slice(0, 4);
@@ -9377,8 +9482,9 @@ function startNgay50k(){
     if(!r){ msgs.push({ id:uid(), role:"bot", html: err && err.message === "offline"
         ? "Lần đầu đọc ảnh cần mạng để tải bộ đọc chữ (chỉ tải một lần). Bật mạng rồi gửi lại ảnh nhé."
         : "Chưa đọc được ảnh này. Thử chụp gần phần thông báo có số tiền, hoặc chép chữ trong ảnh bằng iPhone rồi dán vào ô chat.", t:Date.now() }); }
-    else if(r.items.length || (r.deps && r.deps.length)){
+    else if(r.items.length || (r.deps && r.deps.length) || (r.loans && r.loans.length)){
       (r.deps || []).forEach(dp => msgs.push({ id:uid(), role:"bot", dep:dp, depSt:"pending", t:Date.now(), src:"local" }));
+      (r.loans || []).forEach(lp => { const it = loanFromImg(lp, cap); msgs.push({ id:uid(), role:"bot", items:[it], intro:loanImgIntro(it, lp), introHtml:true, status:["pending"], refs:[null], t:Date.now(), src:"local" }); });
       if(r.items.length){
       const intro = "Mình đọc được " + r.items.length + " giao dịch trong ảnh (bằng bộ đọc chữ trên máy), bạn xem lại rồi bấm Ghi nhé:" + dupNote(r.items);
       msgs.push({ id:uid(), role:"bot", items:r.items, intro, introHtml:true, status:r.items.map(() => "pending"), refs:r.items.map(() => null), t:Date.now(), src:"local" });
@@ -9396,6 +9502,7 @@ function startNgay50k(){
     const msgs = [];
     if(text && r.query && !r.items.length) learnAdd(text, null, r.query, "ai");
     if(r.items.length && text) r.items = askMark(r.items, text);              /* v200: khoản AI hiểu cũng qua bước hỏi lại */
+    if(r.items.length && text) loanEnrich(r.items, text);                     /* v232: AI quên lãi suất / hạn trả thì máy điền */
     if(r.items.length) msgs.push({ id:uid(), role:"bot", items:r.items, intro:r.reply || "", status:r.items.map(() => "pending"), refs:r.items.map(() => null), t:Date.now(), ai:true, text:text || "", orig:JSON.parse(JSON.stringify(r.items)) });
     if(r.query) msgs.push({ id:uid(), role:"bot", html:(r.reply && !r.items.length ? esc(r.reply) + (r.query.q === "report" ? "" : "\n") : "") + answer(r.query), q:r.query, t:Date.now(), ai:true });
     if(!r.items.length && !r.query) msgs.push({ id:uid(), role:"bot", html:esc(r.reply || "Mình chưa rõ ý bạn, kể lại giúp mình nhé?"), t:Date.now(), ai:true });
@@ -9470,6 +9577,23 @@ function startNgay50k(){
             /* đưa thẻ xuống dưới câu vừa nhắn, hỏi lại ngay trên thẻ (để câu trả lời sau vẫn nối được vào thẻ) */
             const m = st.m, at = chat.msgs.indexOf(m); if(at >= 0) chat.msgs.splice(at, 1);
             m.intro = "Còn một chỗ chưa rõ, bạn chọn giúp mình (hoặc nhắn trả lời) rồi mới Ghi được nhé:"; m.introHtml = false; m.t = Date.now();
+            chat.msgs.push(m); chatSave(); renderChat(); chatScrollEnd(true); return;
+          }
+        }
+      }
+      /* v232: thẻ vay mới đang chờ Ghi, câu nhắn chỉ nói lãi suất / hạn trả ("lãi 6%/năm", "hạn 17/8/2027", "trong 12 tháng") → điền vào thẻ */
+      if(st && st.m && window.N50KVay && text.length <= 60){
+        const j = st.idxs.find(k => ["lend","borrow"].includes(st.m.items[k].kind) && !st.m.items[k].loanId);
+        let inf = null; if(j != null){ try{ inf = window.N50KVay.textInfo(text, todayKey()); }catch(e){} }
+        const rest = window.N50KParse.norm(text).replace(/\d+(?:[.,]\d+)?\s*%/g, "").replace(/\d{1,2}\s*[\/\-.]\s*\d{1,2}(?:\s*[\/\-.]\s*\d{2,4})?/g, "").replace(/\d+\s*(thang|nam)\b/g, "");
+        if(inf && (inf.rate || inf.due || inf.termM) && !/\d/.test(rest) && !/\b(vay|muon)\b/.test(rest)){
+          const m = st.m, it = m.items[j], say = [];
+          if(inf.rate){ it.rate = inf.rate; delete it.rateTxt; say.push("lãi " + String(inf.rate).replace(".", ",") + "%/năm"); }
+          const due = inf.due || (inf.termM ? addMonths(it.date || todayKey(), inf.termM) : "");
+          if(due && due > (it.date || todayKey())){ it.due = due; say.push("hạn trả " + fmtDate(due)); }
+          if(say.length){
+            const at = chat.msgs.indexOf(m); if(at >= 0) chat.msgs.splice(at, 1);
+            m.intro = "✓ Đã thêm " + say.join(", ") + ". Bạn xem lại rồi bấm Ghi nhé:"; m.introHtml = false; m.t = Date.now();
             chat.msgs.push(m); chatSave(); renderChat(); chatScrollEnd(true); return;
           }
         }
