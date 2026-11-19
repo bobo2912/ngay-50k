@@ -1,6 +1,12 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v232, ngày 19/11/2026
+**Phiên bản hiện tại:** v233, ngày 19/11/2026
+
+---
+
+## Có gì mới trong v233 (so với v232)
+
+- Sửa ô ngày (Hạn trả, ngày khoản) trên thẻ xác nhận trong Chat bị tràn ra ngoài viền thẻ trên iPhone: ô ngày cao bằng các ô khác, chữ canh trái, hai ô Lãi %/năm và Hạn trả thẳng hàng.
 
 ---
 

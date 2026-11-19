@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v232";
+  var K = "ngay50k:errlog", VER = "v233";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -1519,6 +1519,10 @@ body.kb #tab-chat .chat-sugg{display:none}
 .pcard .pfl{flex:1 1 130px; display:flex; flex-direction:column; gap:2px; font-size:.74rem; color:var(--muted)}
 .pcard .pfl span{padding-left:4px}
 .pcard .pfl input{width:100%}
+/* v233: iPhone Safari cho ô ngày bề rộng tối thiểu riêng → tràn ra ngoài thẻ; bỏ giao diện gốc, cao bằng các ô khác */
+.pcard input[type="date"]{-webkit-appearance:none; appearance:none; display:block; width:100%; min-width:0; max-width:100%; box-sizing:border-box; height:38px; line-height:22px; text-align:left}
+.pcard input[type="date"]::-webkit-date-and-time-value{text-align:left; margin:0}
+.pcard .pfl{min-width:0; overflow:hidden}
 .pcard .pwhos{gap:6px}
 .pcard .pwho{font:inherit; font-size:.85rem; border:1px solid var(--line); background:var(--field, #fff); color:var(--ink); border-radius:999px; padding:5px 12px; cursor:pointer}
 .pcard .pwho:active{transform:scale(.97)}
@@ -3266,7 +3270,7 @@ li.txg > details.txd > ul{margin:0 !important}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v232</p>
+      <p class="sync" id="appVersion">Phiên bản v233</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3823,15 +3827,15 @@ li.txg > details.txd > ul{margin:0 !important}
 <input type="file" id="phFile" accept="image/*" hidden>
 <div class="ph-view" id="phView" role="dialog" aria-modal="true" aria-label="Ảnh hoá đơn" hidden><img id="phImg" alt="Ảnh hoá đơn"><div class="ph-bar"><button type="button" id="phDel">Bỏ ảnh này</button><button type="button" id="phClose">Đóng</button></div></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=232"></script>
-<script src="thu-vien-cau.js?v=232"></script>
-<script src="quy-tac.js?v=232"></script>
-<script src="du-lieu.js?v=232"></script>
-<script src="doc-so-tk.js?v=232"></script>
-<script src="doc-khoan-vay.js?v=232"></script>
-<script src="tich-luy.js?v=232"></script>
-<script src="native.js?v=232"></script>
-<script src="lock.js?v=232"></script>
+<script src="parse-vi.js?v=233"></script>
+<script src="thu-vien-cau.js?v=233"></script>
+<script src="quy-tac.js?v=233"></script>
+<script src="du-lieu.js?v=233"></script>
+<script src="doc-so-tk.js?v=233"></script>
+<script src="doc-khoan-vay.js?v=233"></script>
+<script src="tich-luy.js?v=233"></script>
+<script src="native.js?v=233"></script>
+<script src="lock.js?v=233"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
