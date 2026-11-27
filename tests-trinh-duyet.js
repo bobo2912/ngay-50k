@@ -156,6 +156,8 @@ const ok = (name, cond, extra) => { n++; console.log((cond ? "✓ " : "✗ ") + 
     await T(() => { __T.state.loans.push({ id:"nwT", type:"borrow", who:"Thử trừ ví", amt:5000000, date:"2026-01-05", payments:[], draws:[], prepaid:0, t:1 }); __T.persist(); });
     await pg.reload(); await pg.waitForTimeout(1800);
     await tab("Tài sản");
+    await T(() => { const d = document.querySelector("details.lgrp-fam"); if(d) d.open = true; });   /* v242: khoản đi vay nằm trong nhóm thu gọn */
+    await pg.waitForTimeout(200);
     await pg.getByText("Thử trừ ví").first().click(); await pg.waitForTimeout(500);
     const nb0 = await bal();
     await pg.getByRole("button", { name:"Ghi đã trả" }).click(); await pg.waitForTimeout(300);
@@ -245,6 +247,27 @@ khoản vay`);
     await ic.locator(".pa").fill("20000000"); await ghi();
     const il = await T(() => __T.state.loans.find(l => l.acct === "7157800001234"));
     ok("ghi khoản từ ảnh: lưu số tài khoản, ghi chú, lãi", il && il.amt === 20000000 && il.rate === 5.7 && il.date === "2026-08-17" && il.due === "2027-08-17" && /Lãi dự kiến 165\.656đ/.test(il.note), JSON.stringify(il));
+
+    /* v242: Đi vay chia nhóm, Phải trả tháng này, tên gợi nhớ */
+    await T(() => { const S = __T.state, ym = __T.todayKey().slice(0, 7);
+      S.loans.push({ id:"t242a", type:"borrow", who:"LD9990001", amt:12000000, date:"2026-01-05", per:1000000, day:5, payments:[{ id:"t242p", amt:1000000, date:ym + "-05" }], t:1 });
+      S.loans.push({ id:"t242b", type:"borrow", who:"Chị Hoa", amt:3000000, date:"2026-01-05", due:ym + "-01", payments:[], t:2 });
+      __T.persist(true); });
+    await tab("Tài sản");
+    await pg.locator("#loanSeg button").filter({ hasText:"Đi vay" }).click(); await pg.waitForTimeout(300);
+    ok("Đi vay: có khung Phải trả tháng này", await pg.locator(".lplan").count() === 1);
+    ok("Phải trả: khoản ngân hàng đã trả kỳ này có dấu ✓", await pg.locator(".lplan .lp.done").filter({ hasText:"LD9990001" }).count() === 1);
+    ok("Phải trả: khoản người thân quá hạn báo đỏ", await pg.locator(".lplan .lp.late").filter({ hasText:"Chị Hoa" }).count() === 1);
+    ok("Đi vay: chia nhóm Vay ngân hàng / Người thân", await pg.locator("details.lgrp-bank").count() === 1 && await pg.locator("details.lgrp-fam").count() === 1);
+    ok("nhóm mặc định thu gọn", !(await pg.locator("details.lgrp-bank").evaluate(e => e.open)));
+    await pg.locator("details.lgrp-bank summary").click(); await pg.waitForTimeout(200);
+    await pg.locator("details.lgrp-bank .loan").filter({ hasText:"LD9990001" }).click(); await pg.waitForTimeout(400);
+    await pg.locator("#loanDetail button").filter({ hasText:"Sửa" }).first().click(); await pg.waitForTimeout(300);
+    await pg.locator("#lNick").fill("Vay sửa nhà"); await pg.locator("#saveLoan").click(); await pg.waitForTimeout(400);
+    ok("tên gợi nhớ: lưu và hiện ở chi tiết", await T(() => __T.state.loans.find(l => l.id === "t242a").nick) === "Vay sửa nhà" && /Vay sửa nhà/.test(await pg.locator("#loanDetail h2").first().innerText()));
+    await pg.locator("#loanDetail .back").click(); await pg.waitForTimeout(400);
+    ok("tên gợi nhớ: thẻ khoản vay hiện tên mới, mã ở dòng phụ", await pg.locator("details.lgrp-bank .loan").filter({ hasText:"Vay sửa nhà" }).filter({ hasText:"LD9990001" }).count() === 1);
+    ok("nhóm mở được nhớ lại sau khi vẽ lại", await pg.locator("details.lgrp-bank").evaluate(e => e.open));
 
     ok("không có lỗi JavaScript", !errs.length, errs.slice(0, 5).join("\n   "));
   }catch(e){

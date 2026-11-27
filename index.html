@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v241";
+  var K = "ngay50k:errlog", VER = "v242";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -386,6 +386,36 @@ ul{list-style:none; margin:0; padding:0}
 .day-sum strong{color:var(--ink)}
 .list-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:8px}
 .list-head h2{margin:0}
+/* v242: Đi vay chia nhóm + Phải trả tháng này */
+.lplan{background:var(--surface); border:1.5px solid var(--line); border-radius:22px; padding:14px 16px 6px; margin-top:10px}
+.lplan-h{display:flex; align-items:baseline; justify-content:space-between; gap:10px}
+.lplan-h b{font-size:1rem}
+.lplan-h span{font-weight:700; font-size:1rem}
+.lplan-sub{margin:2px 0 8px; font-size:.78rem; color:var(--muted)}
+.lplan .progress{margin-bottom:6px}
+.lplan-l{list-style:none; margin:0; padding:0}
+.lplan-l .lp{display:flex; align-items:center; gap:10px; padding:9px 0; border-top:1px solid var(--line); cursor:pointer}
+.lplan-l .lp:first-child{border-top:0}
+.lp-ck{flex:none; width:22px; height:22px; border-radius:50%; border:1.5px solid var(--line); display:grid; place-items:center; font-size:.72rem; font-weight:700; color:#fff}
+.lp.done .lp-ck{background:var(--ok); border-color:var(--ok)}
+.lp.late .lp-ck{background:var(--over); border-color:var(--over)}
+.lp-m{flex:1; min-width:0; display:flex; flex-direction:column}
+.lp-m b{font-size:.9rem; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.lp-m small{font-size:.74rem; color:var(--muted)}
+.lp.late .lp-m small{color:var(--over)}
+.lp-a{flex:none; font-weight:600; font-size:.9rem}
+.lp.done .lp-a{color:var(--muted); text-decoration:line-through; font-weight:500}
+details.lgrp{margin-top:10px; border:1px dashed var(--line); border-radius:22px; background:color-mix(in srgb, var(--bg) 55%, transparent)}
+details.lgrp > summary{list-style:none; display:flex; align-items:center; gap:10px; padding:12px 16px; cursor:pointer}
+details.lgrp > summary::-webkit-details-marker{display:none}
+details.lgrp > summary::after{content:""; flex:none; width:7px; height:7px; border-right:1.6px solid var(--muted); border-bottom:1.6px solid var(--muted); transform:rotate(-45deg); margin-left:2px; transition:transform .2s}
+details.lgrp[open] > summary::after{transform:rotate(45deg); margin-top:-4px}
+.lg-t{flex:1; min-width:0; display:flex; flex-direction:column}
+.lg-t b{font-size:.95rem; color:var(--ink)}
+.lg-t small{font-size:.75rem; color:var(--muted); font-weight:400}
+.lg-a{flex:none; font-weight:700; font-size:.95rem; color:var(--ink)}
+.lg-in{padding:0 8px 8px}
+.lg-in .loan:first-child{margin-top:0}
 #activeTitle .kt-sub{display:block; margin-top:2px; font-size:.8rem; font-weight:500; color:var(--muted); letter-spacing:0}
 .filter-btn{display:flex; align-items:center; gap:6px; border:1.5px solid var(--line); background:var(--surface); border-radius:999px; padding:6px 12px; font-weight:600; font-size:.85rem}
 .filter-btn.on{border-color:var(--ink); background:var(--ink); color:var(--bg)}
@@ -2682,6 +2712,9 @@ li.txg > details.txd > ul{margin:0 !important}
           <button data-type="lend" aria-pressed="false">Mình cho vay</button>
         </div>
         <div class="field"><label for="lWho"><span id="lWhoLabel">Vay của ai</span></label><input id="lWho" class="inp" maxlength="40" placeholder="vd: Anh Tuấn, Home Credit"></div>
+        <!-- v242: tên gợi nhớ (vd "Vay mua xe MB"); tên / mã khoản vay ở trên thành dòng phụ -->
+        <div class="field"><label for="lNick"><span>Tên gợi nhớ (không bắt buộc)</span></label><input id="lNick" class="inp" maxlength="40" placeholder="vd: Vay mua xe, Vay sửa nhà"></div>
+        <div class="field" id="lGrpField" hidden><label><span>Xếp vào nhóm</span></label><div class="chips" id="lGrpChips" style="margin-top:0"></div></div>
         <div class="field"><label for="lAmt"><span>Số tiền</span></label><input id="lAmt" class="inp amount-inp num" inputmode="numeric" placeholder="0đ"></div>
         <div class="field"><label for="lPaid"><span id="lPaidLabel">Số tiền đã trả</span></label><input id="lPaid" class="inp num" inputmode="numeric" placeholder="0đ"></div>
         <p class="subtle" id="lPaidHint" hidden style="margin-top:4px"></p>
@@ -3278,7 +3311,7 @@ li.txg > details.txd > ul{margin:0 !important}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v241</p>
+      <p class="sync" id="appVersion">Phiên bản v242</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -4939,7 +4972,7 @@ function startNgay50k(){
     (state.cardPay || []).forEach(p => { if(p.date === k) out.push({ t:recTime(p.date, p.t), icon:"💳", name:"Trả thẻ" + (cardName(p.cardId) ? " " + cardName(p.cardId) : "") + (instOf(p) ? " (gồm trả góp " + fmt(instOf(p)) + ")" : ""), amt:-(Number(p.amt)||0), src:p.from || MAIN_W, o:p, kind:"pay", lbl:"Trả thẻ" }); });
     (state.xfer || []).forEach(x => { if(x.date === k) out.push({ t:recTime(x.date, x.t), icon:"🔁", name:walletName(x.from) + " → " + walletName(x.to), amt:Number(x.amt)||0, neutral:true, o:x, kind:"xfer", lbl:"Chuyển ví" + (x.note ? " · " + x.note : "") }); });
     state.loans.forEach(l => {
-      const b = l.type === "borrow", who = l.who || "?", sg = b ? 1 : -1;
+      const b = l.type === "borrow", who = l.nick || l.who || "?", sg = b ? 1 : -1;   /* v242: tên gợi nhớ nếu có */
       /* v197: mang theo khoản vay và lần ghi (rec) để mở bảng sửa ngay tại chỗ */
       if(l.date === k && !l.card) out.push({ t:recTime(l.date, l.t), icon:"🤝", name: b ? "Vay của " + who : "Cho " + who + " vay", amt:sg * (Number(l.amt)||0), kind:"loan", o:l, sub:"base", src:lW(null, l), lbl: b ? "Đi vay" : "Cho vay" });
       (l.draws || []).forEach(d => { if(d.date === k) out.push({ t:recTime(d.date, d.t), icon:"🤝", name: (b ? "Vay thêm của " + who : "Cho " + who + " vay thêm") + (noW(d) ? " · không tính vào ví" : ""), amt:sg * (Number(d.amt)||0), kind:"loan", o:l, rec:d, sub:"draw", src:lW(d, l), lbl: b ? "Vay thêm" : "Cho vay thêm" }); });
@@ -5831,6 +5864,7 @@ function startNgay50k(){
     editingLoanId = l ? l.id : null;
     $("loanFormTitle").textContent = l ? "Sửa thông tin khoản vay" : "Thêm khoản vay";
     $("lWho").value = l ? l.who : ""; $("lAmt").value = l ? money(l.amt) : "";
+    $("lNick").value = l && l.nick ? l.nick : ""; lGrp = l && l.grp ? l.grp : "";
     $("lPaid").value = l ? money(paidOf(l)) : "";
     const hint = $("lPaidHint");
     hint.hidden = !(l && (l.payments||[]).length);
@@ -5866,12 +5900,25 @@ function startNgay50k(){
     $("lInstBox").hidden = $("lCardField").hidden || !lCard;
     $("lSchedBox").hidden = loanType !== "borrow" || !!lCard;   /* v221: lịch trả của khoản vay thường */
     $("lRateField").hidden = $("lRateHint").hidden = loanType === "borrow" && !!lCard;   /* v230 */
+    lGrpPick(lGrp);
+  }
+  /* v242: nhóm của khoản đi vay (không phải trả góp thẻ): Tự động / Ngân hàng / Cá nhân */
+  var lGrp = "";
+  function lGrpPick(v){
+    lGrp = v === "bank" || v === "fam" ? v : "";
+    const box = $("lGrpChips"); if(!box) return; box.innerHTML = "";
+    [["", "Tự động"], ["bank", "Ngân hàng"], ["fam", "Người thân"]].forEach(([k, label]) => {
+      const b = document.createElement("button"); b.type = "button"; b.className = "chip"; b.textContent = label;
+      b.setAttribute("aria-pressed", k === lGrp ? "true" : "false"); b.onclick = () => lGrpPick(k); box.appendChild(b);
+    });
+    $("lGrpField").hidden = loanType !== "borrow" || !!lCard;
   }
   const lPerVal = () => parseInt(digits($("lPer").value), 10) || 0;
   function saveLoan(){
     if($("saveLoan").disabled) return;
     const data = { type:loanType, who:$("lWho").value.trim(), amt:lAmt(),
-      date:$("lDate").value || todayKey(), due:$("lDue").value || "", note:$("lNote").value.trim() };
+      date:$("lDate").value || todayKey(), due:$("lDue").value || "", note:$("lNote").value.trim(),
+      nick:$("lNick").value.trim() || undefined, grp:(loanType === "borrow" && !lCard && lGrp) || undefined };
     const paid = lPaid();
     if(!$("lWField").hidden){ const lw = pickedW("lWChips"); data.w = lw || undefined; }
     const inst = loanType === "borrow" && lCard && lPerVal() > 0 ? { card:lCard, per:lPerVal(), from:$("lFrom").value || todayKey() } : null;
@@ -5884,10 +5931,10 @@ function startNgay50k(){
     };
     if(editingLoanId){
       const l = getLoan(editingLoanId);
-      if(l){ const po = payOnly(l); Object.assign(l, data); if(!l.w) delete l.w; setInst(l); l.prepaid = paid - po; detailLoanId = l.id; }
+      if(l){ const po = payOnly(l); Object.assign(l, data); if(!l.w) delete l.w; if(!l.nick) delete l.nick; if(!l.grp) delete l.grp; setInst(l); l.prepaid = paid - po; detailLoanId = l.id; }
       persist(true); editingLoanId = null; renderLoans(); showLoanView("detail"); flash("detailMsg", "✓ Đã lưu thay đổi");
     } else {
-      const nl = Object.assign({ id:uid(), payments:[], prepaid:paid, t:Date.now() }, data); if(!nl.w) delete nl.w; setInst(nl);
+      const nl = Object.assign({ id:uid(), payments:[], prepaid:paid, t:Date.now() }, data); if(!nl.w) delete nl.w; if(!nl.nick) delete nl.nick; if(!nl.grp) delete nl.grp; setInst(nl);
       state.loans.push(nl);
       loanView = data.type;   /* về đúng tab con của khoản vừa thêm */
       [...$("loanSeg").children].forEach(b => b.setAttribute("aria-pressed", b.dataset.lv === loanView ? "true" : "false"));
@@ -5902,6 +5949,7 @@ function startNgay50k(){
     if(n === 0) return {txt:"Đến hạn hôm nay", late:true};
     return {txt:"Còn " + n + " ngày đến hạn", late:n<=3};
   }
+  const loanName = l => (l && l.nick) || (l && l.who) || "?";   /* v242 */
   function el(tag, cls, text){ const e = document.createElement(tag); if(cls) e.className = cls; if(text!=null) e.textContent = text; return e; }
 
   function loanCard(l, showType){
@@ -5914,13 +5962,14 @@ function startNgay50k(){
       </div>
       <div class="progress"><i></i></div>
       <div class="more"><span class="due"></span><span>Xem chi tiết ›</span></div>`;
-    card.querySelector(".loan-top b").textContent = l.who;
+    card.querySelector(".loan-top b").textContent = loanName(l);
     const sm = card.querySelector(".loan-top small");
+    if(l.nick){ sm.appendChild(document.createTextNode(l.who)); }
     if(showType){
       sm.appendChild(el("span", l.type==="borrow"?"tag-borrow":"tag-lend", l.type==="borrow" ? "Mình vay" : "Mình cho vay"));
       sm.appendChild(document.createTextNode(" · "));
     }
-    sm.appendChild(document.createTextNode(fmtDate(l.date)));
+    if(!l.nick) sm.appendChild(document.createTextNode(fmtDate(l.date)));
     card.querySelector(".loan-amt b").textContent = done ? "Đã xong" : "Còn " + fmt(left);
     card.querySelector(".loan-amt small").textContent = "Đã " + verb(l) + " " + fmt(paid) + " / " + fmt(totalOf(l));
     card.querySelector(".progress i").style.width = Math.min(100, paid/Math.max(1,totalOf(l))*100) + "%";
@@ -5944,7 +5993,7 @@ function startNgay50k(){
 
     const card = el("div","detail-card");
     const top = el("div","loan-top");
-    const t1 = el("div"); t1.appendChild(el("h2",null,l.who));
+    const t1 = el("div"); t1.appendChild(el("h2",null,loanName(l))); if(l.nick) t1.appendChild(el("small", "subtle", l.who + " · "));
     t1.appendChild(el("small", l.type==="borrow"?"tag-borrow":"tag-lend", l.type==="borrow" ? "Mình đi vay" : "Mình cho vay"));
     top.appendChild(t1);
     card.appendChild(top);
@@ -6266,6 +6315,110 @@ function startNgay50k(){
     return out;
   }
 
+  /* ================= v242: Đi vay chia nhóm + Phải trả tháng này =================
+     Ba nhóm: Vay ngân hàng (có lịch trả / tên ngân hàng / mã LD…), Trả góp thẻ (l.card), Người thân & bạn bè (còn lại).
+     Người dùng chọn nhóm khác được ở form (l.grp). Mỗi nhóm là một khung thu gọn được, nhớ trạng thái trên máy. */
+  const BANKISH = /^(LD|LN|HD)\s*\d|th[ấa]u\s*chi|ng[âa]n\s*h[àa]ng|\bbank\b|t[àa]i\s*ch[íi]nh|credit|finance|fe\s*credit|home\s*credit|vietcombank|vcb|vietinbank|bidv|agribank|\bmb\b|techcombank|tcb|\bacb\b|vpbank|tpbank|sacombank|hdbank|\bvib\b|\bshb\b|\bmsb\b|\bocb\b|seabank|\buob\b|hsbc|shinhan|cake|timo|mcredit|shinhan\s*finance|lotte\s*finance|momo|\bvay\s*app/i;
+  function loanKind(l){
+    if(l.card) return "card";
+    if(l.grp === "bank" || l.grp === "fam") return l.grp;
+    if(Number(l.per) > 0 || l.acct || BANKISH.test(l.who || "")) return "bank";
+    return "fam";
+  }
+  const LGRP_KEY = "ngay50k:lgrp";
+  function lgrpOpen(){ try{ return JSON.parse(lsGet(LGRP_KEY) || "{}") || {}; }catch(e){ return {}; } }
+  /* các kỳ phải trả trong tháng hiện tại (và khoản người thân đã quá hạn) */
+  function monthPlan(list){
+    const now = new Date(todayKey() + "T00:00:00"), tk = todayKey(), ym = tk.slice(0, 7);
+    const at = (y, m, d) => { const dim = new Date(y, m + 1, 0).getDate(); return new Date(y, m, Math.min(d, dim)); };
+    const rows = [], cards = {};
+    list.forEach(l => {
+      const k = loanKind(l);
+      if(k === "card"){
+        if(!(Number(l.per) > 0)) return;
+        if(l.from && l.from.slice(0, 7) > ym) return;
+        const got = (instAlloc().hist[l.id] || []).filter(h => String(h.date).slice(0, 7) === ym).reduce((a, h) => a + h.amt, 0);
+        const need = Math.min(Number(l.per), leftOf(l) + got); if(need <= 0) return;
+        const c = cards[l.card] = cards[l.card] || { kind:"card", card:l.card, need:0, got:0, n:0, ids:[] };
+        c.need += need; c.got += Math.min(got, need); c.n++; c.ids.push(l.id);
+        return;
+      }
+      if(k === "bank" && Number(l.per) > 0 && Number(l.day) > 0){
+        const due = keyOf(at(now.getFullYear(), now.getMonth(), Number(l.day)));
+        const paid = (l.payments || []).filter(p => String(p.date).slice(0, 7) === ym).reduce((a, p) => a + (Number(p.amt) || 0), 0)
+          + (function(){ let a = 0; (function(b){ for(const d in b) if(d.slice(0, 7) === ym) (b[d] || []).forEach(x => { if(x && x.lid === l.id) a += Number(x.amt) || 0; }); })(state.days); return a; })();
+        const nd = nextDue(l);
+        const amt = paid > 0 ? paid : nd ? nd.tot : Math.min(Number(l.per), leftOf(l));
+        rows.push({ kind:"bank", l, date:due, amt, done:paid > 0, late:!paid && due < tk });
+        return;
+      }
+      if(l.due && l.due.slice(0, 7) <= ym){
+        rows.push({ kind:k, l, date:l.due, amt:leftOf(l), done:false, late:l.due < tk, all:true });
+      }
+    });
+    Object.values(cards).forEach(c => rows.push({ kind:"card", card:c.card, ids:c.ids, n:c.n, amt:c.need, got:c.got, done:c.got >= c.need, date:"", late:false }));
+    rows.sort((a, b) => (a.done - b.done) || (b.late - a.late) || (a.date || "9999").localeCompare(b.date || "9999"));
+    return rows;
+  }
+  function loanPlanBox(list){
+    const rows = monthPlan(list); if(!rows.length) return null;
+    const m = new Date().getMonth() + 1;
+    const tot = rows.reduce((a, r) => a + r.amt, 0), paid = rows.reduce((a, r) => a + (r.kind === "card" ? r.got : r.done ? r.amt : 0), 0);
+    const nLate = rows.filter(r => r.late).length;
+    const box = el("section", "lplan");
+    const h = el("div", "lplan-h");
+    h.appendChild(el("b", null, "Phải trả tháng " + m));
+    h.appendChild(el("span", "num", fmt(Math.max(0, tot - paid)) + (paid ? " còn lại" : "")));
+    box.appendChild(h);
+    const sub = el("p", "lplan-sub", rows.filter(r => r.done).length + "/" + rows.length + " khoản đã xong" + (paid ? " · đã trả " + fmt(paid) : "") + (nLate ? " · " + nLate + " quá hạn" : ""));
+    box.appendChild(sub);
+    const pr = el("div", "progress"); const pi = el("i"); pi.style.width = Math.min(100, paid / Math.max(1, tot) * 100) + "%"; pr.appendChild(pi); box.appendChild(pr);
+    const ul = el("ul", "lplan-l");
+    rows.forEach(r => {
+      const li = el("li", "lp" + (r.done ? " done" : "") + (r.late ? " late" : ""));
+      const ck = el("span", "lp-ck"); ck.setAttribute("aria-hidden", "true"); ck.textContent = r.done ? "✓" : r.late ? "!" : "";
+      const mid = el("div", "lp-m");
+      const d = r.date ? r.date.slice(8, 10) + "/" + r.date.slice(5, 7) : "";
+      if(r.kind === "card"){
+        mid.appendChild(el("b", null, "Trả góp " + (cardName(r.card) || "thẻ")));
+        mid.appendChild(el("small", null, r.n + " khoản · " + (r.done ? "đã trừ đủ kỳ" : r.got ? "đã trừ " + fmt(r.got) + ", trừ tiếp khi trả thẻ" : "trừ khi trả thẻ")));
+      } else {
+        mid.appendChild(el("b", null, loanName(r.l)));
+        mid.appendChild(el("small", null, [d ? (r.late ? "Hạn " + d + ", quá hạn" : (r.done ? "Ngày " : "Hạn ") + d) : "", r.done ? "đã trả" : r.all ? "trả hết" : r.kind === "bank" ? (r.l.rate ? "gốc + lãi ước tính" : "gốc kỳ này") : ""].filter(Boolean).join(" · ")));
+      }
+      const a = el("span", "lp-a num", (r.done ? "" : "") + fmt(r.kind === "card" && !r.done ? r.amt - r.got : r.amt));
+      li.append(ck, mid, a);
+      const id = r.l ? r.l.id : r.ids[0];
+      if(id && !(r.kind === "card" && r.ids.length > 1)){ li.setAttribute("role", "button"); li.tabIndex = 0; li.onclick = () => { detailLoanId = id; payOpen = false; drawOpen = false; laiOpen = false; editRecId = null; renderLoans(); showLoanView("detail"); }; }
+      else if(r.kind === "card"){ li.setAttribute("role", "button"); li.tabIndex = 0; li.onclick = () => { const g = document.querySelector('#loanList details.lgrp-card'); if(g){ g.open = true; g.scrollIntoView({ block:"start", behavior:"smooth" }); } }; }
+      ul.appendChild(li);
+    });
+    box.appendChild(ul);
+    return box;
+  }
+  function loanBorrowView(box, list){
+    const plan = loanPlanBox(list); if(plan) box.appendChild(plan);
+    const st = lgrpOpen();
+    [["bank", "Vay ngân hàng"], ["card", "Trả góp thẻ"], ["fam", "Người thân, bạn bè"]].forEach(([k, label]) => {
+      const xs = list.filter(l => loanKind(l) === k); if(!xs.length) return;
+      const dt = el("details", "lgrp lgrp-" + k); dt.open = !!st[k];
+      const sm = el("summary");
+      const t = el("div", "lg-t"); t.appendChild(el("b", null, label)); 
+      const kt = xs.reduce((a, l) => { const n = nextDue(l); return a + (n ? n.tot : 0); }, 0);
+      let info = xs.length + " khoản";
+      if(k === "card"){ const cs = [...new Set(xs.map(l => cardName(l.card)).filter(Boolean))]; if(cs.length) info += " · " + cs.join(", "); }
+      if(kt) info += " · kỳ tới ≈ " + fmt(kt);
+      t.appendChild(el("small", null, info));
+      sm.append(t, el("span", "lg-a num", fmt(xs.reduce((a, l) => a + leftOf(l), 0))));
+      dt.appendChild(sm);
+      const inner = el("div", "lg-in");
+      xs.forEach(l => inner.appendChild(loanCard(l, false)));
+      dt.appendChild(inner);
+      dt.addEventListener("toggle", () => { const o = lgrpOpen(); o[k] = dt.open; lsSet(LGRP_KEY, JSON.stringify(o)); });
+      box.appendChild(dt);
+    });
+  }
+
   function renderLoans(){
     try{ renderAssets(); }catch(e){ console.error(e); }   /* v203: phần tiết kiệm & đầu tư ở đầu tab Tài sản */
     const f = loanFilter, n = filterCount(f);
@@ -6304,14 +6457,15 @@ function startNgay50k(){
       : (loanView === "borrow" ? "Còn phải trả " : "Còn phải thu ") + fmt(list.reduce((a, l) => a + leftOf(l), 0));
     /* v221: tổng kỳ tới; v223: dòng nhỏ riêng bên dưới, không làm tiêu đề nhảy dòng */
     const kt = loanView === "borrow" ? list.reduce((a, l) => { const n = nextDue(l); return a + (n ? n.tot : 0); }, 0) : 0;
-    if(kt){ const sm = document.createElement("small"); sm.className = "kt-sub"; sm.textContent = "Kỳ tới ≈ " + fmt(kt); $("activeTitle").appendChild(sm); }
+    if(kt && loanView !== "borrow"){ const sm = document.createElement("small"); sm.className = "kt-sub";   /* v242: Đi vay đã có khung Phải trả tháng này */ sm.textContent = "Kỳ tới ≈ " + fmt(kt); $("activeTitle").appendChild(sm); }
     const box = $("loanList"); box.innerHTML = "";
     if(!list.length){
       box.innerHTML = '<p class="empty">' + (n ? "Không có khoản nào khớp bộ lọc."
         : loanView === "borrow" ? "Chưa có khoản đi vay nào."
         : loanView === "lend" ? "Chưa có khoản cho vay nào." : "Chưa có khoản nào tất toán.") + '</p>';
     }
-    list.forEach(l => box.appendChild(loanCard(l, loanView === "done")));
+    if(loanView === "borrow" && list.length) loanBorrowView(box, list);
+    else list.forEach(l => box.appendChild(loanCard(l, loanView === "done")));
     if(detailLoanId) renderLoanDetail();
     if(detailLoanId && !getLoan(detailLoanId)){ detailLoanId = null; if($("loanForm").hidden) showLoanView("main"); }
   }

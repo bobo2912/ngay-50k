@@ -1,6 +1,16 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v241, ngày 27/11/2026
+**Phiên bản hiện tại:** v242, ngày 27/11/2026
+
+---
+
+## Có gì mới trong v242 (so với v241) – Đi vay dễ quản lý hơn
+
+- **Phải trả tháng này**: khung mới ở đầu tab Đi vay, liệt kê mọi kỳ phải trả trong tháng theo thứ tự: khoản vay ngân hàng có lịch (ngày trả hằng tháng, gốc + lãi ước tính), trả góp thẻ (gom theo thẻ, đã trừ bao nhiêu qua các lần trả thẻ), khoản vay người thân có hạn trả trong tháng. Mỗi dòng có ✓ đã trả, ! quá hạn (đỏ); đầu khung là số còn phải trả, số khoản đã xong và thanh tiến độ. Chạm dòng để mở khoản vay.
+- **Đi vay chia 3 nhóm thu gọn được**: Vay ngân hàng · Trả góp thẻ · Người thân, bạn bè. Mỗi nhóm hiện số khoản, tổng còn nợ, kỳ tới; mặc định thu gọn, mở nhóm nào thì app nhớ. Nhóm tự xếp: trả góp thẻ theo thẻ; có gốc mỗi kỳ, số tài khoản vay hoặc tên giống ngân hàng / công ty tài chính / mã LD… là Vay ngân hàng; còn lại là Người thân. Xếp sai thì chọn lại ở ô **Xếp vào nhóm** khi sửa khoản vay (trường `grp`: "bank" / "fam").
+- **Tên gợi nhớ** cho khoản vay (trường `nick`, vd "Vay mua xe"): hiện làm tên chính trên thẻ, chi tiết, lịch sử ví; tên / mã khoản vay (LD…) thành dòng phụ.
+- Bỏ dòng "Kỳ tới ≈" dưới tiêu đề Đi vay (đã có trong khung Phải trả tháng này và từng nhóm).
+- Bài thử: thêm 8 bước trong `tests-trinh-duyet.js`.
 
 ---
 
