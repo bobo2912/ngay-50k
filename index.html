@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v243";
+  var K = "ngay50k:errlog", VER = "v244";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -392,6 +392,19 @@ ul{list-style:none; margin:0; padding:0}
 .lplan-h b{font-size:1rem}
 .lplan-h span{font-weight:700; font-size:1rem}
 .lplan-sub{margin:2px 0 8px; font-size:.78rem; color:var(--muted)}
+.lplan-nav{display:flex; align-items:center; gap:6px; min-width:0}
+.lplan-nav b{white-space:nowrap}
+.lpn{flex:none; width:28px; height:28px; border-radius:50%; border:1.5px solid var(--line); background:var(--surface); color:var(--ink); font:inherit; font-size:1rem; line-height:1; display:grid; place-items:center; padding:0; cursor:pointer}
+.lpn:disabled{opacity:.35; cursor:default}
+.lplan-bars{display:grid; grid-template-columns:repeat(13, 1fr); gap:3px; margin:10px 0 6px}
+.lpb{display:flex; flex-direction:column; align-items:center; gap:3px; border:0; background:none; padding:0; font:inherit; cursor:pointer; min-width:0}
+.lpb-c{position:relative; width:100%; height:40px; border-radius:5px; background:color-mix(in srgb, var(--line) 55%, transparent); overflow:hidden; display:flex; align-items:flex-end}
+.lpb-c i{display:block; width:100%; border-radius:5px; background:color-mix(in srgb, var(--note) 45%, transparent)}
+.lpb.on .lpb-c{box-shadow:inset 0 0 0 1.5px var(--note)}
+.lpb.on .lpb-c i{background:var(--note)}
+.lpb small{font-size:.6rem; color:var(--muted); white-space:nowrap}
+.lpb.on small{color:var(--note); font-weight:700}
+.lp.fut .lp-ck{border-style:dashed}
 .lplan .progress{margin-bottom:6px}
 .lplan-l{list-style:none; margin:0; padding:0}
 .lplan-l .lp{display:flex; align-items:center; gap:10px; padding:9px 0; border-top:1px solid var(--line); cursor:pointer}
@@ -3311,7 +3324,7 @@ li.txg > details.txd > ul{margin:0 !important}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v243</p>
+      <p class="sync" id="appVersion">Phiên bản v244</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -6328,91 +6341,140 @@ function startNgay50k(){
   const LGRP_KEY = "ngay50k:lgrp";
   function lgrpOpen(){ try{ return JSON.parse(lsGet(LGRP_KEY) || "{}") || {}; }catch(e){ return {}; } }
   /* các kỳ phải trả trong tháng hiện tại (và khoản người thân đã quá hạn) */
-  function monthPlan(list){
-    const now = new Date(todayKey() + "T00:00:00"), tk = todayKey(), ym = tk.slice(0, 7);
-    const at = (y, m, d) => { const dim = new Date(y, m + 1, 0).getDate(); return new Date(y, m, Math.min(d, dim)); };
-    const rows = [], cards = {}, cardLoans = new Set();
+  /* v244: lịch trả 13 tháng (tháng này + 12 tháng tới). Tháng này dùng số thật (đã trả / quá hạn);
+     các tháng sau là dự kiến: gốc mỗi kỳ trừ dần trên số còn nợ, lãi ước tính trên dư nợ còn lại của kỳ đó. */
+  const PLAN_N = 13;
+  function monthsPlan(list){
+    const now = new Date(todayKey() + "T00:00:00"), tk = todayKey(), ym0 = tk.slice(0, 7);
+    const Y = now.getFullYear(), M = now.getMonth();
+    const ymOf = j => { const d = new Date(Y, M + j, 1); return d.getFullYear() + "-" + pad(d.getMonth() + 1); };
+    const at = (j, d) => { const y = new Date(Y, M + j, 1), dim = new Date(y.getFullYear(), y.getMonth() + 1, 0).getDate(); return keyOf(new Date(y.getFullYear(), y.getMonth(), Math.min(d, dim))); };
+    const mdiff = k => (Number(k.slice(0, 4)) - Y) * 12 + Number(k.slice(5, 7)) - (M + 1);
+    const out = []; for(let j = 0; j < PLAN_N; j++) out.push({ ym:ymOf(j), rows:[], cards:{} });
+    const cardLoans = new Set();
+    const addCard = (j, card, amt, got, id, date) => {
+      const c = out[j].cards[card] = out[j].cards[card] || { kind:"card", card, amt:0, got:0, n:0, ids:[], date:"" };
+      c.amt += amt; c.got += got; c.n++; if(id && !c.ids.includes(id)) c.ids.push(id); if(date && (!c.date || date < c.date)) c.date = date;
+    };
     list.forEach(l => {
       const k = loanKind(l);
       if(k === "card"){
-        if(l.from && l.from.slice(0, 7) > ym) return;
-        /* v243: kỳ tháng này đã trừ = phần các lần trả thẻ chia vào khoản này + kỳ do Khoản định kỳ ghi vào thẻ (cardTx mang loan) */
-        let got = (instAlloc().hist[l.id] || []).filter(h => String(h.date).slice(0, 7) === ym).reduce((a, h) => a + h.amt, 0);
-        for(const d in (state.cardTx || {})) if(d.slice(0, 7) === ym) (state.cardTx[d] || []).forEach(x => { if(x && x.loan === l.id) got += Number(x.amt) || 0; });
-        /* chưa đặt "mỗi kỳ": chia đều số còn lại cho các tháng tới hạn trả; không có hạn thì lấy cả số còn lại */
-        const lf = leftOf(l) + got, mLeft = l.due ? Math.max(1, (Number(l.due.slice(0, 4)) - now.getFullYear()) * 12 + Number(l.due.slice(5, 7)) - (now.getMonth() + 1) + 1) : 1;
+        const sIdx = l.from ? Math.max(0, mdiff(l.from)) : 0; if(sIdx >= PLAN_N) return;
+        let got = (instAlloc().hist[l.id] || []).filter(h => String(h.date).slice(0, 7) === ym0).reduce((a, h) => a + h.amt, 0);
+        for(const d in (state.cardTx || {})) if(d.slice(0, 7) === ym0) (state.cardTx[d] || []).forEach(x => { if(x && x.loan === l.id) got += Number(x.amt) || 0; });
+        const lf = leftOf(l) + got, mLeft = l.due ? Math.max(1, mdiff(l.due) + 1) : 1;
         const per = Number(l.per) > 0 ? Number(l.per) : Math.ceil(lf / mLeft);
-        const need = Math.min(per, lf); if(need <= 0) return;
-        const c = cards[l.card] = cards[l.card] || { kind:"card", card:l.card, need:0, got:0, n:0, ids:[] };
-        c.need += need; c.got += Math.min(got, need); c.n++; c.ids.push(l.id); cardLoans.add(l.id);
+        let bal = leftOf(l);
+        for(let j = sIdx; j < PLAN_N; j++){
+          if(j === 0){ const need = Math.min(per, lf); if(need <= 0) continue; const g = Math.min(got, need); addCard(0, l.card, need, g, l.id); bal -= Math.max(0, need - g); }
+          else { if(bal <= 0) break; const x = Math.min(per, bal); addCard(j, l.card, x, 0, l.id); bal -= x; }
+        }
+        cardLoans.add(l.id);
         return;
       }
       if(k === "bank" && Number(l.per) > 0 && Number(l.day) > 0){
-        const due = keyOf(at(now.getFullYear(), now.getMonth(), Number(l.day)));
-        const paid = (l.payments || []).filter(p => String(p.date).slice(0, 7) === ym).reduce((a, p) => a + (Number(p.amt) || 0), 0)
-          + (function(){ let a = 0; (function(b){ for(const d in b) if(d.slice(0, 7) === ym) (b[d] || []).forEach(x => { if(x && x.lid === l.id) a += Number(x.amt) || 0; }); })(state.days); return a; })();
-        const nd = nextDue(l);
-        const amt = paid > 0 ? paid : nd ? nd.tot : Math.min(Number(l.per), leftOf(l));
-        rows.push({ kind:"bank", l, date:due, amt, done:paid > 0, late:!paid && due < tk });
+        const D = Number(l.day), per = Number(l.per), r = Number(l.rate) || 0;
+        let bal = leftOf(l);
+        const paid0 = (l.payments || []).filter(p => String(p.date).slice(0, 7) === ym0).reduce((a, p) => a + (Number(p.amt) || 0), 0)
+          + (function(){ let a = 0; for(const d in state.days) if(d.slice(0, 7) === ym0) (state.days[d] || []).forEach(x => { if(x && x.lid === l.id) a += Number(x.amt) || 0; }); return a; })();
+        for(let j = 0; j < PLAN_N; j++){
+          const due = at(j, D), prev = at(j - 1, D), days = Math.round((new Date(due + "T00:00:00") - new Date(prev + "T00:00:00")) / 86400000);
+          if(j === 0 && paid0 > 0){ out[0].rows.push({ kind:"bank", l, date:due, amt:paid0, done:true }); continue; }
+          if(bal <= 0) break;
+          const goc = Math.min(per, bal), lai = r ? Math.round(bal * r / 100 * days / 360) : 0;
+          out[j].rows.push({ kind:"bank", l, date:due, amt:goc + lai, done:false, late:j === 0 && due < tk, est:j > 0 });
+          bal -= goc;
+        }
         return;
       }
-      if(l.due && l.due.slice(0, 7) <= ym){
-        rows.push({ kind:k, l, date:l.due, amt:leftOf(l), done:false, late:l.due < tk, all:true });
+      if(l.due){
+        const j = l.due.slice(0, 7) <= ym0 ? 0 : mdiff(l.due);
+        if(j < PLAN_N) out[j].rows.push({ kind:k, l, date:l.due, amt:leftOf(l), done:false, late:l.due < tk, all:true });
       }
     });
-    /* v243: trả góp ghi dạng Khoản định kỳ vào thẻ (có tháng kết thúc hoặc gắn khoản vay), chưa tính ở trên */
+    /* trả góp ghi bằng Khoản định kỳ vào thẻ (có tháng kết thúc hoặc gắn khoản vay), chưa tính ở trên */
     recurList().forEach(r => {
       if(!r.amt || !r.card || !(r.to || r.loan)) return;
       if(r.loan && cardLoans.has(r.loan)) return;
-      if(r.to && r.to.slice(0, 7) < ym) return;
-      if(r.from && r.from.slice(0, 7) > ym) return;
       const ln = r.loan ? state.loans.find(x => x.id === r.loan) : null;
-      const done = recurHas(r.id, ym);
-      if(ln && leftOf(ln) <= 0 && !done) return;
-      const amt = ln && !done ? Math.min(Number(r.amt), leftOf(ln)) : Number(r.amt);
-      const c = cards[r.card] = cards[r.card] || { kind:"card", card:r.card, need:0, got:0, n:0, ids:[] };
-      c.need += amt; if(done) c.got += amt; c.n++; if(ln) c.ids.push(ln.id);
-      const day = Math.min(Number(r.day) || 1, new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate());
-      const dk = ym + "-" + pad(day); if(!c.date || dk < c.date) c.date = dk;
-    });
-    Object.values(cards).forEach(c => rows.push({ kind:"card", card:c.card, ids:c.ids, n:c.n, amt:c.need, got:c.got, done:c.got >= c.need, date:c.date || "", late:false }));
-    rows.sort((a, b) => (a.done - b.done) || (b.late - a.late) || (a.date || "9999").localeCompare(b.date || "9999"));
-    return rows;
-  }
-  function loanPlanBox(list){
-    const rows = monthPlan(list); if(!rows.length) return null;
-    const m = new Date().getMonth() + 1;
-    const tot = rows.reduce((a, r) => a + r.amt, 0), paid = rows.reduce((a, r) => a + (r.kind === "card" ? r.got : r.done ? r.amt : 0), 0);
-    const nLate = rows.filter(r => r.late).length;
-    const box = el("section", "lplan");
-    const h = el("div", "lplan-h");
-    h.appendChild(el("b", null, "Phải trả tháng " + m));
-    h.appendChild(el("span", "num", fmt(Math.max(0, tot - paid)) + (paid ? " còn lại" : "")));
-    box.appendChild(h);
-    const sub = el("p", "lplan-sub", rows.filter(r => r.done).length + "/" + rows.length + " khoản đã xong" + (paid ? " · đã trả " + fmt(paid) : "") + (nLate ? " · " + nLate + " quá hạn" : ""));
-    box.appendChild(sub);
-    const pr = el("div", "progress"); const pi = el("i"); pi.style.width = Math.min(100, paid / Math.max(1, tot) * 100) + "%"; pr.appendChild(pi); box.appendChild(pr);
-    const ul = el("ul", "lplan-l");
-    rows.forEach(r => {
-      const li = el("li", "lp" + (r.done ? " done" : "") + (r.late ? " late" : ""));
-      const ck = el("span", "lp-ck"); ck.setAttribute("aria-hidden", "true"); ck.textContent = r.done ? "✓" : r.late ? "!" : "";
-      const mid = el("div", "lp-m");
-      const d = r.date ? r.date.slice(8, 10) + "/" + r.date.slice(5, 7) : "";
-      if(r.kind === "card"){
-        mid.appendChild(el("b", null, "Trả góp " + (cardName(r.card) || "thẻ")));
-        mid.appendChild(el("small", null, [r.n + " khoản", d ? "ngày " + d : "", r.done ? "đã trừ đủ kỳ" : r.got ? "đã trừ " + fmt(r.got) + ", trừ tiếp khi trả thẻ" : "trừ khi trả thẻ"].filter(Boolean).join(" · ")));
-      } else {
-        mid.appendChild(el("b", null, loanName(r.l)));
-        mid.appendChild(el("small", null, [d ? (r.late ? "Hạn " + d + ", quá hạn" : (r.done ? "Ngày " : "Hạn ") + d) : "", r.done ? "đã trả" : r.all ? "trả hết" : r.kind === "bank" ? (r.l.rate ? "gốc + lãi ước tính" : "gốc kỳ này") : ""].filter(Boolean).join(" · ")));
+      let bal = ln ? leftOf(ln) : Infinity;
+      for(let j = 0; j < PLAN_N; j++){
+        const ym = out[j].ym;
+        if(r.to && r.to.slice(0, 7) < ym) break;
+        if(r.from && r.from.slice(0, 7) > ym) continue;
+        const done = j === 0 && recurHas(r.id, ym);
+        if(!done && bal <= 0) break;
+        const amt = done ? Number(r.amt) : Math.min(Number(r.amt), bal);
+        if(!done) bal -= amt;
+        addCard(j, r.card, amt, done ? amt : 0, ln ? ln.id : null, at(j, Number(r.day) || 1));
       }
-      const a = el("span", "lp-a num", (r.done ? "" : "") + fmt(r.kind === "card" && !r.done ? r.amt - r.got : r.amt));
-      li.append(ck, mid, a);
-      const id = r.l ? r.l.id : r.ids.length === 1 ? r.ids[0] : null;
-      if(id){ li.setAttribute("role", "button"); li.tabIndex = 0; li.onclick = () => { detailLoanId = id; payOpen = false; drawOpen = false; laiOpen = false; editRecId = null; renderLoans(); showLoanView("detail"); }; }
-      else if(r.kind === "card"){ li.setAttribute("role", "button"); li.tabIndex = 0; li.onclick = () => { const g = document.querySelector('#loanList details.lgrp-card'); if(g){ g.open = true; g.scrollIntoView({ block:"start", behavior:"smooth" }); } }; }
-      ul.appendChild(li);
     });
-    box.appendChild(ul);
+    out.forEach((m, j) => {
+      Object.values(m.cards).forEach(c => m.rows.push({ kind:"card", card:c.card, ids:c.ids, n:c.n, amt:c.amt, got:c.got, done:c.got >= c.amt, date:c.date, late:false, est:j > 0 }));
+      m.rows.sort((a, b) => (a.done - b.done) || ((b.late ? 1 : 0) - (a.late ? 1 : 0)) || (a.date || "9999").localeCompare(b.date || "9999"));
+      m.tot = m.rows.reduce((a, r) => a + r.amt, 0);
+      m.paid = m.rows.reduce((a, r) => a + (r.kind === "card" ? r.got : r.done ? r.amt : 0), 0);
+    });
+    return out;
+  }
+  var planOff = 0;
+  function loanPlanBox(list){
+    const plan = monthsPlan(list);
+    if(!plan.some(m => m.rows.length)) return null;
+    planOff = Math.max(0, Math.min(PLAN_N - 1, planOff));
+    const box = el("section", "lplan");
+    const draw = () => {
+      box.innerHTML = "";
+      const m = plan[planOff], mm = Number(m.ym.slice(5, 7)), yy = m.ym.slice(0, 4), fut = planOff > 0;
+      const h = el("div", "lplan-h");
+      const nav = el("div", "lplan-nav");
+      const bp = el("button", "lpn", "‹"); bp.type = "button"; bp.setAttribute("aria-label", "Tháng trước"); bp.disabled = planOff === 0; bp.onclick = () => { planOff--; draw(); };
+      const bn = el("button", "lpn", "›"); bn.type = "button"; bn.setAttribute("aria-label", "Tháng sau"); bn.disabled = planOff === PLAN_N - 1; bn.onclick = () => { planOff++; draw(); };
+      nav.append(bp, el("b", null, "Phải trả " + (fut ? "T" + mm + "/" + yy : "tháng " + mm)), bn);
+      h.append(nav, el("span", "num", fmt(Math.max(0, m.tot - m.paid)) + (m.paid ? " còn lại" : "")));
+      box.appendChild(h);
+      /* dải 13 cột: nhìn nhanh tháng nào nặng, chạm để xem */
+      const mx = Math.max(1, ...plan.map(x => x.tot));
+      const bars = el("div", "lplan-bars"); bars.setAttribute("role", "tablist");
+      plan.forEach((x, j) => {
+        const b = el("button", "lpb" + (j === planOff ? " on" : "")); b.type = "button";
+        b.setAttribute("aria-label", "Tháng " + Number(x.ym.slice(5, 7)) + "/" + x.ym.slice(0, 4) + ": " + fmt(x.tot));
+        b.setAttribute("aria-selected", j === planOff ? "true" : "false");
+        const bi = el("i"); bi.style.height = Math.max(x.tot ? 8 : 0, Math.round(Math.sqrt(x.tot / mx) * 100)) + "%";   /* căn bậc hai: tháng có khoản lớn không đè bẹp các tháng khác */
+        const lb = Number(x.ym.slice(5, 7)) === 1 ? "T1/" + x.ym.slice(2, 4) : "T" + Number(x.ym.slice(5, 7));
+        b.append(el("span", "lpb-c"), el("small", null, lb)); b.firstChild.appendChild(bi);
+        b.onclick = () => { planOff = j; draw(); };
+        bars.appendChild(b);
+      });
+      box.appendChild(bars);
+      const rows = m.rows, nLate = rows.filter(r => r.late).length;
+      box.appendChild(el("p", "lplan-sub", !rows.length ? "Không có khoản nào phải trả tháng này."
+        : fut ? rows.length + " khoản · dự kiến theo lịch trả"
+        : rows.filter(r => r.done).length + "/" + rows.length + " khoản đã xong" + (m.paid ? " · đã trả " + fmt(m.paid) : "") + (nLate ? " · " + nLate + " quá hạn" : "")));
+      if(!fut && rows.length){ const pr = el("div", "progress"); const pi = el("i"); pi.style.width = Math.min(100, m.paid / Math.max(1, m.tot) * 100) + "%"; pr.appendChild(pi); box.appendChild(pr); }
+      const ul = el("ul", "lplan-l");
+      rows.forEach(r => {
+        const li = el("li", "lp" + (r.done ? " done" : "") + (r.late ? " late" : "") + (fut ? " fut" : ""));
+        const ck = el("span", "lp-ck"); ck.setAttribute("aria-hidden", "true"); ck.textContent = r.done ? "✓" : r.late ? "!" : "";
+        const mid = el("div", "lp-m");
+        const d = r.date ? r.date.slice(8, 10) + "/" + r.date.slice(5, 7) : "";
+        if(r.kind === "card"){
+          mid.appendChild(el("b", null, "Trả góp " + (cardName(r.card) || "thẻ")));
+          mid.appendChild(el("small", null, [r.n + " khoản", d ? "ngày " + d : "", fut ? "trừ khi trả thẻ" : r.done ? "đã trừ đủ kỳ" : r.got ? "đã trừ " + fmt(r.got) + ", trừ tiếp khi trả thẻ" : "trừ khi trả thẻ"].filter(Boolean).join(" · ")));
+        } else {
+          mid.appendChild(el("b", null, loanName(r.l)));
+          mid.appendChild(el("small", null, [d ? (r.late ? "Hạn " + d + ", quá hạn" : (r.done ? "Ngày " : "Hạn ") + d) : "", r.done ? "đã trả" : r.all ? "trả hết" : r.kind === "bank" ? (r.l.rate ? "gốc + lãi ước tính" : "gốc kỳ này") : ""].filter(Boolean).join(" · ")));
+        }
+        const a = el("span", "lp-a num", fmt(r.kind === "card" && !r.done ? r.amt - r.got : r.amt));
+        li.append(ck, mid, a);
+        const id = r.l ? r.l.id : r.ids.length === 1 ? r.ids[0] : null;
+        if(id){ li.setAttribute("role", "button"); li.tabIndex = 0; li.onclick = () => { detailLoanId = id; payOpen = false; drawOpen = false; laiOpen = false; editRecId = null; renderLoans(); showLoanView("detail"); }; }
+        else if(r.kind === "card"){ li.setAttribute("role", "button"); li.tabIndex = 0; li.onclick = () => { const g = document.querySelector('#loanList details.lgrp-card'); if(g){ g.open = true; g.scrollIntoView({ block:"start", behavior:"smooth" }); } }; }
+        ul.appendChild(li);
+      });
+      box.appendChild(ul);
+    };
+    draw();
     return box;
   }
   function loanBorrowView(box, list){

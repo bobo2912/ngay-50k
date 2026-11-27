@@ -1,6 +1,13 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v243, ngày 27/11/2026
+**Phiên bản hiện tại:** v244, ngày 27/11/2026
+
+---
+
+## Có gì mới trong v244 (so với v243)
+
+- **Phải trả xem được 12 tháng tới**: khung Phải trả ở tab Đi vay có nút ‹ › và dải 13 cột nhỏ (tháng này + 12 tháng tới, cao theo tổng phải trả; dùng căn bậc hai để tháng có khoản rất lớn không đè bẹp các tháng khác). Chạm cột để xem tháng đó.
+- Tháng này vẫn là số thật (✓ đã trả, ! quá hạn). Các tháng sau là **dự kiến**: vay ngân hàng có lịch thì gốc mỗi kỳ trừ dần trên số còn nợ, lãi ước tính trên dư nợ còn lại của kỳ đó (/360 như ngân hàng), hết nợ thì thôi; trả góp thẻ trừ dần mỗi kỳ tới khi hết (khoản chưa có "Mỗi kỳ" chia đều tới hạn trả), bắt đầu từ tháng "Trừ từ ngày"; trả góp ghi bằng Khoản định kỳ vào thẻ chạy tới tháng kết thúc; khoản người thân hiện ở tháng có hạn trả.
 
 ---
 
