@@ -1,6 +1,12 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v237, ngày 27/11/2026
+**Phiên bản hiện tại:** v238, ngày 27/11/2026
+
+---
+
+## Có gì mới trong v238 (so với v237)
+
+- Khung **Định kỳ** cuối mỗi ngày cũng mặc định thu gọn như khung Không tính chi: chỉ hiện "Định kỳ · N khoản · tổng", bấm mới bung ra; mở ngày nào chỉ ngày đó mở. Đang tìm trong lịch sử ví thì mở sẵn.
 
 ---
 

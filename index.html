@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v237";
+  var K = "ngay50k:errlog", VER = "v238";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -3274,7 +3274,7 @@ li.txg > details.txd > ul{margin:0 !important}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v237</p>
+      <p class="sync" id="appVersion">Phiên bản v238</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -4895,15 +4895,16 @@ function startNgay50k(){
     const lb = li.getAttribute("aria-label"); if(lb) li.setAttribute("aria-label", lb + TX_AK[k][1]);
   }
   var txgShut = { fx:false, mv:false, sv:false };   /* khung đã thu gọn (nhớ trong lúc mở app) */
-  /* v236: khung "Không tính chi" mặc định thu gọn; bấm mở ngày nào thì chỉ ngày đó mở (nhớ trong lúc mở app). Đang tìm kiếm thì mở sẵn để thấy kết quả. */
+  /* v236: khung "Không tính chi" mặc định thu gọn; v238: khung "Định kỳ" cũng vậy. Bấm mở ngày nào thì chỉ khung đó của ngày đó mở (nhớ trong lúc mở app). Đang tìm kiếm thì mở sẵn để thấy kết quả. */
   var txgMvOpen = new Set();
+  const TXG_SHUT = { fx:1, mv:1 };
   function txDayList(ul, rows, plain, dk, force){
     if(txView() !== "group"){ rows.forEach(r => ul.appendChild(r.el())); return; }
     rows.filter(r => r.g !== "fx" && r.g !== "mv" && r.g !== "sv").forEach(r => ul.appendChild(r.el()));
     [["fx", "Định kỳ"], ["mv", "Không tính chi"], ["sv", "Tiết kiệm & đầu tư"]].forEach(([g, label]) => {
       const rs = rows.filter(r => r.g === g); if(!rs.length) return;
       const li = document.createElement("li"); li.className = "txg txg-" + g;
-      const dt = document.createElement("details"); dt.className = "txd"; dt.open = force || (g === "mv" ? !!(dk && txgMvOpen.has(dk)) : !txgShut[g]);
+      const dt = document.createElement("details"); dt.className = "txd"; dt.open = force || (TXG_SHUT[g] ? !!(dk && txgMvOpen.has(g + dk)) : !txgShut[g]);
       const vs = rs.map(r => r.v || 0), allNeg = vs.every(v => v <= 0), allPos = vs.every(v => v >= 0), tot = vs.reduce((a, v) => a + Math.abs(v), 0);
       const sm = document.createElement("summary");
       sm.innerHTML = '<span class="txc"></span><span class="txn"></span><b class="num"></b>';
@@ -4911,7 +4912,7 @@ function startNgay50k(){
       sm.children[2].textContent = tot && (allNeg || allPos) ? (plain && allNeg ? "" : allNeg ? "−" : "+") + fmt(tot) : "";
       const inner = document.createElement("ul"); rs.forEach(r => inner.appendChild(r.el()));
       dt.append(sm, inner);
-      dt.addEventListener("toggle", () => { if(force) return; if(g === "mv"){ if(dk){ if(dt.open) txgMvOpen.add(dk); else txgMvOpen.delete(dk); } } else txgShut[g] = !dt.open; });
+      dt.addEventListener("toggle", () => { if(force) return; if(TXG_SHUT[g]){ if(dk){ if(dt.open) txgMvOpen.add(g + dk); else txgMvOpen.delete(g + dk); } } else txgShut[g] = !dt.open; });
       li.appendChild(dt); ul.appendChild(li);
     });
   }
