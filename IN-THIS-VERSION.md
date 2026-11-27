@@ -1,6 +1,12 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v244, ngày 27/11/2026
+**Phiên bản hiện tại:** v245, ngày 27/11/2026
+
+---
+
+## Có gì mới trong v245 (so với v244)
+
+- Khung Phải trả: tiêu đề rút gọn thành **‹ Tháng 11 ›** (năm sau thì "Tháng 1/2027"), số tiền bỏ chữ "còn lại" và luôn nằm một dòng; dòng mô tả gọn lại ("1/5 khoản xong · đã trả … · 2 quá hạn"). Trước đây tiêu đề + số tiền dài làm rớt dòng trên iPhone.
 
 ---
 

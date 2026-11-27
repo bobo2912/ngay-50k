@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v244";
+  var K = "ngay50k:errlog", VER = "v245";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -390,7 +390,8 @@ ul{list-style:none; margin:0; padding:0}
 .lplan{background:var(--surface); border:1.5px solid var(--line); border-radius:22px; padding:14px 16px 6px; margin-top:10px}
 .lplan-h{display:flex; align-items:baseline; justify-content:space-between; gap:10px}
 .lplan-h b{font-size:1rem}
-.lplan-h span{font-weight:700; font-size:1rem}
+.lplan-h span{font-weight:700; font-size:1rem; white-space:nowrap}
+.lplan-h{align-items:center}
 .lplan-sub{margin:2px 0 8px; font-size:.78rem; color:var(--muted)}
 .lplan-nav{display:flex; align-items:center; gap:6px; min-width:0}
 .lplan-nav b{white-space:nowrap}
@@ -3324,7 +3325,7 @@ li.txg > details.txd > ul{margin:0 !important}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v244</p>
+      <p class="sync" id="appVersion">Phiên bản v245</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -6430,8 +6431,8 @@ function startNgay50k(){
       const nav = el("div", "lplan-nav");
       const bp = el("button", "lpn", "‹"); bp.type = "button"; bp.setAttribute("aria-label", "Tháng trước"); bp.disabled = planOff === 0; bp.onclick = () => { planOff--; draw(); };
       const bn = el("button", "lpn", "›"); bn.type = "button"; bn.setAttribute("aria-label", "Tháng sau"); bn.disabled = planOff === PLAN_N - 1; bn.onclick = () => { planOff++; draw(); };
-      nav.append(bp, el("b", null, "Phải trả " + (fut ? "T" + mm + "/" + yy : "tháng " + mm)), bn);
-      h.append(nav, el("span", "num", fmt(Math.max(0, m.tot - m.paid)) + (m.paid ? " còn lại" : "")));
+      nav.append(bp, el("b", null, "Tháng " + mm + (fut && yy !== String(new Date().getFullYear()) ? "/" + yy : "")), bn);   /* v245: tiêu đề ngắn, không rớt dòng */
+      h.append(nav, el("span", "num", fmt(Math.max(0, m.tot - m.paid))));
       box.appendChild(h);
       /* dải 13 cột: nhìn nhanh tháng nào nặng, chạm để xem */
       const mx = Math.max(1, ...plan.map(x => x.tot));
@@ -6450,7 +6451,7 @@ function startNgay50k(){
       const rows = m.rows, nLate = rows.filter(r => r.late).length;
       box.appendChild(el("p", "lplan-sub", !rows.length ? "Không có khoản nào phải trả tháng này."
         : fut ? rows.length + " khoản · dự kiến theo lịch trả"
-        : rows.filter(r => r.done).length + "/" + rows.length + " khoản đã xong" + (m.paid ? " · đã trả " + fmt(m.paid) : "") + (nLate ? " · " + nLate + " quá hạn" : "")));
+        : rows.filter(r => r.done).length + "/" + rows.length + " khoản xong" + (m.paid ? " · đã trả " + fmt(m.paid) : "") + (nLate ? " · " + nLate + " quá hạn" : "")));
       if(!fut && rows.length){ const pr = el("div", "progress"); const pi = el("i"); pi.style.width = Math.min(100, m.paid / Math.max(1, m.tot) * 100) + "%"; pr.appendChild(pi); box.appendChild(pr); }
       const ul = el("ul", "lplan-l");
       rows.forEach(r => {
