@@ -1,6 +1,12 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v236, ngày 27/11/2026
+**Phiên bản hiện tại:** v237, ngày 27/11/2026
+
+---
+
+## Có gì mới trong v237 (so với v236)
+
+- Sửa nút **Xem thêm N khoản** trong câu trả lời báo cáo của Chat (khi mở một nhóm như Ăn, Uống) bị rớt từng chữ thành cột dọc. Giờ nằm gọn một dòng, thụt vào thẳng với danh sách khoản.
 
 ---
 

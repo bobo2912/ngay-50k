@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v236";
+  var K = "ngay50k:errlog", VER = "v237";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -1797,6 +1797,9 @@ header .date{font-size:1.25rem}
 .rpt > .rpt-l{padding-left:0; margin-top:6px}
 .rpt-l li{display:flex; align-items:baseline; gap:6px; padding:4px 0; border-bottom:1px dashed var(--line); font-size:.8rem}
 .rpt-l li:last-child{border-bottom:0}
+/* v237: nút "Xem thêm N khoản" nằm trong nhóm (.rpt-g) không ăn kiểu lưới của dòng nhóm, tránh chữ rớt từng ký tự */
+.rpt-g .rpt-more{border-top:0}
+.rpt-g .rpt-more > summary{display:block; padding:6px 0 6px 30px; font-weight:600; color:var(--note); white-space:nowrap}
 .rpt-l .d{flex:none; width:36px; color:var(--muted); font-size:.72rem; font-variant-numeric:tabular-nums}
 .rpt-l .i{flex:none; font-size:.85rem}
 .rpt-l .n{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
@@ -3271,7 +3274,7 @@ li.txg > details.txd > ul{margin:0 !important}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v236</p>
+      <p class="sync" id="appVersion">Phiên bản v237</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
