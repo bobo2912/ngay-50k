@@ -1,6 +1,12 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v238, ngày 27/11/2026
+**Phiên bản hiện tại:** v239, ngày 27/11/2026
+
+---
+
+## Có gì mới trong v239 (so với v238)
+
+- Sửa Chat: gõ xong hạ bàn phím thì trang có lúc bị kẹt ở đầu, hiện lại các câu trả lời cũ thay vì câu mới nhất. Giờ bàn phím hạ bằng đường nào (chạm ra ngoài, vuốt, nút Xong) app cũng cuộn về tin cuối thêm vài nhịp trong lúc iPhone trượt bàn phím xuống; bạn tự vuốt thì app thôi không cuộn.
 
 ---
 

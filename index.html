@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v238";
+  var K = "ngay50k:errlog", VER = "v239";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -3274,7 +3274,7 @@ li.txg > details.txd > ul{margin:0 !important}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v238</p>
+      <p class="sync" id="appVersion">Phiên bản v239</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -9925,6 +9925,29 @@ function startNgay50k(){
   document.addEventListener("visibilitychange", () => { if(!document.hidden) setTimeout(redock, 120); });
   window.addEventListener("pageshow", redock); window.addEventListener("focus", redock);
   if(window.ResizeObserver) new ResizeObserver(placeDockSoon).observe($("chatDock"));
+  /* v239: bàn phím hạ (dù bằng đường nào: bấm ra ngoài, vuốt, nút Xong, chuyển app…) thì trang đang ở đầu (lúc gõ, khung chat nổi riêng).
+     iPhone còn trượt bàn phím xuống một lúc và có thể ghi đè lần cuộn đầu, để trang kẹt ở đầu, hiện lại kết quả cũ.
+     Nên cuộn lại về tin cuối thêm vài nhịp; người dùng tự vuốt thì thôi. */
+  (function(){
+    let had = document.body.classList.contains("kb"), stop = 0, tms = [];
+    const cancel = () => { tms.forEach(clearTimeout); tms = []; };
+    const after = () => {
+      cancel(); if(currentTab !== "chat") return;
+      const t0 = Date.now(); stop = 0;
+      [0, 120, 300, 550, 850].forEach(ms => tms.push(setTimeout(() => {
+        if(stop > t0 || document.body.classList.contains("kb") || currentTab !== "chat") return;
+        window.scrollTo(0, chatEndY());
+      }, ms)));
+    };
+    new MutationObserver(() => {
+      const now = document.body.classList.contains("kb");
+      if(had && !now) after(); else if(now) cancel();
+      had = now;
+    }).observe(document.body, { attributes:true, attributeFilter:["class"] });
+    const user = () => { stop = Date.now(); };
+    document.addEventListener("touchmove", user, { passive:true });
+    document.addEventListener("wheel", user, { passive:true });
+  })();
   $("chatToWallet").onclick = () => showTab("vi");
   $("soSeg").querySelectorAll("button").forEach(b => b.onclick = () => showTab(b.dataset.so));
   $("chatLog").addEventListener("click", e => {
