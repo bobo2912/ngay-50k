@@ -1,6 +1,12 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v240, ngày 27/11/2026
+**Phiên bản hiện tại:** v241, ngày 27/11/2026
+
+---
+
+## Có gì mới trong v241 (so với v240)
+
+- Tab Tài sản, phần Nợ & cho vay: nhóm ít khoản (Cho vay, Tất toán) không còn để thừa khoảng trống dài bên dưới danh sách.
 
 ---
 
