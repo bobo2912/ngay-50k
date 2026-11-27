@@ -62,6 +62,11 @@ const CASES = [
     [{ amt:30000, sd:500000, note:"an trua" }]],
   ["Thẻ tín dụng", `The ****1234 giao dich -350,000VND tai CIRCLE K luc ${DY} 18:00. Han muc con lai 10,000,000VND`,
     [{ amt:350000, note:"CIRCLE K", sd:0 }]],
+  /* ---- v234: màn "Chi tiết tài khoản" (vd MB) chụp/dán nguyên màn, nhiều khoản liền nhau, mỗi khoản một nhãn TIỀN RA / TIỀN VÀO riêng dòng ---- */
+  ["Màn Chi tiết tài khoản, nhiều khoản", `${DY}\nTIỀN RA\n-286,000 VND\nCUSTOMER PHAN HUU HUNG tien an team. DEN: NGUYEN THI GIANG\n16:32\n\nTIỀN VÀO\n+2,600,000 VND\nCUSTOMER PHAN HUU HUNG chuyen tien. TU: PHAN HUU HUNG\n16:31\n\nTIỀN RA\n-100,000 VND\nCUSTOMER PHAN HUU HUNG chuyen tien. DEN: PHAN HUU HUNG\n16:30`,
+    [{ amt:286000, inc:false, day:K, time:"16:32", note:"NGUYEN THI GIANG" },
+     { amt:2600000, inc:true, day:K, time:"16:31", note:"PHAN HUU HUNG" },
+     { amt:100000, inc:false, day:K, time:"16:30", note:"PHAN HUU HUNG" }]],
 ];
 
 let fail = 0;

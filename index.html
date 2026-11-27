@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v233";
+  var K = "ngay50k:errlog", VER = "v234";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -3270,7 +3270,7 @@ li.txg > details.txd > ul{margin:0 !important}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v233</p>
+      <p class="sync" id="appVersion">Phiên bản v234</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3827,15 +3827,15 @@ li.txg > details.txd > ul{margin:0 !important}
 <input type="file" id="phFile" accept="image/*" hidden>
 <div class="ph-view" id="phView" role="dialog" aria-modal="true" aria-label="Ảnh hoá đơn" hidden><img id="phImg" alt="Ảnh hoá đơn"><div class="ph-bar"><button type="button" id="phDel">Bỏ ảnh này</button><button type="button" id="phClose">Đóng</button></div></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=233"></script>
-<script src="thu-vien-cau.js?v=233"></script>
-<script src="quy-tac.js?v=233"></script>
-<script src="du-lieu.js?v=233"></script>
-<script src="doc-so-tk.js?v=233"></script>
-<script src="doc-khoan-vay.js?v=233"></script>
-<script src="tich-luy.js?v=233"></script>
-<script src="native.js?v=233"></script>
-<script src="lock.js?v=233"></script>
+<script src="parse-vi.js?v=234"></script>
+<script src="thu-vien-cau.js?v=234"></script>
+<script src="quy-tac.js?v=234"></script>
+<script src="du-lieu.js?v=234"></script>
+<script src="doc-so-tk.js?v=234"></script>
+<script src="doc-khoan-vay.js?v=234"></script>
+<script src="tich-luy.js?v=234"></script>
+<script src="native.js?v=234"></script>
+<script src="lock.js?v=234"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -11778,6 +11778,8 @@ function startNgay50k(){
       if(!m) m = s.match(/\bat\s+([A-Z][A-Z0-9&'*._\-]+(?:\s+[A-Z0-9&'*._\-]+){0,4})/);   /* "... at CIRCLE K on ..." */
       if(!m) m = s.match(/(?:\bn[^\s]{1,2}i\s?dung(?: giao d[iị]ch)?|\bNDung\b|\bND\b)[:\s]+(.{2,70})/i);
       if(!m) m = s.match(/\bRef\b[:\s]*[A-Z0-9.\-]{4,}\s+(.{2,60})/i);            /* Vietcombank: "Ref MBVCB.123 noi dung" */
+      if(!m) m = s.match(/\bDEN\s*[:：]\s*(.{2,60}?)(?=\s+\d|\s*$)/i);           /* v234: màn Chi tiết tài khoản (MB): "… DEN: NGUYEN THI GIANG" */
+      if(!m) m = s.match(/\bTU\s*[:：]\s*(.{2,60}?)(?=\s+\d|\s*$)/i);
       if(m) return m[1];
       const caps = s.match(/\b[A-Z][A-Z0-9&'._-]{2,}(?:\s+[A-Z0-9&'._-]{2,}){0,4}\b/g);
       if(caps){
@@ -11808,7 +11810,9 @@ function startNgay50k(){
       l.indexOf("|") >= 0 ||                          /* v129: nhiều thông báo dán liền nhau, mỗi dòng có "|" là một thông báo */
       /^(thông báo|thong bao|biến động|bien dong)/i.test(l) ||
       /(yesterday|hôm qua|hom qua)\s*,?\s*\d{1,2}:\d{2}/i.test(l) ||
-      /\d{1,2}:\d{2}\s?(am|pm)\s*$/i.test(l);
+      /\d{1,2}:\d{2}\s?(am|pm)\s*$/i.test(l) ||
+      /^ti[ềe]n\s*(ra|v[àa]o)$/i.test(l) ||            /* v234: màn "Chi tiết tài khoản" (vd MB): mỗi khoản có nhãn TIỀN RA / TIỀN VÀO riêng một dòng */
+      /^\d{1,2}\/\d{1,2}\/\d{4}$/.test(l);              /* v234: dòng ngày riêng (vd 27/11/2026) đứng đầu các khoản trong ngày đó */
     const fixSep = t => String(t || "")
       .replace(/ /g, " ")
       .replace(/(VN[DĐ])\s*[|IlJj!\]\)}]+(?![a-zà-ỹđ])\s*/gi, "$1|")
@@ -11841,7 +11845,12 @@ function startNgay50k(){
       });
       blocks.push(segs);
     });
+    let stmtDay = "";   /* v234: ngày của dòng tiêu đề ngày (màn Chi tiết tài khoản), áp cho các khoản theo sau chưa có ngày riêng */
     blocks.forEach(segs => {
+      if(segs.length === 1 && /^\d{1,2}\/\d{1,2}\/\d{4}$/.test(segs[0].trim())){
+        const d = dayOf(segs[0]); if(d) stmtDay = d;
+        return;
+      }
       let card = { first6:"", last4:"" }, cur = null;
       const flush = () => {
         if(cur && cur.amt >= 1000){
@@ -11853,7 +11862,7 @@ function startNgay50k(){
         }
         cur = null;
       };
-      const rec = () => cur || (cur = { amt:0, sd:0, nd:"", where:"", day:"", hm:null, mi:0, first6:card.first6, last4:card.last4, raw:"", pick:true, ndDay:"", ndT:null });
+      const rec = () => cur || (cur = { amt:0, sd:0, nd:"", where:"", day:stmtDay || "", hm:null, mi:0, first6:card.first6, last4:card.last4, raw:"", pick:true, ndDay:"", ndT:null });
       segs.forEach(seg => {
         const s0 = seg.trim(); if(s0.length < 2) return;
         const sp = splitND(s0), s = sp.main;
