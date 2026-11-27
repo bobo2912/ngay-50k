@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v242";
+  var K = "ngay50k:errlog", VER = "v243";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -405,7 +405,7 @@ ul{list-style:none; margin:0; padding:0}
 .lp.late .lp-m small{color:var(--over)}
 .lp-a{flex:none; font-weight:600; font-size:.9rem}
 .lp.done .lp-a{color:var(--muted); text-decoration:line-through; font-weight:500}
-details.lgrp{margin-top:10px; border:1px dashed var(--line); border-radius:22px; background:color-mix(in srgb, var(--bg) 55%, transparent)}
+details.lgrp{padding:0 !important; margin-top:10px; border:1px dashed var(--line); border-radius:22px; background:color-mix(in srgb, var(--bg) 55%, transparent)}
 details.lgrp > summary{list-style:none; display:flex; align-items:center; gap:10px; padding:12px 16px; cursor:pointer}
 details.lgrp > summary::-webkit-details-marker{display:none}
 details.lgrp > summary::after{content:""; flex:none; width:7px; height:7px; border-right:1.6px solid var(--muted); border-bottom:1.6px solid var(--muted); transform:rotate(-45deg); margin-left:2px; transition:transform .2s}
@@ -3311,7 +3311,7 @@ li.txg > details.txd > ul{margin:0 !important}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v242</p>
+      <p class="sync" id="appVersion">Phiên bản v243</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -6331,16 +6331,20 @@ function startNgay50k(){
   function monthPlan(list){
     const now = new Date(todayKey() + "T00:00:00"), tk = todayKey(), ym = tk.slice(0, 7);
     const at = (y, m, d) => { const dim = new Date(y, m + 1, 0).getDate(); return new Date(y, m, Math.min(d, dim)); };
-    const rows = [], cards = {};
+    const rows = [], cards = {}, cardLoans = new Set();
     list.forEach(l => {
       const k = loanKind(l);
       if(k === "card"){
-        if(!(Number(l.per) > 0)) return;
         if(l.from && l.from.slice(0, 7) > ym) return;
-        const got = (instAlloc().hist[l.id] || []).filter(h => String(h.date).slice(0, 7) === ym).reduce((a, h) => a + h.amt, 0);
-        const need = Math.min(Number(l.per), leftOf(l) + got); if(need <= 0) return;
+        /* v243: kỳ tháng này đã trừ = phần các lần trả thẻ chia vào khoản này + kỳ do Khoản định kỳ ghi vào thẻ (cardTx mang loan) */
+        let got = (instAlloc().hist[l.id] || []).filter(h => String(h.date).slice(0, 7) === ym).reduce((a, h) => a + h.amt, 0);
+        for(const d in (state.cardTx || {})) if(d.slice(0, 7) === ym) (state.cardTx[d] || []).forEach(x => { if(x && x.loan === l.id) got += Number(x.amt) || 0; });
+        /* chưa đặt "mỗi kỳ": chia đều số còn lại cho các tháng tới hạn trả; không có hạn thì lấy cả số còn lại */
+        const lf = leftOf(l) + got, mLeft = l.due ? Math.max(1, (Number(l.due.slice(0, 4)) - now.getFullYear()) * 12 + Number(l.due.slice(5, 7)) - (now.getMonth() + 1) + 1) : 1;
+        const per = Number(l.per) > 0 ? Number(l.per) : Math.ceil(lf / mLeft);
+        const need = Math.min(per, lf); if(need <= 0) return;
         const c = cards[l.card] = cards[l.card] || { kind:"card", card:l.card, need:0, got:0, n:0, ids:[] };
-        c.need += need; c.got += Math.min(got, need); c.n++; c.ids.push(l.id);
+        c.need += need; c.got += Math.min(got, need); c.n++; c.ids.push(l.id); cardLoans.add(l.id);
         return;
       }
       if(k === "bank" && Number(l.per) > 0 && Number(l.day) > 0){
@@ -6356,7 +6360,22 @@ function startNgay50k(){
         rows.push({ kind:k, l, date:l.due, amt:leftOf(l), done:false, late:l.due < tk, all:true });
       }
     });
-    Object.values(cards).forEach(c => rows.push({ kind:"card", card:c.card, ids:c.ids, n:c.n, amt:c.need, got:c.got, done:c.got >= c.need, date:"", late:false }));
+    /* v243: trả góp ghi dạng Khoản định kỳ vào thẻ (có tháng kết thúc hoặc gắn khoản vay), chưa tính ở trên */
+    recurList().forEach(r => {
+      if(!r.amt || !r.card || !(r.to || r.loan)) return;
+      if(r.loan && cardLoans.has(r.loan)) return;
+      if(r.to && r.to.slice(0, 7) < ym) return;
+      if(r.from && r.from.slice(0, 7) > ym) return;
+      const ln = r.loan ? state.loans.find(x => x.id === r.loan) : null;
+      const done = recurHas(r.id, ym);
+      if(ln && leftOf(ln) <= 0 && !done) return;
+      const amt = ln && !done ? Math.min(Number(r.amt), leftOf(ln)) : Number(r.amt);
+      const c = cards[r.card] = cards[r.card] || { kind:"card", card:r.card, need:0, got:0, n:0, ids:[] };
+      c.need += amt; if(done) c.got += amt; c.n++; if(ln) c.ids.push(ln.id);
+      const day = Math.min(Number(r.day) || 1, new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate());
+      const dk = ym + "-" + pad(day); if(!c.date || dk < c.date) c.date = dk;
+    });
+    Object.values(cards).forEach(c => rows.push({ kind:"card", card:c.card, ids:c.ids, n:c.n, amt:c.need, got:c.got, done:c.got >= c.need, date:c.date || "", late:false }));
     rows.sort((a, b) => (a.done - b.done) || (b.late - a.late) || (a.date || "9999").localeCompare(b.date || "9999"));
     return rows;
   }
@@ -6381,15 +6400,15 @@ function startNgay50k(){
       const d = r.date ? r.date.slice(8, 10) + "/" + r.date.slice(5, 7) : "";
       if(r.kind === "card"){
         mid.appendChild(el("b", null, "Trả góp " + (cardName(r.card) || "thẻ")));
-        mid.appendChild(el("small", null, r.n + " khoản · " + (r.done ? "đã trừ đủ kỳ" : r.got ? "đã trừ " + fmt(r.got) + ", trừ tiếp khi trả thẻ" : "trừ khi trả thẻ")));
+        mid.appendChild(el("small", null, [r.n + " khoản", d ? "ngày " + d : "", r.done ? "đã trừ đủ kỳ" : r.got ? "đã trừ " + fmt(r.got) + ", trừ tiếp khi trả thẻ" : "trừ khi trả thẻ"].filter(Boolean).join(" · ")));
       } else {
         mid.appendChild(el("b", null, loanName(r.l)));
         mid.appendChild(el("small", null, [d ? (r.late ? "Hạn " + d + ", quá hạn" : (r.done ? "Ngày " : "Hạn ") + d) : "", r.done ? "đã trả" : r.all ? "trả hết" : r.kind === "bank" ? (r.l.rate ? "gốc + lãi ước tính" : "gốc kỳ này") : ""].filter(Boolean).join(" · ")));
       }
       const a = el("span", "lp-a num", (r.done ? "" : "") + fmt(r.kind === "card" && !r.done ? r.amt - r.got : r.amt));
       li.append(ck, mid, a);
-      const id = r.l ? r.l.id : r.ids[0];
-      if(id && !(r.kind === "card" && r.ids.length > 1)){ li.setAttribute("role", "button"); li.tabIndex = 0; li.onclick = () => { detailLoanId = id; payOpen = false; drawOpen = false; laiOpen = false; editRecId = null; renderLoans(); showLoanView("detail"); }; }
+      const id = r.l ? r.l.id : r.ids.length === 1 ? r.ids[0] : null;
+      if(id){ li.setAttribute("role", "button"); li.tabIndex = 0; li.onclick = () => { detailLoanId = id; payOpen = false; drawOpen = false; laiOpen = false; editRecId = null; renderLoans(); showLoanView("detail"); }; }
       else if(r.kind === "card"){ li.setAttribute("role", "button"); li.tabIndex = 0; li.onclick = () => { const g = document.querySelector('#loanList details.lgrp-card'); if(g){ g.open = true; g.scrollIntoView({ block:"start", behavior:"smooth" }); } }; }
       ul.appendChild(li);
     });

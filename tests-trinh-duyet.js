@@ -251,6 +251,7 @@ khoản vay`);
     /* v242: Đi vay chia nhóm, Phải trả tháng này, tên gợi nhớ */
     await T(() => { const S = __T.state, ym = __T.todayKey().slice(0, 7);
       S.loans.push({ id:"t242a", type:"borrow", who:"LD9990001", amt:12000000, date:"2026-01-05", per:1000000, day:5, payments:[{ id:"t242p", amt:1000000, date:ym + "-05" }], t:1 });
+      const cd = (S.cards || [])[0]; if(cd) S.loans.push({ id:"t243c", type:"borrow", who:"Máy giặt", amt:6000000, date:"2026-01-05", card:cd.id, payments:[], t:3 });
       S.loans.push({ id:"t242b", type:"borrow", who:"Chị Hoa", amt:3000000, date:"2026-01-05", due:ym + "-01", payments:[], t:2 });
       __T.persist(true); });
     await tab("Tài sản");
@@ -258,6 +259,8 @@ khoản vay`);
     ok("Đi vay: có khung Phải trả tháng này", await pg.locator(".lplan").count() === 1);
     ok("Phải trả: khoản ngân hàng đã trả kỳ này có dấu ✓", await pg.locator(".lplan .lp.done").filter({ hasText:"LD9990001" }).count() === 1);
     ok("Phải trả: khoản người thân quá hạn báo đỏ", await pg.locator(".lplan .lp.late").filter({ hasText:"Chị Hoa" }).count() === 1);
+    ok("nhóm vay: khoảng cách trên / dưới tiêu đề đều", await pg.locator("details.lgrp").first().evaluate(d => { const a = d.getBoundingClientRect(), b = d.querySelector(".lg-t").getBoundingClientRect(); return Math.abs((b.top - a.top) - (a.bottom - b.bottom)) <= 3; }));
+    ok("Phải trả: có trả góp thẻ (kể cả khoản chưa đặt mỗi kỳ)", !(await T(() => (__T.state.cards || []).length)) || await pg.locator(".lplan .lp").filter({ hasText:"Trả góp" }).count() >= 1);
     ok("Đi vay: chia nhóm Vay ngân hàng / Người thân", await pg.locator("details.lgrp-bank").count() === 1 && await pg.locator("details.lgrp-fam").count() === 1);
     ok("nhóm mặc định thu gọn", !(await pg.locator("details.lgrp-bank").evaluate(e => e.open)));
     await pg.locator("details.lgrp-bank summary").click(); await pg.waitForTimeout(200);

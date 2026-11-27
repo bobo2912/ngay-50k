@@ -1,6 +1,13 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v242, ngày 27/11/2026
+**Phiên bản hiện tại:** v243, ngày 27/11/2026
+
+---
+
+## Có gì mới trong v243 (so với v242)
+
+- **Phải trả tháng này có trả góp thẻ đầy đủ**: gom theo thẻ cả khoản trả góp chưa đặt "Mỗi kỳ" (lấy số còn lại chia đều tới hạn trả, không có hạn thì cả số còn lại) và trả góp ghi bằng Khoản định kỳ vào thẻ (có tháng kết thúc hoặc gắn khoản vay). Kỳ do Khoản định kỳ ghi vào thẻ tính là đã trừ. Dòng hiện ngày trừ sớm nhất trong tháng.
+- Khung nhóm vay (Vay ngân hàng / Trả góp thẻ / Người thân): khoảng cách từ viền trên tới tiêu đề bằng khoảng cách từ dòng mô tả tới viền dưới (trước đây bị thừa 14px ở trên).
 
 ---
 
