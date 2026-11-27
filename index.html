@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v239";
+  var K = "ngay50k:errlog", VER = "v240";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -1160,6 +1160,10 @@ body.searching header{display:none}
 .as-closed{margin:0 2px 12px; font-size:.86rem; color:var(--muted)}
 .as-closed summary{cursor:pointer; padding:4px 0}
 .as-closed .as-row{opacity:.75}
+/* v240: danh sách đã tất toán có khung như Tiết kiệm / Đầu tư; trước đây dòng nằm trơ trên nền và số tiền tràn ra mép phải */
+.as-closed #asClosedList{background:var(--surface); border:1.5px solid var(--line); border-radius:14px; padding:2px 14px; margin-top:6px; overflow:hidden; font-size:1rem}
+.as-closed #asClosedList .as-row{box-sizing:border-box}
+.as-closed #asClosedList .as-row:first-child{border-top:0}
 .as-row{transition:background-color .4s; border-radius:10px; padding-left:8px !important; padding-right:8px !important; margin:0 -8px; width:calc(100% + 16px) !important}
 .as-row.as-flash{background:color-mix(in srgb, var(--note) 16%, transparent); animation:asFlash 2.4s ease-out}
 @keyframes asFlash{0%,40%{background:color-mix(in srgb, var(--note) 22%, transparent)}100%{background:transparent}}
@@ -3274,7 +3278,7 @@ li.txg > details.txd > ul{margin:0 !important}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v239</p>
+      <p class="sync" id="appVersion">Phiên bản v240</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>

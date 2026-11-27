@@ -1,6 +1,12 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v239, ngày 27/11/2026
+**Phiên bản hiện tại:** v240, ngày 27/11/2026
+
+---
+
+## Có gì mới trong v240 (so với v239)
+
+- Tab Tài sản: mục **Đã tất toán** có lại khung thẻ như Tiết kiệm / Đầu tư; số tiền không còn tràn ra mép phải màn hình.
 
 ---
 
