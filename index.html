@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v235";
+  var K = "ngay50k:errlog", VER = "v236";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -3270,7 +3270,7 @@ li.txg > details.txd > ul{margin:0 !important}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v235</p>
+      <p class="sync" id="appVersion">Phiên bản v236</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -4891,13 +4891,15 @@ function startNgay50k(){
     const lb = li.getAttribute("aria-label"); if(lb) li.setAttribute("aria-label", lb + TX_AK[k][1]);
   }
   var txgShut = { fx:false, mv:false, sv:false };   /* khung đã thu gọn (nhớ trong lúc mở app) */
-  function txDayList(ul, rows, plain){
+  /* v236: khung "Không tính chi" mặc định thu gọn; bấm mở ngày nào thì chỉ ngày đó mở (nhớ trong lúc mở app). Đang tìm kiếm thì mở sẵn để thấy kết quả. */
+  var txgMvOpen = new Set();
+  function txDayList(ul, rows, plain, dk, force){
     if(txView() !== "group"){ rows.forEach(r => ul.appendChild(r.el())); return; }
     rows.filter(r => r.g !== "fx" && r.g !== "mv" && r.g !== "sv").forEach(r => ul.appendChild(r.el()));
     [["fx", "Định kỳ"], ["mv", "Không tính chi"], ["sv", "Tiết kiệm & đầu tư"]].forEach(([g, label]) => {
       const rs = rows.filter(r => r.g === g); if(!rs.length) return;
       const li = document.createElement("li"); li.className = "txg txg-" + g;
-      const dt = document.createElement("details"); dt.className = "txd"; dt.open = !txgShut[g];
+      const dt = document.createElement("details"); dt.className = "txd"; dt.open = force || (g === "mv" ? !!(dk && txgMvOpen.has(dk)) : !txgShut[g]);
       const vs = rs.map(r => r.v || 0), allNeg = vs.every(v => v <= 0), allPos = vs.every(v => v >= 0), tot = vs.reduce((a, v) => a + Math.abs(v), 0);
       const sm = document.createElement("summary");
       sm.innerHTML = '<span class="txc"></span><span class="txn"></span><b class="num"></b>';
@@ -4905,7 +4907,7 @@ function startNgay50k(){
       sm.children[2].textContent = tot && (allNeg || allPos) ? (plain && allNeg ? "" : allNeg ? "−" : "+") + fmt(tot) : "";
       const inner = document.createElement("ul"); rs.forEach(r => inner.appendChild(r.el()));
       dt.append(sm, inner);
-      dt.addEventListener("toggle", () => { txgShut[g] = !dt.open; });
+      dt.addEventListener("toggle", () => { if(force) return; if(g === "mv"){ if(dk){ if(dt.open) txgMvOpen.add(dk); else txgMvOpen.delete(dk); } } else txgShut[g] = !dt.open; });
       li.appendChild(dt); ul.appendChild(li);
     });
   }
@@ -5183,7 +5185,7 @@ function startNgay50k(){
       li.textContent = dk === todayKey() ? "Chưa có khoản nào hôm nay. Bấm Ghi chi, Ghi thu hoặc kể trong Chat." : "Không có giao dịch ngày này. Có thể ghi bù bằng cách chọn ngày trong form.";
       list.appendChild(li);
     }
-    txDayList(list, rowsD, true);   /* Sổ Ngày ghi số tiền không kèm dấu */
+    txDayList(list, rowsD, true, dk);   /* Sổ Ngày ghi số tiền không kèm dấu */
 
     const week = $("week"), labels = $("weekLabels"); week.innerHTML = ""; labels.innerHTML = "";
     const days = []; for(let i=6;i>=0;i--){ const d = new Date(); d.setDate(d.getDate()-i); days.push(d); }
@@ -5333,7 +5335,7 @@ function startNgay50k(){
       const din = sumOf(state.income[k]), dout = dayLimit(k), dfx = sumOf(state.days[k]) + sumOf((state.cardTx || {})[k]) - dout;
       box.appendChild(txDayHead(k, din, dout, dfx));
       const ul = document.createElement("ul");
-      txDayList(ul, soDayRows(k, true));
+      txDayList(ul, soDayRows(k, true), false, k);
       box.appendChild(ul);
     });
   }
@@ -10258,7 +10260,7 @@ function startNgay50k(){
       const din = list.reduce((a, r) => a + r.din, 0), dout = list.reduce((a, r) => a + r.dout, 0), dfx = list.reduce((a, r) => a + (r.fx || 0), 0);
       ul.appendChild(txDayHead(k, din, dout, dfx));
       const box = document.createElement("ul");
-      txDayList(box, list);
+      txDayList(box, list, false, k, !!q);
       ul.appendChild(box);
     });
     $("walMore").hidden = true;

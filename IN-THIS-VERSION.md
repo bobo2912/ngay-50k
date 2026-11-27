@@ -1,6 +1,12 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v233, ngày 19/11/2026
+**Phiên bản hiện tại:** v236, ngày 27/11/2026
+
+---
+
+## Có gì mới trong v236 (so với v235)
+
+- Khung **Không tính chi** (trả nợ, cho vay, trả thẻ, chuyển ví) cuối mỗi ngày giờ **mặc định thu gọn**, chỉ hiện dòng tóm tắt "Không tính chi · N khoản · tổng". Bấm vào mới bung ra; mở ngày nào chỉ ngày đó mở, không bung cả tháng. Đang tìm trong lịch sử ví thì khung mở sẵn để thấy kết quả.
 
 ---
 
