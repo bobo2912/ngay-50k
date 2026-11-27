@@ -355,7 +355,8 @@ ul{list-style:none; margin:0; padding:0}
 .pay-hist button{border:0; background:transparent; color:var(--muted); padding:2px 6px}
 .loan{cursor:pointer; position:relative}
 .loan:active{transform:scale(.995)}
-.loan .more{font-size:.78rem; color:var(--muted); margin-top:8px; display:flex; justify-content:space-between}
+.loan .more{font-size:.78rem; color:var(--muted); margin-top:8px; display:flex; justify-content:space-between; gap:10px; align-items:flex-start}
+.loan .more > span:last-child{white-space:nowrap; flex-shrink:0}   /* v236: "Xem chi tiết ›" không bị rớt mũi tên xuống dòng */
 .back{border:0; background:transparent; color:var(--muted); font-weight:600; padding:4px 0; margin-bottom:10px; font-size:.9rem}
 .detail-card{background:var(--surface); border:1.5px solid var(--line); border-radius:14px; padding:14px}
 .detail-card h2{font-size:1.1rem; margin:0}

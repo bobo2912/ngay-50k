@@ -7,6 +7,7 @@
 ## Có gì mới trong v236 (so với v235)
 
 - Khung **Không tính chi** (trả nợ, cho vay, trả thẻ, chuyển ví) cuối mỗi ngày giờ **mặc định thu gọn**, chỉ hiện dòng tóm tắt "Không tính chi · N khoản · tổng". Bấm vào mới bung ra; mở ngày nào chỉ ngày đó mở, không bung cả tháng. Đang tìm trong lịch sử ví thì khung mở sẵn để thấy kết quả.
+- Thẻ khoản vay: chữ "Xem chi tiết ›" luôn nằm trên một dòng, không còn rớt dấu mũi tên xuống dòng khi dòng "Còn … ngày đến hạn · lãi chưa trả …" dài.
 
 ---
 
