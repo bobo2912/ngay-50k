@@ -67,6 +67,11 @@ const CASES = [
     [{ amt:286000, inc:false, day:K, time:"16:32", note:"NGUYEN THI GIANG" },
      { amt:2600000, inc:true, day:K, time:"16:31", note:"PHAN HUU HUNG" },
      { amt:100000, inc:false, day:K, time:"16:30", note:"PHAN HUU HUNG" }]],
+  /* ---- v235: như trên nhưng đúng kiểu chữ đọc được từ ẢNH thật (nhãn và số tiền dính cùng dòng, có rác icon đầu dòng, dòng mô tả ngắt giữa chừng dính luôn giờ) ---- */
+  ["Màn Chi tiết tài khoản, đọc từ ảnh (OCR)", `4:32 all > 68\n< Chi tiết tài khoản\n${DY}\n®) TIỀN RA -286,000 VND\nCUSTOMER PHAN HUU HUNG tien an 16:32\nteam. DEN: NGUYEN THI GIANG\n®) TIỀN RA -300,000 VND\nCUSTOMER hung phan lien hoan 16:32\nphong. DEN: NGUYEN THI GIANG\n(oS TIỀN VÀO +2,600,000 VND\nCUSTOMER PHAN HUU HUNG chuyen 16:31\ntien. TU: PHAN HUU HUNG`,
+    [{ amt:286000, inc:false, day:K, time:"16:32", note:"NGUYEN THI GIANG" },
+     { amt:300000, inc:false, day:K, time:"16:32", note:"NGUYEN THI GIANG" },
+     { amt:2600000, inc:true, day:K, time:"16:31", note:"PHAN HUU HUNG" }]],
 ];
 
 let fail = 0;

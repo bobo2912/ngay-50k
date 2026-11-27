@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v234";
+  var K = "ngay50k:errlog", VER = "v235";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -3270,7 +3270,7 @@ li.txg > details.txd > ul{margin:0 !important}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v234</p>
+      <p class="sync" id="appVersion">Phiên bản v235</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -3827,15 +3827,15 @@ li.txg > details.txd > ul{margin:0 !important}
 <input type="file" id="phFile" accept="image/*" hidden>
 <div class="ph-view" id="phView" role="dialog" aria-modal="true" aria-label="Ảnh hoá đơn" hidden><img id="phImg" alt="Ảnh hoá đơn"><div class="ph-bar"><button type="button" id="phDel">Bỏ ảnh này</button><button type="button" id="phClose">Đóng</button></div></div>
 <div class="update-bar notif-bar" id="notifBar" role="status" hidden><p>📋 Vừa có thông báo ngân hàng?</p><button id="notifGo" type="button">Ghi</button><button id="notifGo2" type="button" hidden>Chọn tệp</button><button class="nx" id="notifX" type="button" aria-label="Ẩn">✕</button></div>
-<script src="parse-vi.js?v=234"></script>
-<script src="thu-vien-cau.js?v=234"></script>
-<script src="quy-tac.js?v=234"></script>
-<script src="du-lieu.js?v=234"></script>
-<script src="doc-so-tk.js?v=234"></script>
-<script src="doc-khoan-vay.js?v=234"></script>
-<script src="tich-luy.js?v=234"></script>
-<script src="native.js?v=234"></script>
-<script src="lock.js?v=234"></script>
+<script src="parse-vi.js?v=235"></script>
+<script src="thu-vien-cau.js?v=235"></script>
+<script src="quy-tac.js?v=235"></script>
+<script src="du-lieu.js?v=235"></script>
+<script src="doc-so-tk.js?v=235"></script>
+<script src="doc-khoan-vay.js?v=235"></script>
+<script src="tich-luy.js?v=235"></script>
+<script src="native.js?v=235"></script>
+<script src="lock.js?v=235"></script>
 <script>
 /* ---------- kho dữ liệu ----------
    Dữ liệu chính nằm trong IndexedDB (cơ sở dữ liệu "ngay50k", bảng "kv"), không còn chung giới hạn 5 MB của localStorage.
@@ -11811,7 +11811,7 @@ function startNgay50k(){
       /^(thông báo|thong bao|biến động|bien dong)/i.test(l) ||
       /(yesterday|hôm qua|hom qua)\s*,?\s*\d{1,2}:\d{2}/i.test(l) ||
       /\d{1,2}:\d{2}\s?(am|pm)\s*$/i.test(l) ||
-      /^ti[ềe]n\s*(ra|v[àa]o)$/i.test(l) ||            /* v234: màn "Chi tiết tài khoản" (vd MB): mỗi khoản có nhãn TIỀN RA / TIỀN VÀO riêng một dòng */
+      /^.{0,8}ti[ềe]n\s*(ra|v[àa]o)\b/i.test(l) ||     /* v235: nới lại điều kiện v234 — đọc ảnh thật thì nhãn TIỀN RA/VÀO dính cùng dòng với số tiền (và có thể dính rác icon đầu dòng), không đứng riêng một dòng như giả định ban đầu */
       /^\d{1,2}\/\d{1,2}\/\d{4}$/.test(l);              /* v234: dòng ngày riêng (vd 27/11/2026) đứng đầu các khoản trong ngày đó */
     const fixSep = t => String(t || "")
       .replace(/ /g, " ")
