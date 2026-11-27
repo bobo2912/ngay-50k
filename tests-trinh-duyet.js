@@ -275,7 +275,9 @@ khoản vay`);
     ok("tên gợi nhớ: lưu và hiện ở chi tiết", await T(() => __T.state.loans.find(l => l.id === "t242a").nick) === "Vay sửa nhà" && /Vay sửa nhà/.test(await pg.locator("#loanDetail h2").first().innerText()));
     await pg.locator("#loanDetail .back").click(); await pg.waitForTimeout(400);
     ok("tên gợi nhớ: thẻ khoản vay hiện tên mới, mã ở dòng phụ", await pg.locator("details.lgrp-bank .loan").filter({ hasText:"Vay sửa nhà" }).filter({ hasText:"LD9990001" }).count() === 1);
-    ok("nhóm mở được nhớ lại sau khi vẽ lại", await pg.locator("details.lgrp-bank").evaluate(e => e.open));
+    ok("nhóm đang mở giữ nguyên khi xem chi tiết rồi quay lại", await pg.locator("details.lgrp-bank").evaluate(e => e.open));
+    await T(() => { scrollTo(0, 0); document.body.classList.remove("nav-hide"); }); await pg.waitForTimeout(300); await tab("Chat"); await tab("Tài sản"); await pg.locator("#loanSeg button").filter({ hasText:"Đi vay" }).click(); await pg.waitForTimeout(300);
+    ok("rời tab rồi quay lại: nhóm vay thu gọn, không tự bung", !(await pg.locator("details.lgrp-bank").evaluate(e => e.open)));
 
     ok("không có lỗi JavaScript", !errs.length, errs.slice(0, 5).join("\n   "));
   }catch(e){

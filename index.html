@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v245";
+  var K = "ngay50k:errlog", VER = "v246";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -3325,7 +3325,7 @@ li.txg > details.txd > ul{margin:0 !important}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v245</p>
+      <p class="sync" id="appVersion">Phiên bản v246</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -6339,8 +6339,11 @@ function startNgay50k(){
     if(Number(l.per) > 0 || l.acct || BANKISH.test(l.who || "")) return "bank";
     return "fam";
   }
-  const LGRP_KEY = "ngay50k:lgrp";
-  function lgrpOpen(){ try{ return JSON.parse(lsGet(LGRP_KEY) || "{}") || {}; }catch(e){ return {}; } }
+  /* v246: nhóm vay luôn thu gọn khi vào tab; chỉ bung khi người dùng bấm. Chỉ nhớ trong lúc đang ở tab Tài sản
+     (vào xem chi tiết một khoản rồi quay lại vẫn giữ nhóm đang mở); rời tab, đổi Đi vay / Cho vay, mở lại app thì thu gọn hết. */
+  var lgrpMem = {};
+  try{ localStorage.removeItem("ngay50k:lgrp"); }catch(e){}
+  function lgrpOpen(){ return lgrpMem; }
   /* các kỳ phải trả trong tháng hiện tại (và khoản người thân đã quá hạn) */
   /* v244: lịch trả 13 tháng (tháng này + 12 tháng tới). Tháng này dùng số thật (đã trả / quá hạn);
      các tháng sau là dự kiến: gốc mỗi kỳ trừ dần trên số còn nợ, lãi ước tính trên dư nợ còn lại của kỳ đó. */
@@ -6496,7 +6499,7 @@ function startNgay50k(){
       const inner = el("div", "lg-in");
       xs.forEach(l => inner.appendChild(loanCard(l, false)));
       dt.appendChild(inner);
-      dt.addEventListener("toggle", () => { const o = lgrpOpen(); o[k] = dt.open; lsSet(LGRP_KEY, JSON.stringify(o)); });
+      dt.addEventListener("toggle", () => { lgrpMem[k] = dt.open; });
       box.appendChild(dt);
     });
   }
@@ -7144,6 +7147,7 @@ function startNgay50k(){
      Sổ = hai màn "today" (Ngày) và "money" (Tháng), chuyển bằng nút Ngày/Tháng; Ví = "wal" (ví) và "cards" (thẻ). */
   var soView = "today";
   function showTab(name){
+    lgrpMem = {};   /* v246: rời / vào tab thì nhóm vay thu gọn lại */
     if(name === "wallet") name = "today";                  /* Ví và Tài khoản đã gộp làm một (v82) */
     if(name === "so") name = soView;
     if(name === "vi"){ walSel = MAIN_W; walMonth = null; name = "wal"; }
@@ -7279,7 +7283,7 @@ function startNgay50k(){
   function loanStuck(){ const st = $("loanStick"); return !!st && !st.closest("[hidden]") && st.getBoundingClientRect().top <= headH() + 1 && $("loanStickAt").getBoundingClientRect().top < headH(); }
   [...$("loanSeg").children].forEach(b => b.onclick = () => {
     const was = loanStuck();
-    loanView = b.dataset.lv; renderLoans();
+    loanView = b.dataset.lv; lgrpMem = {}; renderLoans();
     if(was) window.scrollTo(0, $("loanStickAt").getBoundingClientRect().top + scrollY + 14 - headH());
   });
   addEventListener("scroll", () => { if(currentTab === "loans") $("loanStick").classList.toggle("stuck", loanStuck()); }, { passive:true });

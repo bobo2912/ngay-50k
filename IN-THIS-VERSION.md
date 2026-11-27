@@ -1,6 +1,12 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v245, ngày 27/11/2026
+**Phiên bản hiện tại:** v246, ngày 27/11/2026
+
+---
+
+## Có gì mới trong v246 (so với v245)
+
+- Nhóm vay (Vay ngân hàng / Trả góp thẻ / Người thân) **luôn thu gọn** khi vào tab Tài sản; chỉ bung khi bạn bấm. Trước đây app nhớ nhóm đã mở từ lần trước (cả sau khi tắt app) nên mở vào là bung sẵn. Giờ chỉ giữ nhóm đang mở khi bạn vào xem chi tiết một khoản rồi quay lại; rời tab, đổi Đi vay / Cho vay hoặc mở lại app thì thu gọn hết.
 
 ---
 
