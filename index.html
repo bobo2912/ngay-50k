@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v246";
+  var K = "ngay50k:errlog", VER = "v247";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -2737,6 +2737,9 @@ li.txg > details.txd > ul{margin:0 !important}
         <div id="lSchedBox" hidden>
           <div class="row"><div class="field"><label for="lPerG"><span>Gốc mỗi kỳ</span></label><input id="lPerG" class="inp num" inputmode="numeric" placeholder="0đ"></div>
           <div class="field"><label for="lDay"><span>Ngày trả hằng tháng</span></label><input id="lDay" class="inp num" inputmode="numeric" maxlength="2" placeholder="vd 28"></div></div>
+          <!-- v247: ân hạn gốc -->
+          <div class="field"><label for="lGrace"><span>Ân hạn gốc đến hết tháng (không bắt buộc)</span></label><input id="lGrace" class="inp" type="month"></div>
+          <p class="subtle" style="margin-top:4px">Trong thời gian ân hạn chỉ trả lãi. Để trống "Gốc mỗi kỳ" thì app tự chia gốc còn lại cho các tháng từ khi hết ân hạn tới hạn trả.</p>
         </div>
         <!-- v230: lãi suất cho mọi khoản (đi vay, cho vay), trừ trả góp thẻ; app tính lãi theo ngày tới hôm nay -->
         <div class="field" id="lRateField"><label for="lRate"><span>Lãi suất %/năm (không bắt buộc)</span></label><input id="lRate" class="inp num" inputmode="decimal" placeholder="vd 7 hoặc 5,7"></div>
@@ -3325,7 +3328,7 @@ li.txg > details.txd > ul{margin:0 !important}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v246</p>
+      <p class="sync" id="appVersion">Phiên bản v247</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
@@ -4390,7 +4393,7 @@ function startNgay50k(){
     clearTimeout(persist.gc); persist.gc = setTimeout(() => { try{ phGc(); }catch(e){} }, 2000);   /* v169: dọn ảnh hoá đơn của khoản đã xoá */
   }
   /* v211: lối vào cho bài thử trình duyệt (tests-trinh-duyet.js), chỉ có khi mở trang với ?test=1 */
-  if(/[?&]test=1(&|$)/.test(location.search)) window.__T = { get state(){ return state; }, set state(v){ state = v; }, balCalc:(a, w) => balCalc(a, w), todayKey:() => todayKey(), persist:() => persist(), mergeStates:(a, b) => mergeStates(a, b), loanInterest:(l, to) => loanInterest(l, to) };
+  if(/[?&]test=1(&|$)/.test(location.search)) window.__T = { get state(){ return state; }, set state(v){ state = v; }, balCalc:(a, w) => balCalc(a, w), todayKey:() => todayKey(), persist:() => persist(), mergeStates:(a, b) => mergeStates(a, b), loanInterest:(l, to) => loanInterest(l, to), nextDue:l => nextDue(l), perOf:l => perOf(l) };
   /* ---------- số dư ví ----------
      Số dư = số bạn nhập ở lần đối chiếu gần nhất, rồi tính tiếp mọi khoản xảy ra SAU thời điểm đó:
      + khoản thu, − chi thường, − tiền trả thẻ, ± tiền vay/cho vay/trả nợ.
@@ -5789,10 +5792,26 @@ function startNgay50k(){
   const instOf = p => (p && instAlloc().pay[p.id]) || 0;
   /* v221: kỳ trả tới của một khoản đi vay có lịch (per; day / rate với khoản vay thường; card với trả góp thẻ).
      Lãi ước tính = dư nợ × lãi suất × số ngày của kỳ / 360 (khớp số ngân hàng báo với các khoản LD). */
+  /* v247: ân hạn gốc. l.grace = "YYYY-MM": tháng cuối cùng được ân hạn (chỉ trả lãi). Chỉ cho khoản đi vay thường (không phải trả góp thẻ).
+     Gốc mỗi kỳ: theo ô "Gốc mỗi kỳ"; để trống mà có hạn trả thì chia đều gốc còn lại cho các tháng từ khi hết ân hạn tới hạn trả. */
+  const ymNow = () => todayKey().slice(0, 7);
+  const ymAdd = (ym, n) => { const d = new Date(Number(ym.slice(0, 4)), Number(ym.slice(5, 7)) - 1 + n, 1); return d.getFullYear() + "-" + pad(d.getMonth() + 1); };
+  const ymDiff = (a, b) => (Number(b.slice(0, 4)) - Number(a.slice(0, 4))) * 12 + Number(b.slice(5, 7)) - Number(a.slice(5, 7));
+  const hasGrace = l => !!(l && !l.card && l.type === "borrow" && /^\d{4}-\d{2}$/.test(l.grace || ""));
+  const inGrace = (l, ym) => hasGrace(l) && ym <= l.grace;
+  function perOf(l){
+    if(Number(l.per) > 0) return Number(l.per);
+    if(hasGrace(l) && l.due){
+      const start = l.grace >= ymNow() ? ymAdd(l.grace, 1) : ymNow();
+      return Math.ceil(leftOf(l) / Math.max(1, ymDiff(start, l.due.slice(0, 7)) + 1));
+    }
+    return 0;
+  }
   function nextDue(l){
-    if(!l || l.type !== "borrow" || !(Number(l.per) > 0)) return null;
+    if(!l || l.type !== "borrow" || !(perOf(l) > 0 || (hasGrace(l) && Number(l.day) > 0))) return null;
     const left = leftOf(l); if(left <= 0) return null;
-    const goc = Math.min(Number(l.per), left), periods = Math.ceil(left / Number(l.per));
+    const P = perOf(l);
+    let goc = P > 0 ? Math.min(P, left) : 0, periods = P > 0 ? Math.ceil(left / P) : 0;
     const now = new Date(todayKey() + "T00:00:00"), ymOf = d => d.getFullYear() + "-" + pad(d.getMonth() + 1);
     const at = (y, m, d) => { const dim = new Date(y, m + 1, 0).getDate(); return new Date(y, m, Math.min(d, dim)); };
     if(l.card){
@@ -5802,21 +5821,25 @@ function startNgay50k(){
       const m = f0 && f0 > now ? f0 : paidThis ? new Date(now.getFullYear(), now.getMonth() + 1, 1) : now;
       return { card:true, goc, lai:0, tot:goc, month:pad(m.getMonth() + 1) + "/" + m.getFullYear(), periods, endM:(d => pad(d.getMonth() + 1) + "/" + d.getFullYear())(new Date(m.getFullYear(), m.getMonth() + periods - 1, 1)) };
     }
-    const D = Number(l.day) || 0; if(!D) return { goc, lai:0, tot:goc, periods };
+    const D = Number(l.day) || 0; if(!D) return { goc, lai:0, tot:goc, periods };   /* (trả góp thẻ đã return ở trên) */
     /* đã trả trong tháng này (có lần trả từ ngày 1) → kỳ tới là tháng sau */
     const ym = ymOf(now), paidM = (l.payments || []).some(p => String(p.date).slice(0, 7) === ym);
     let due = at(now.getFullYear(), now.getMonth(), D);
     if(paidM || due < now) due = at(now.getFullYear(), now.getMonth() + 1, D);
     const prev = at(due.getFullYear(), due.getMonth() - 1, D), days = Math.round((due - prev) / 86400000);
+    /* v247: kỳ rơi vào thời gian ân hạn → chỉ lãi; số kỳ còn lại cộng thêm các tháng ân hạn còn lại */
+    const dueYm = ymOf(due), grace = inGrace(l, dueYm);
+    if(hasGrace(l) && l.grace >= dueYm) periods += ymDiff(dueYm, l.grace) + 1;
+    if(grace) goc = 0;
     const lai = l.rate ? Math.round(left * Number(l.rate) / 100 * days / 360) : 0;
     const end = new Date(due.getFullYear(), due.getMonth() + periods - 1, 1);
-    return { goc, lai, tot:goc + lai, date:keyOf(due), days, periods, endM:pad(end.getMonth() + 1) + "/" + end.getFullYear() };
+    return { goc, lai, tot:goc + lai, date:keyOf(due), days, periods, grace, endM:P > 0 ? pad(end.getMonth() + 1) + "/" + end.getFullYear() : "" };
   }   /* phần trả góp trong một lần trả thẻ */
   /* v230: lãi theo ngày của khoản có lãi suất (l.rate %/năm). Lãi đơn: mỗi đoạn giữa hai mốc tiền
      (cho vay / vay ban đầu, vay thêm, các lần trả gốc) = dư nợ × lãi suất × số ngày / 365 (khoản đi vay có lịch trả ngân hàng: / 360 như nextDue).
      Tính từ ngày giải ngân tới hôm nay (ngày giải ngân tính, hôm nay không tính). Lãi đã thu / đã trả là các khoản thu (cho vay)
      hoặc khoản chi nhóm Lãi vay (đi vay) mang lid = mã khoản vay, ghi bằng nút "Ghi lãi đã thu / đã trả" ở chi tiết khoản vay. */
-  const laiBasis = l => l.type === "borrow" && Number(l.per) > 0 && Number(l.day) > 0 ? 360 : 365;
+  const laiBasis = l => l.type === "borrow" && (Number(l.per) > 0 || hasGrace(l)) && Number(l.day) > 0 ? 360 : 365;
   const dayNo = k => Math.round(new Date(k + "T12:00:00").getTime() / 86400000);
   function laiGot(l){
     let a = 0; const bag = l.type === "lend" ? state.income : state.days;
@@ -5888,7 +5911,7 @@ function startNgay50k(){
     setLoanType(l ? l.type : (loanView === "lend" ? "lend" : "borrow")); refreshLoanForm();
     wPicker("lWField", "lWChips", l ? l.w : MAIN_W);   /* v212 */
     $("lPer").value = l && l.per ? money(+l.per) : ""; $("lFrom").value = l && l.from ? l.from : todayKey();
-    $("lPerG").value = l && l.per && !l.card ? money(+l.per) : ""; $("lDay").value = l && l.day ? String(l.day) : ""; $("lRate").value = l && l.rate ? String(l.rate).replace(".", ",") : "";
+    $("lPerG").value = l && l.per && !l.card ? money(+l.per) : ""; $("lDay").value = l && l.day ? String(l.day) : ""; $("lGrace").value = l && l.grace && !l.card ? l.grace : ""; $("lRate").value = l && l.rate ? String(l.rate).replace(".", ",") : "";
     lCardPick(l ? l.card : "");
     showLoanView("form");
   }
@@ -5938,9 +5961,10 @@ function startNgay50k(){
     const inst = loanType === "borrow" && lCard && lPerVal() > 0 ? { card:lCard, per:lPerVal(), from:$("lFrom").value || todayKey() } : null;
     const perG = parseInt(digits($("lPerG").value), 10) || 0, day = Math.min(31, parseInt(digits($("lDay").value), 10) || 0), rate = parseFloat(String($("lRate").value).replace(",", ".")) || 0;
     const setInst = o => {
-      ["card", "per", "from", "day", "rate"].forEach(k => delete o[k]);
+      ["card", "per", "from", "day", "rate", "grace"].forEach(k => delete o[k]);
       if(inst) Object.assign(o, inst);
-      else if(loanType === "borrow"){ if(perG > 0) o.per = perG; if(day > 0) o.day = day; if(rate > 0 && rate < 100) o.rate = rate; }   /* v221 */
+      else if(loanType === "borrow"){ if(perG > 0) o.per = perG; if(day > 0) o.day = day; if(rate > 0 && rate < 100) o.rate = rate;   /* v221 */
+        const gv = $("lGrace").value; if(/^\d{4}-\d{2}$/.test(gv)) o.grace = gv; }   /* v247 */
       else if(rate > 0 && rate < 100) o.rate = rate;   /* v230: cho vay cũng có lãi suất */
     };
     if(editingLoanId){
@@ -5989,7 +6013,8 @@ function startNgay50k(){
     card.querySelector(".progress i").style.width = Math.min(100, paid/Math.max(1,totalOf(l))*100) + "%";
     const dt = done ? {txt:"",late:false} : dueText(l), due = card.querySelector(".due");
     const li = !done && loanInterest(l);   /* v230 */
-    due.textContent = [dt.txt, li ? "lãi " + (l.type === "lend" ? "chưa thu " : "chưa trả ") + fmt(li.owe) : ""].filter(Boolean).join(" · ");
+    const gN = !done && hasGrace(l) ? ymDiff(ymNow(), l.grace) + 1 : 0;   /* v247 */
+    due.textContent = [gN > 0 ? "Ân hạn gốc · còn " + gN + " tháng" : "", dt.txt, li ? "lãi " + (l.type === "lend" ? "chưa thu " : "chưa trả ") + fmt(li.owe) : ""].filter(Boolean).join(" · ");
     due.className = "due" + (dt.late ? " late" : ""); due.style.marginTop = "0";
     const open = () => { detailLoanId = l.id; payOpen = false; drawOpen = false; laiOpen = false; editRecId = null; renderLoans(); showLoanView("detail"); };
     card.onclick = open; card.onkeydown = e => { if(e.key==="Enter"||e.key===" "){ e.preventDefault(); open(); } };
@@ -6024,14 +6049,19 @@ function startNgay50k(){
     const nx = nextDue(l);
     if(nx && nx.card) add("Kỳ tới", fmt(nx.tot) + " · trừ khi trả thẻ tháng " + nx.month, "num");
     else if(nx){
-      add("Kỳ tới" + (nx.date ? " " + fmtDate(nx.date) : ""), fmt(nx.tot) + (nx.lai ? "" : " gốc"), "num");
-      if(nx.lai) add("Trong đó", "gốc " + fmt(nx.goc) + " + lãi ≈ " + fmt(nx.lai) + " (" + nx.days + " ngày, " + String(l.rate).replace(".", ",") + "%/năm)", "");
+      add("Kỳ tới" + (nx.date ? " " + fmtDate(nx.date) : ""), fmt(nx.tot) + (nx.grace ? " chỉ lãi" : nx.lai ? "" : " gốc"), "num");
+      if(nx.lai && !nx.grace) add("Trong đó", "gốc " + fmt(nx.goc) + " + lãi ≈ " + fmt(nx.lai) + " (" + nx.days + " ngày, " + String(l.rate).replace(".", ",") + "%/năm)", "");
       /* lãi thật kỳ trước: khoản chi nhóm Lãi vay có mã khoản vay trong ghi chú (ghi từ thông báo "Thu lai khe uoc LD…") */
       const code = (String(l.who || "") + " " + String(l.note || "")).match(/LD\d{8,12}/i);
       if(code){ let last = null; for(const k in state.days) (state.days[k] || []).forEach(x => { if(x.cat === "laivay" && String(x.note || "").toUpperCase().includes(code[0].toUpperCase()) && (!last || k > last.k)) last = { k, amt:+x.amt || 0 }; }); if(last) add("Lãi kỳ trước", fmt(last.amt) + " · " + fmtDate(last.k)); }
     }
     if(nx) add("Còn", nx.periods + " kỳ" + (nx.endM ? " · xong khoảng " + nx.endM : ""), "");
     if(!l.card && l.per && !nx) add("Gốc mỗi kỳ", fmt(+l.per));
+    if(hasGrace(l) && !done){   /* v247 */
+      const g = l.grace.slice(5, 7) + "/" + l.grace.slice(0, 4), n = ymDiff(ymNow(), l.grace) + 1;
+      add("Ân hạn gốc", n > 0 ? "đến hết " + g + " · còn " + n + " tháng chỉ trả lãi" : "đã hết từ " + g, "");
+      if(!(Number(l.per) > 0) && perOf(l) > 0) add("Gốc mỗi kỳ sau ân hạn", "≈ " + fmt(perOf(l)) + " (chia đều tới hạn trả)", "num");
+    }
     if(l.card) add("Trả góp qua thẻ", (cardName(l.card) || "thẻ đã xoá") + (l.per ? " · " + fmt(+l.per) + "/kỳ" : "") + (l.from ? " · từ " + fmtDate(l.from) : ""), "");
     if(l.note) add("Ghi chú", l.note, "");
     card.appendChild(kv);
@@ -6336,7 +6366,7 @@ function startNgay50k(){
   function loanKind(l){
     if(l.card) return "card";
     if(l.grp === "bank" || l.grp === "fam") return l.grp;
-    if(Number(l.per) > 0 || l.acct || BANKISH.test(l.who || "")) return "bank";
+    if(Number(l.per) > 0 || hasGrace(l) || l.acct || BANKISH.test(l.who || "")) return "bank";
     return "fam";
   }
   /* v246: nhóm vay luôn thu gọn khi vào tab; chỉ bung khi người dùng bấm. Chỉ nhớ trong lúc đang ở tab Tài sản
@@ -6376,8 +6406,8 @@ function startNgay50k(){
         cardLoans.add(l.id);
         return;
       }
-      if(k === "bank" && Number(l.per) > 0 && Number(l.day) > 0){
-        const D = Number(l.day), per = Number(l.per), r = Number(l.rate) || 0;
+      if(k === "bank" && (perOf(l) > 0 || hasGrace(l)) && Number(l.day) > 0){
+        const D = Number(l.day), per = perOf(l), r = Number(l.rate) || 0;
         let bal = leftOf(l);
         const paid0 = (l.payments || []).filter(p => String(p.date).slice(0, 7) === ym0).reduce((a, p) => a + (Number(p.amt) || 0), 0)
           + (function(){ let a = 0; for(const d in state.days) if(d.slice(0, 7) === ym0) (state.days[d] || []).forEach(x => { if(x && x.lid === l.id) a += Number(x.amt) || 0; }); return a; })();
@@ -6385,8 +6415,9 @@ function startNgay50k(){
           const due = at(j, D), prev = at(j - 1, D), days = Math.round((new Date(due + "T00:00:00") - new Date(prev + "T00:00:00")) / 86400000);
           if(j === 0 && paid0 > 0){ out[0].rows.push({ kind:"bank", l, date:due, amt:paid0, done:true }); continue; }
           if(bal <= 0) break;
-          const goc = Math.min(per, bal), lai = r ? Math.round(bal * r / 100 * days / 360) : 0;
-          out[j].rows.push({ kind:"bank", l, date:due, amt:goc + lai, done:false, late:j === 0 && due < tk, est:j > 0 });
+          const gr = inGrace(l, out[j].ym), goc = gr ? 0 : Math.min(per, bal), lai = r ? Math.round(bal * r / 100 * days / 360) : 0;
+          if(goc + lai <= 0) continue;
+          out[j].rows.push({ kind:"bank", l, date:due, amt:goc + lai, done:false, late:j === 0 && due < tk, est:j > 0, grace:gr });
           bal -= goc;
         }
         return;
@@ -6467,7 +6498,7 @@ function startNgay50k(){
           mid.appendChild(el("small", null, [r.n + " khoản", d ? "ngày " + d : "", fut ? "trừ khi trả thẻ" : r.done ? "đã trừ đủ kỳ" : r.got ? "đã trừ " + fmt(r.got) + ", trừ tiếp khi trả thẻ" : "trừ khi trả thẻ"].filter(Boolean).join(" · ")));
         } else {
           mid.appendChild(el("b", null, loanName(r.l)));
-          mid.appendChild(el("small", null, [d ? (r.late ? "Hạn " + d + ", quá hạn" : (r.done ? "Ngày " : "Hạn ") + d) : "", r.done ? "đã trả" : r.all ? "trả hết" : r.kind === "bank" ? (r.l.rate ? "gốc + lãi ước tính" : "gốc kỳ này") : ""].filter(Boolean).join(" · ")));
+          mid.appendChild(el("small", null, [d ? (r.late ? "Hạn " + d + ", quá hạn" : (r.done ? "Ngày " : "Hạn ") + d) : "", r.done ? "đã trả" : r.all ? "trả hết" : r.kind === "bank" ? (r.grace ? "chỉ lãi · ân hạn gốc đến " + r.l.grace.slice(5, 7) + "/" + r.l.grace.slice(0, 4) : r.l.rate ? "gốc + lãi ước tính" : "gốc kỳ này") : ""].filter(Boolean).join(" · ")));
         }
         const a = el("span", "lp-a num", fmt(r.kind === "card" && !r.done ? r.amt - r.got : r.amt));
         li.append(ck, mid, a);

@@ -1,6 +1,15 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v246, ngày 27/11/2026
+**Phiên bản hiện tại:** v247, ngày 27/11/2026
+
+---
+
+## Có gì mới trong v247 (so với v246) – Ân hạn gốc
+
+- Form khoản vay (đi vay thường, không phải trả góp thẻ): ô mới **Ân hạn gốc đến hết tháng** (trường `grace` = "YYYY-MM").
+- Trong thời gian ân hạn mỗi kỳ **chỉ lãi** (dư nợ × lãi suất × số ngày / 360): Kỳ tới ghi "… chỉ lãi"; khung Phải trả ghi "chỉ lãi · ân hạn gốc đến MM/YYYY"; thẻ khoản vay có "Ân hạn gốc · còn N tháng"; chi tiết có dòng Ân hạn gốc.
+- Hết ân hạn: gốc mỗi kỳ theo ô "Gốc mỗi kỳ"; để trống mà có Hạn trả thì app tự chia gốc còn lại đều cho các tháng từ khi hết ân hạn tới hạn trả (chi tiết hiện "Gốc mỗi kỳ sau ân hạn ≈ …"). Số kỳ còn lại và tháng xong tính cả các tháng ân hạn. Dải 13 tháng cho thấy tháng bắt đầu trả gốc.
+- Khoản có ân hạn tự xếp vào nhóm Vay ngân hàng.
 
 ---
 

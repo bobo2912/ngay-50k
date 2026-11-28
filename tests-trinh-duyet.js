@@ -264,6 +264,13 @@ khoản vay`);
     ok("Phải trả: chọn tháng sau hiện lịch dự kiến, khoản ngân hàng có kỳ", /dự kiến/.test(await pg.locator(".lplan-sub").innerText()) && await pg.locator(".lplan .lp").filter({ hasText:"LD9990001" }).count() === 1);
     await pg.locator(".lplan .lpn").first().click(); await pg.locator(".lplan .lpn").first().click(); await pg.waitForTimeout(200);
     ok("Phải trả: nút ‹ về lại tháng này", await pg.locator(".lplan .lpn").first().isDisabled());
+    /* v247: ân hạn gốc */
+    ok("ân hạn gốc: kỳ trong ân hạn chỉ lãi, hết ân hạn có gốc chia đều tới hạn trả", await T(() => {
+      const ym = __T.todayKey().slice(0, 7), d = new Date(+ym.slice(0, 4), +ym.slice(5, 7) + 1, 1), g = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0");
+      const l = { id:"t247", type:"borrow", who:"LD7770001", amt:60000000, date:"2026-01-01", due:"2031-12-31", day:28, rate:10, grace:g, payments:[] };
+      __T.state.loans.push(l); const nx = __T.nextDue(l), per = __T.perOf(l); __T.state.loans.pop();
+      return nx && nx.goc === 0 && nx.lai > 0 && per > 0 && per < 60000000 / 40;
+    }));
     ok("nhóm vay: khoảng cách trên / dưới tiêu đề đều", await pg.locator("details.lgrp").first().evaluate(d => { const a = d.getBoundingClientRect(), b = d.querySelector(".lg-t").getBoundingClientRect(); return Math.abs((b.top - a.top) - (a.bottom - b.bottom)) <= 3; }));
     ok("Phải trả: có trả góp thẻ (kể cả khoản chưa đặt mỗi kỳ)", !(await T(() => (__T.state.cards || []).length)) || await pg.locator(".lplan .lp").filter({ hasText:"Trả góp" }).count() >= 1);
     ok("Đi vay: chia nhóm Vay ngân hàng / Người thân", await pg.locator("details.lgrp-bank").count() === 1 && await pg.locator("details.lgrp-fam").count() === 1);
