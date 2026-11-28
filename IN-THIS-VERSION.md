@@ -1,6 +1,12 @@
 # Tiêu Gọn – In this version
 
-**Phiên bản hiện tại:** v247, ngày 27/11/2026
+**Phiên bản hiện tại:** v248, ngày 27/11/2026
+
+---
+
+## Có gì mới trong v248 (so với v247)
+
+- Ô **Ân hạn gốc đến hết tháng** trên iPhone không còn tràn ra mép phải và chữ căn trái như các ô ngày khác.
 
 ---
 

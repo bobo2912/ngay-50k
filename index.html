@@ -25,7 +25,7 @@
    Mở app sau 9 giây vẫn chưa xong (mà không phải đang chờ nhập mã PIN) thì hiện nút Tải lại và Tải bản mới nhất,
    thay vì để màn hình đơ. Tải bản mới nhất chỉ xoá bộ nhớ đệm của app, không đụng tới dữ liệu. */
 (function(){
-  var K = "ngay50k:errlog", VER = "v247";
+  var K = "ngay50k:errlog", VER = "v248";
   window.__boot = { stage:"html", t:Date.now() };
   function log(kind, msg){
     try{ var a = JSON.parse(localStorage.getItem(K) || "[]"); a.push({ t:Date.now(), v:VER, k:kind, s:window.__boot.stage, m:String(msg || "").slice(0, 400) }); localStorage.setItem(K, JSON.stringify(a.slice(-30))); }catch(e){}
@@ -213,11 +213,11 @@ textarea.note-ta{resize:none; min-height:64px; line-height:1.4; font-family:inhe
 .inp:focus{border-color:var(--note)}
 .inp.missing{border-color:var(--over)}
 .inp:disabled{opacity:.75}
-input[type="date"].inp{
+input[type="date"].inp, input[type="month"].inp{   /* v248: ô tháng (Ân hạn gốc) cùng kiểu ô ngày, không tràn viền trên iPhone */
   -webkit-appearance:none; appearance:none; display:block;
   width:100%; min-width:0; max-width:100%; min-height:48px; text-align:left; line-height:1.5;
 }
-input[type="date"].inp::-webkit-date-and-time-value{text-align:left; margin:0}
+input[type="date"].inp::-webkit-date-and-time-value, input[type="month"].inp::-webkit-date-and-time-value{text-align:left; margin:0}
 .field{min-width:0}
 .amount-inp{font-size:1.25rem; font-weight:700; padding:8px 11px}
 .amt-row{display:flex; gap:8px; align-items:stretch}
@@ -3328,7 +3328,7 @@ li.txg > details.txd > ul{margin:0 !important}
         <div><dt>Dữ liệu của bạn</dt><dd class="num" id="storData">–</dd></div>
         <div><dt>Bản lưu để mở offline</dt><dd class="num" id="storCache">–</dd></div>
       </dl>
-      <p class="sync" id="appVersion">Phiên bản v247</p>
+      <p class="sync" id="appVersion">Phiên bản v248</p>
       <p class="sync" id="syncLabel">Dữ liệu chỉ lưu trên máy này, không gửi lên máy chủ nào. App lưu bằng IndexedDB nên không còn bị giới hạn khoảng 5 MB dùng chung với các mini app khác.</p>
 
       <h4 class="sub">Nhật ký lỗi</h4>
